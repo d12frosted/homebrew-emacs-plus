@@ -13,8 +13,8 @@ class EmacsPlus < Formula
   end
 
   devel do
-    url "http://alpha.gnu.org/gnu/emacs/pretest/emacs-25.0.91.tar.xz"
-    sha256 "d77ebd310dd8c978e15f29af33186646989534ae483aa8acafe6963244930193"
+    url "http://alpha.gnu.org/gnu/emacs/pretest/emacs-25.0.93.tar.xz"
+    sha256 "b39199a491ce53f8b8a5b74fe6f1f191257e424f3ba047b3098ff9218e1579f1"
     depends_on "autoconf" => :build
     depends_on "automake" => :build
   end
@@ -55,10 +55,13 @@ class EmacsPlus < Formula
   end
 
   def install
-    args = ["--prefix=#{prefix}",
-            "--enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp",
-            "--infodir=#{info}/emacs",
-           ]
+    args = %W[
+      --disable-dependency-tracking
+      --disable-silent-rules
+      --enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp
+      --infodir=#{info}/emacs
+      --prefix=#{prefix}
+    ]
 
     args << "--with-file-notification=gfile" if build.with? "glib"
 
@@ -149,6 +152,8 @@ class EmacsPlus < Formula
       EOS
     end
   end
+
+  plist_options :manual => "emacs"
 
   def plist; <<-EOS.undent
     <?xml version="1.0" encoding="UTF-8"?>
