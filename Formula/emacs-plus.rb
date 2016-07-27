@@ -13,16 +13,21 @@ class EmacsPlus < Formula
   end
 
   devel do
-    url "http://alpha.gnu.org/gnu/emacs/pretest/emacs-25.0.93.tar.xz"
-    sha256 "b39199a491ce53f8b8a5b74fe6f1f191257e424f3ba047b3098ff9218e1579f1"
+    url "http://alpha.gnu.org/gnu/emacs/pretest/emacs-25.1-rc1.tar.xz"
+    version "25.1-rc1"
+    sha256 "c00c50e66474359d1e24baa2a0703bc64207caffc31d0808d8b4ffa4b3826133"
+
     depends_on "autoconf" => :build
     depends_on "automake" => :build
+    depends_on "jpeg" => :linked
   end
 
   head do
     url "https://github.com/emacs-mirror/emacs.git"
+
     depends_on "autoconf" => :build
     depends_on "automake" => :build
+    depends_on "jpeg" => :linked
   end
 
   option "with-cocoa", "Build a Cocoa version of emacs"
@@ -32,11 +37,12 @@ class EmacsPlus < Formula
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
+  deprecated_option "with-d-bus" => "with-dbus"
   deprecated_option "with-x" => "with-x11"
 
   depends_on "pkg-config" => :build
   depends_on :x11 => :optional
-  depends_on "d-bus" => :optional
+  depends_on "dbus" => :optional
   depends_on "gnutls" => :optional
   depends_on "librsvg" => :optional
   depends_on "imagemagick" => :optional
@@ -71,7 +77,7 @@ class EmacsPlus < Formula
       args << "--without-xml2"
     end
 
-    if build.with? "d-bus"
+    if build.with? "dbus"
       args << "--with-dbus"
     else
       args << "--without-dbus"
