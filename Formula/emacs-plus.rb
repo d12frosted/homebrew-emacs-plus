@@ -18,11 +18,11 @@ class EmacsPlus < Formula
     depends_on "automake" => :build
   end
 
-  option "with-cocoa", "Build a Cocoa version of emacs"
-  option "with-ctags", "Don't remove the ctags executable that emacs provides"
-  option "without-libxml2", "Don't build with libxml2 support"
-  option "with-modules", "Compile with dynamic modules support"
-  option "with-spacemacs-icon", "Using the spacemacs Emacs icon by Nasser Alshammari"
+  option "without-cocoa", "Build a non-Cocoa version of Emacs"
+  option "without-libxml2", "Build without libxml2 support"
+  option "without-modules", "Build without dynamic modules support"
+  option "without-spacemacs-icon", "Build without Spacemacs icon by Nasser Alshammari"
+  option "with-ctags", "Don't remove the ctags executable that Emacs provides"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -30,9 +30,9 @@ class EmacsPlus < Formula
 
   depends_on "pkg-config" => :build
   depends_on "dbus" => :optional
-  depends_on "gnutls" => :optional
+  depends_on "gnutls" => :recommended
   depends_on "librsvg" => :recommended
-  depends_on "imagemagick" => :optional
+  depends_on "imagemagick" => :recommended
   depends_on "mailutils" => :optional
 
   def install
