@@ -1,0 +1,48 @@
+* Emacs Plus
+
+Emacs Plus is GNU Emacs formulae based on =emacs= [[https://github.com/Homebrew/homebrew-core/blob/master/Formula/emacs.rb][formulae]]. The difference is
+that some of the options available from =emacs= formulae are enabled by default
+in =emacs-plus= and some new [[#options][additional options]] are available for user.
+
+** Install
+
+#+BEGIN_SRC bash
+$ brew tap d12frosted/emacs-plus
+$ brew install emacs-plus [options]
+#+END_SRC
+
+** Options
+
+To get list of all available options, call ~brew info emacs-plus~. Here is
+relevant part from output of that command for your convenience.
+
+#+BEGIN_SRC bash
+==> Options
+--with-ctags
+  Don't remove the ctags executable that Emacs provides
+--with-dbus
+  Build with dbus support
+--with-mailutils
+  Build with mailutils support
+--without-cocoa
+  Build a non-Cocoa version of emacs
+--without-gnutls
+  Build without gnutls support
+--without-imagemagick
+  Build without imagemagick support
+--without-librsvg
+  Build without librsvg support
+--without-libxml2
+  Build without libxml2 support
+--without-modules
+  Build without dynamic modules support
+--without-spacemacs-icon
+  Build without Spacemacs icon by Nasser Alshammari
+--HEAD
+  Install HEAD version
+#+END_SRC
+
+Note that by default =emacs-plus= is builds Cocoa version of Emacs with
+=gnutls=, =imagemagick=, =librsvg= and dynamic modules support by default. Also
+it changes default GNU Emacs icon to Spacemacs icon. If you wish to change
+defaults, just use =--without-FEATURE= flag.
