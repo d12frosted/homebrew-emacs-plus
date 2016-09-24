@@ -107,14 +107,6 @@ class EmacsPlus < Formula
     end
   end
 
-  def caveats
-    if build.with? "cocoa" then <<-EOS.undent
-      Please try the Cask for a better-supported Cocoa version:
-        brew cask install emacs
-      EOS
-    end
-  end
-
   plist_options manual: "emacs"
 
   def plist; <<-EOS.undent
