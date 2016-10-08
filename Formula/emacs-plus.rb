@@ -29,11 +29,17 @@ class EmacsPlus < Formula
   deprecated_option "with-d-bus" => "with-dbus"
 
   depends_on "pkg-config" => :build
+  depends_on :x11 => :optional
   depends_on "dbus" => :optional
   depends_on "gnutls" => :recommended
   depends_on "librsvg" => :recommended
   depends_on "imagemagick" => :recommended
   depends_on "mailutils" => :optional
+
+  if build.with? "x11"
+    depends_on "freetype" => :recommended
+    depends_on "fontconfig" => :recommended
+  end
 
   def install
     args = %W[
@@ -42,7 +48,6 @@ class EmacsPlus < Formula
       --enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp
       --infodir=#{info}/emacs
       --prefix=#{prefix}
-      --without-x
     ]
 
     if build.with? "libxml2"
@@ -97,6 +102,22 @@ class EmacsPlus < Formula
         #!/bin/bash
         exec #{prefix}/Emacs.app/Contents/MacOS/Emacs "$@"
       EOS
+    else
+      if build.with? "x11"
+        # These libs are not specified in xft's .pc. See:
+        # https://trac.macports.org/browser/trunk/dports/editors/emacs/Portfile#L74
+        # https://github.com/Homebrew/homebrew/issues/8156
+        ENV.append "LDFLAGS", "-lfreetype -lfontconfig"
+        args << "--with-x"
+        args << "--with-gif=no" << "--with-tiff=no" << "--with-jpeg=no"
+      else
+        args << "--without-x"
+      end
+      args << "--without-ns"
+
+      system "./configure", *args
+      system "make"
+      system "make", "install"
     end
 
     # Follow MacPorts and don't install ctags from Emacs. This allows Vim
