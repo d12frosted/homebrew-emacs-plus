@@ -22,6 +22,14 @@ class EmacsPlus < Formula
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
+
+    # borderless patch
+    # remove once it's merged to Emacs
+    # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
+    patch do
+      url "https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/binh950gCIBLY.bin"
+      sha256 "184301d28dabab5e2115cfd3c4875b89b408c31845ef04f909a6e0710523f082"
+    end
   end
 
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
