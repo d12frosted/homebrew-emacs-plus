@@ -22,6 +22,7 @@ class EmacsPlus < Formula
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
+    depends_on "texinfo" => :build
   end
 
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
