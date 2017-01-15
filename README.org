@@ -46,3 +46,26 @@ Note that by default =emacs-plus= is builds Cocoa version of Emacs with
 =gnutls=, =imagemagick=, =librsvg= and dynamic modules support by default. Also
 it changes default GNU Emacs icon to Spacemacs icon. If you wish to change
 defaults, just use =--without-FEATURE= flag.
+
+** Known Issues
+
+*** Crash on start with error about =imagemagick=
+In case Emacs crashes right after the start with an error about =imagemagick=
+dynamic library, you have to reinstall =emacs-plus=. Sorry for the
+inconvenience.
+
+In order to reinstall just use following commands.
+
+#+BEGIN_SRC bash
+$ brew uninstall emacs-plus
+$ brew install emacs-plus [options]
+#+END_SRC
+
+The exact error that hints you to reinstall is following error.
+
+#+BEGIN_SRC
+Dyld Error Message:
+  Library not loaded: /usr/local/opt/imagemagick/lib/libMagickWand-6.Q16.2.dylib
+  Referenced from: /usr/local/Cellar/emacs-plus/25.1/Emacs.app/Contents/MacOS/Emacs
+  Reason: image not found
+#+END_SRC
