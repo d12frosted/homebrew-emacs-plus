@@ -31,6 +31,8 @@ class EmacsPlus < Formula
   option "without-spacemacs-icon", "Build without Spacemacs icon by Nasser Alshammari"
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
   option "without-multicolor-fonts", "Build without a patch that enables multicolor font support"
+  option "with-borderless-variable",
+         "Build with ns-use-title-bar option (--HEAD not currently  supported)"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -53,6 +55,21 @@ class EmacsPlus < Formula
     patch do
       url "https://gist.githubusercontent.com/aatxe/260261daf70865fbf1749095de9172c5/raw/214b50c62450be1cbee9f11cecba846dd66c7d06/patch-multicolor-font.diff"
       sha256 "5af2587e986db70999d1a791fca58df027ccbabd75f45e4a2af1602c75511a8c"
+    end
+  end
+
+  # borderless patch
+  # remove once it's merged to Emacs
+  # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
+  if build.with? "borderless-variable"
+    if build.head?
+      odie "Options --HEAD and --with-borderless-variable are mutually exclusive at this time " \
+           "(because the borderless patch as written does not successfully apply to --HEAD)."
+    end
+
+    patch do
+      url "https://gitlab.com/brds/GNU-Emacs-OS-X-no-title-bar/raw/master/GNU-Emacs-25.1-OS-X-no-title-bar.patch"
+      sha256 "9e6fa5901563426ad7143b4d3698853f52e26744d327b9941aa350d412be361b"
     end
   end
 
