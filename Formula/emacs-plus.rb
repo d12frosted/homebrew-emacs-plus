@@ -22,14 +22,6 @@ class EmacsPlus < Formula
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
-
-    # borderless patch
-    # remove once it's merged to Emacs
-    # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
-    patch do
-      url "https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/binh950gCIBLY.bin"
-      sha256 "184301d28dabab5e2115cfd3c4875b89b408c31845ef04f909a6e0710523f082"
-    end
   end
 
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
@@ -37,6 +29,8 @@ class EmacsPlus < Formula
   option "without-modules", "Build without dynamic modules support"
   option "without-spacemacs-icon", "Build without Spacemacs icon by Nasser Alshammari"
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
+  option "with-borderless-variable",
+         "Build with ns-use-title-bar option (--HEAD not currently  supported)"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -53,6 +47,21 @@ class EmacsPlus < Formula
   if build.with? "x11"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
+  end
+
+  # borderless patch
+  # remove once it's merged to Emacs
+  # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
+  if build.with? "borderless-variable"
+    if build.head?
+      odie "Options --HEAD and --with-borderless-variable are mutually exclusive at this time " \
+           "(because the borderless patch as written does not successfully apply to --HEAD)."
+    end
+
+    patch do
+      url "https://gitlab.com/brds/GNU-Emacs-OS-X-no-title-bar/raw/master/GNU-Emacs-25.1-OS-X-no-title-bar.patch"
+      sha256 "9e6fa5901563426ad7143b4d3698853f52e26744d327b9941aa350d412be361b"
+    end
   end
 
   def install
