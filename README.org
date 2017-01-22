@@ -36,6 +36,8 @@ relevant part from output of that command for your convenience.
 	Build with dbus support
 --with-mailutils
 	Build with mailutils support
+--with-no-title-bars
+	Build with a patch for no title bars on frames (neither --HEAD nor --devel currently supported)
 --with-x11
 	Build with x11 support
 --without-cocoa
