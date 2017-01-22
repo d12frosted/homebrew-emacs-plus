@@ -19,27 +19,33 @@ relevant part from output of that command for your convenience.
 #+BEGIN_SRC bash
 ==> Options
 --with-ctags
-  Don't remove the ctags executable that Emacs provides
+	Don't remove the ctags executable that Emacs provides
 --with-dbus
-  Build with dbus support
+	Build with dbus support
 --with-mailutils
-  Build with mailutils support
+	Build with mailutils support
+--with-x11
+	Build with x11 support
 --without-cocoa
-  Build a non-Cocoa version of emacs
+	Build a non-Cocoa version of Emacs
 --without-gnutls
-  Build without gnutls support
+	Build without gnutls support
 --without-imagemagick
-  Build without imagemagick support
+	Build without imagemagick support
 --without-librsvg
-  Build without librsvg support
+	Build without librsvg support
 --without-libxml2
-  Build without libxml2 support
+	Build without libxml2 support
 --without-modules
-  Build without dynamic modules support
+	Build without dynamic modules support
+--without-multicolor-fonts
+	Build without a patch that enables multicolor font support
 --without-spacemacs-icon
-  Build without Spacemacs icon by Nasser Alshammari
+	Build without Spacemacs icon by Nasser Alshammari
+--devel
+	Install development version 25.1.90
 --HEAD
-  Install HEAD version
+	Install HEAD version
 #+END_SRC
 
 Note that by default =emacs-plus= is builds Cocoa version of Emacs with

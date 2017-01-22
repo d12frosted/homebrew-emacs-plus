@@ -30,7 +30,7 @@ class EmacsPlus < Formula
   option "without-modules", "Build without dynamic modules support"
   option "without-spacemacs-icon", "Build without Spacemacs icon by Nasser Alshammari"
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
-  option "with-multicolor-fonts", "Build using patch for enabling multicolor font support."
+  option "without-multicolor-fonts", "Build without a patch that enables multicolor font support"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
