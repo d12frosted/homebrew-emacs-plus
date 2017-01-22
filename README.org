@@ -11,6 +11,18 @@ $ brew tap d12frosted/emacs-plus
 $ brew install emacs-plus [options]
 #+END_SRC
 
+By default (without any addition options) this formula install Cocoa version of
+Emacs with support of =gnutls=, =imagemagick=, =librsvg=, =libxml2= dynamic
+modules and multicolor fonts and Spacemacs icon. Please see the list of
+available options to disable any bit of default behaviour or add even more
+stuff.
+
+In order to install without Spacemacs icon you should use following command.
+
+#+BEGIN_SRC bash
+$ brew install emacs-plus --wihtout-spacemacs-icon
+#+END_SRC
+
 ** Options
 
 To get list of all available options, call ~brew info emacs-plus~. Here is
