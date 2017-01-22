@@ -30,7 +30,8 @@ class EmacsPlus < Formula
   option "without-spacemacs-icon", "Build without Spacemacs icon by Nasser Alshammari"
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
   option "with-no-title-bars",
-         "Build with a patch for no title bars on frames (neither --HEAD nor --devel currently supported)"
+         "Build with a patch for no title bars on frames (neither --HEAD nor --devel currently " \
+         "supported)"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
