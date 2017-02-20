@@ -20,7 +20,7 @@ stuff.
 In order to install without Spacemacs icon you should use following command.
 
 #+BEGIN_SRC bash
-$ brew install emacs-plus --wihtout-spacemacs-icon
+$ brew install emacs-plus --without-spacemacs-icon
 #+END_SRC
 
 ** Options
