@@ -13,8 +13,8 @@ class EmacsPlus < Formula
   end
 
   devel do
-    url "http://alpha.gnu.org/gnu/emacs/pretest/emacs-25.1.90.tar.xz"
-    sha256 "4dadcf1ed96e9c375647a55a053a41c64c4958cb3eadb1ee50d6b2e8c1aa8a6a"
+    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-25.2-rc2.tar.xz"
+    sha256 "4f405314b427f9fdfc3fe89c3a062524156b23e07396427bb16d30ba1a8bf687"
   end
 
   head do
