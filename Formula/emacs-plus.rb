@@ -34,6 +34,7 @@ class EmacsPlus < Formula
   option "with-no-title-bars",
          "Build with a patch for no title bars on frames (neither --HEAD nor --devel currently " \
          "supported)"
+  option "with-dark-title-bar", "Use a dark title mar on mac (--HEAD is supported)"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -71,6 +72,12 @@ class EmacsPlus < Formula
     patch do
       url "https://gitlab.com/brds/GNU-Emacs-OS-X-no-title-bar/raw/master/GNU-Emacs-25.1-OS-X-no-title-bar.patch"
       sha256 "51b9bbe4c731e7f5b391fdae98cf5c946b77e45b8dc25317cdd00e4180c72241"
+    end
+  end
+
+  if build.with? "dark-title-bar"
+    patch do
+      url "https://gist.githubusercontent.com/jwintz/853f0075cf46770f5ab4f1dbf380ab11/raw/bc30bd2e9a7bf6873f3a3e301d0085bcbefb99b0/emacs_dark_title_bar.patch"
     end
   end
 
