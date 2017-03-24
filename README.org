@@ -36,10 +36,10 @@ relevant part from output of that command for your convenience.
 	Build with dbus support
 --with-mailutils
 	Build with mailutils support
+--with-natural-title-bar
+    Build with an inferred title bar colour (--HEAD is supported)
 --with-no-title-bars
 	Build with a patch for no title bars on frames (neither --HEAD nor --devel currently supported)
---with-dark-title-bar
-    Build with a dark title bar on mac (--HEAD is supported)
 --with-x11
 	Build with x11 support
 --without-cocoa
