@@ -6,10 +6,9 @@ class EmacsPlus < Formula
   sha256 "19f2798ee3bc26c95dca3303e7ab141e7ad65d6ea2b6945eeba4dbea7df48f33"
 
   bottle do
-    rebuild 4
-    sha256 "c80ef281b85fb8a8bd65a84676056ea41d7bb2954d5c82193eef2acea2ade856" => :sierra
-    sha256 "5498bd9f8e027d8a77a8939d3468123313a57e67c3f08ad4d4f72bd1a95b3cbb" => :el_capitan
-    sha256 "8fa2c1f493b9dc831a017055b5de26b426925895c6400b24a3755e4db8b0ffa2" => :yosemite
+    root_url "https://github.com/d12frosted/brew-bottles-emacs-plus/raw/master"
+    rebuild 5
+    sha256 "c50915998cc9c2022ec69a53195ccf4ab95bf65c51923dc75866f0c4fa8fd1f8" => :sierra
   end
 
   devel do
