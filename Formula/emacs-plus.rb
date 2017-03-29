@@ -44,7 +44,9 @@ class EmacsPlus < Formula
   depends_on "dbus" => :optional
   depends_on "gnutls" => :recommended
   depends_on "librsvg" => :recommended
-  depends_on "imagemagick" => :recommended
+  # Emacs does not support ImageMagick 7:
+  # Reported on 2017-03-04: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25967
+  depends_on "imagemagick@6" => :recommended
   depends_on "mailutils" => :optional
 
   if build.with? "x11"
@@ -108,7 +110,15 @@ class EmacsPlus < Formula
       args << "--without-gnutls"
     end
 
-    args << "--with-imagemagick" if build.with? "imagemagick"
+    # Note that if ./configure is passed --with-imagemagick but can't find the
+    # library it does not fail but imagemagick support will not be available.
+    # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
+    if build.with? "imagemagick@6"
+      args << "--with-imagemagick"
+    else
+      args << "--without-imagemagick"
+    end
+
     args << "--with-modules" if build.with? "modules"
     args << "--with-rsvg" if build.with? "librsvg"
     args << "--without-pop" if build.with? "mailutils"
