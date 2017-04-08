@@ -84,6 +84,17 @@ class EmacsPlus < Formula
     end
   end
 
+  # vfork patch
+  # remove after 26.1 is released
+  # Backported from https://github.com/emacs-mirror/emacs/commit/a13eaddce2ddbe3ba0b7f4c81715bc0fcdba99f6
+  # See http://lists.gnu.org/archive/html/bug-gnu-emacs/2017-04/msg00201.html
+  unless build.head?
+    patch do
+      url "https://gist.githubusercontent.com/aaronjensen/f45894ddf431ecbff78b1bcf533d3e6b/raw/6a5cd7f57341aba673234348d8b0d2e776f86719/Emacs-25-OS-X-use-vfork.patch"
+      sha256 "f2fdbc5adab80f1af01ce120cf33e3b0590d7ae29538999287986beb55ec9ada"
+    end
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
