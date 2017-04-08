@@ -58,6 +58,8 @@ relevant part from output of that command for your convenience.
 	Build without a patch that enables multicolor font support
 --without-spacemacs-icon
 	Build without Spacemacs icon by Nasser Alshammari
+--with-vfork
+  Experimental: Speed up call-process calls in GUI.
 --devel
 	Install development version 25.1.90
 --HEAD
