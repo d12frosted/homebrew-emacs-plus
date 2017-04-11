@@ -37,7 +37,7 @@ relevant part from output of that command for your convenience.
 --with-mailutils
 	Build with mailutils support
 --with-natural-title-bar
-    Build with an inferred title bar colour (--HEAD is supported)
+	Use a title bar colour inferred by your theme (--HEAD is supported)
 --with-no-title-bars
 	Build with a patch for no title bars on frames (neither --HEAD nor --devel currently supported)
 --with-x11
@@ -46,8 +46,8 @@ relevant part from output of that command for your convenience.
 	Build a non-Cocoa version of Emacs
 --without-gnutls
 	Build without gnutls support
---without-imagemagick
-	Build without imagemagick support
+--without-imagemagick@6
+	Build without imagemagick@6 support
 --without-librsvg
 	Build without librsvg support
 --without-libxml2
@@ -59,7 +59,7 @@ relevant part from output of that command for your convenience.
 --without-spacemacs-icon
 	Build without Spacemacs icon by Nasser Alshammari
 --devel
-	Install development version 25.1.90
+	Install development version 25.2-rc2
 --HEAD
 	Install HEAD version
 #+END_SRC
@@ -71,23 +71,8 @@ defaults, just use =--without-FEATURE= flag.
 
 ** Known Issues
 
-*** Crash on start with error about =imagemagick=
-In case Emacs crashes right after the start with an error about =imagemagick=
-dynamic library, you have to reinstall =emacs-plus=. Sorry for the
-inconvenience.
+Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues?utf8=%E2%9C%93&q=is%253Aissue%2520][Issues]] page for a list of all known issues.
 
-In order to reinstall just use following commands.
+** Acknowledgements
 
-#+BEGIN_SRC bash
-$ brew uninstall emacs-plus
-$ brew install emacs-plus [options]
-#+END_SRC
-
-The exact error that hints you to reinstall is following error.
-
-#+BEGIN_SRC
-Dyld Error Message:
-  Library not loaded: /usr/local/opt/imagemagick/lib/libMagickWand-6.Q16.2.dylib
-  Referenced from: /usr/local/Cellar/emacs-plus/25.1/Emacs.app/Contents/MacOS/Emacs
-  Reason: image not found
-#+END_SRC
+Many thanks to [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][all contributors]]. And everyone reporting issues!
