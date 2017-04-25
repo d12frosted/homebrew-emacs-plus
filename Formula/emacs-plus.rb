@@ -1,20 +1,15 @@
 class EmacsPlus < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-  url "https://ftpmirror.gnu.org/emacs/emacs-25.1.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/emacs/emacs-25.1.tar.xz"
-  sha256 "19f2798ee3bc26c95dca3303e7ab141e7ad65d6ea2b6945eeba4dbea7df48f33"
+  url "https://ftp.gnu.org/gnu/emacs/emacs-25.2.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-25.2.tar.xz"
+  sha256 "59b55194c9979987c5e9f1a1a4ab5406714e80ffcfd415cc6b9222413bc073fa"
 
   bottle do
     root_url "https://s3.amazonaws.com/d12frosted/emacs-plus/bottles"
     rebuild 7
     sha256 "ecd69fbcb0a940c4f0d1e281f6c6d7585c8d3f0175b1670b3b16086a3a1bdf92" => :sierra
     sha256 "1547d3a62f97f782733d3322f97ffc352c3447cc1ec83e2c9d73620b6aa3ff1e" => :el_capitan
-  end
-
-  devel do
-    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-25.2-rc2.tar.xz"
-    sha256 "4f405314b427f9fdfc3fe89c3a062524156b23e07396427bb16d30ba1a8bf687"
   end
 
   head do
