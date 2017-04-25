@@ -12,7 +12,7 @@ $ brew install emacs-plus [options]
 #+END_SRC
 
 By default (without any addition options) this formula install Cocoa version of
-Emacs with support of =gnutls=, =imagemagick=, =librsvg=, =libxml2= dynamic
+Emacs with support of =gnutls=, =imagemagick=, =librsvg=, =libxml2=, dynamic
 modules and multicolor fonts and Spacemacs icon. Please see the list of
 available options to disable any bit of default behaviour or add even more
 stuff.
