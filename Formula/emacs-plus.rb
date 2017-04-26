@@ -18,16 +18,24 @@ class EmacsPlus < Formula
     depends_on "texinfo" => :build
   end
 
-  option "without-cocoa", "Build a non-Cocoa version of Emacs"
-  option "without-libxml2", "Build without libxml2 support"
-  option "without-modules", "Build without dynamic modules support"
-  option "without-spacemacs-icon", "Build without Spacemacs icon by Nasser Alshammari"
-  option "with-ctags", "Don't remove the ctags executable that Emacs provides"
-  option "without-multicolor-fonts", "Build without a patch that enables multicolor font support"
+  option "without-cocoa",
+         "Build a non-Cocoa version of Emacs"
+  option "without-libxml2",
+         "Build without libxml2 support"
+  option "without-modules",
+         "Build without dynamic modules support"
+  option "without-spacemacs-icon",
+         "Build without Spacemacs icon by Nasser Alshammari"
+  option "with-ctags",
+         "Don't remove the ctags executable that Emacs provides"
+  option "without-multicolor-fonts",
+         "Build without a patch that enables multicolor font support"
+  option "with-x11",
+         "Experimental: build with x11 support"
   option "with-no-title-bars",
-         "Build with a patch for no title bars on frames (neither --HEAD nor --devel currently " \
-         "supported)"
-  option "with-natural-title-bar", "Use a title bar colour inferred by your theme (--HEAD is supported)"
+         "Experimental: build with a patch for no title bars on frames (--HEAD is not supported)"
+  option "with-natural-title-bar",
+         "Experimental: use a title bar colour inferred by your theme"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
