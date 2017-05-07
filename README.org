@@ -39,7 +39,7 @@ relevant part from output of that command for your convenience.
 --with-natural-title-bar
 	Experimental: use a title bar colour inferred by your theme
 --with-no-title-bars
-	Experimental: build with a patch for no title bars on frames (--HEAD is not supported)
+	Experimental: build with a patch for no title bars on frames (--HEAD has this built-in via undecorated flag)
 --with-x11
 	Experimental: build with x11 support
 --without-cocoa

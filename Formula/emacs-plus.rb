@@ -69,8 +69,7 @@ class EmacsPlus < Formula
   # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
   if build.with? "no-title-bars"
     if build.head? or build.devel?
-      odie "--with-no-title-bars not currently supported on --devel, nor on --HEAD " \
-           "(because the patch as written does not successfully apply)."
+      odie "--with-no-title-bars is unnecessary on --HEAD, try (setq default-frame-alist '((undecorated . t)))"
     end
 
     patch do
