@@ -75,7 +75,7 @@ class EmacsPlus < Formula
 
     patch do
       url "https://gitlab.com/brds/GNU-Emacs-OS-X-no-title-bar/raw/master/GNU-Emacs-25.1-OS-X-no-title-bar.patch"
-      sha256 "51b9bbe4c731e7f5b391fdae98cf5c946b77e45b8dc25317cdd00e4180c72241"
+      sha256 "d098240657791aa1da9ed93f96a2168d11660db816e0253a63b8a5fac2f7d399"
     end
   end
 
