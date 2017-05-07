@@ -69,13 +69,12 @@ class EmacsPlus < Formula
   # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
   if build.with? "no-title-bars"
     if build.head? or build.devel?
-      odie "--with-no-title-bars not currently supported on --devel, nor on --HEAD " \
-           "(because the patch as written does not successfully apply)."
+      odie "--with-no-title-bars is unnecessary on --HEAD, try (setq default-frame-alist '((undecorated . t)))"
     end
 
     patch do
-      url "https://gitlab.com/brds/GNU-Emacs-OS-X-no-title-bar/raw/master/GNU-Emacs-25.1-OS-X-no-title-bar.patch"
-      sha256 "51b9bbe4c731e7f5b391fdae98cf5c946b77e45b8dc25317cdd00e4180c72241"
+      url "https://gist.githubusercontent.com/aaronjensen/b3e4118f8b7072ef312eaf0a8ed2748f/raw/8beff48d1f04eb3d3bd93a079edd00676d6b7134/GNU-Emacs-25.2-OS-X-no-title-bar.patch"
+      sha256 "69523d18ee746733731ba2de664ef3b81ba804e7f4729ac98025a5bbaba3f5c2"
     end
   end
 
