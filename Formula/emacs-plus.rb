@@ -34,7 +34,7 @@ class EmacsPlus < Formula
   option "with-x11",
          "Experimental: build with x11 support"
   option "with-no-title-bars",
-         "Experimental: build with a patch for no title bars on frames (--HEAD is not supported)"
+         "Experimental: build with a patch for no title bars on frames (--HEAD has this built-in via undecorated flag)"
   option "with-natural-title-bar",
          "Experimental: use a title bar colour inferred by your theme"
 
