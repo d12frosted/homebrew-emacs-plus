@@ -80,8 +80,8 @@ class EmacsPlus < Formula
 
   if build.with? "natural-title-bar"
     patch do
-      url "https://gist.githubusercontent.com/jwintz/853f0075cf46770f5ab4f1dbf380ab11/raw/bc30bd2e9a7bf6873f3a3e301d0085bcbefb99b0/emacs_dark_title_bar.patch"
-      sha256 "742f7275f3ada695e32735fa02edf91a2ae7b1fa87b7e5f5c6478dd591efa162"
+      url "https://gist.githubusercontent.com/jwintz/853f0075cf46770f5ab4f1dbf380ab11/raw/6c34efae7a0025aa237d1b11147c81588dba8263/emacs_dark_title_bar.patch"
+      sha256 "e80f45086b471da795525ad7096092caab780e136bfdac3cf1ee93f73e1dce18"
     end
   end
 
