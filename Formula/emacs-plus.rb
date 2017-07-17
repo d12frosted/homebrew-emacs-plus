@@ -6,7 +6,7 @@ class EmacsPlus < Formula
   sha256 "59b55194c9979987c5e9f1a1a4ab5406714e80ffcfd415cc6b9222413bc073fa"
 
   bottle do
-    root_url "https://dl.dropboxusercontent.com/u/14438695/emacs-plus/bottles"
+    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
     rebuild 1
     sha256 "f6fa36d3afb47d8251fdade4d967deca9fac470ad029b6db04650643f2623d1f" => :sierra
     # sha256 "0cad5513de68ec93b4f522fd6a065ee163bc880a5e8091794fb8b3da3dc635e5" => :el_capitan
