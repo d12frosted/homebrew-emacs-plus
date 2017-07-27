@@ -4,6 +4,7 @@ class EmacsPlus < Formula
   url "https://ftp.gnu.org/gnu/emacs/emacs-25.2.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-25.2.tar.xz"
   sha256 "59b55194c9979987c5e9f1a1a4ab5406714e80ffcfd415cc6b9222413bc073fa"
+  revision 1
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
