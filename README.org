@@ -79,4 +79,5 @@ Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues?utf8=
 
 ** Acknowledgements
 
-Many thanks to [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][all contributors]]. And everyone reporting issues!
+Many thanks to [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][all contributors]], everyone reporting issues and [[https://github.com/wadkar][Sudarshan Wadkar]]
+for providing bottles for El Capitan.
