@@ -75,7 +75,7 @@ with any arising issues.
 
 ** Known Issues
 
-Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues?utf8=%E2%9C%93&q=is%253Aissue%2520][Issues]] page for a list of all known issues.
+Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues.
 
 ** Acknowledgements
 
