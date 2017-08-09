@@ -4,12 +4,10 @@ class EmacsPlus < Formula
   url "https://ftp.gnu.org/gnu/emacs/emacs-25.2.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-25.2.tar.xz"
   sha256 "59b55194c9979987c5e9f1a1a4ab5406714e80ffcfd415cc6b9222413bc073fa"
-  revision 1
+  revision 2
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    sha256 "5000f80b63ba7f8f7eb5605e0f9ec52c93e42ddffc144d0ae6559bc52157951c" => :sierra
-    sha256 "895aeb4fd6bd3b17faa0292001bda590eae664613c9849231ab31e8ae5642600" => :el_capitan
   end
 
   head do
