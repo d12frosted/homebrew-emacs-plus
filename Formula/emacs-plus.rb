@@ -8,6 +8,7 @@ class EmacsPlus < Formula
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
+    sha256 "f9976b20471340972eae141d10d0955fd0c8e9aac8f5b0057b06db19392bd55b" => :sierra
   end
 
   head do
