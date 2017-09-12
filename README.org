@@ -30,6 +30,8 @@ relevant part from output of that command for your convenience.
 
 #+BEGIN_SRC bash
 ==> Options
+--with-24bit-color
+	Experimental: build with 24 bit color support
 --with-ctags
 	Don't remove the ctags executable that Emacs provides
 --with-dbus

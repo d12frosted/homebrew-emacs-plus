@@ -26,6 +26,8 @@ class EmacsPlus < Formula
          "Build without dynamic modules support"
   option "without-spacemacs-icon",
          "Build without Spacemacs icon by Nasser Alshammari"
+  option "with-24bit-color",
+         "Experimental: build with 24 bit color support"
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
   option "without-multicolor-fonts",
@@ -81,6 +83,16 @@ class EmacsPlus < Formula
     patch do
       url "https://gist.githubusercontent.com/jwintz/853f0075cf46770f5ab4f1dbf380ab11/raw/bc30bd2e9a7bf6873f3a3e301d0085bcbefb99b0/emacs_dark_title_bar.patch"
       sha256 "742f7275f3ada695e32735fa02edf91a2ae7b1fa87b7e5f5c6478dd591efa162"
+    end
+  end
+
+  # 24 bit color patch
+  # remove after 26.1 is released
+  # See https://gist.github.com/akorobov/2c9f5796c661304b4d8aa64c89d2cd00
+  if build.with? "24bit-color"
+    patch do
+      url "https://gist.githubusercontent.com/akorobov/2c9f5796c661304b4d8aa64c89d2cd00/raw/2f7d3ae544440b7e2d3a13dd126b491bccee9dbf/emacs-25.2-term-24bit-colors.diff"
+      sha256 "ffe72c57117a6dca10b675cbe3701308683d24b62611048d2e7f80f419820cd0"
     end
   end
 
