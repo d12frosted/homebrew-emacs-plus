@@ -36,8 +36,6 @@ class EmacsPlus < Formula
          "Experimental: build with x11 support"
   option "with-no-title-bars",
          "Experimental: build with a patch for no title bars on frames (--HEAD has this built-in via undecorated flag)"
-  option "with-natural-title-bar",
-         "Experimental: use a title bar colour inferred by your theme"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -76,13 +74,6 @@ class EmacsPlus < Formula
     patch do
       url "https://raw.githubusercontent.com/braham-snyder/GNU-Emacs-OS-X-no-title-bar/master/GNU-Emacs-OS-X-no-title-bar.patch"
       sha256 "2cdb12a73d8e209ce3195e663d6012d1d039eb2880e3c1b9d4e10b77e90ada52"
-    end
-  end
-
-  if build.with? "natural-title-bar"
-    patch do
-      url "https://gist.githubusercontent.com/jwintz/853f0075cf46770f5ab4f1dbf380ab11/raw/bc30bd2e9a7bf6873f3a3e301d0085bcbefb99b0/emacs_dark_title_bar.patch"
-      sha256 "742f7275f3ada695e32735fa02edf91a2ae7b1fa87b7e5f5c6478dd591efa162"
     end
   end
 
