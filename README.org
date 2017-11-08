@@ -74,7 +74,7 @@ that I am not close enough to Emacs development process to provide you much help
 with any arising issues.
 
 Note that =--with-natural-title-bar= has been deprecated since it is
-available for =--HEADS= builds using the following lisp snippet
+available for =--HEAD= builds using the following lisp snippet
 (thanks to @CarlQLange):
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
