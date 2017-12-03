@@ -64,7 +64,7 @@ relevant part from output of that command for your convenience.
 	Install HEAD version
 #+END_SRC
 
-Note that by default =emacs-plus= is builds Cocoa version of Emacs with
+Note that by default =emacs-plus= builds the Cocoa version of Emacs with
 =gnutls=, =imagemagick=, =librsvg= and dynamic modules support by default. Also
 it changes default GNU Emacs icon to Spacemacs icon. If you wish to change
 defaults, just use =--without-FEATURE= flag.
