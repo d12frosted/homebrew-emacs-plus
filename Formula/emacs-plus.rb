@@ -32,6 +32,8 @@ class EmacsPlus < Formula
          "Don't remove the ctags executable that Emacs provides"
   option "without-multicolor-fonts",
          "Build without a patch that enables multicolor font support"
+  option "with-pixel-scrolling",
+         "Build with a patch from emacs-mac supporting native pixel scrolling"
   option "with-x11",
          "Experimental: build with x11 support"
   option "with-no-title-bars",
@@ -62,6 +64,13 @@ class EmacsPlus < Formula
     patch do
       url "https://gist.githubusercontent.com/aatxe/260261daf70865fbf1749095de9172c5/raw/214b50c62450be1cbee9f11cecba846dd66c7d06/patch-multicolor-font.diff"
       sha256 "5af2587e986db70999d1a791fca58df027ccbabd75f45e4a2af1602c75511a8c"
+    end
+  end
+
+  if build.with? "pixel-scrolling"
+    patch do
+      url "https://gist.githubusercontent.com/aatxe/ecd14e3e4636524915eab2c976650576/raw/c20527ab724ddbeb14db8cc01324410a5a722b18/emacs-pixel-scrolling.patch"
+      sha256 "34654d889e8a02aedc0c39a0f710b3cc17d5d4201eb9cb357ecca6ed1ec24684"
     end
   end
 
