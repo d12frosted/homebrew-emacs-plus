@@ -1,3 +1,5 @@
+language: generic
+
 branches:
   only:
     - master
@@ -11,6 +13,9 @@ matrix:
     - env: BUILD_OPTIONS="--devel"
     - env: BUILD_OPTIONS="--HEAD"
   fast_finish: true
+
+before_install:
+  - brew update
 
 script:
   - brew install Formula/emacs-plus.rb $BUILD_OPTIONS
