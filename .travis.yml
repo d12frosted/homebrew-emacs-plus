@@ -7,12 +7,11 @@ os:
 
 matrix:
   include:
-    - env: BUILD_TYPE=STABLE
-    - env: BUILD_TYPE=DEVEL
-    - env: BUILD_TYPE=HEAD
+    - env: BUILD_OPTIONS=""
+    - env: BUILD_OPTIONS="--devel"
+    - env: BUILD_OPTIONS="--HEAD"
   fast_finish: true
 
 script:
-  - if [ "$BUILD_TYPE" = "STABLE" ]; then brew install Formula/emacs-plus.rb; fi
-  - if [ "$BUILD_TYPE" = "DEVEL" ]; then brew install Formula/emacs-plus.rb --devel; fi
-  - if [ "$BUILD_TYPE" = "HEAD" ]; then brew install Formula/emacs-plus.rb --HEAD; fi
+  - brew install Formula/emacs-plus.rb $BUILD_OPTIONS
+  - brew test Formula/emacs-plus.rb
