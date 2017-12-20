@@ -23,6 +23,7 @@ class EmacsPlus < Formula
     depends_on "texinfo" => :build
   end
 
+  # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
   option "without-libxml2",
@@ -31,20 +32,26 @@ class EmacsPlus < Formula
          "Build without dynamic modules support"
   option "without-spacemacs-icon",
          "Build without Spacemacs icon by Nasser Alshammari"
-  option "with-24bit-color",
-         "Experimental: build with 24 bit color support"
-  option "with-ctags",
-         "Don't remove the ctags executable that Emacs provides"
   option "without-multicolor-fonts",
          "Build without a patch that enables multicolor font support"
-  option "with-pixel-scrolling",
-         "Build with a patch from emacs-mac supporting native pixel scrolling"
+
+  # Opt-in
+  option "with-ctags",
+         "Don't remove the ctags executable that Emacs provides"
+
+  # Emacs 25.x and Emacs 26.x experimental stuff
   option "with-x11",
          "Experimental: build with x11 support"
-  option "with-no-title-bars",
-         "Experimental: build with a patch for no title bars on frames (--HEAD has this built-in via undecorated flag)"
+
+  # Emacs 25.x only
+  option "with-24bit-color",
+         "Experimental: build with 24 bit color support (stable only)"
+  option "with-pixel-scrolling",
+         "Build with a patch from emacs-mac supporting native pixel scrolling (stable only)"
   option "with-natural-title-bar",
-         "Experimental: use a title bar colour inferred by your theme"
+         "Experimental: use a title bar colour inferred by your theme (stable only)"
+  option "with-no-title-bars",
+         "Experimental: build with a patch for no title bars on frames (--HEAD and --devel has this built-in via undecorated flag)"
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -72,19 +79,12 @@ class EmacsPlus < Formula
     end
   end
 
-  if build.with? "pixel-scrolling"
-    patch do
-      url "https://gist.githubusercontent.com/aatxe/ecd14e3e4636524915eab2c976650576/raw/c20527ab724ddbeb14db8cc01324410a5a722b18/emacs-pixel-scrolling.patch"
-      sha256 "34654d889e8a02aedc0c39a0f710b3cc17d5d4201eb9cb357ecca6ed1ec24684"
-    end
-  end
-
   # borderless patch
   # remove once it's merged to Emacs
   # more info here: https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-10/msg00072.html
   if build.with? "no-title-bars"
     if build.head? or build.devel?
-      odie "--with-no-title-bars is unnecessary on --HEAD, try (setq default-frame-alist '((undecorated . t)))"
+      odie "--with-no-title-bars is unnecessary on --HEAD or --devel, try (setq default-frame-alist '((undecorated . t)))"
     end
 
     patch do
@@ -94,19 +94,36 @@ class EmacsPlus < Formula
   end
 
   if build.with? "natural-title-bar"
+    if build.head? or build.devel?
+      odie "--with-natural-title-bars is unnecessary on --HEAD or --devel, try (setq 'default-frame-alist '((ns-transparent-titlebar . t) (ns-appearance . 'nil)))"
+    end
+
     patch do
       url "https://gist.githubusercontent.com/jwintz/853f0075cf46770f5ab4f1dbf380ab11/raw/bc30bd2e9a7bf6873f3a3e301d0085bcbefb99b0/emacs_dark_title_bar.patch"
       sha256 "742f7275f3ada695e32735fa02edf91a2ae7b1fa87b7e5f5c6478dd591efa162"
     end
   end
 
+  if build.with? "pixel-scrolling"
+    if build.head? or build.devel?
+      odie "--with-pixel-scrolling is not support on non-stable version of Emacs"
+    end
+
+    patch do
+      url "https://gist.githubusercontent.com/aatxe/ecd14e3e4636524915eab2c976650576/raw/c20527ab724ddbeb14db8cc01324410a5a722b18/emacs-pixel-scrolling.patch"
+      sha256 "34654d889e8a02aedc0c39a0f710b3cc17d5d4201eb9cb357ecca6ed1ec24684"
+    end
+  end
+
   # 24 bit color patch
   # remove after 26.1 is released
   # See https://gist.github.com/akorobov/2c9f5796c661304b4d8aa64c89d2cd00
-  if build.with? "24bit-color"
-    patch do
-      url "https://gist.githubusercontent.com/akorobov/2c9f5796c661304b4d8aa64c89d2cd00/raw/2f7d3ae544440b7e2d3a13dd126b491bccee9dbf/emacs-25.2-term-24bit-colors.diff"
-      sha256 "ffe72c57117a6dca10b675cbe3701308683d24b62611048d2e7f80f419820cd0"
+  unless build.head? or build.devel?
+    if build.with? "24bit-color"
+      patch do
+        url "https://gist.githubusercontent.com/akorobov/2c9f5796c661304b4d8aa64c89d2cd00/raw/2f7d3ae544440b7e2d3a13dd126b491bccee9dbf/emacs-25.2-term-24bit-colors.diff"
+        sha256 "ffe72c57117a6dca10b675cbe3701308683d24b62611048d2e7f80f419820cd0"
+      end
     end
   end
 
