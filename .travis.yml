@@ -1,0 +1,18 @@
+branches:
+  only:
+    - master
+
+os:
+  - osx
+
+matrix:
+  include:
+    - env: BUILD_TYPE=STABLE
+    - env: BUILD_TYPE=DEVEL
+    - env: BUILD_TYPE=HEAD
+  fast_finish: true
+
+script:
+  - if [ "$BUILD_TYPE" = "STABLE" ]; then brew install Formula/emacs-plus.rb; fi
+  - if [ "$BUILD_TYPE" = "DEVEL" ]; then brew install Formula/emacs-plus.rb --devel; fi
+  - if [ "$BUILD_TYPE" = "HEAD" ]; then brew install Formula/emacs-plus.rb --HEAD; fi
