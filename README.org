@@ -79,6 +79,15 @@ with any arising issues.
 
 Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues.
 
+** Screenshots
+
+#+BEGIN_HTML
+<p align="center">
+  <img src="images/screen1.png">
+  <p>by @j-martin</p>
+</p>
+#+END_HTML
+
 ** Acknowledgements
 
 Many thanks to [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][all contributors]], everyone reporting issues and [[https://github.com/wadkar][Sudarshan Wadkar]]
