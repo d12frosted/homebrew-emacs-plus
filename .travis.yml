@@ -18,5 +18,5 @@ before_install:
   - brew update
 
 script:
-  - brew install Formula/emacs-plus.rb $BUILD_OPTIONS
+  - travis_wait brew install Formula/emacs-plus.rb $BUILD_OPTIONS
   - brew test Formula/emacs-plus.rb
