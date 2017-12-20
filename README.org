@@ -38,8 +38,6 @@ relevant part from output of that command for your convenience.
 	Build with dbus support
 --with-mailutils
 	Build with mailutils support
---with-natural-title-bar
-	Experimental: use a title bar colour inferred by your theme
 --with-no-title-bars
 	Experimental: build with a patch for no title bars on frames (--HEAD has this built-in via undecorated flag)
 --with-x11
@@ -74,6 +72,14 @@ they may crash at run time. Or even worse, the may work as expected. So use this
 option at your own risk. And feel free to open up issues you face, just remember
 that I am not close enough to Emacs development process to provide you much help
 with any arising issues.
+
+Note that =--with-natural-title-bar= has been deprecated since it is
+available for =--HEAD= builds using the following lisp snippet
+(thanks to @CarlQLange):
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . 'nil))
+#+END_SRC
 
 ** Known Issues
 
