@@ -83,7 +83,7 @@ Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issu
 
 #+BEGIN_HTML
 <p align="center">
-  <img src="https://www.dropbox.com/s/b6r8m3runia01fz/screen1.png?dl=1">
+  <img src="https://www.dropbox.com/s/b6r8m3runia01fz/screen1.png?raw=1">
   <p>by @j-martin</p>
 </p>
 #+END_HTML
