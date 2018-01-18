@@ -83,6 +83,12 @@ with any arising issues.
 
 Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues.
 
+*** Rust Dependency 
+	
+The librsvg dependency requires the rust compiler at build time. Rust can take
+quite a while to build (30+ minutes), so if you don't need SVG rendering support
+use the `--without-librsvg` flag when installing.
+
 ** Screenshots
 
 #+BEGIN_HTML
