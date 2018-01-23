@@ -95,7 +95,7 @@ class EmacsPlus < Formula
 
   if build.with? "natural-title-bar"
     if build.head? or build.devel?
-      odie "--with-natural-title-bars is unnecessary on --HEAD or --devel, try (setq 'default-frame-alist '((ns-transparent-titlebar . t) (ns-appearance . 'nil)))"
+      odie "--with-natural-title-bars is unnecessary on --HEAD or --devel, try (setq default-frame-alist '((ns-transparent-titlebar . t) (ns-appearance . 'nil)))"
     end
 
     patch do
