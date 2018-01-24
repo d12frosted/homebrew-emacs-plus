@@ -7,11 +7,6 @@ branches:
 os:
   - osx
 
-osx_image:
-  - xcode9.2
-  - xcode8.3
-  - xcode8
-
 matrix:
   include:
     - env: BUILD_OPTIONS=""
