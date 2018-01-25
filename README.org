@@ -74,7 +74,7 @@ it changes default GNU Emacs icon to Spacemacs icon. If you wish to change
 defaults, just use =--without-FEATURE= flag.
 
 Note that =--HEAD= builds are not really supported. They may fail to install,
-they may crash at run time. Or even worse, the may work as expected. So use this
+they may crash at run time. Or even worse, they may work as expected. So use this
 option at your own risk. And feel free to open up issues you face, just remember
 that I am not close enough to Emacs development process to provide you much help
 with any arising issues.
