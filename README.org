@@ -79,6 +79,14 @@ option at your own risk. And feel free to open up issues you face, just remember
 that I am not close enough to Emacs development process to provide you much help
 with any arising issues.
 
+** Emacs configuration
+Emacs is a journey. And for some of you these projects might be inspiring.
+
+- [[https://github.com/purcell/emacs.d][Steve Purcell's .emacs.d]]
+- [[https://github.com/syl20bnr/spacemacs/][Spacemacs]]
+- [[https://github.com/hlissner/doom-emacs][doom-emacs]]
+- [[https://github.com/bbatsov/prelude][Prelude]]
+
 ** Known Issues
 
 Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues.
