@@ -3,7 +3,7 @@ class EmacsPlus < Formula
   homepage "https://www.gnu.org/software/emacs/"
   url "https://ftp.gnu.org/gnu/emacs/emacs-25.3.tar.xz"
   sha256 "253ac5e7075e594549b83fd9ec116a9dc37294d415e2f21f8ee109829307c00b"
-  revision 1
+  revision 2
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
