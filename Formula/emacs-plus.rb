@@ -186,15 +186,11 @@ class EmacsPlus < Formula
 
     if build.with? "cocoa"
       args << "--with-ns" << "--disable-ns-self-contained"
-    else
-      args << "--without-ns"
-    end
 
-    system "./configure", *args
-    system "make"
-    system "make", "install"
+      system "./configure", *args
+      system "make"
+      system "make", "install"
 
-    if build.with? "cocoa"
       # icons
       if build.with? "spacemacs-icon"
         icon_file = "nextstep/Emacs.app/Contents/Resources/Emacs.icns"
