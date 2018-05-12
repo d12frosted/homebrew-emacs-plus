@@ -11,6 +11,7 @@ matrix:
   include:
     - env: BUILD_OPTIONS=""
     - env: BUILD_OPTIONS="--devel"
+    - env: BUILD_OPTIONS="--without-cocoa"
     - env: BUILD_OPTIONS="--without-cocoa --with-x11"
   fast_finish: true
 
