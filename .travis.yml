@@ -10,7 +10,7 @@ os:
 matrix:
   include:
     - env: BUILD_OPTIONS=""
-    - env: BUILD_OPTIONS="--without-spacemacs-icon"
+    - env: BUILD_OPTIONS="--build-from-source"
     - env: BUILD_OPTIONS="--devel"
     - env: BUILD_OPTIONS="--without-cocoa"
     - env: BUILD_OPTIONS="--without-cocoa --with-x11"
