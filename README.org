@@ -1,5 +1,4 @@
 * Emacs Plus
-
 #+BEGIN_HTML
 <img src="https://travis-ci.org/d12frosted/homebrew-emacs-plus.svg?branch=master">
 #+END_HTML
@@ -9,7 +8,6 @@ that some of the options available from =emacs= formulae are enabled by default
 in =emacs-plus= and some new [[#options][additional options]] are available for user.
 
 ** Install
-
 #+BEGIN_SRC bash
 $ brew tap d12frosted/emacs-plus
 $ brew install emacs-plus [options]
@@ -28,7 +26,6 @@ $ brew install emacs-plus --without-spacemacs-icon
 #+END_SRC
 
 ** Options
-
 To get list of all available options, call ~brew info emacs-plus~. Here is
 relevant part from output of that command for your convenience.
 
@@ -88,11 +85,20 @@ Emacs is a journey. And for some of you these projects might be inspiring.
 - [[https://github.com/bbatsov/prelude][Prelude]]
 
 ** Known Issues
+Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues. But here are several
+you should be aware of.
 
-Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues.
+*** =emacs= dependency in other formulas
+In some cases (like when installing =cask=) regular =emacs= package will be
+required. In such cases you might want to install all dependencies manually
+(except for =emacs=) and then install desired package with
+=--ignore-dependencies= option.
+
+#+BEGIN_SRC bash
+$ brew install cask --ignore-dependencies
+#+END_SRC
 
 ** Screenshots
-
 #+BEGIN_HTML
 <p align="center">
   <img src="https://www.dropbox.com/s/b6r8m3runia01fz/screen1.png?raw=1">
@@ -101,6 +107,5 @@ Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issu
 #+END_HTML
 
 ** Acknowledgements
-
 Many thanks to [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][all contributors]], everyone reporting issues and [[https://github.com/wadkar][Sudarshan Wadkar]]
 for providing bottles for El Capitan.
