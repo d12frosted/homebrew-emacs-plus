@@ -139,6 +139,22 @@ class EmacsPlus < Formula
     end
   end
 
+  # wait_reading_process_ouput patch
+  # remove after it's released
+  # and apply to master once 26.1 is released
+  # See https://lists.gnu.org/archive/html/emacs-devel/2018-02/msg00363.html
+  if build.devel?
+    patch do
+      url "https://lists.gnu.org/archive/html/emacs-devel/2018-02/txtshOHDg6PmW.txt"
+      sha256 "ba9d9555256f91409c4a7b233c36119514ba3d61f4acdb15d7d017db0fb9f00c"
+    end
+
+    patch do
+      url "https://lists.gnu.org/archive/html/emacs-devel/2018-02/txtzUNqW9dNDT.txt"
+      sha256 "500b437c3ed03e0ef1341b800919aa85cc9a9f13ecbaea8d5fc67bf74510317a"
+    end
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
