@@ -14,6 +14,7 @@ matrix:
     - env: BUILD_OPTIONS="--devel"
     - env: BUILD_OPTIONS="--without-cocoa"
     - env: BUILD_OPTIONS="--without-cocoa --with-x11"
+    - env: BUILD_OPTIONS="--HEAD"
   fast_finish: true
 
 before_install:
