@@ -10,19 +10,6 @@ class EmacsPlus < Formula
     sha256 "f5dac8ba168d0dc9aa1a17a3c971cab451269a200420033b45a8f09a679d2e5a" => :sierra
   end
 
-  devel do
-    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.1-rc1.tar.xz"
-    sha256 "6594e668de00b96e73ad4f168c897fe4bca7c55a4caf19ee20eac54b62a05758"
-  end
-
-  head do
-    url "https://github.com/emacs-mirror/emacs.git"
-
-    depends_on "autoconf" => :build
-    depends_on "gnu-sed" => :build
-    depends_on "texinfo" => :build
-  end
-
   # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
@@ -67,6 +54,27 @@ class EmacsPlus < Formula
 
   # Emacs 26.x and Emacs 27.x experimental stuff
   option "with-x11", "Experimental: build with x11 support"
+
+  # Emacs 27.x only
+  option "with-pdumper",
+         "Experimental: build from pdumper branch and with increased remembered_data size (--HEAD only)"
+
+  devel do
+    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.1-rc1.tar.xz"
+    sha256 "6594e668de00b96e73ad4f168c897fe4bca7c55a4caf19ee20eac54b62a05758"
+  end
+
+  head do
+    if build.with? "pdumper"
+      url "https://github.com/emacs-mirror/emacs.git", :branch => "pdumper"
+    else
+      url "https://github.com/emacs-mirror/emacs.git"
+    end
+
+    depends_on "autoconf" => :build
+    depends_on "gnu-sed" => :build
+    depends_on "texinfo" => :build
+  end
 
   deprecated_option "cocoa" => "with-cocoa"
   deprecated_option "keep-ctags" => "with-ctags"
@@ -123,6 +131,18 @@ class EmacsPlus < Formula
     patch do
       url "https://lists.gnu.org/archive/html/emacs-devel/2018-02/txtzUNqW9dNDT.txt"
       sha256 "500b437c3ed03e0ef1341b800919aa85cc9a9f13ecbaea8d5fc67bf74510317a"
+    end
+  end
+
+  if build.with? "pdumper"
+    unless build.head?
+      odie "--with-pdumper is supported only on --HEAD"
+    end
+
+    patch do
+      system "git" "checkout" "pdumper"
+      url "https://gist.githubusercontent.com/d12frosted/515f1437b0fa2a1f82f95e9d41050375/raw/8d29ec146d158d5357a60e4c259fcaa3d58571b8/0001-increase-size-of-remembered_data.patch"
+      sha256 "a9894e54cc4cce77c706e24770a5b60926afcd9ececf3022e627605a1597a59e"
     end
   end
 
