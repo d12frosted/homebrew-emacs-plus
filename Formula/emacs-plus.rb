@@ -270,6 +270,18 @@ class EmacsPlus < Formula
     EOS
   end
 
+  def caveats
+    <<~EOS
+      Emacs.app was installed to:
+        #{prefix}
+
+      To link the application to default Homebrew App location:
+        brew linkapps
+      or:
+        ln -s #{prefix}/Emacs.app /Applications
+    EOS
+  end
+
   test do
     assert_equal "4", shell_output("#{bin}/emacs --batch --eval=\"(print (+ 2 2))\"").strip
   end
