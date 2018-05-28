@@ -239,7 +239,7 @@ class EmacsPlus < Formula
       <key>ProgramArguments</key>
       <array>
         <string>#{opt_bin}/emacs</string>
-        <string>--daemon</string>
+        <string>--fg-daemon</string>
       </array>
       <key>RunAtLoad</key>
       <true/>
