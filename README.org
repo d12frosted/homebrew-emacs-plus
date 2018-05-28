@@ -31,18 +31,40 @@ relevant part from output of that command for your convenience.
 
 #+BEGIN_SRC bash
 ==> Options
---with-24bit-color
-	Experimental: build with 24 bit color support
 --with-ctags
 	Don't remove the ctags executable that Emacs provides
 --with-dbus
 	Build with dbus support
+--with-emacs-icons-project-EmacsIcon1
+	Using Emacs icon project EmacsIcon1
+--with-emacs-icons-project-EmacsIcon2
+	Using Emacs icon project EmacsIcon2
+--with-emacs-icons-project-EmacsIcon3
+	Using Emacs icon project EmacsIcon3
+--with-emacs-icons-project-EmacsIcon4
+	Using Emacs icon project EmacsIcon4
+--with-emacs-icons-project-EmacsIcon5
+	Using Emacs icon project EmacsIcon5
+--with-emacs-icons-project-EmacsIcon6
+	Using Emacs icon project EmacsIcon6
+--with-emacs-icons-project-EmacsIcon7
+	Using Emacs icon project EmacsIcon7
+--with-emacs-icons-project-EmacsIcon8
+	Using Emacs icon project EmacsIcon8
+--with-emacs-icons-project-EmacsIcon9
+	Using Emacs icon project EmacsIcon9
+--with-emacs-icons-project-emacs-card-blue-deep
+	Using Emacs icon project emacs-card-blue-deep
+--with-emacs-icons-project-emacs-card-british-racing-green
+	Using Emacs icon project emacs-card-british-racing-green
+--with-emacs-icons-project-emacs-card-carmine
+	Using Emacs icon project emacs-card-carmine
+--with-emacs-icons-project-emacs-card-green
+	Using Emacs icon project emacs-card-green
 --with-mailutils
 	Build with mailutils support
---with-natural-title-bar
-	Experimental: use a title bar colour inferred by your theme
---with-no-title-bars
-	Experimental: build with a patch for no title bars on frames (--HEAD has this built-in via undecorated flag)
+--with-modern-icon
+	Using a modern style Emacs icon by @tpanum
 --with-x11
 	Experimental: build with x11 support
 --without-cocoa
@@ -61,6 +83,8 @@ relevant part from output of that command for your convenience.
 	Build without a patch that enables multicolor font support
 --without-spacemacs-icon
 	Build without Spacemacs icon by Nasser Alshammari
+--devel
+	Install development version 26.1-rc1
 --HEAD
 	Install HEAD version
 #+END_SRC
