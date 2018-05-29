@@ -7,6 +7,22 @@ Emacs Plus is GNU Emacs formulae based on =emacs= [[https://github.com/Homebrew/
 that some of the options available from =emacs= formulae are enabled by default
 in =emacs-plus= and some new [[#options][additional options]] are available for user.
 
+** Important
+With release of Emacs 26.1 many options were removed from the formula, as
+features behind them are already in released version.
+
+But most of the users might suffer due to removal of =--with-no-title-bars= and
+=--natural-title-bar= options. In order to duplicate their behaviour add
+following lines to your =init.el= file.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist
+               '(ns-transparent-titlebar . t))
+
+  (add-to-list 'default-frame-alist
+               '(ns-appearance . light)) ;; or dark - depending on your theme
+#+END_SRC
+
 ** Install
 #+BEGIN_SRC bash
 $ brew tap d12frosted/emacs-plus
