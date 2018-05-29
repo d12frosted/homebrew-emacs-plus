@@ -82,6 +82,7 @@ class EmacsPlus < Formula
   deprecated_option "with-d-bus" => "with-dbus"
 
   depends_on "pkg-config" => :build
+  depends_on "little-cms2" => :recommended
   depends_on :x11 => :optional
   depends_on "dbus" => :optional
   depends_on "gnutls" => :recommended
