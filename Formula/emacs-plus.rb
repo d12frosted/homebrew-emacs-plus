@@ -100,8 +100,10 @@ class EmacsPlus < Formula
   end
 
   if build.with? "no-titlebar"
-    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
-    sha256 "137d71df50d806c4f2699148c66f88909a3dc3952c0e26e2e55f85da542987d1"
+    patch do
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
+      sha256 "137d71df50d806c4f2699148c66f88909a3dc3952c0e26e2e55f85da542987d1"
+    end
   end
 
   if build.with? "multicolor-fonts"
