@@ -266,6 +266,10 @@ class EmacsPlus < Formula
       </array>
       <key>RunAtLoad</key>
       <true/>
+      <key>StandardOutPath</key>
+      <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
+      <key>StandardErrorPath</key>
+      <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
     </dict>
     </plist>
     EOS
