@@ -144,8 +144,8 @@ class EmacsPlus < Formula
 
     patch do
       system "git" "checkout" "pdumper"
-      url "https://gist.githubusercontent.com/d12frosted/515f1437b0fa2a1f82f95e9d41050375/raw/8d29ec146d158d5357a60e4c259fcaa3d58571b8/0001-increase-size-of-remembered_data.patch"
-      sha256 "a9894e54cc4cce77c706e24770a5b60926afcd9ececf3022e627605a1597a59e"
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/pdumper-size-increase.patch"
+      sha256 "74aba01f2bae4248f8c41f524b0a2820f5cda8ea46de10b64a6ae7e971c53dff"
     end
   end
 
