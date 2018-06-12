@@ -56,6 +56,7 @@ class EmacsPlus < Formula
 
   # Emacs 26.x and Emacs 27.x experimental stuff
   option "with-x11", "Experimental: build with x11 support"
+  option "with-no-titlebar", "Experimental: build without titlebar"
 
   # Emacs 27.x only
   option "with-pdumper",
@@ -96,6 +97,11 @@ class EmacsPlus < Formula
   if build.with? "x11"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
+  end
+
+  if build.with? "no-titlebar"
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
+    sha256 "137d71df50d806c4f2699148c66f88909a3dc3952c0e26e2e55f85da542987d1"
   end
 
   if build.with? "multicolor-fonts"
