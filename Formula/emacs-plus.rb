@@ -58,6 +58,7 @@ class EmacsPlus < Formula
   # Emacs 26.x and Emacs 27.x experimental stuff
   option "with-x11", "Experimental: build with x11 support"
   option "with-no-titlebar", "Experimental: build without titlebar"
+  deprecated_option "with-no-title-bars" => "with-no-titlebar"
 
   # Emacs 27.x only
   option "with-pdumper",
@@ -101,8 +102,10 @@ class EmacsPlus < Formula
   end
 
   if build.with? "no-titlebar"
-    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
-    sha256 "137d71df50d806c4f2699148c66f88909a3dc3952c0e26e2e55f85da542987d1"
+    patch do
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
+      sha256 "137d71df50d806c4f2699148c66f88909a3dc3952c0e26e2e55f85da542987d1"
+    end
   end
 
   if build.with? "multicolor-fonts"
@@ -307,14 +310,12 @@ class EmacsPlus < Formula
       or:
         ln -s #{prefix}/Emacs.app /Applications
 
-      --with-no-title-bars option was removed from this formula, in order to
-        duplicate its effect add following line to your init.el file
-        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-
       --natural-title-bar option was removed from this formula, in order to
         duplicate its effect add following line to your init.el file
+        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . dark))
       or:
+        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . light))
 
     EOS
