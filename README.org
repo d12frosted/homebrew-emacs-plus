@@ -7,7 +7,7 @@ Emacs Plus is GNU Emacs formulae based on =emacs= [[https://github.com/Homebrew/
 that some of the options available from =emacs= formulae are enabled by default
 in =emacs-plus= and some new [[#options][additional options]] are available for user.
 
-** Upgrade from Emacs 26.1
+** Upgrade from Emacs 25.x
 With release of Emacs 26.1 many options were removed from the formula, as
 features behind them are already in released version.
 
