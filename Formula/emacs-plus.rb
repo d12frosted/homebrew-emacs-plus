@@ -23,7 +23,8 @@ class EmacsPlus < Formula
          "Build without Spacemacs icon by Nasser Alshammari"
   option "without-multicolor-fonts",
          "Build without a patch that enables multicolor font support"
-
+  option "with-xwidgets",
+         "Build with xwidgets"
   # Opt-in
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
@@ -114,6 +115,20 @@ class EmacsPlus < Formula
     end
   end
 
+  if build.with? "xwidgets"
+    unless build.head?
+      odie "--with-wdidgets is supported only on --HEAD"
+    end
+    unless build.with? "cocoa"
+      odie "--with-wdidgets is supported only on cocoa via xwidget webkit"
+    end
+    patch do
+      url "https://gist.githubusercontent.com/fuxialexander/0231e994fd27be6dd87db60339238813/raw/b30c2d3294835f41e2c8afa1e63571531a38f3cf/0_all_webkit.patch"
+      sha256 "f35b955aef31537d2ff163ec9bfcc2176dbcd0ea64f05440d98ec2988b82ce25"
+    end
+  end
+
+
   resource "modern-icon" do
     url "https://s3.amazonaws.com/emacs-mac-port/Emacs.icns.modern"
     sha256 "eb819de2380d3e473329a4a5813fa1b4912ec284146c94f28bd24fbb79f8b2c5"
@@ -197,6 +212,7 @@ class EmacsPlus < Formula
     args << "--with-modules" if build.with? "modules"
     args << "--with-rsvg" if build.with? "librsvg"
     args << "--without-pop" if build.with? "mailutils"
+    args << "--with-xwidgets" if build.with? "xwidgets"
 
     if build.head?
       ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
