@@ -113,9 +113,12 @@ class EmacsPlus < Formula
   end
 
   if build.with? "xwidgets"
+    unless build.head?
+      odie "--with-wdidgets is supported only on --HEAD"
+    end
     patch do
-      url "https://gist.githubusercontent.com/irfn/64037e7172c0d28a90e60afd15030572/raw/55ffbc215a8b85fa9a523def29d1ae306d7c2bf0/0_all_webkit.patch"
-      sha256 "731775ea0065cc96861f17d04d5a8b2f620a1e3a9ed7213e42598ac44cfe4b64"
+      url "https://gist.githubusercontent.com/fuxialexander/0231e994fd27be6dd87db60339238813/raw/b30c2d3294835f41e2c8afa1e63571531a38f3cf/0_all_webkit.patch"
+      sha256 "f35b955aef31537d2ff163ec9bfcc2176dbcd0ea64f05440d98ec2988b82ce25"
     end
   end
 
