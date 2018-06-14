@@ -140,8 +140,11 @@ In order to use that branch, please use =--with-pdumper --HEAD= options.
 Please, take a look at it's usage in [[https://github.com/syl20bnr/spacemacs/blob/develop/EXPERIMENTAL.org#spacemacs-dumps-using-the-portable-dumper][Spacemacs]].
 
 *** Xwidgets (webkit)
-The original [[https://www.emacswiki.org/emacs/EmacsXWidgets][Emacs xwidgets]] builds and works on macOS however must be used with x11 and hence not practical option on macOS. This version enables xwidgets on native macOS X Cocoa via embedding a native webkit window.
-More details can be seen here [[https://github.com/veshboo/emacs][Veshboo's emacs branch]]
+The original [[https://www.emacswiki.org/emacs/EmacsXWidgets][Emacs xwidgets]] builds and works on macOS however must be used with
+x11 and hence not practical option on macOS. This version enables xwidgets on
+native macOS X Cocoa via embedding a native webkit window.
+
+More details can be seen here [[https://github.com/veshboo/emacs][Veshboo's emacs branch]].
 
 ** Emacs configuration
 Emacs is a journey. And for some of you these projects might be inspiring.

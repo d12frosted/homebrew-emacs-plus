@@ -23,8 +23,7 @@ class EmacsPlus < Formula
          "Build without Spacemacs icon by Nasser Alshammari"
   option "without-multicolor-fonts",
          "Build without a patch that enables multicolor font support"
-  option "with-xwidgets",
-         "Build with xwidgets"
+
   # Opt-in
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
@@ -63,6 +62,8 @@ class EmacsPlus < Formula
   # Emacs 27.x only
   option "with-pdumper",
          "Experimental: build from pdumper branch and with increased remembered_data size (--HEAD only)"
+  option "with-xwidgets",
+         "Experimental: build with xwidgets support (--HEAD only)"
 
   devel do
     url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.1-rc1.tar.xz"
