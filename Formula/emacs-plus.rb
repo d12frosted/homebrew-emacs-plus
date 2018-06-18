@@ -118,10 +118,10 @@ class EmacsPlus < Formula
 
   if build.with? "xwidgets"
     unless build.head?
-      odie "--with-wdidgets is supported only on --HEAD"
+      odie "--with-xwidgets is supported only on --HEAD"
     end
     unless build.with? "cocoa"
-      odie "--with-wdidgets is supported only on cocoa via xwidget webkit"
+      odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
     end
     patch do
       url "https://gist.githubusercontent.com/fuxialexander/0231e994fd27be6dd87db60339238813/raw/b30c2d3294835f41e2c8afa1e63571531a38f3cf/0_all_webkit.patch"
