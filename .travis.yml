@@ -10,6 +10,8 @@ os:
 matrix:
   include:
     - env: BUILD_OPTIONS=""
+      osx_image: xcode10
+    - env: BUILD_OPTIONS=""
     - env: BUILD_OPTIONS="--build-from-source"
     - env: BUILD_OPTIONS="--with-no-titlebar"
     - env: BUILD_OPTIONS="--devel"
