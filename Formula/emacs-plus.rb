@@ -320,6 +320,8 @@ class EmacsPlus < Formula
       Emacs.app was installed to:
         #{prefix}
 
+      macOS Mojave user should install emacs-plus with --HEAD option!
+
       To link the application to default Homebrew App location:
         brew linkapps
       or:
