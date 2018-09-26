@@ -61,7 +61,8 @@ class EmacsPlus < Formula
 
   # Emacs 27.x only
   option "with-pdumper",
-         "Experimental: build from pdumper branch and with increased remembered_data size (--HEAD only)"
+         "Experimental: build from pdumper branch and with increased
+         remembered_data size (--HEAD only and not supported on macOS Mojave)"
   option "with-xwidgets",
          "Experimental: build with xwidgets support (--HEAD only)"
 
@@ -166,24 +167,20 @@ class EmacsPlus < Formula
     unless build.head?
       odie "--with-pdumper is supported only on --HEAD"
     end
-
-    patch do
-      system "git" "checkout" "pdumper"
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/pdumper-size-increase.patch"
-      sha256 "74aba01f2bae4248f8c41f524b0a2820f5cda8ea46de10b64a6ae7e971c53dff"
-    end
   end
 
   if build.head?
     if build.with? "cocoa"
-      patch do
-        url "https://github.com/emacs-mirror/emacs/compare/scratch/ns-drawing.patch"
-        sha256 "95aad40f90b3750858c700152d46d5bf5062f12c76d77dd838998c86301fdcb8"
-      end
+      unless build.with? "pdumper"
+        patch do
+          url "https://github.com/emacs-mirror/emacs/compare/scratch/ns-drawing.patch"
+          sha256 "95aad40f90b3750858c700152d46d5bf5062f12c76d77dd838998c86301fdcb8"
+        end
 
-      patch do
-        url "http://emacs.1067599.n8.nabble.com/attachment/465838/0/0001-Fix-crash-on-flush-to-display-bug-32812.patch"
-        sha256 "5c7b50d594a7e57ab518a2995258513ac474d6606fdb165b0e2346253161256a"
+        patch do
+          url "http://emacs.1067599.n8.nabble.com/attachment/465838/0/0001-Fix-crash-on-flush-to-display-bug-32812.patch"
+          sha256 "5c7b50d594a7e57ab518a2995258513ac474d6606fdb165b0e2346253161256a"
+        end
       end
     end
   end
