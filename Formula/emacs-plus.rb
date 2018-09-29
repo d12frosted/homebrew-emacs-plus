@@ -196,8 +196,10 @@ class EmacsPlus < Formula
   end
 
   def install
-    unless build.head?
-      odie "Mojave supports only building from --HEAD"
+    if MacOS.full_version == "10.14"
+      unless build.head?
+        odie "Mojave supports only building from --HEAD"
+      end
     end
 
     args = %W[
