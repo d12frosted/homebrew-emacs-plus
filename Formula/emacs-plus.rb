@@ -80,9 +80,6 @@ class EmacsPlus < Formula
     if build.with? "xwidgets"
       odie "--with-xwidgets is not supported on Mojave yet"
     end
-    unless build.head?
-      odie "Mojave supports only building from --HEAD"
-    end
 
     patch do
       url "https://github.com/emacs-mirror/emacs/compare/scratch/ns-drawing.patch"
@@ -199,6 +196,10 @@ class EmacsPlus < Formula
   end
 
   def install
+    unless build.head?
+      odie "Mojave supports only building from --HEAD"
+    end
+
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
