@@ -80,16 +80,6 @@ class EmacsPlus < Formula
     if build.with? "xwidgets"
       odie "--with-xwidgets is not supported on Mojave yet"
     end
-
-    patch do
-      url "https://github.com/emacs-mirror/emacs/compare/scratch/ns-drawing.patch"
-      sha256 "95aad40f90b3750858c700152d46d5bf5062f12c76d77dd838998c86301fdcb8"
-    end
-
-    patch do
-      url "http://emacs.1067599.n8.nabble.com/attachment/465838/0/0001-Fix-crash-on-flush-to-display-bug-32812.patch"
-      sha256 "5c7b50d594a7e57ab518a2995258513ac474d6606fdb165b0e2346253161256a"
-    end
   end
 
   devel do
