@@ -61,10 +61,39 @@ class EmacsPlus < Formula
 
   # Emacs 27.x only
   option "with-pdumper",
-         "Experimental: build from pdumper branch and with increased
-         remembered_data size (--HEAD only and not supported on macOS Mojave)"
+         "Experimental: build from pdumper branch and with
+         increasedremembered_data size (--HEAD only)"
   option "with-xwidgets",
          "Experimental: build with xwidgets support (--HEAD only)"
+
+  # Disable some experimental stuff on Mojave
+  if MacOS.full_version == "10.14"
+    if build.with? "x11"
+      odie "--with-x11 is not supported on Mojave yet"
+    end
+    if build.with? "no-titlebar"
+      odie "--with-no-titlebar is not supported on Mojave yet"
+    end
+    if build.with? "pdumper"
+      odie "--with-pdumper is not supported on Mojave yet"
+    end
+    if build.with? "xwidgets"
+      odie "--with-xwidgets is not supported on Mojave yet"
+    end
+    unless build.head?
+      odie "Mojave supports only building from --HEAD"
+    end
+
+    patch do
+      url "https://github.com/emacs-mirror/emacs/compare/scratch/ns-drawing.patch"
+      sha256 "95aad40f90b3750858c700152d46d5bf5062f12c76d77dd838998c86301fdcb8"
+    end
+
+    patch do
+      url "http://emacs.1067599.n8.nabble.com/attachment/465838/0/0001-Fix-crash-on-flush-to-display-bug-32812.patch"
+      sha256 "5c7b50d594a7e57ab518a2995258513ac474d6606fdb165b0e2346253161256a"
+    end
+  end
 
   devel do
     url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.1-rc1.tar.xz"
@@ -166,22 +195,6 @@ class EmacsPlus < Formula
   if build.with? "pdumper"
     unless build.head?
       odie "--with-pdumper is supported only on --HEAD"
-    end
-  end
-
-  if build.head?
-    if build.with? "cocoa"
-      unless build.with? "pdumper"
-        patch do
-          url "https://github.com/emacs-mirror/emacs/compare/scratch/ns-drawing.patch"
-          sha256 "95aad40f90b3750858c700152d46d5bf5062f12c76d77dd838998c86301fdcb8"
-        end
-
-        patch do
-          url "http://emacs.1067599.n8.nabble.com/attachment/465838/0/0001-Fix-crash-on-flush-to-display-bug-32812.patch"
-          sha256 "5c7b50d594a7e57ab518a2995258513ac474d6606fdb165b0e2346253161256a"
-        end
-      end
     end
   end
 
@@ -317,8 +330,6 @@ class EmacsPlus < Formula
       Emacs.app was installed to:
         #{prefix}
 
-      macOS Mojave user should install emacs-plus with --HEAD option!
-
       To link the application to default Homebrew App location:
         brew linkapps
       or:
@@ -331,6 +342,10 @@ class EmacsPlus < Formula
       or:
         (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . light))
+
+      If you are using macOS Mojave, please install emacs-plus with --HEAD
+      option. Most of the experimental options are forbidden on Mojave. This is
+      temporary solution.
 
     EOS
   end
