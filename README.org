@@ -50,8 +50,9 @@ In order to install without Spacemacs icon you should use following command.
 
 *** macOS Mojave users
 
-If you are using macOS Mojave, please install =emacs-plus= with =--HEAD= option,
-otherwise you will get errors on GUI startup. More info in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/95][#95]].
+If you are using macOS Mojave, please install =emacs-plus= with =--HEAD= option.
+Most of the experimental options are forbidden on Mojave. This is temporary
+solution.
 
 #+BEGIN_SRC bash
   $ brew install emacs-plus --HEAD
