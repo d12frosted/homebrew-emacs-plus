@@ -1,4 +1,4 @@
-From d30596828948cb1715234bc5faa47bf5bc385be2 Mon Sep 17 00:00:00 2001
+From be4537d5b8c87d5ae0b074b30fadafc061e7ea65 Mon Sep 17 00:00:00 2001
 From: Boris Buliga <boris@d12frosted.io>
 Date: Thu, 7 Jun 2018 20:11:34 +0300
 Subject: [PATCH] borderless frame on macOS
@@ -6,27 +6,26 @@ Subject: [PATCH] borderless frame on macOS
 Please note that this commit is a hack and should not be treated
 seriously. And most importantly - use it at your own risk.
 ---
- src/nsterm.m | 65 +++++++---------------------------------------------
- 1 file changed, 8 insertions(+), 57 deletions(-)
+ src/nsterm.m | 66 +++++++++-------------------------------------------
+ 1 file changed, 11 insertions(+), 55 deletions(-)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index c8ae31abc0..79b1aa8677 100644
+index 68ad64660c..5656d15919 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -425,11 +425,9 @@ - (NSColor *)colorUsingDefaultColorSpace
-
- /* These flags will be OR'd or XOR'd with the NSWindow's styleMask
-    property depending on what we're doing. */
--#define FRAME_DECORATED_FLAGS (NSWindowStyleMaskTitled              \
--                               | NSWindowStyleMaskResizable         \
-+#define FRAME_UNDECORATED_FLAGS (NSWindowStyleMaskResizable         \
+@@ -451,7 +451,10 @@ - (NSColor *)colorUsingDefaultColorSpace
+                                | NSWindowStyleMaskResizable         \
                                 | NSWindowStyleMaskMiniaturizable    \
                                 | NSWindowStyleMaskClosable)
 -#define FRAME_UNDECORATED_FLAGS NSWindowStyleMaskBorderless
++
++#define FRAME_UNDECORATED_FLAGS (NSWindowStyleMaskResizable         \
++                                 | NSWindowStyleMaskMiniaturizable  \
++                                 | NSWindowStyleMaskClosable)
 
- /* TODO: get rid of need for these forward declarations */
+ /* TODO: Get rid of need for these forward declarations.  */
  static void ns_condemn_scroll_bars (struct frame *f);
-@@ -1890,23 +1888,11 @@ -(void)remove
+@@ -1916,23 +1919,11 @@ breaks live resize (resizing with a mouse), so don't do it if
      {
        block_input ();
 
@@ -35,16 +34,16 @@ index c8ae31abc0..79b1aa8677 100644
 -          FRAME_UNDECORATED (f) = false;
 -          [window setStyleMask: ((window.styleMask | FRAME_DECORATED_FLAGS)
 -                                  ^ FRAME_UNDECORATED_FLAGS)];
--
++      [window setToolbar: nil];
++      /* Do I need to release the toolbar here? */
+
 -          [view createToolbar: f];
 -        }
 -      else
 -        {
 -          [window setToolbar: nil];
--          /* Do I need to release the toolbar here? */
-+      [window setToolbar: nil];
-+      /* Do I need to release the toolbar here? */
-
+-          /* Do I need to release the toolbar here?  */
+-
 -          FRAME_UNDECORATED (f) = true;
 -          [window setStyleMask: ((window.styleMask | FRAME_UNDECORATED_FLAGS)
 -                                 ^ FRAME_DECORATED_FLAGS)];
@@ -53,8 +52,8 @@ index c8ae31abc0..79b1aa8677 100644
 +      [window setStyleMask: (window.styleMask | FRAME_UNDECORATED_FLAGS)];
 
        /* At this point it seems we don't have an active NSResponder,
-          so some key presses (TAB) are swallowed by the system. */
-@@ -6856,36 +6842,7 @@ - (void) updateFrameSize: (BOOL) delay
+          so some key presses (TAB) are swallowed by the system.  */
+@@ -6965,36 +6956,7 @@ - (void) updateFrameSize: (BOOL) delay
    NSTRACE_MSG  ("Original columns: %d", cols);
    NSTRACE_MSG  ("Original rows: %d", rows);
 
@@ -78,7 +77,7 @@ index c8ae31abc0..79b1aa8677 100644
 -  if (wait_for_tool_bar)
 -    {
 -      /* The toolbar height is always 0 in fullscreen and undecorated
--         frames, so don't wait for it to become available. */
+-         frames, so don't wait for it to become available.  */
 -      if (FRAME_TOOLBAR_HEIGHT (emacsframe) == 0
 -          && FRAME_UNDECORATED (emacsframe) == false
 -          && ! [self isFullscreen])
@@ -92,7 +91,7 @@ index c8ae31abc0..79b1aa8677 100644
 
    neww = (int)wr.size.width - emacsframe->border_width;
    newh = (int)wr.size.height - extra;
-@@ -7261,11 +7218,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7370,11 +7332,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
    maximizing_resize = NO;
  #endif
 
@@ -106,7 +105,7 @@ index c8ae31abc0..79b1aa8677 100644
                          backing: NSBackingStoreBuffered
                            defer: YES];
 
-@@ -7298,10 +7253,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7407,10 +7367,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
 
@@ -118,4 +117,4 @@ index c8ae31abc0..79b1aa8677 100644
  #ifndef NSAppKitVersionNumber10_10
  #define NSAppKitVersionNumber10_10 1343
 --
-2.17.0
+2.19.0

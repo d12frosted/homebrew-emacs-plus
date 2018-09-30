@@ -71,9 +71,6 @@ class EmacsPlus < Formula
     if build.with? "x11"
       odie "--with-x11 is not supported on Mojave yet"
     end
-    if build.with? "no-titlebar"
-      odie "--with-no-titlebar is not supported on Mojave yet"
-    end
     if build.with? "pdumper"
       odie "--with-pdumper is not supported on Mojave yet"
     end
@@ -121,8 +118,13 @@ class EmacsPlus < Formula
 
   if build.with? "no-titlebar"
     patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
-      sha256 "137d71df50d806c4f2699148c66f88909a3dc3952c0e26e2e55f85da542987d1"
+      if MacOS.full_version == "10.14"
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS-Mojave.patch"
+        sha256 "c092a00cef8c89ea61955442d82e6f7b31c91da3fd49beb891cea5780c43b4b6"
+      else
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
+        sha256 "cbfb097d77f47b31ad8e87751b1c05150ae94e651852cd565d991c11beee48e3"
+      end
     end
   end
 
