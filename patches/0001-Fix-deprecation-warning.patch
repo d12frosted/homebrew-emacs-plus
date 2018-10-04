@@ -1,0 +1,41 @@
+From 9ad0f1d15c06eb07dfbd9bd3e3b8a0d747942152 Mon Sep 17 00:00:00 2001
+From: Alan Third <alan@idiocy.org>
+Date: Wed, 26 Sep 2018 22:21:37 +0100
+Subject: [PATCH] Fix deprecation warning
+
+* src/nsterm.m (ns_term_init): Use writeToFile or writeToURL as
+required.
+---
+ src/nsterm.m | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/nsterm.m b/src/nsterm.m
+index 954020dcde..d92d6c3244 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -5193,7 +5193,21 @@ Needs to be here because ns_initialize_display_info () uses AppKit classes.
+                                       alpha: 1.0]
+                   forKey: [NSString stringWithUTF8String: name]];
+           }
+-        [cl writeToFile: nil];
++
++        /* FIXME: Report any errors writing the color file below.  */
++#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
++#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100
++        if ([cl respondsToSelector:@selector(writeToURL:error:)])
++#endif
++          [cl writeToURL:nil error:nil];
++#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100
++        else
++#endif
++#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101100 */
++#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100 \
++  || defined (NS_IMPL_GNUSTEP)
++          [cl writeToFile: nil];
++#endif
+       }
+   }
+ 
+-- 
+2.19.0
+

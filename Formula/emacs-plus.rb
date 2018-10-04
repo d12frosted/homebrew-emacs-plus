@@ -181,6 +181,21 @@ class EmacsPlus < Formula
     end
   end
 
+  # apply critical fixes for macOS Mojave
+  # more info - https://github.com/d12frosted/homebrew-emacs-plus/issues/95
+  if MacOS.full_version == "10.14"
+    unless build.head?
+      patch do
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/0001-Make-all-NS-drawing-be-done-from-drawRect.patch"
+        sha256 "0839b070fc698f4efddb6e9dc2fe30f7afb75925b9ff875d1a026b1e283ab28d"
+      end
+      patch do
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/0001-Fix-deprecation-warning.patch"
+        sha256 "07aa87fe0c56c65de44c5e56c1d5e1d79402560b13e12fa7e00c7ba846637ea6"
+      end
+    end
+  end
+
   if build.with? "pdumper"
     unless build.head?
       odie "--with-pdumper is supported only on --HEAD"
@@ -188,12 +203,6 @@ class EmacsPlus < Formula
   end
 
   def install
-    if MacOS.full_version == "10.14"
-      unless build.head?
-        odie "Mojave supports only building from --HEAD"
-      end
-    end
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
