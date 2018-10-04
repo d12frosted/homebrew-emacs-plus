@@ -10,6 +10,7 @@ class EmacsPlus < Formula
     rebuild 1
     sha256 "f5dac8ba168d0dc9aa1a17a3c971cab451269a200420033b45a8f09a679d2e5a" => :sierra
     sha256 "048db7c214a2709fb2e3a44e098498fa6c1a1bade0e9e43be6192089fe2165c0" => :high_sierra
+    sha256 "699d3db5147c366e9320259c3f20ca58134414e19f811442222c915300ccf037" => :mojave
   end
 
   # Opt-out
