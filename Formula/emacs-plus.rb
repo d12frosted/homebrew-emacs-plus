@@ -348,9 +348,8 @@ class EmacsPlus < Formula
         (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . light))
 
-      If you are using macOS Mojave, please install emacs-plus with --HEAD
-      option. Most of the experimental options are forbidden on Mojave. This is
-      temporary solution.
+      If you are using macOS Mojave, please note that most of the experimental
+      options are forbidden on Mojave. This is temporary decision.
 
     EOS
   end
