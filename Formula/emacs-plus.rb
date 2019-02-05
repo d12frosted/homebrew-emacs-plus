@@ -68,7 +68,7 @@ class EmacsPlus < Formula
          "Experimental: build with xwidgets support (--HEAD only)"
 
   # Disable some experimental stuff on Mojave
-  if MacOS.full_version == "10.14"
+  if MacOS.full_version >= "10.14"
     if build.with? "x11"
       odie "--with-x11 is not supported on Mojave yet"
     end
@@ -119,7 +119,7 @@ class EmacsPlus < Formula
 
   if build.with? "no-titlebar"
     patch do
-      if MacOS.full_version == "10.14"
+      if MacOS.full_version >= "10.14"
         url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS-Mojave.patch"
         sha256 "c092a00cef8c89ea61955442d82e6f7b31c91da3fd49beb891cea5780c43b4b6"
       else
@@ -184,7 +184,7 @@ class EmacsPlus < Formula
 
   # apply critical fixes for macOS Mojave
   # more info - https://github.com/d12frosted/homebrew-emacs-plus/issues/95
-  if MacOS.full_version == "10.14"
+  if MacOS.full_version >= "10.14"
     unless build.head?
       patch do
         url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/0001-Make-all-NS-drawing-be-done-from-drawRect.patch"
