@@ -55,6 +55,8 @@ class EmacsPlus < Formula
 
   option "with-modern-icon", "Using a modern style Emacs icon by @tpanum"
 
+  option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
+
   # Emacs 26.x and Emacs 27.x experimental stuff
   option "with-x11", "Experimental: build with x11 support"
   option "with-no-titlebar", "Experimental: build without titlebar"
@@ -149,6 +151,12 @@ class EmacsPlus < Formula
     end
   end
 
+  if build.with? "no-frame-refocus"
+    patch do
+      url "https://raw.githubusercontent.com/xenodium/homebrew-emacs-plus/master/patches/no-frame-refocus-cocoa.patch"
+      sha256 "f004e6e65b969bbe83f5d6d53e4ba0e020631959da9ef9682479f7eeb09becd1"
+    end
+  end
 
   resource "modern-icon" do
     url "https://s3.amazonaws.com/emacs-mac-port/Emacs.icns.modern"
