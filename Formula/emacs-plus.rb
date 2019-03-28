@@ -107,10 +107,16 @@ class EmacsPlus < Formula
   depends_on "dbus" => :optional
   depends_on "gnutls" => :recommended
   depends_on "librsvg" => :recommended
-  # Emacs does not support ImageMagick 7:
+  # Emacs 26.x does not support ImageMagick 7:
   # Reported on 2017-03-04: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25967
   depends_on "imagemagick@6" => :recommended
+  # Emacs 27.x (current HEAD) does support ImageMagick 7:
+  # Prefer ImageMagick 7 when both on
+  depends_on "imagemagick@7" => :optional
+
   depends_on "mailutils" => :optional
+
+  depends_on "jansson" => :optional
 
   if build.with? "x11"
     depends_on "freetype" => :recommended
@@ -148,7 +154,6 @@ class EmacsPlus < Formula
       sha256 "f35b955aef31537d2ff163ec9bfcc2176dbcd0ea64f05440d98ec2988b82ce25"
     end
   end
-
 
   resource "modern-icon" do
     url "https://s3.amazonaws.com/emacs-mac-port/Emacs.icns.modern"
@@ -233,10 +238,32 @@ class EmacsPlus < Formula
     # Note that if ./configure is passed --with-imagemagick but can't find the
     # library it does not fail but imagemagick support will not be available.
     # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
-    if build.with? "imagemagick@6"
+    # if build.with? "imagemagick@6"
+    if build.with?("imagemagick@6") || build.with?("imagemagick@7")
       args << "--with-imagemagick"
     else
       args << "--without-imagemagick"
+    end
+
+    # Emacs 27.x (current HEAD) supports imagemagick7 but not Emacs 26.x
+    if build.with? "imagemagick@7"
+      imagemagick_lib_path =  Formula["imagemagick@7"].opt_lib/"pkgconfig"
+      unless build.head?
+        odie "--with-imagemagick@7 is supported only on --HEAD"
+      end
+        ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
+        ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
+    elsif build.with? "imagemagick@6"
+       imagemagick_lib_path =  Formula["imagemagick@6"].opt_lib/"pkgconfig"
+       ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
+       ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
+    end
+
+    if build.with? "jansson"
+      unless build.head?
+        odie "--with-jansson is supported only on --HEAD"
+      end
+      args << "--with-json"
     end
 
     args << "--with-modules" if build.with? "modules"
