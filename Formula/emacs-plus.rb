@@ -66,6 +66,8 @@ class EmacsPlus < Formula
          increasedremembered_data size (--HEAD only)"
   option "with-xwidgets",
          "Experimental: build with xwidgets support (--HEAD only)"
+  option "with-jansson",
+         "Build with jansson support (--HEAD only)"
 
   # Disable some experimental stuff on Mojave
   if MacOS.full_version >= "10.14"
@@ -107,14 +109,18 @@ class EmacsPlus < Formula
   depends_on "dbus" => :optional
   depends_on "gnutls" => :recommended
   depends_on "librsvg" => :recommended
-  # Emacs 26.x does not support ImageMagick 7:
-  # Reported on 2017-03-04: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25967
-  depends_on "imagemagick@6" => :recommended
-  # Emacs 27.x (current HEAD) does support ImageMagick 7:
-  # Prefer ImageMagick 7 when both on
-  depends_on "imagemagick@7" => :optional
 
   depends_on "mailutils" => :optional
+
+  if build.head?
+    # Emacs 27.x (current HEAD) does support ImageMagick 7
+    depends_on "imagemagick@7" => :recommended
+    depends_on "imagemagick@6" => :optional
+  else
+    # Emacs 26.x does not support ImageMagick 7:
+    # Reported on 2017-03-04: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25967
+    depends_on "imagemagick@6" => :recommended
+  end
 
   depends_on "jansson" => :optional
 
@@ -238,7 +244,6 @@ class EmacsPlus < Formula
     # Note that if ./configure is passed --with-imagemagick but can't find the
     # library it does not fail but imagemagick support will not be available.
     # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
-    # if build.with? "imagemagick@6"
     if build.with?("imagemagick@6") || build.with?("imagemagick@7")
       args << "--with-imagemagick"
     else

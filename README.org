@@ -101,12 +101,16 @@ relevant part from output of that command for your convenience.
     Experimental: build with x11 support
   --with-xwidgets
     Build with xwidgets
+  --with-jansson
+    Build with jansson support (--HEAD only)
   --without-cocoa
     Build a non-Cocoa version of Emacs
   --without-gnutls
     Build without gnutls support
   --without-imagemagick@6
     Build without imagemagick@6 support
+  --without-imagemagick@7
+    Build without imagemagick@7 support (--HEAD only)
   --without-librsvg
     Build without librsvg support
   --without-libxml2
