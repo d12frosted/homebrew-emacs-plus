@@ -1,0 +1,20 @@
+diff --git a/src/frame.c b/src/frame.c
+index 46bdf22231..08584384f4 100644
+--- a/src/frame.c
++++ b/src/frame.c
+@@ -2000,15 +2000,6 @@ delete_frame (Lisp_Object frame, Lisp_Object force)
+ 		}
+ 	    }
+ 	}
+-#ifdef NS_IMPL_COCOA
+-      else
+-	/* Under NS, there is no system mechanism for choosing a new
+-	   window to get focus -- it is left to application code.
+-	   So the portion of THIS application interfacing with NS
+-	   needs to know about it.  We call Fraise_frame, but the
+-	   purpose is really to transfer focus.  */
+-	Fraise_frame (frame1);
+-#endif
+
+       do_switch_frame (frame1, 0, 1, Qnil);
+       sf = SELECTED_FRAME ();
