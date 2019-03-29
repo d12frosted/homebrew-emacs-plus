@@ -153,7 +153,7 @@ class EmacsPlus < Formula
 
   if build.with? "no-frame-refocus"
     patch do
-      url "https://raw.githubusercontent.com/xenodium/homebrew-emacs-plus/master/patches/no-frame-refocus-cocoa.patch"
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/no-frame-refocus-cocoa.patch"
       sha256 "f004e6e65b969bbe83f5d6d53e4ba0e020631959da9ef9682479f7eeb09becd1"
     end
   end
