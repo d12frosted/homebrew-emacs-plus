@@ -93,6 +93,8 @@ relevant part from output of that command for your convenience.
     Build with mailutils support
   --with-modern-icon
     Using a modern style Emacs icon by @tpanum
+  --with-no-frame-refocus
+    Disables frame re-focus (ie. closing one frame does not refocus another one)
   --with-no-titlebar
     Experimental: build without titlebar
   --with-pdumper
