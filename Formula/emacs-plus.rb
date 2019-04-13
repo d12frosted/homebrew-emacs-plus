@@ -1,9 +1,9 @@
 class EmacsPlus < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-  url "https://ftp.gnu.org/gnu/emacs/emacs-26.1.tar.xz"
-  mirror "https://ftpmirror.gnu.org/emacs/emacs-26.1.tar.xz"
-  sha256 "1cf4fc240cd77c25309d15e18593789c8dbfba5c2b44d8f77c886542300fd32c"
+  url "https://ftp.gnu.org/gnu/emacs/emacs-26.2.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-26.2.tar.xz"
+  sha256 "151ce69dbe5b809d4492ffae4a4b153b2778459de6deb26f35691e1281a9c58e"
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
@@ -184,36 +184,6 @@ class EmacsPlus < Formula
     resource "emacs-icons-project-#{icon}" do
       url "https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/#{icon}.icns"
       sha256 sha
-    end
-  end
-
-  # wait_reading_process_ouput patch
-  # remove after 27.1 is released
-  # See https://lists.gnu.org/archive/html/emacs-devel/2018-02/msg00363.html
-  unless build.head?
-    patch do
-      url "https://lists.gnu.org/archive/html/emacs-devel/2018-02/txtshOHDg6PmW.txt"
-      sha256 "ba9d9555256f91409c4a7b233c36119514ba3d61f4acdb15d7d017db0fb9f00c"
-    end
-
-    patch do
-      url "https://lists.gnu.org/archive/html/emacs-devel/2018-02/txtzUNqW9dNDT.txt"
-      sha256 "500b437c3ed03e0ef1341b800919aa85cc9a9f13ecbaea8d5fc67bf74510317a"
-    end
-  end
-
-  # apply critical fixes for macOS Mojave
-  # more info - https://github.com/d12frosted/homebrew-emacs-plus/issues/95
-  if MacOS.full_version >= "10.14"
-    unless build.head?
-      patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/0001-Make-all-NS-drawing-be-done-from-drawRect.patch"
-        sha256 "0839b070fc698f4efddb6e9dc2fe30f7afb75925b9ff875d1a026b1e283ab28d"
-      end
-      patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/0001-Fix-deprecation-warning.patch"
-        sha256 "07aa87fe0c56c65de44c5e56c1d5e1d79402560b13e12fa7e00c7ba846637ea6"
-      end
     end
   end
 
