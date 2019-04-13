@@ -85,8 +85,8 @@ class EmacsPlus < Formula
   end
 
   devel do
-    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.1-rc1.tar.xz"
-    sha256 "6594e668de00b96e73ad4f168c897fe4bca7c55a4caf19ee20eac54b62a05758"
+    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.2-rc1.tar.xz"
+    sha256 "3bad71d52e115d40b55869911dc267d3609cf685e54f12e93e0933ee7a43636f"
   end
 
   head do
@@ -132,14 +132,13 @@ class EmacsPlus < Formula
   end
 
   if build.with? "no-titlebar"
+    if build.head?
+      odie "--with-no-titlebar is not supported on --HEAD yet"
+    end
+
     patch do
-      if MacOS.full_version >= "10.14"
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS-Mojave.patch"
-        sha256 "c092a00cef8c89ea61955442d82e6f7b31c91da3fd49beb891cea5780c43b4b6"
-      else
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
-        sha256 "cbfb097d77f47b31ad8e87751b1c05150ae94e651852cd565d991c11beee48e3"
-      end
+      url "https://raw.githubusercontent.com/shuxiao9058/homebrew-emacs-plus/feature/26.2/patches/borderless-frame-on-macOS.patch"
+      sha256 "2059213cc740a49b131a363d6093913fa29f8f67227fc86a82ffe633bbf1a5f5"
     end
   end
 
