@@ -84,10 +84,10 @@ class EmacsPlus < Formula
     end
   end
 
-  # devel do
-  #   url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.1-rc1.tar.xz"
-  #   sha256 "6594e668de00b96e73ad4f168c897fe4bca7c55a4caf19ee20eac54b62a05758"
-  # end
+  devel do
+    url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-26.2-rc1.tar.xz"
+    sha256 "3bad71d52e115d40b55869911dc267d3609cf685e54f12e93e0933ee7a43636f"
+  end
 
   head do
     if build.with? "pdumper"
