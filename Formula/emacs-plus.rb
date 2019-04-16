@@ -137,7 +137,7 @@ class EmacsPlus < Formula
     end
 
     patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
+      url "https://raw.githubusercontent.com/shuxiao9058/homebrew-emacs-plus/feature/26.2/patches/borderless-frame-on-macOS.patch"
       sha256 "2059213cc740a49b131a363d6093913fa29f8f67227fc86a82ffe633bbf1a5f5"
     end
   end
