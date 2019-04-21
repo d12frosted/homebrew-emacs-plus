@@ -5,6 +5,12 @@ class EmacsPlus < Formula
   mirror "https://ftpmirror.gnu.org/emacs/emacs-26.2.tar.xz"
   sha256 "151ce69dbe5b809d4492ffae4a4b153b2778459de6deb26f35691e1281a9c58e"
 
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-emacs-plus"
+    rebuild 2
+    sha256 "1fce8aa4bef48f557298e67821327b4d7ea4cdbb2f27cb82edb6bcd882a0d332" => :mojave
+  end
+
   # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
