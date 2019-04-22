@@ -142,6 +142,16 @@ option at your own risk. And feel free to open up issues you face, just remember
 that I am not close enough to Emacs development process to provide you much help
 with any arising issues.
 
+*** No Titlebar
+This patch is enabled with the =--with-no-titlebar= option. It is meant for use with
+window tiling applications like chunkwm or amethyst so that the titlebar you will
+never need to click on won't take up screen real estate. If you see gaps between your
+emacs frames and other windows, try this:
+
+#+BEGIN_SRC emacs-lisp
+  (setq frame-resize-pixelwise t)
+#+END_SRC
+
 *** Portable dumper
 The portable dumper is a feature that may be available with Emacs 27.1, but for
 now the code is in the =dumper= branch of the Emacs Git repository.
