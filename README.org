@@ -198,5 +198,5 @@ $ brew install cask --ignore-dependencies
 #+END_HTML
 
 ** Acknowledgements
-Many thanks to [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][all contributors]], everyone reporting issues and [[https://github.com/wadkar][Sudarshan Wadkar]]
-for providing bottles for El Capitan.
+Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][Sudarshan
+Wadkar]], [[https://github.com/jonhermansen][Jon Hermansen]]).
