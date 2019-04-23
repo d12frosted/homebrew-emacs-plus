@@ -9,6 +9,7 @@ class EmacsPlus < Formula
     root_url "https://homebrew.bintray.com/bottles-emacs-plus"
     rebuild 2
     sha256 "1fce8aa4bef48f557298e67821327b4d7ea4cdbb2f27cb82edb6bcd882a0d332" => :mojave
+    sha256 "dc63557c1802744351bfa639bde1ae2aee13d41d785ceaa8641a19cd30e67728" => :high_sierra
   end
 
   # Opt-out
