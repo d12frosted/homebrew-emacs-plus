@@ -78,9 +78,6 @@ class EmacsPlus < Formula
     if build.with? "pdumper"
       odie "--with-pdumper is not supported on Mojave yet"
     end
-    if build.with? "xwidgets"
-      odie "--with-xwidgets is not supported on Mojave yet"
-    end
   end
 
   head do
