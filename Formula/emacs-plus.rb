@@ -153,8 +153,8 @@ class EmacsPlus < Formula
       odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
     end
     patch do
-      url "https://gist.githubusercontent.com/fuxialexander/0231e994fd27be6dd87db60339238813/raw/b30c2d3294835f41e2c8afa1e63571531a38f3cf/0_all_webkit.patch"
-      sha256 "f35b955aef31537d2ff163ec9bfcc2176dbcd0ea64f05440d98ec2988b82ce25"
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
+      sha256 "bd614add2ca3b0da940521116b8b78f605213229747502c2159a728db5ac82d3"
     end
   end
 
