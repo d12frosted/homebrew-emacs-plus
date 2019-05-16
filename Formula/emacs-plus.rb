@@ -151,7 +151,7 @@ class EmacsPlus < Formula
     end
     patch do
       url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
-      sha256 "84bbff657c3823d5a671956a429a05a4f27accfc36b25d12ef14d6537df976ab"
+      sha256 "bd614add2ca3b0da940521116b8b78f605213229747502c2159a728db5ac82d3"
     end
   end
 

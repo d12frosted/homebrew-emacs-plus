@@ -1,5 +1,5 @@
 diff --git a/configure.ac b/configure.ac
-index 79fe0c98c6..6e9a067455 100644
+index d13dddfd9a..525c4c6703 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -483,7 +483,7 @@ AC_DEFUN
@@ -563,24 +563,27 @@ index 662a854ac3..f93b4bedba 100644
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; Xwidget plist management (similar to the process plist functions)
 diff --git a/nextstep/templates/Info.plist.in b/nextstep/templates/Info.plist.in
-index c1e50a8409..7475329de5 100644
+index c1e50a8409..6ec4c6f764 100644
 --- a/nextstep/templates/Info.plist.in
 +++ b/nextstep/templates/Info.plist.in
-@@ -675,6 +675,14 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
+@@ -675,7 +675,15 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
  	</array>
  	<key>NSAppleScriptEnabled</key>
  	<string>YES</string>
-+        <!-- For xwidget webkit to browse remote url,
-+             but this set no restriction at all.  Consult apple's documentation
-+             for detail information about `NSApplicationDefinedMask'. -->
-+        <key>NSAppTransportSecurity</key>
-+        <dict>
-+          <key>NSAllowsArbitraryLoads</key>
-+          <true/>
-+        </dict>
-         <key>NSAppleEventsUsageDescription</key>
-         <string>Emacs requires permission to send AppleEvents to other applications.</string>
+-        <key>NSAppleEventsUsageDescription</key>
+-        <string>Emacs requires permission to send AppleEvents to other applications.</string>
++	<key>NSAppleEventsUsageDescription</key>
++	<string>Emacs requires permission to send AppleEvents to other applications.</string>
++	<!-- For xwidget webkit to browse remote url,
++	     but this set no restriction at all.  Consult apple's documentation
++ 	     for detail information about `NSApplicationDefinedMask'. -->
++	<key>NSAppTransportSecurity</key>
++	<dict>
++		<key>NSAllowsArbitraryLoads</key>
++		<true/>
++	</dict>
  </dict>
+ </plist>
 diff --git a/src/Makefile.in b/src/Makefile.in
 index 3aab5270a4..77200440af 100644
 --- a/src/Makefile.in
@@ -693,8 +696,725 @@ index d688aceca5..f54e418762 100644
      help_echo_string = previous_help_echo_string;
  
    XSETFRAME (frame, emacsframe);
+diff --git a/src/nsxwidget.h b/src/nsxwidget.h
+new file mode 100644
+index 0000000000..6af5fe5a4d
+--- /dev/null
++++ b/src/nsxwidget.h
+@@ -0,0 +1,80 @@
++/* Header for NS Cocoa part of xwidget and webkit widget.
++
++Copyright (C) 2011-2017 Free Software Foundation, Inc.
++
++This file is part of GNU Emacs.
++
++GNU Emacs is free software: you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation, either version 3 of the License, or (at
++your option) any later version.
++
++GNU Emacs is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
++
++#ifndef NSXWIDGET_H_INCLUDED
++#define NSXWIDGET_H_INCLUDED
++
++/* This file can be included from non-objc files through 'xwidget.h'.  */
++#ifdef __OBJC__
++#import <AppKit/NSView.h>
++#endif
++
++#include "dispextern.h"
++#include "lisp.h"
++#include "xwidget.h"
++
++/* Functions for xwidget webkit.  */
++
++bool nsxwidget_is_web_view (struct xwidget *xw);
++Lisp_Object nsxwidget_webkit_uri (struct xwidget *xw);
++Lisp_Object nsxwidget_webkit_title (struct xwidget *xw);
++void nsxwidget_webkit_goto_uri (struct xwidget *xw, const char *uri);
++void nsxwidget_webkit_goto_history (struct xwidget *xw, int rel_pos);
++void nsxwidget_webkit_zoom (struct xwidget *xw, double zoom_change);
++void nsxwidget_webkit_execute_script (struct xwidget *xw, const char *script,
++                                      Lisp_Object fun);
++
++/* Functions for xwidget model.  */
++
++#ifdef __OBJC__
++@interface XwWindow : NSView
++@property struct xwidget *xw;
++@end
++#endif
++
++void nsxwidget_init (struct xwidget *xw);
++void nsxwidget_kill (struct xwidget *xw);
++void nsxwidget_resize (struct xwidget *xw);
++Lisp_Object nsxwidget_get_size (struct xwidget *xw);
++
++/* Functions for xwidget view.  */
++
++#ifdef __OBJC__
++@interface XvWindow : NSView
++@property struct xwidget *xw;
++@property struct xwidget_view *xv;
++@end
++#endif
++
++void nsxwidget_init_view (struct xwidget_view *xv,
++                          struct xwidget *xww,
++                          struct glyph_string *s,
++                          int x, int y);
++void nsxwidget_delete_view (struct xwidget_view *xv);
++
++void nsxwidget_show_view (struct xwidget_view *xv);
++void nsxwidget_hide_view (struct xwidget_view *xv);
++void nsxwidget_resize_view (struct xwidget_view *xv,
++                            int widget, int height);
++
++void nsxwidget_move_view (struct xwidget_view *xv, int x, int y);
++void nsxwidget_move_widget_in_view (struct xwidget_view *xv, int x, int y);
++void nsxwidget_set_needsdisplay (struct xwidget_view *xv);
++
++#endif /* NSXWIDGET_H_INCLUDED */
+diff --git a/src/nsxwidget.m b/src/nsxwidget.m
+new file mode 100644
+index 0000000000..0d628b533a
+--- /dev/null
++++ b/src/nsxwidget.m
+@@ -0,0 +1,625 @@
++/* NS Cocoa part implementation of xwidget and webkit widget.
++
++Copyright (C) 1989, 1992-1994, 2005-2006, 2008-2017 Free Software
++Foundation, Inc.
++
++This file is part of GNU Emacs.
++
++GNU Emacs is free software: you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation, either version 3 of the License, or (at
++your option) any later version.
++
++GNU Emacs is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
++
++#include <config.h>
++
++#include "lisp.h"
++#include "blockinput.h"
++#include "dispextern.h"
++#include "buffer.h"
++#include "frame.h"
++#include "nsterm.h"
++#include "xwidget.h"
++
++/* Defined in 'xwidget.c'.  */
++void store_xwidget_event_string (struct xwidget *xw,
++                                 const char *eventname,
++                                 const char *eventstr);
++
++void store_xwidget_response_callback_event (struct xwidget *xw,
++                                            const char *url,
++                                            const char *mimetype,
++                                            const char *filename);
++
++void store_xwidget_js_callback_event (struct xwidget *xw,
++                                      Lisp_Object proc,
++                                      Lisp_Object argument);
++
++#import <AppKit/AppKit.h>
++#import <WebKit/WebKit.h>
++
++/* Thoughts on NS Cocoa xwidget and webkit2:
++
++   Webkit2 process architecture seems to be very hostile for offscreen
++   rendering techniques, which is used by GTK xwiget implementation;
++   Specifically NSView level view sharing / copying is not working.
++
++   *** So only one view can be associcated with a model. ***
++
++   With this decision, implementation is plain and can expect best out
++   of webkit2's rationale.  But process and session structures will
++   diverge from GTK xwiget.  Though, cosmetically similar usages can
++   be presented and will be preferred, if agreeable.
++
++   For other widget types, OSR seems possible, but will not care for a
++   while.  */
++
++/* Xwidget webkit.  */
++
++@interface XwWebView : WKWebView
++<WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
++@property struct xwidget *xw;
++/* Map url to whether javascript is blocked by
++   'Content-Security-Policy' sandbox without allow-scripts.  */
++@property(retain) NSMutableDictionary *urlScriptBlocked;
++@end
++@implementation XwWebView : WKWebView
++
++- (id)initWithFrame:(CGRect)frame
++      configuration:(WKWebViewConfiguration *)configuration
++            xwidget:(struct xwidget *)xw
++{
++  /* Script controller to add script message handler and user script.  */
++  WKUserContentController *scriptor = [[WKUserContentController alloc] init];
++  configuration.userContentController = scriptor;
++
++  /* Enable inspect element context menu item for debugging.  */
++  [configuration.preferences setValue:@YES
++                               forKey:@"developerExtrasEnabled"];
++
++  Lisp_Object enablePlugins =
++    Fintern (build_string ("xwidget-webkit-enable-plugins"), Qnil);
++  if (!EQ (Fsymbol_value (enablePlugins), Qnil))
++    configuration.preferences.plugInsEnabled = YES;
++
++  self = [super initWithFrame:frame configuration:configuration];
++  if (self)
++    {
++      self.xw = xw;
++      self.urlScriptBlocked = [[NSMutableDictionary alloc] init];
++      self.navigationDelegate = self;
++      self.UIDelegate = self;
++      self.customUserAgent =
++        @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)"
++        @" AppleWebKit/603.3.8 (KHTML, like Gecko)"
++        @" Version/11.0.1 Safari/603.3.8";
++      [scriptor addScriptMessageHandler:self name:@"keyDown"];
++      [scriptor addUserScript:[[WKUserScript alloc]
++                                initWithSource:xwScript
++                                 injectionTime:
++                                  WKUserScriptInjectionTimeAtDocumentStart
++                                forMainFrameOnly:NO]];
++    }
++  return self;
++}
++
++#if 0
++/* Non ARC - just to check lifecycle.  */
++- (void)dealloc
++{
++  NSLog (@"XwWebView dealloc");
++  [super dealloc];
++}
++#endif
++
++- (void)webView:(WKWebView *)webView
++didFinishNavigation:(WKNavigation *)navigation
++{
++  if (EQ (Fbuffer_live_p (self.xw->buffer), Qt))
++    store_xwidget_event_string (self.xw, "load-changed", "");
++}
++
++- (void)webView:(WKWebView *)webView
++decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
++decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
++{
++  switch (navigationAction.navigationType) {
++  case WKNavigationTypeLinkActivated:
++    decisionHandler (WKNavigationActionPolicyAllow);
++    break;
++  default:
++    // decisionHandler (WKNavigationActionPolicyCancel);
++    decisionHandler (WKNavigationActionPolicyAllow);
++    break;
++  }
++}
++
++- (void)webView:(WKWebView *)webView
++decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse
++decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
++{
++  if (!navigationResponse.canShowMIMEType)
++    {
++      NSString *url = navigationResponse.response.URL.absoluteString;
++      NSString *mimetype = navigationResponse.response.MIMEType;
++      NSString *filename = navigationResponse.response.suggestedFilename;
++      decisionHandler (WKNavigationResponsePolicyCancel);
++      store_xwidget_response_callback_event (self.xw,
++                                             url.UTF8String,
++                                             mimetype.UTF8String,
++                                             filename.UTF8String);
++      return;
++    }
++  decisionHandler (WKNavigationResponsePolicyAllow);
++
++  self.urlScriptBlocked[navigationResponse.response.URL] =
++    [NSNumber numberWithBool:NO];
++  if ([navigationResponse.response isKindOfClass:[NSHTTPURLResponse class]])
++    {
++      NSDictionary *headers =
++        ((NSHTTPURLResponse *) navigationResponse.response).allHeaderFields;
++      NSString *value = headers[@"Content-Security-Policy"];
++      if (value)
++        {
++          /* TODO: Sloppy parsing of 'Content-Security-Policy' value.  */
++          NSRange sandbox = [value rangeOfString:@"sandbox"];
++          if (sandbox.location != NSNotFound
++              && (sandbox.location == 0
++                  || [value characterAtIndex:(sandbox.location - 1)] == ' '
++                  || [value characterAtIndex:(sandbox.location - 1)] == ';'))
++            {
++              NSRange allowScripts = [value rangeOfString:@"allow-scripts"];
++              if (allowScripts.location == NSNotFound
++                  || allowScripts.location < sandbox.location)
++                self.urlScriptBlocked[navigationResponse.response.URL] =
++                  [NSNumber numberWithBool:YES];
++            }
++        }
++    }
++}
++
++/* No additional new webview or emacs window will be created
++   for <a ... target="_blank">.  */
++- (WKWebView *)webView:(WKWebView *)webView
++createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
++   forNavigationAction:(WKNavigationAction *)navigationAction
++        windowFeatures:(WKWindowFeatures *)windowFeatures
++{
++  if (!navigationAction.targetFrame.isMainFrame)
++    [webView loadRequest:navigationAction.request];
++  return nil;
++}
++
++/* Open panel for file upload.  */
++- (void)webView:(WKWebView *)webView
++runOpenPanelWithParameters:(WKOpenPanelParameters *)parameters
++initiatedByFrame:(WKFrameInfo *)frame
++completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
++{
++  NSOpenPanel *openPanel = [NSOpenPanel openPanel];
++  openPanel.canChooseFiles = YES;
++  openPanel.canChooseDirectories = NO;
++  openPanel.allowsMultipleSelection = parameters.allowsMultipleSelection;
++  if ([openPanel runModal] == NSModalResponseOK)
++    completionHandler (openPanel.URLs);
++  else
++    completionHandler (nil);
++}
++
++/* By forwarding mouse events to emacs view (frame)
++   - Mouse click in webview selects the window contains the webview.
++   - Correct mouse hand/arrow/I-beam is displayed (TODO: not perfect yet).
++*/
++
++- (void)mouseDown:(NSEvent *)event
++{
++  [self.xw->xv->emacswindow mouseDown:event];
++  [super mouseDown:event];
++}
++
++- (void)mouseUp:(NSEvent *)event
++{
++  [self.xw->xv->emacswindow mouseUp:event];
++  [super mouseUp:event];
++}
++
++/* Basically we want keyboard events handled by emacs unless an input
++   element has focus.  Especially, while incremental search, we set
++   emacs as first responder to avoid focus held in an input element
++   with matching text.  */
++
++- (void)keyDown:(NSEvent *)event
++{
++  Lisp_Object var = Fintern (build_string ("isearch-mode"), Qnil);
++  Lisp_Object val = buffer_local_value (var, Fcurrent_buffer ());
++  if (!EQ (val, Qunbound) && !EQ (val, Qnil))
++    {
++      [self.window makeFirstResponder:self.xw->xv->emacswindow];
++      [self.xw->xv->emacswindow keyDown:event];
++      return;
++    }
++
++  /* Emacs handles keyboard events when javascript is blocked.  */
++  if ([self.urlScriptBlocked[self.URL] boolValue])
++    {
++      [self.xw->xv->emacswindow keyDown:event];
++      return;
++    }
++
++  [self evaluateJavaScript:@"xwHasFocus()"
++         completionHandler:^(id result, NSError *error) {
++      if (error)
++        {
++          NSLog (@"xwHasFocus: %@", error);
++          [self.xw->xv->emacswindow keyDown:event];
++        }
++      else if (result)
++        {
++          NSNumber *hasFocus = result; /* __NSCFBoolean */
++          if (!hasFocus.boolValue)
++            [self.xw->xv->emacswindow keyDown:event];
++          else
++            [super keyDown:event];
++        }
++    }];
++}
++
++- (void)interpretKeyEvents:(NSArray<NSEvent *> *)eventArray
++{
++  /* We should do nothing and do not forward (default implementation
++     if we not override here) to let emacs collect key events and ask
++     interpretKeyEvents to its superclass.  */
++}
++
++static NSString *xwScript;
+++ (void)initialize
++{
++  /* Find out if an input element has focus.
++     Message to script message handler when 'C-g' key down.  */
++  if (!xwScript)
++    xwScript =
++      @"function xwHasFocus() {"
++      @"  var ae = document.activeElement;"
++      @"  if (ae) {"
++      @"    var name = ae.nodeName;"
++      @"    return name == 'INPUT' || name == 'TEXTAREA';"
++      @"  } else {"
++      @"    return false;"
++      @"  }"
++      @"}"
++      @"function xwKeyDown(event) {"
++      @"  if (event.ctrlKey && event.key == 'g') {"
++      @"    window.webkit.messageHandlers.keyDown.postMessage('C-g');"
++      @"  }"
++      @"}"
++      @"document.addEventListener('keydown', xwKeyDown);"
++      ;
++}
++
++/* Confirming to WKScriptMessageHandler, listens concerning keyDown in
++   webkit. Currently 'C-g'.  */
++- (void)userContentController:(WKUserContentController *)userContentController
++      didReceiveScriptMessage:(WKScriptMessage *)message
++{
++  if ([message.body isEqualToString:@"C-g"])
++    {
++      /* Just give up focus, no relay "C-g" to emacs, another "C-g"
++         follows will be handled by emacs.  */
++      [self.window makeFirstResponder:self.xw->xv->emacswindow];
++    }
++}
++
++@end
++
++/* Xwidget webkit commands.  */
++
++static Lisp_Object build_string_with_nsstr (NSString *nsstr);
++
++bool
++nsxwidget_is_web_view (struct xwidget *xw)
++{
++  return xw->xwWidget != NULL &&
++    [xw->xwWidget isKindOfClass:WKWebView.class];
++}
++
++Lisp_Object
++nsxwidget_webkit_uri (struct xwidget *xw)
++{
++  XwWebView *xwWebView = (XwWebView *) xw->xwWidget;
++  return build_string_with_nsstr (xwWebView.URL.absoluteString);
++}
++
++Lisp_Object
++nsxwidget_webkit_title (struct xwidget *xw)
++{
++  XwWebView *xwWebView = (XwWebView *) xw->xwWidget;
++  return build_string_with_nsstr (xwWebView.title);
++}
++
++/* @Note ATS - Need application transport security in 'Info.plist' or
++   remote pages will not loaded.  */
++void
++nsxwidget_webkit_goto_uri (struct xwidget *xw, const char *uri)
++{
++  XwWebView *xwWebView = (XwWebView *) xw->xwWidget;
++  NSString *urlString = [NSString stringWithUTF8String:uri];
++  NSURL *url = [NSURL URLWithString:urlString];
++  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
++  [xwWebView loadRequest:urlRequest];
++}
++
++void
++nsxwidget_webkit_goto_history (struct xwidget *xw, int rel_pos)
++{
++  XwWebView *xwWebView = (XwWebView *) xw->xwWidget;
++  switch (rel_pos) {
++  case -1: [xwWebView goBack]; break;
++  case 0: [xwWebView reload]; break;
++  case 1: [xwWebView goForward]; break;
++  }
++}
++
++void
++nsxwidget_webkit_zoom (struct xwidget *xw, double zoom_change)
++{
++  XwWebView *xwWebView = (XwWebView *) xw->xwWidget;
++  xwWebView.magnification += zoom_change;
++  /* TODO: setMagnification:centeredAtPoint.  */
++}
++
++/* Build lisp string */
++static Lisp_Object
++build_string_with_nsstr (NSString *nsstr)
++{
++  const char *utfstr = [nsstr UTF8String];
++  NSUInteger bytes = [nsstr lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
++  return make_string (utfstr, bytes);
++}
++
++/* Recursively convert an objc native type JavaScript value to a Lisp
++   value.  Mostly copied from GTK xwidget 'webkit_js_to_lisp'.  */
++static Lisp_Object
++js_to_lisp (id value)
++{
++  if (value == nil || [value isKindOfClass:NSNull.class])
++    return Qnil;
++  else if ([value isKindOfClass:NSString.class])
++    return build_string_with_nsstr ((NSString *) value);
++  else if ([value isKindOfClass:NSNumber.class])
++    {
++      NSNumber *nsnum = (NSNumber *) value;
++      char type = nsnum.objCType[0];
++      if (type == 'c') /* __NSCFBoolean has type character 'c'.  */
++        return nsnum.boolValue? Qt : Qnil;
++      else
++        {
++          if (type == 'i' || type == 'l')
++            return make_int (nsnum.longValue);
++          else if (type == 'f' || type == 'd')
++            return make_float (nsnum.doubleValue);
++          /* else fall through.  */
++        }
++    }
++  else if ([value isKindOfClass:NSArray.class])
++    {
++      NSArray *nsarr = (NSArray *) value;
++      EMACS_INT n = nsarr.count;
++      Lisp_Object obj;
++      struct Lisp_Vector *p = allocate_vector (n);
++
++      for (ptrdiff_t i = 0; i < n; ++i)
++        p->contents[i] = js_to_lisp ([nsarr objectAtIndex:i]);
++      XSETVECTOR (obj, p);
++      return obj;
++    }
++  else if ([value isKindOfClass:NSDictionary.class])
++    {
++      NSDictionary *nsdict = (NSDictionary *) value;
++      NSArray *keys = nsdict.allKeys;
++      ptrdiff_t n = keys.count;
++      Lisp_Object obj;
++      struct Lisp_Vector *p = allocate_vector (n);
++
++      for (ptrdiff_t i = 0; i < n; ++i)
++        {
++          NSString *prop_key = (NSString *) [keys objectAtIndex:i];
++          id prop_value = [nsdict valueForKey:prop_key];
++          p->contents[i] = Fcons (build_string_with_nsstr (prop_key),
++                                  js_to_lisp (prop_value));
++        }
++      XSETVECTOR (obj, p);
++      return obj;
++    }
++  NSLog (@"Unhandled type in javascript result");
++  return Qnil;
++}
++
++void
++nsxwidget_webkit_execute_script (struct xwidget *xw, const char *script,
++                                 Lisp_Object fun)
++{
++  XwWebView *xwWebView = (XwWebView *) xw->xwWidget;
++  if ([xwWebView.urlScriptBlocked[xwWebView.URL] boolValue])
++    {
++      message ("Javascript is blocked by 'CSP: sandbox'.");
++      return;
++    }
++
++  NSString *javascriptString = [NSString stringWithUTF8String:script];
++  [xwWebView evaluateJavaScript:javascriptString
++              completionHandler:^(id result, NSError *error) {
++      if (error)
++        {
++          NSLog (@"evaluateJavaScript error : %@", error.localizedDescription);
++          NSLog (@"error script=%@", javascriptString);
++        }
++      else if (result && FUNCTIONP (fun))
++        {
++          // NSLog (@"result=%@, type=%@", result, [result class]);
++          Lisp_Object lisp_value = js_to_lisp (result);
++          store_xwidget_js_callback_event (xw, fun, lisp_value);
++        }
++    }];
++}
++
++/* Window containing an xwidget.  */
++
++@implementation XwWindow
++- (BOOL)isFlipped { return YES; }
++@end
++
++/* Xwidget model, macOS Cocoa part.  */
++
++void
++nsxwidget_init(struct xwidget *xw)
++{
++  block_input ();
++  NSRect rect = NSMakeRect (0, 0, xw->width, xw->height);
++  xw->xwWidget = [[XwWebView alloc]
++                   initWithFrame:rect
++                   configuration:[[WKWebViewConfiguration alloc] init]
++                         xwidget:xw];
++  xw->xwWindow = [[XwWindow alloc]
++                   initWithFrame:rect];
++  [xw->xwWindow addSubview:xw->xwWidget];
++  xw->xv = NULL; /* for 1 to 1 relationship of webkit2.  */
++  unblock_input ();
++}
++
++void
++nsxwidget_kill (struct xwidget *xw)
++{
++  if (xw)
++    {
++      WKUserContentController *scriptor =
++        ((XwWebView *) xw->xwWidget).configuration.userContentController;
++      [scriptor removeAllUserScripts];
++      [scriptor removeScriptMessageHandlerForName:@"keyDown"];
++      [scriptor release];
++      if (xw->xv)
++        xw->xv->model = Qnil; /* Make sure related view stale.  */
++
++      /* This stops playing audio when a xwidget-webkit buffer is
++         killed.  I could not find other solution.  */
++      nsxwidget_webkit_goto_uri (xw, "about:blank");
++
++      [((XwWebView *) xw->xwWidget).urlScriptBlocked release];
++      [xw->xwWidget removeFromSuperviewWithoutNeedingDisplay];
++      [xw->xwWidget release];
++      [xw->xwWindow removeFromSuperviewWithoutNeedingDisplay];
++      [xw->xwWindow release];
++      xw->xwWidget = nil;
++    }
++}
++
++void
++nsxwidget_resize (struct xwidget *xw)
++{
++  if (xw->xwWidget)
++    {
++      [xw->xwWindow setFrameSize:NSMakeSize(xw->width, xw->height)];
++      [xw->xwWidget setFrameSize:NSMakeSize(xw->width, xw->height)];
++    }
++}
++
++Lisp_Object
++nsxwidget_get_size (struct xwidget *xw)
++{
++  return list2i (xw->xwWidget.frame.size.width,
++                 xw->xwWidget.frame.size.height);
++}
++
++/* Xwidget view, macOS Cocoa part.  */
++
++@implementation XvWindow : NSView
++- (BOOL)isFlipped { return YES; }
++@end
++
++void
++nsxwidget_init_view (struct xwidget_view *xv,
++                     struct xwidget *xw,
++                     struct glyph_string *s,
++                     int x, int y)
++{
++  /* 'x_draw_xwidget_glyph_string' will calculate correct position and
++     size of clip to draw in emacs buffer window.  Thus, just begin at
++     origin with no crop.  */
++  xv->x = x;
++  xv->y = y;
++  xv->clip_left = 0;
++  xv->clip_right = xw->width;
++  xv->clip_top = 0;
++  xv->clip_bottom = xw->height;
++
++  xv->xvWindow = [[XvWindow alloc]
++                   initWithFrame:NSMakeRect (x, y, xw->width, xw->height)];
++  xv->xvWindow.xw = xw;
++  xv->xvWindow.xv = xv;
++
++  xw->xv = xv; /* For 1 to 1 relationship of webkit2.  */
++  [xv->xvWindow addSubview:xw->xwWindow];
++
++  xv->emacswindow = FRAME_NS_VIEW (s->f);
++  [xv->emacswindow addSubview:xv->xvWindow];
++}
++
++void
++nsxwidget_delete_view (struct xwidget_view *xv)
++{
++  if (!EQ (xv->model, Qnil))
++    {
++      struct xwidget *xw = XXWIDGET (xv->model);
++      [xw->xwWindow removeFromSuperviewWithoutNeedingDisplay];
++      xw->xv = NULL; /* Now model has no view.  */
++    }
++  [xv->xvWindow removeFromSuperviewWithoutNeedingDisplay];
++  [xv->xvWindow release];
++}
++
++void
++nsxwidget_show_view (struct xwidget_view *xv)
++{
++  xv->hidden = NO;
++  [xv->xvWindow setFrameOrigin:NSMakePoint(xv->x + xv->clip_left,
++                                           xv->y + xv->clip_top)];
++}
++
++void
++nsxwidget_hide_view (struct xwidget_view *xv)
++{
++  xv->hidden = YES;
++  [xv->xvWindow setFrameOrigin:NSMakePoint(10000, 10000)];
++}
++
++void
++nsxwidget_resize_view (struct xwidget_view *xv, int width, int height)
++{
++  [xv->xvWindow setFrameSize:NSMakeSize(width, height)];
++}
++
++void
++nsxwidget_move_view (struct xwidget_view *xv, int x, int y)
++{
++  [xv->xvWindow setFrameOrigin:NSMakePoint (x, y)];
++}
++
++/* Move model window in container (view window).  */
++void
++nsxwidget_move_widget_in_view (struct xwidget_view *xv, int x, int y)
++{
++  struct xwidget *xww = xv->xvWindow.xw;
++  [xww->xwWindow setFrameOrigin:NSMakePoint (x, y)];
++}
++
++void
++nsxwidget_set_needsdisplay (struct xwidget_view *xv)
++{
++  xv->xvWindow.needsDisplay = YES;
++}
 diff --git a/src/xwidget.c b/src/xwidget.c
-index 2486a2d4da..fd766c3b0c 100644
+index 2486a2d4da..dad7945437 100644
 --- a/src/xwidget.c
 +++ b/src/xwidget.c
 @@ -18,25 +18,36 @@ You should have received a copy of the GNU General Public License
@@ -750,11 +1470,10 @@ index 2486a2d4da..fd766c3b0c 100644
  
  
  DEFUN ("make-xwidget",
-@@ -85,8 +98,11 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
+@@ -85,8 +98,10 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
     Lisp_Object title, Lisp_Object width, Lisp_Object height,
     Lisp_Object arguments, Lisp_Object buffer)
  {
-+
 +#if defined (USE_GTK)
    if (!xg_gtk_initialized)
      error ("make-xwidget: GTK has not been initialized");
@@ -762,7 +1481,7 @@ index 2486a2d4da..fd766c3b0c 100644
    CHECK_SYMBOL (type);
    CHECK_FIXNAT (width);
    CHECK_FIXNAT (height);
-@@ -101,10 +117,11 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
+@@ -101,10 +116,11 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
    xw->kill_without_query = false;
    XSETXWIDGET (val, xw);
    Vxwidget_list = Fcons (val, Vxwidget_list);
@@ -776,7 +1495,7 @@ index 2486a2d4da..fd766c3b0c 100644
    if (EQ (xw->type, Qwebkit))
      {
        block_input ();
-@@ -159,6 +176,9 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
+@@ -159,6 +175,9 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
  
        unblock_input ();
      }
@@ -786,7 +1505,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
    return val;
  }
-@@ -194,6 +214,7 @@ xwidget_hidden (struct xwidget_view *xv)
+@@ -194,6 +213,7 @@ xwidget_hidden (struct xwidget_view *xv)
    return xv->hidden;
  }
  
@@ -794,7 +1513,7 @@ index 2486a2d4da..fd766c3b0c 100644
  static void
  xwidget_show_view (struct xwidget_view *xv)
  {
-@@ -232,8 +253,9 @@ offscreen_damage_event (GtkWidget *widget, GdkEvent *event,
+@@ -232,8 +252,9 @@ offscreen_damage_event (GtkWidget *widget, GdkEvent *event,
  
    return FALSE;
  }
@@ -805,7 +1524,7 @@ index 2486a2d4da..fd766c3b0c 100644
  store_xwidget_event_string (struct xwidget *xw, const char *eventname,
                              const char *eventstr)
  {
-@@ -247,7 +269,27 @@ store_xwidget_event_string (struct xwidget *xw, const char *eventname,
+@@ -247,7 +268,27 @@ store_xwidget_event_string (struct xwidget *xw, const char *eventname,
    kbd_buffer_store_event (&event);
  }
  
@@ -834,7 +1553,7 @@ index 2486a2d4da..fd766c3b0c 100644
  store_xwidget_js_callback_event (struct xwidget *xw,
                                   Lisp_Object proc,
                                   Lisp_Object argument)
-@@ -263,6 +305,7 @@ store_xwidget_js_callback_event (struct xwidget *xw,
+@@ -263,6 +304,7 @@ store_xwidget_js_callback_event (struct xwidget *xw,
  }
  
  
@@ -842,7 +1561,7 @@ index 2486a2d4da..fd766c3b0c 100644
  void
  webkit_view_load_changed_cb (WebKitWebView *webkitwebview,
                               WebKitLoadEvent load_event,
-@@ -520,6 +563,7 @@ xwidget_osr_event_set_embedder (GtkWidget *widget, GdkEvent *event,
+@@ -520,6 +562,7 @@ xwidget_osr_event_set_embedder (GtkWidget *widget, GdkEvent *event,
                                       gtk_widget_get_window (xv->widget));
    return FALSE;
  }
@@ -850,7 +1569,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
  
  /* Initializes and does initial placement of an xwidget view on screen.  */
-@@ -529,8 +573,10 @@ xwidget_init_view (struct xwidget *xww,
+@@ -529,8 +572,10 @@ xwidget_init_view (struct xwidget *xww,
                     int x, int y)
  {
  
@@ -861,7 +1580,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
    struct xwidget_view *xv = allocate_xwidget_view ();
    Lisp_Object val;
-@@ -541,6 +587,7 @@ xwidget_init_view (struct xwidget *xww,
+@@ -541,6 +586,7 @@ xwidget_init_view (struct xwidget *xww,
    XSETWINDOW (xv->w, s->w);
    XSETXWIDGET (xv->model, xww);
  
@@ -869,7 +1588,7 @@ index 2486a2d4da..fd766c3b0c 100644
    if (EQ (xww->type, Qwebkit))
      {
        xv->widget = gtk_drawing_area_new ();
-@@ -598,6 +645,10 @@ xwidget_init_view (struct xwidget *xww,
+@@ -598,6 +644,10 @@ xwidget_init_view (struct xwidget *xww,
    xv->x = x;
    xv->y = y;
    gtk_widget_show_all (xv->widgetwindow);
@@ -880,7 +1599,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
    return xv;
  }
-@@ -610,24 +661,59 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
+@@ -610,24 +660,59 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
       initialization.  */
    struct xwidget *xww = s->xwidget;
    struct xwidget_view *xv = xwidget_view_lookup (xww, s->w);
@@ -943,7 +1662,7 @@ index 2486a2d4da..fd766c3b0c 100644
    clip_left = max (0, text_area_x - x);
    clip_right = max (clip_left,
  		    min (xww->width, text_area_x + text_area_width - x));
-@@ -650,8 +736,14 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
+@@ -650,8 +735,14 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
  
    /* Has it moved?  */
    if (moved)
@@ -960,7 +1679,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
    /* Clip the widget window if some parts happen to be outside
       drawable area.  An Emacs window is not a gtk window.  A gtk window
-@@ -662,10 +754,16 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
+@@ -662,10 +753,16 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
        || xv->clip_bottom != clip_bottom
        || xv->clip_top != clip_top || xv->clip_left != clip_left)
      {
@@ -977,7 +1696,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
        xv->clip_right = clip_right;
        xv->clip_bottom = clip_bottom;
-@@ -679,21 +777,65 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
+@@ -679,21 +776,65 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
       xwidgets background.  It's just a visual glitch though.  */
    if (!xwidget_hidden (xv))
      {
@@ -1046,7 +1765,7 @@ index 2486a2d4da..fd766c3b0c 100644
  DEFUN ("xwidget-webkit-goto-uri",
         Fxwidget_webkit_goto_uri, Sxwidget_webkit_goto_uri,
         2, 2, 0,
-@@ -703,7 +845,32 @@ DEFUN ("xwidget-webkit-goto-uri",
+@@ -703,7 +844,32 @@ DEFUN ("xwidget-webkit-goto-uri",
    WEBKIT_FN_INIT ();
    CHECK_STRING (uri);
    uri = ENCODE_FILE (uri);
@@ -1079,7 +1798,7 @@ index 2486a2d4da..fd766c3b0c 100644
    return Qnil;
  }
  
-@@ -717,10 +884,14 @@ DEFUN ("xwidget-webkit-zoom",
+@@ -717,10 +883,14 @@ DEFUN ("xwidget-webkit-zoom",
    if (FLOATP (factor))
      {
        double zoom_change = XFLOAT_DATA (factor);
@@ -1094,7 +1813,7 @@ index 2486a2d4da..fd766c3b0c 100644
      }
    return Qnil;
  }
-@@ -757,7 +928,10 @@ argument procedure FUN.*/)
+@@ -757,7 +927,10 @@ argument procedure FUN.*/)
  {
    WEBKIT_FN_INIT ();
    CHECK_STRING (script);
@@ -1106,7 +1825,7 @@ index 2486a2d4da..fd766c3b0c 100644
      wrong_type_argument (Qinvalid_function, fun);
  
    script = ENCODE_SYSTEM (script);
-@@ -765,6 +939,7 @@ argument procedure FUN.*/)
+@@ -765,6 +938,7 @@ argument procedure FUN.*/)
    /* Protect script and fun during GC.  */
    intptr_t idx = save_script_callback (xw, script, fun);
  
@@ -1114,7 +1833,7 @@ index 2486a2d4da..fd766c3b0c 100644
    /* JavaScript execution happens asynchronously.  If an elisp
       callback function is provided we pass it to the C callback
       procedure that retrieves the return value.  */
-@@ -775,6 +950,9 @@ argument procedure FUN.*/)
+@@ -775,6 +949,9 @@ argument procedure FUN.*/)
                                    NULL, /* cancelable */
                                    webkit_javascript_finished_cb,
  				  (gpointer) idx);
@@ -1124,7 +1843,7 @@ index 2486a2d4da..fd766c3b0c 100644
    return Qnil;
  }
  
-@@ -793,6 +971,7 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
+@@ -793,6 +970,7 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
    xw->height = h;
  
    /* If there is an offscreen widget resize it first.  */
@@ -1132,7 +1851,7 @@ index 2486a2d4da..fd766c3b0c 100644
    if (xw->widget_osr)
      {
        gtk_window_resize (GTK_WINDOW (xw->widgetwindow_osr), xw->width,
-@@ -801,6 +980,9 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
+@@ -801,6 +979,9 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
        gtk_widget_set_size_request (GTK_WIDGET (xw->widget_osr), xw->width,
                                     xw->height);
      }
@@ -1142,7 +1861,7 @@ index 2486a2d4da..fd766c3b0c 100644
  
    for (Lisp_Object tail = Vxwidget_view_list; CONSP (tail); tail = XCDR (tail))
      {
-@@ -808,8 +990,14 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
+@@ -808,8 +989,14 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
          {
            struct xwidget_view *xv = XXWIDGET_VIEW (XCAR (tail));
            if (XXWIDGET (xv->model) == xw)
@@ -1157,7 +1876,7 @@ index 2486a2d4da..fd766c3b0c 100644
          }
      }
  
-@@ -828,9 +1016,13 @@ Emacs allocated area accordingly.  */)
+@@ -828,9 +1015,13 @@ Emacs allocated area accordingly.  */)
    (Lisp_Object xwidget)
  {
    CHECK_XWIDGET (xwidget);
@@ -1171,7 +1890,7 @@ index 2486a2d4da..fd766c3b0c 100644
  }
  
  DEFUN ("xwidgetp",
-@@ -907,14 +1099,19 @@ DEFUN ("delete-xwidget-view",
+@@ -907,14 +1098,19 @@ DEFUN ("delete-xwidget-view",
  {
    CHECK_XWIDGET_VIEW (xwidget_view);
    struct xwidget_view *xv = XXWIDGET_VIEW (xwidget_view);
@@ -1192,7 +1911,7 @@ index 2486a2d4da..fd766c3b0c 100644
    return Qnil;
  }
  
-@@ -1020,7 +1217,10 @@ syms_of_xwidget (void)
+@@ -1020,7 +1216,10 @@ syms_of_xwidget (void)
    defsubr (&Sxwidget_query_on_exit_flag);
    defsubr (&Sset_xwidget_query_on_exit_flag);
  
@@ -1203,7 +1922,7 @@ index 2486a2d4da..fd766c3b0c 100644
    defsubr (&Sxwidget_webkit_zoom);
    defsubr (&Sxwidget_webkit_execute_script);
    DEFSYM (Qwebkit, "webkit");
-@@ -1191,11 +1391,19 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
+@@ -1191,11 +1390,19 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
  		     xwidget_end_redisplay (w->current_matrix);  */
  		  struct xwidget_view *xv
  		    = xwidget_view_lookup (glyph->u.xwidget, w);
@@ -1223,7 +1942,7 @@ index 2486a2d4da..fd766c3b0c 100644
  		}
  	  }
      }
-@@ -1212,9 +1420,21 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
+@@ -1212,9 +1419,21 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
            if (XWINDOW (xv->w) == w)
              {
                if (xwidget_touched (xv))
@@ -1247,7 +1966,7 @@ index 2486a2d4da..fd766c3b0c 100644
              }
          }
      }
-@@ -1233,6 +1453,7 @@ kill_buffer_xwidgets (Lisp_Object buffer)
+@@ -1233,6 +1452,7 @@ kill_buffer_xwidgets (Lisp_Object buffer)
        {
          CHECK_XWIDGET (xwidget);
          struct xwidget *xw = XXWIDGET (xwidget);
@@ -1255,7 +1974,7 @@ index 2486a2d4da..fd766c3b0c 100644
          if (xw->widget_osr && xw->widgetwindow_osr)
            {
              gtk_widget_destroy (xw->widget_osr);
-@@ -1246,6 +1467,9 @@ kill_buffer_xwidgets (Lisp_Object buffer)
+@@ -1246,6 +1466,9 @@ kill_buffer_xwidgets (Lisp_Object buffer)
  		xfree (xmint_pointer (XCAR (cb)));
  	      ASET (xw->script_callbacks, idx, Qnil);
  	    }
