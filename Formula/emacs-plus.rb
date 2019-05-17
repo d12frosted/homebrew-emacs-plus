@@ -70,16 +70,6 @@ class EmacsPlus < Formula
   option "with-jansson",
          "Build with jansson support (--HEAD only)"
 
-  # Disable some experimental stuff on Mojave
-  if MacOS.full_version >= "10.14"
-    if build.with? "x11"
-      odie "--with-x11 is not supported on Mojave yet"
-    end
-    if build.with? "pdumper"
-      odie "--with-pdumper is not supported on Mojave yet"
-    end
-  end
-
   head do
     if build.with? "pdumper"
       url "https://github.com/emacs-mirror/emacs.git", :branch => "pdumper"
@@ -350,9 +340,6 @@ class EmacsPlus < Formula
       or:
         (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . light))
-
-      If you are using macOS Mojave, please note that most of the experimental
-      options are forbidden on Mojave. This is temporary decision.
 
     EOS
   end
