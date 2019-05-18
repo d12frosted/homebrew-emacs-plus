@@ -139,9 +139,16 @@ class EmacsPlus < Formula
     unless build.with? "cocoa"
       odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
     end
-    patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
-      sha256 "bd614add2ca3b0da940521116b8b78f605213229747502c2159a728db5ac82d3"
+    if build.with? "pdumper"
+      patch do
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa_pdumper.patch"
+        sha256 "4e178783cdf2f8611edbdc2ecf0d9a7314d132d5022fe5a75387e2291ca515bc"
+      end
+    else
+      patch do
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
+        sha256 "bd614add2ca3b0da940521116b8b78f605213229747502c2159a728db5ac82d3"
+      end
     end
   end
 
