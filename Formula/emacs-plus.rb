@@ -1,16 +1,16 @@
 class EmacsPlus < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-  url "https://ftp.gnu.org/gnu/emacs/emacs-26.2.tar.xz"
-  mirror "https://ftpmirror.gnu.org/emacs/emacs-26.2.tar.xz"
-  sha256 "151ce69dbe5b809d4492ffae4a4b153b2778459de6deb26f35691e1281a9c58e"
+  url "https://ftp.gnu.org/gnu/emacs/emacs-26.3.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-26.3.tar.xz"
+  sha256 "4d90e6751ad8967822c6e092db07466b9d383ef1653feb2f95c93e7de66d3485"
 
-  bottle do
-    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    rebuild 2
-    sha256 "1fce8aa4bef48f557298e67821327b4d7ea4cdbb2f27cb82edb6bcd882a0d332" => :mojave
-    sha256 "dc63557c1802744351bfa639bde1ae2aee13d41d785ceaa8641a19cd30e67728" => :high_sierra
-  end
+#  bottle do
+#    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
+#    rebuild 2
+#    sha256 "1fce8aa4bef48f557298e67821327b4d7ea4cdbb2f27cb82edb6bcd882a0d332" => :mojave
+#    sha256 "dc63557c1802744351bfa639bde1ae2aee13d41d785ceaa8641a19cd30e67728" => :high_sierra
+#  end
 
   # Opt-out
   option "without-cocoa",
