@@ -5,12 +5,10 @@ class EmacsPlus < Formula
   mirror "https://ftpmirror.gnu.org/emacs/emacs-26.3.tar.xz"
   sha256 "4d90e6751ad8967822c6e092db07466b9d383ef1653feb2f95c93e7de66d3485"
 
-#  bottle do
-#    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-#    rebuild 2
-#    sha256 "1fce8aa4bef48f557298e67821327b4d7ea4cdbb2f27cb82edb6bcd882a0d332" => :mojave
-#    sha256 "dc63557c1802744351bfa639bde1ae2aee13d41d785ceaa8641a19cd30e67728" => :high_sierra
-#  end
+  bottle do
+    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
+    sha256 "6b59ea5c941b754f5008039be319e4437ebd66dc2e1a50fdf890cf226c078386" => :mojave
+  end
 
   # Opt-out
   option "without-cocoa",
