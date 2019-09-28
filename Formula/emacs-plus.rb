@@ -251,6 +251,20 @@ class EmacsPlus < Formula
       args << "--with-ns" << "--disable-ns-self-contained"
 
       system "./configure", *args
+
+      # Disable aligned_alloc on Mojave. See issue: https://github.com/daviderestivo/homebrew-emacs-head/issues/15
+      if MacOS.version <= :mojave
+        ohai "Force disabling of aligned_alloc on macOS <= Mojave"
+        configure_h_filtered = File.read("src/config.h")
+                                 .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
+                                 .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
+                                 .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
+                                 .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
+        File.open("src/config.h", "w") do |f|
+          f.write(configure_h_filtered)
+        end
+      end
+
       system "make"
       system "make", "install"
 
@@ -291,6 +305,20 @@ class EmacsPlus < Formula
       args << "--without-ns"
 
       system "./configure", *args
+
+      # Disable aligned_alloc on Mojave. See issue: https://github.com/daviderestivo/homebrew-emacs-head/issues/15
+      if MacOS.version <= :mojave
+        ohai "Force disabling of aligned_alloc on macOS <= Mojave"
+        configure_h_filtered = File.read("src/config.h")
+                                 .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
+                                 .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
+                                 .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
+                                 .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
+        File.open("src/config.h", "w") do |f|
+          f.write(configure_h_filtered)
+        end
+      end
+
       system "make"
       system "make", "install"
     end
