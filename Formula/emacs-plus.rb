@@ -8,6 +8,7 @@ class EmacsPlus < Formula
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
     sha256 "6b59ea5c941b754f5008039be319e4437ebd66dc2e1a50fdf890cf226c078386" => :mojave
+    sha256 "cb589861c8a697869107d1cbacc9cc920a8e7257b5c371b7e590b05e7e04c92c" => :catalina
   end
 
   # Opt-out
