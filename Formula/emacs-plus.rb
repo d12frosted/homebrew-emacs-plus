@@ -362,8 +362,6 @@ class EmacsPlus < Formula
         #{prefix}
 
       To link the application to default Homebrew App location:
-        brew linkapps
-      or:
         ln -s #{prefix}/Emacs.app /Applications
 
       --natural-title-bar option was removed from this formula, in order to
