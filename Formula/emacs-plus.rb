@@ -116,7 +116,7 @@ class EmacsPlus < Formula
   if build.with? "no-titlebar"
     if build.head?
       patch do
-        url "https://raw.githubusercontent.com/jakejx/homebrew-emacs-plus/head-no-title-bar/patches/27-no-titlebar.patch"
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/27-no-titlebar.patch"
         sha256 "aa1c9be5adfabc5f385628b881cd78bdbd0ce0f0a217b09a9f9638db1981537b"
       end
     else
@@ -129,7 +129,7 @@ class EmacsPlus < Formula
 
   if build.with? "window-role-fix"
     patch do
-      url "https://raw.githubusercontent.com/jakejx/homebrew-emacs-plus/head-no-title-bar/patches/fix-window-role.patch"
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/fix-window-role.patch"
       sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
     end
   end
