@@ -26,6 +26,8 @@ class EmacsPlus < Formula
   # Opt-in
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
+  option "with-window-role-fix",
+         "Fix Emacs window role to use AXWindowRole"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -114,14 +116,21 @@ class EmacsPlus < Formula
   if build.with? "no-titlebar"
     if build.head?
       patch do
-        url "https://gist.githubusercontent.com/jakejx/1538373194edff34f98b328198a7f7dc/raw/0f5ce4b359253f06f94c054e4c717ecf158adb02/27-no-titlebar"
-        sha256 "7059f6eb75365ea7935c51265e2c54956960d2aff5725fc78f3def40b034f90d"
+        url "https://raw.githubusercontent.com/jakejx/homebrew-emacs-plus/head-no-title-bar/patches/27-no-titlebar.patch"
+        sha256 "aa1c9be5adfabc5f385628b881cd78bdbd0ce0f0a217b09a9f9638db1981537b"
       end
     else
       patch do
         url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/borderless-frame-on-macOS.patch"
         sha256 "2059213cc740a49b131a363d6093913fa29f8f67227fc86a82ffe633bbf1a5f5"
       end
+    end
+  end
+
+  if build.with? "window-role-fix"
+    patch do
+      url "https://raw.githubusercontent.com/jakejx/homebrew-emacs-plus/head-no-title-bar/patches/fix-window-role.patch"
+      sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
     end
   end
 
