@@ -27,7 +27,7 @@ class EmacsPlus < Formula
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
   option "with-window-role-fix",
-         "Fix Emacs window role to use AXWindowRole"
+         "Experimental: fix Emacs window role to use AXWindowRole"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
