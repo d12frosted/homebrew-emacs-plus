@@ -1,7 +1,6 @@
 * Emacs Plus
-#+BEGIN_HTML
-<img src="https://travis-ci.org/d12frosted/homebrew-emacs-plus.svg?branch=master">
-#+END_HTML
+
+[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/CI/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/CI/badge.svg]]
 
 Emacs Plus is GNU Emacs formulae based on =emacs= [[https://github.com/Homebrew/homebrew-core/blob/master/Formula/emacs.rb][formulae]]. The difference is
 that some of the options available from =emacs= formulae are enabled by default
