@@ -11,7 +11,11 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        build_opts: ['', '--build-from-source', '--with-no-titlebar', '--without-cocoa', '--without-cocoa --with-x11', '--HEAD']
+        build_opts:
+          - ''
+          - '--build-from-source'
+          - '--with-no-titlebar'
+          - '--HEAD'
 
     steps:
     - uses: actions/checkout@v1
@@ -20,4 +24,9 @@ jobs:
       run: brew install Formula/emacs-plus.rb ${{ matrix.build_opts }}
 
     - name: Test installation
+      if: matrix.build_opts != '--HEAD'
       run: brew test Formula/emacs-plus.rb
+
+    - name: Test installation (--HEAD)
+      if: matrix.build_opts == '--HEAD'
+      run: brew test Formula/emacs-plus.rb --HEAD
