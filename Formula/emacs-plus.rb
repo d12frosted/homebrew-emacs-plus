@@ -149,7 +149,7 @@ class EmacsPlus < Formula
 
   if build.with? "emacs-27-branch"
     unless build.head?
-      odie "--emacs-27-branch is supported only on --HEAD"
+      odie "--with-emacs-27-branch is supported only on --HEAD"
     end
   end
 
