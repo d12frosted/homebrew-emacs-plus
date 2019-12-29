@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        build_opts: ['', '--build-from-source', '--with-no-titlebar']
+        build_opts: ['', '--build-from-source', '--with-no-titlebar', '--without-cocoa', '--without-cocoa --with-x11', '--HEAD']
 
     steps:
     - uses: actions/checkout@v1
