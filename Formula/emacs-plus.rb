@@ -70,10 +70,14 @@ class EmacsPlus < Formula
          "Experimental: build with xwidgets support (--HEAD only)"
   option "with-jansson",
          "Build with jansson support (--HEAD only)"
+  option "with-emacs-27-branch",
+         "Build from emacs-27-branch (--HEAD only)"
 
   head do
     if build.with? "pdumper"
       url "https://github.com/emacs-mirror/emacs.git", :branch => "pdumper"
+    elsif build.with? "emacs-27-branch"
+      url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
     else
       url "https://github.com/emacs-mirror/emacs.git"
     end
@@ -140,6 +144,12 @@ class EmacsPlus < Formula
         url "https://gist.githubusercontent.com/aatxe/260261daf70865fbf1749095de9172c5/raw/214b50c62450be1cbee9f11cecba846dd66c7d06/patch-multicolor-font.diff"
         sha256 "5af2587e986db70999d1a791fca58df027ccbabd75f45e4a2af1602c75511a8c"
       end
+    end
+  end
+
+  if build.with? "emacs-27-branch"
+    unless build.head?
+      odie "--emacs-27-branch is supported only on --HEAD"
     end
   end
 
