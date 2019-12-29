@@ -71,7 +71,6 @@ class EmacsPlus < Formula
   option "with-jansson",
          "Build with jansson support (--HEAD only)"
 
-  devel "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
   head do
     if build.with? "pdumper"
       url "https://github.com/emacs-mirror/emacs.git", :branch => "pdumper"
@@ -97,7 +96,7 @@ class EmacsPlus < Formula
 
   depends_on "mailutils" => :optional
 
-  if build.head? or build.devel?
+  if build.head?
     # Emacs 27.x (current HEAD) does support ImageMagick 7
     depends_on "imagemagick@7" => :recommended
     depends_on "imagemagick@6" => :optional
@@ -233,7 +232,7 @@ class EmacsPlus < Formula
     # Emacs 27.x (current HEAD) supports imagemagick7 but not Emacs 26.x
     if build.with? "imagemagick@7"
       imagemagick_lib_path =  Formula["imagemagick@7"].opt_lib/"pkgconfig"
-      unless build.head? or build.devel?
+      unless build.head?
         odie "--with-imagemagick@7 is supported only on --HEAD"
       end
       ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
