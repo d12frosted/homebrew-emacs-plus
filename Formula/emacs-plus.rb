@@ -63,9 +63,6 @@ class EmacsPlus < Formula
   deprecated_option "with-no-title-bars" => "with-no-titlebar"
 
   # Emacs 27.x only
-  option "with-pdumper",
-         "Experimental: build from pdumper branch and with
-         increasedremembered_data size (--HEAD only)"
   option "with-xwidgets",
          "Experimental: build with xwidgets support (--HEAD only)"
   option "with-jansson",
@@ -74,9 +71,7 @@ class EmacsPlus < Formula
          "Build from emacs-27-branch (--HEAD only)"
 
   head do
-    if build.with? "pdumper"
-      url "https://github.com/emacs-mirror/emacs.git", :branch => "pdumper"
-    elsif build.with? "emacs-27-branch"
+    if build.with? "emacs-27-branch"
       url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
     else
       url "https://github.com/emacs-mirror/emacs.git"
@@ -160,16 +155,9 @@ class EmacsPlus < Formula
     unless build.with? "cocoa"
       odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
     end
-    if build.with? "pdumper"
-      patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa_pdumper.patch"
-        sha256 "4e178783cdf2f8611edbdc2ecf0d9a7314d132d5022fe5a75387e2291ca515bc"
-      end
-    else
-      patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
-        sha256 "bd614add2ca3b0da940521116b8b78f605213229747502c2159a728db5ac82d3"
-      end
+    patch do
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
+      sha256 "bd614add2ca3b0da940521116b8b78f605213229747502c2159a728db5ac82d3"
     end
   end
 
@@ -194,12 +182,6 @@ class EmacsPlus < Formula
     resource "emacs-icons-project-#{icon}" do
       url "https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/#{icon}.icns"
       sha256 sha
-    end
-  end
-
-  if build.with? "pdumper"
-    unless build.head?
-      odie "--with-pdumper is supported only on --HEAD"
     end
   end
 

@@ -98,9 +98,6 @@ relevant part from output of that command for your convenience.
     Disables frame re-focus (ie. closing one frame does not refocus another one)
   --with-no-titlebar
     Experimental: build without titlebar
-  --with-pdumper
-    Experimental: build from pdumper branch and with
-           increasedremembered_data size (--HEAD only)
   --with-window-role-fix
     Experimental: fix Emacs window role to use AXWindowRole
   --with-x11
@@ -151,10 +148,8 @@ emacs frames and other windows, try this:
 #+END_SRC
 
 *** Portable dumper
-The portable dumper is a feature that may be available with Emacs 27.1, but for
-now the code is in the =dumper= branch of the Emacs Git repository.
-
-In order to use that branch, please use =--with-pdumper --HEAD= options.
+The portable dumper is a feature that is available with Emacs 27. In order to
+get this feature, please use =--HEAD= option.
 
 Please, take a look at it's usage in [[https://github.com/syl20bnr/spacemacs/blob/develop/EXPERIMENTAL.org#spacemacs-dumps-using-the-portable-dumper][Spacemacs]].
 
