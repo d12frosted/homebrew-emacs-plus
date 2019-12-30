@@ -7,6 +7,7 @@ that some of the options available from =emacs= formulae are enabled by default
 in =emacs-plus= and some new [[#options][additional options]] are available for user.
 
 ** Upgrade from Emacs 25.x
+
 With release of Emacs 26.1 many options were removed from the formula, as
 features behind them are already in released version.
 
@@ -30,6 +31,7 @@ available as =emacs-plus@25=.
 #+END_SRC
 
 ** Install
+
 #+BEGIN_SRC bash
   $ brew tap d12frosted/emacs-plus
   $ brew install emacs-plus [options]
@@ -53,6 +55,7 @@ If you are using macOS Mojave, please note that most of the experimental options
 are forbidden on Mojave. This is temporary decision.
 
 ** Options
+
 To get list of all available options, call ~brew info emacs-plus~. Here is
 relevant part from output of that command for your convenience.
 
@@ -138,6 +141,7 @@ that I am not close enough to Emacs development process to provide you much help
 with any arising issues.
 
 *** No Titlebar
+
 This patch is enabled with the =--with-no-titlebar= option. It is meant for use with
 window tiling applications like chunkwm or amethyst so that the titlebar you will
 never need to click on won't take up screen real estate. If you see gaps between your
@@ -148,12 +152,14 @@ emacs frames and other windows, try this:
 #+END_SRC
 
 *** Portable dumper
+
 The portable dumper is a feature that is available with Emacs 27. In order to
 get this feature, please use =--HEAD= option.
 
 Please, take a look at it's usage in [[https://github.com/syl20bnr/spacemacs/blob/develop/EXPERIMENTAL.org#spacemacs-dumps-using-the-portable-dumper][Spacemacs]].
 
 *** Xwidgets (webkit)
+
 The original [[https://www.emacswiki.org/emacs/EmacsXWidgets][Emacs xwidgets]] builds and works on macOS however must be used with
 x11 and hence not practical option on macOS. This version enables xwidgets on
 native macOS X Cocoa via embedding a native webkit window.
@@ -161,6 +167,7 @@ native macOS X Cocoa via embedding a native webkit window.
 More details can be seen here [[https://github.com/veshboo/emacs][Veshboo's emacs branch]].
 
 ** Emacs configuration
+
 Emacs is a journey. And for some of you these projects might be inspiring.
 
 - [[https://github.com/purcell/emacs.d][Steve Purcell's .emacs.d]]
@@ -169,6 +176,7 @@ Emacs is a journey. And for some of you these projects might be inspiring.
 - [[https://github.com/bbatsov/prelude][Prelude]]
 
 ** Known Issues
+
 Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][Issues]] page for a list of all known issues. But here are several
 you should be aware of.
 
@@ -183,6 +191,7 @@ $ brew install cask --ignore-dependencies
 #+END_SRC
 
 ** Screenshots
+
 #+BEGIN_HTML
 <p align="center">
   <img src="https://www.dropbox.com/s/b6r8m3runia01fz/screen1.png?raw=1">
@@ -191,5 +200,6 @@ $ brew install cask --ignore-dependencies
 #+END_HTML
 
 ** Acknowledgements
+
 Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][Sudarshan
 Wadkar]], [[https://github.com/jonhermansen][Jon Hermansen]]).
