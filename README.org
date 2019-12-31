@@ -49,6 +49,18 @@ In order to install without Spacemacs icon you should use following command.
   $ brew install emacs-plus --without-spacemacs-icon
 #+END_SRC
 
+** Reinstall
+
+If you wish to reinstall =emacs-plus= with new options you should not use
+=reinstall= command of =brew= (not related to this formula, it's a general
+advice). Install you should =unstall= a package and then install it with new set
+of arguments.
+
+#+BEGIN_SRC bash
+  $ brew uninstall emacs-plus
+  $ brew uninstall emacs-plus [options]
+#+END_SRC
+
 ** Options
 
 To get list of all available options, call ~brew info emacs-plus~. Here is
