@@ -201,12 +201,11 @@ $ brew install cask --ignore-dependencies
 
 #+BEGIN_HTML
 <p align="center">
-  <img src="https://www.dropbox.com/s/b6r8m3runia01fz/screen1.png?raw=1">
-  <p>by @j-martin</p>
+  <img src="images/screenshot-01.png">
 </p>
 #+END_HTML
 
 ** Acknowledgements
 
-Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][Sudarshan
-Wadkar]], [[https://github.com/jonhermansen][Jon Hermansen]]).
+Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][contributors]], issue reporters and bottle providers
+([[https://github.com/wadkar][Sudarshan Wadkar]], [[https://github.com/jonhermansen][Jon Hermansen]]).
