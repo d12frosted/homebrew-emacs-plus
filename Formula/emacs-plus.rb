@@ -30,6 +30,10 @@ class EmacsPlus < Formula
     sha256 "cb589861c8a697869107d1cbacc9cc920a8e7257b5c371b7e590b05e7e04c92c" => :catalina
   end
 
+  #
+  # Options
+  #
+
   # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
@@ -45,6 +49,16 @@ class EmacsPlus < Formula
   # Opt-in
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
+  option "with-x11", "Experimental: build with x11 support"
+  option "with-no-titlebar", "Experimental: build without titlebar"
+
+  # Emacs 27.x only
+  option "with-xwidgets",
+         "Experimental: build with xwidgets support (--HEAD only)"
+  option "with-jansson",
+         "Build with jansson support (--HEAD only)"
+  option "with-emacs-27-branch",
+         "Build from emacs-27-branch (--HEAD only)"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -74,18 +88,15 @@ class EmacsPlus < Formula
 
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
 
-  # Emacs 26.x and Emacs 27.x experimental stuff
-  option "with-x11", "Experimental: build with x11 support"
-  option "with-no-titlebar", "Experimental: build without titlebar"
+  # Deprecated options
+  deprecated_option "cocoa" => "with-cocoa"
+  deprecated_option "keep-ctags" => "with-ctags"
+  deprecated_option "with-d-bus" => "with-dbus"
   deprecated_option "with-no-title-bars" => "with-no-titlebar"
 
-  # Emacs 27.x only
-  option "with-xwidgets",
-         "Experimental: build with xwidgets support (--HEAD only)"
-  option "with-jansson",
-         "Build with jansson support (--HEAD only)"
-  option "with-emacs-27-branch",
-         "Build from emacs-27-branch (--HEAD only)"
+  #
+  # URLs
+  #
 
   head do
     if build.with? "emacs-27-branch"
@@ -93,15 +104,17 @@ class EmacsPlus < Formula
     else
       url "https://github.com/emacs-mirror/emacs.git"
     end
+  end
 
+  #
+  # Dependencies
+  #
+
+  head do
     depends_on "autoconf" => :build
     depends_on "gnu-sed" => :build
     depends_on "texinfo" => :build
   end
-
-  deprecated_option "cocoa" => "with-cocoa"
-  deprecated_option "keep-ctags" => "with-ctags"
-  deprecated_option "with-d-bus" => "with-dbus"
 
   depends_on "pkg-config" => :build
   depends_on "little-cms2" => :recommended
@@ -109,7 +122,6 @@ class EmacsPlus < Formula
   depends_on "dbus" => :optional
   depends_on "gnutls" => :recommended
   depends_on "librsvg" => :recommended
-
   depends_on "mailutils" => :optional
 
   if build.head?
@@ -128,6 +140,29 @@ class EmacsPlus < Formula
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
   end
+
+  #
+  # Incompatible options
+  #
+
+  if build.with? "emacs-27-branch"
+    unless build.head?
+      odie "--with-emacs-27-branch is supported only on --HEAD"
+    end
+  end
+
+  if build.with? "xwidgets"
+    unless build.head?
+      odie "--with-xwidgets is supported only on --HEAD"
+    end
+    unless build.with? "cocoa"
+      odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
+    end
+  end
+
+  #
+  # Patches
+  #
 
   if build.with? "no-titlebar"
     if build.head?
@@ -152,28 +187,11 @@ class EmacsPlus < Formula
     end
   end
 
-  if build.with? "emacs-27-branch"
-    unless build.head?
-      odie "--with-emacs-27-branch is supported only on --HEAD"
-    end
-  end
-
   if build.with? "xwidgets"
-    unless build.head?
-      odie "--with-xwidgets is supported only on --HEAD"
-    end
-    unless build.with? "cocoa"
-      odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
-    end
     patch do
       url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa")
       sha256 "5579bc1d687f1fa9fc26a68de9f8e7d7594dd81ecb7855a878e67eef1ec6e456"
     end
-  end
-
-  patch do
-    url (PatchUrlResolver.url "fix-window-role")
-    sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
   end
 
   if build.with? "no-frame-refocus"
@@ -182,6 +200,15 @@ class EmacsPlus < Formula
       sha256 "abe68896ab1043dbdf17830af4ff3b83667412a0bddb1cfe04cfaae5e83e41ca"
     end
   end
+
+  patch do
+    url (PatchUrlResolver.url "fix-window-role")
+    sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
+  end
+
+  #
+  # Icons
+  #
 
   resource "modern-icon" do
     url "https://s3.amazonaws.com/emacs-mac-port/Emacs.icns.modern"
