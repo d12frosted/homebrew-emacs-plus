@@ -1,8 +1,17 @@
+From aeb2283870d3c7c78a7f6abd5824d1ee9f2f24ac Mon Sep 17 00:00:00 2001
+From: Boris Buliga <boris@d12frosted.io>
+Date: Sat, 4 Jan 2020 15:55:21 +0200
+Subject: [PATCH] [patch] no-frame-refocus-cocoa
+
+---
+ src/frame.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
 diff --git a/src/frame.c b/src/frame.c
-index 46bdf22231..08584384f4 100644
+index 88d6f22fc0..4ab5787b8d 100644
 --- a/src/frame.c
 +++ b/src/frame.c
-@@ -2000,15 +2000,6 @@ delete_frame (Lisp_Object frame, Lisp_Object force)
+@@ -2056,15 +2056,6 @@ delete_frame (Lisp_Object frame, Lisp_Object force)
  		}
  	    }
  	}
@@ -15,6 +24,9 @@ index 46bdf22231..08584384f4 100644
 -	   purpose is really to transfer focus.  */
 -	Fraise_frame (frame1);
 -#endif
-
+ 
        do_switch_frame (frame1, 0, 1, Qnil);
        sf = SELECTED_FRAME ();
+-- 
+2.24.1
+
