@@ -129,8 +129,8 @@ class EmacsPlus < Formula
   if build.with? "multicolor-fonts"
     unless build.head?
       patch do
-        url "https://gist.githubusercontent.com/aatxe/260261daf70865fbf1749095de9172c5/raw/214b50c62450be1cbee9f11cecba846dd66c7d06/patch-multicolor-font.diff"
-        sha256 "5af2587e986db70999d1a791fca58df027ccbabd75f45e4a2af1602c75511a8c"
+        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/multicolor-fonts.patch"
+        sha256 "892809b964d5b9be9a81271f17ea1abd479e4f17a5130be0c6167e68d22a6483"
       end
     end
   end

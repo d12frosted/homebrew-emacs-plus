@@ -1,0 +1,17 @@
+diff --git a/src/macfont.m b/src/macfont.m
+index 0445628..c9082a5 100644
+--- a/src/macfont.m
++++ b/src/macfont.m
+@@ -2373,7 +2373,7 @@ So we use CTFontDescriptorCreateMatchingFontDescriptor (no
+                   != (spacing >= FONT_SPACING_MONO)))
+             continue;
+
+-          /* Don't use a color bitmap font until it is supported on
+-	     free platforms.  */
+-          if (sym_traits & kCTFontTraitColorGlyphs)
++          /* Don't use a color bitmap font unless its family is
++             explicitly specified.  */
++          if ((sym_traits & kCTFontTraitColorGlyphs) && NILP (family))
+             continue;
+
+           if (j > 0
