@@ -41,8 +41,6 @@ class EmacsPlus < Formula
   # Opt-in
   option "with-ctags",
          "Don't remove the ctags executable that Emacs provides"
-  option "with-window-role-fix",
-         "Experimental: fix Emacs window role to use AXWindowRole"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -169,11 +167,9 @@ class EmacsPlus < Formula
     end
   end
 
-  if build.with? "window-role-fix"
-    patch do
-      url (PatchUrlResolver.url "fix-window-role")
-      sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
-    end
+  patch do
+    url (PatchUrlResolver.url "fix-window-role")
+    sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
   end
 
   if build.with? "no-frame-refocus"
