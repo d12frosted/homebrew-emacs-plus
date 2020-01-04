@@ -130,7 +130,7 @@ class EmacsPlus < Formula
     unless build.head?
       patch do
         url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/multicolor-fonts.patch"
-        sha256 "892809b964d5b9be9a81271f17ea1abd479e4f17a5130be0c6167e68d22a6483"
+        sha256 "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
       end
     end
   end
