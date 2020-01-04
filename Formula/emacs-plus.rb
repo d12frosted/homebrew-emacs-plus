@@ -1,3 +1,9 @@
+class PatchUrlResolver
+  def self.url name
+    "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/#{name}.patch"
+  end
+end
+
 class EmacsPlus < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
@@ -115,12 +121,12 @@ class EmacsPlus < Formula
   if build.with? "no-titlebar"
     if build.head?
       patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/no-titlebar-head.patch"
+        url (PatchUrlResolver.url "no-titlebar-head")
         sha256 "aa1c9be5adfabc5f385628b881cd78bdbd0ce0f0a217b09a9f9638db1981537b"
       end
     else
       patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/no-titlebar-release.patch"
+        url (PatchUrlResolver.url "no-titlebar-release")
         sha256 "2059213cc740a49b131a363d6093913fa29f8f67227fc86a82ffe633bbf1a5f5"
       end
     end
@@ -129,7 +135,7 @@ class EmacsPlus < Formula
   if build.with? "multicolor-fonts"
     unless build.head?
       patch do
-        url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/multicolor-fonts.patch"
+        url (PatchUrlResolver.url "multicolor-fonts")
         sha256 "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
       end
     end
@@ -149,21 +155,21 @@ class EmacsPlus < Formula
       odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
     end
     patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
+      url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa")
       sha256 "5579bc1d687f1fa9fc26a68de9f8e7d7594dd81ecb7855a878e67eef1ec6e456"
     end
   end
 
   if build.with? "window-role-fix"
     patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/fix-window-role.patch"
+      url (PatchUrlResolver.url "fix-window-role")
       sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
     end
   end
 
   if build.with? "no-frame-refocus"
     patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/no-frame-refocus-cocoa.patch"
+      url (PatchUrlResolver.url "no-frame-refocus-cocoa")
       sha256 "abe68896ab1043dbdf17830af4ff3b83667412a0bddb1cfe04cfaae5e83e41ca"
     end
   end
