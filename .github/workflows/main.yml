@@ -20,6 +20,7 @@ jobs:
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.ref }}
+      HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
 
     steps:
     - uses: actions/checkout@v1
