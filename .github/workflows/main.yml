@@ -18,6 +18,9 @@ jobs:
           - '--HEAD'
           - '--HEAD --with-xwidgets'
 
+    env:
+      HOMEBREW_GITHUB_REF: ${{ github.ref }}
+
     steps:
     - uses: actions/checkout@v1
 

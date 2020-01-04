@@ -1,6 +1,15 @@
 class PatchUrlResolver
+  def self.branch
+    ref = ENV["HOMEBREW_GITHUB_REF"]
+    if ref
+      ref.sub("refs/heads/", "")
+    else
+      "master"
+    end
+  end
+
   def self.url name
-    "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/#{name}.patch"
+    "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/#{branch}/patches/#{name}.patch"
   end
 end
 
