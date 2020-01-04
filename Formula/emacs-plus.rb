@@ -126,13 +126,6 @@ class EmacsPlus < Formula
     end
   end
 
-  if build.with? "window-role-fix"
-    patch do
-      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/fix-window-role.patch"
-      sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
-    end
-  end
-
   if build.with? "multicolor-fonts"
     unless build.head?
       patch do
@@ -158,6 +151,13 @@ class EmacsPlus < Formula
     patch do
       url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/xwidgets_webkit_in_cocoa.patch"
       sha256 "5579bc1d687f1fa9fc26a68de9f8e7d7594dd81ecb7855a878e67eef1ec6e456"
+    end
+  end
+
+  if build.with? "window-role-fix"
+    patch do
+      url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/fix-window-role.patch"
+      sha256 "1ca5c9415232423d04e93c6829ee28e6b7f649bc424c6f2a739125f0a5257ddd"
     end
   end
 
