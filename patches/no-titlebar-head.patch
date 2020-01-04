@@ -1,14 +1,5 @@
-From 87335c9ed8cdae6b419a1c39271c64524c35b8a3 Mon Sep 17 00:00:00 2001
-From: Boris Buliga <boris@d12frosted.io>
-Date: Sat, 4 Jan 2020 15:54:13 +0200
-Subject: [PATCH] [patch] no-titlebar-head
-
----
- src/nsterm.m | 65 +++++++---------------------------------------------
- 1 file changed, 8 insertions(+), 57 deletions(-)
-
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 2b6be86db8..ed32a271ec 100644
+index 6995577920..254d157e4c 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -470,11 +470,9 @@ - (NSColor *)colorUsingDefaultColorSpace
@@ -52,7 +43,7 @@ index 2b6be86db8..ed32a271ec 100644
  
        /* At this point it seems we don't have an active NSResponder,
           so some key presses (TAB) are swallowed by the system.  */
-@@ -7024,36 +7010,7 @@ - (void) updateFrameSize: (BOOL) delay
+@@ -7025,36 +7011,7 @@ - (void) updateFrameSize: (BOOL) delay
    NSTRACE_MSG  ("Original columns: %d", cols);
    NSTRACE_MSG  ("Original rows: %d", rows);
  
@@ -90,7 +81,7 @@ index 2b6be86db8..ed32a271ec 100644
  
    neww = (int)wr.size.width - emacsframe->border_width;
    newh = (int)wr.size.height - extra;
-@@ -7428,11 +7385,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7429,11 +7386,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
    maximizing_resize = NO;
  #endif
  
@@ -104,7 +95,7 @@ index 2b6be86db8..ed32a271ec 100644
                          backing: NSBackingStoreBuffered
                            defer: YES];
  
-@@ -7465,10 +7420,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7466,10 +7421,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
  
@@ -115,6 +106,3 @@ index 2b6be86db8..ed32a271ec 100644
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
  #ifndef NSAppKitVersionNumber10_10
  #define NSAppKitVersionNumber10_10 1343
--- 
-2.24.1
-

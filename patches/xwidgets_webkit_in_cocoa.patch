@@ -1,7 +1,7 @@
-From 4a3e1248c372122b0c5e008574927d173468572f Mon Sep 17 00:00:00 2001
+From 6045469f3cdb2eadf09719bf0c4e47d4c993ecd1 Mon Sep 17 00:00:00 2001
 From: Boris Buliga <boris@d12frosted.io>
-Date: Sat, 4 Jan 2020 15:54:37 +0200
-Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
+Date: Tue, 31 Dec 2019 16:12:11 +0200
+Subject: [PATCH] xwidgets for cocoa
 
 ---
  configure.ac                     |  35 +-
@@ -19,21 +19,21 @@ Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
  create mode 100644 src/nsxwidget.m
 
 diff --git a/configure.ac b/configure.ac
-index 24d21c7afd..84edee3998 100644
+index f24597ae87..75e6e7d98a 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -484,7 +484,7 @@ otherwise for the first of 'inotify', 'kqueue' or 'gfile' that is usable.])
   [with_file_notification=$with_features])
- 
+
  OPTION_DEFAULT_OFF([xwidgets],
 -  [enable use of some gtk widgets in Emacs buffers (requires gtk3)])
 +  [enable use of some gtk widgets in Emacs buffers (requires gtk3 or macOS Cocoa)])
- 
+
  ## For the times when you want to build Emacs but don't have
  ## a suitable makeinfo, and can live without the manuals.
 @@ -2792,20 +2792,34 @@ fi
- 
- 
+
+
  dnl Enable xwidgets if GTK3 and WebKitGTK+ are available.
 +dnl Enable xwidgets if macOS Cocoa and WebKit framework are available.
  HAVE_XWIDGETS=no
@@ -61,7 +61,7 @@ index 24d21c7afd..84edee3998 100644
 +  else
 +    AC_MSG_ERROR([xwidgets requested, it requires GTK3 as X window toolkit or macOS Cocoa as window system.])
 +  fi
- 
+
 -  WEBKIT_REQUIRED=2.12
 -  WEBKIT_MODULES="webkit2gtk-4.0 >= $WEBKIT_REQUIRED"
 -  EMACS_CHECK_MODULES([WEBKIT], [$WEBKIT_MODULES])
@@ -69,7 +69,7 @@ index 24d21c7afd..84edee3998 100644
    test $HAVE_XWIDGETS = yes ||
 -    AC_MSG_ERROR([xwidgets requested but WebKitGTK+ not found.])
 +    AC_MSG_ERROR([xwidgets requested but WebKitGTK+ or WebKit framework not found.])
- 
+
 -  XWIDGETS_OBJ=xwidget.o
    AC_DEFINE([HAVE_XWIDGETS], 1, [Define to 1 if you have xwidgets support.])
  fi
@@ -85,7 +85,7 @@ index 24d21c7afd..84edee3998 100644
    Does Emacs support the portable dumper?                 ${with_pdumper}
    Does Emacs support legacy unexec dumping?               ${with_unexec}
 diff --git a/lisp/xwidget.el b/lisp/xwidget.el
-index 775dddf8ef..ad37f61ace 100644
+index 662a854ac3..f93b4bedba 100644
 --- a/lisp/xwidget.el
 +++ b/lisp/xwidget.el
 @@ -39,9 +39,14 @@
@@ -109,13 +109,13 @@ index 775dddf8ef..ad37f61ace 100644
  (require 'image-mode);;for some image-mode alike functionality
 +(require 'seq)
 +(require 'url-handlers)
- 
+
  ;;;###autoload
  (defun xwidget-webkit-browse-url (url &optional new-session)
 @@ -96,6 +103,22 @@ Interactively, URL defaults to the string looking like a url around point."
          (xwidget-webkit-new-session url)
        (xwidget-webkit-goto-url url))))
- 
+
 +(defun xwidget-webkit-cx2 ()
 +  "Get the URL of current session, then browse to the URL \
 +in `split-window-below' with a new xwidget webkit session."
@@ -147,20 +147,20 @@ index 775dddf8ef..ad37f61ace 100644
 +    (define-key map "w" 'xwidget-webkit-current-url-message-kill)
      (define-key map "+" 'xwidget-webkit-zoom-in)
      (define-key map "-" 'xwidget-webkit-zoom-out)
- 
+
      ;;similar to image mode bindings
      (define-key map (kbd "SPC")                 'xwidget-webkit-scroll-up)
 +    (define-key map (kbd "S-SPC")               'xwidget-webkit-scroll-down)
      (define-key map (kbd "DEL")                 'xwidget-webkit-scroll-down)
- 
+
 -    (define-key map [remap scroll-up]           'xwidget-webkit-scroll-up)
 +    (define-key map [remap scroll-up]           'xwidget-webkit-scroll-up-line)
      (define-key map [remap scroll-up-command]   'xwidget-webkit-scroll-up)
- 
+
 -    (define-key map [remap scroll-down]         'xwidget-webkit-scroll-down)
 +    (define-key map [remap scroll-down]         'xwidget-webkit-scroll-down-line)
      (define-key map [remap scroll-down-command] 'xwidget-webkit-scroll-down)
- 
+
      (define-key map [remap forward-char]        'xwidget-webkit-scroll-forward)
      (define-key map [remap backward-char]       'xwidget-webkit-scroll-backward)
      (define-key map [remap right-char]          'xwidget-webkit-scroll-forward)
@@ -169,7 +169,7 @@ index 775dddf8ef..ad37f61ace 100644
 -    (define-key map [remap next-line]           'xwidget-webkit-scroll-up)
 +    (define-key map [remap previous-line]       'xwidget-webkit-scroll-down-line)
 +    (define-key map [remap next-line]           'xwidget-webkit-scroll-up-line)
- 
+
      ;; (define-key map [remap move-beginning-of-line] 'image-bol)
      ;; (define-key map [remap move-end-of-line]       'image-eol)
      (define-key map [remap beginning-of-buffer] 'xwidget-webkit-scroll-top)
@@ -182,11 +182,11 @@ index 775dddf8ef..ad37f61ace 100644
 +      (define-key map (kbd "C-x 3") 'xwidget-webkit-cx3))
      map)
    "Keymap for `xwidget-webkit-mode'.")
- 
+
 @@ -144,19 +175,48 @@ Interactively, URL defaults to the string looking like a url around point."
    (interactive)
    (xwidget-webkit-zoom (xwidget-webkit-current-session) -0.1))
- 
+
 -(defun xwidget-webkit-scroll-up ()
 -  "Scroll webkit up."
 -  (interactive)
@@ -238,7 +238,7 @@ index 775dddf8ef..ad37f61ace 100644
 +If N is omitted or nil, scroll down by one line."
 +  (interactive "p")
 +  (xwidget-webkit-scroll-down (* n xwidget-webkit-scroll-line-height)))
- 
+
  (defun xwidget-webkit-scroll-forward ()
    "Scroll webkit forwards."
 @@ -184,7 +244,7 @@ Interactively, URL defaults to the string looking like a url around point."
@@ -247,7 +247,7 @@ index 775dddf8ef..ad37f61ace 100644
     (xwidget-webkit-current-session)
 -   "window.scrollTo(pageXOffset, window.document.body.clientHeight);"))
 +   "window.scrollTo(pageXOffset, window.document.body.scrollHeight);"))
- 
+
  ;; The xwidget event needs to go into a higher level handler
  ;; since the xwidget can generate an event even if it's offscreen.
 @@ -192,7 +252,7 @@ Interactively, URL defaults to the string looking like a url around point."
@@ -265,7 +265,7 @@ index 775dddf8ef..ad37f61ace 100644
      ;;(funcall  xwidget-callback xwidget xwidget-event-type)
 -    (message "xw callback %s" xwidget)
      (funcall  'xwidget-webkit-callback xwidget xwidget-event-type)))
- 
+
  (defun xwidget-webkit-callback (xwidget xwidget-event-type)
 @@ -219,43 +278,148 @@ XWIDGET instance, XWIDGET-EVENT-TYPE depends on the originating xwidget."
         "error: callback called for xwidget with dead buffer")
@@ -307,7 +307,7 @@ index 775dddf8ef..ad37f61ace 100644
 +                   (funcall proc (seq-into arg 'list))
 +                 (funcall proc arg))))
              (t (xwidget-log "unhandled event:%s" xwidget-event-type))))))
- 
+
  (defvar bookmark-make-record-function)
 +(defvar isearch-search-fun-function)
 +(when (memq window-system '(mac ns))
@@ -326,7 +326,7 @@ index 775dddf8ef..ad37f61ace 100644
 +    (setq-local isearch-lazy-highlight nil)
      ;; Keep track of [vh]scroll when switching buffers
      (image-mode-setup-winprops))
- 
+
 +;;; Download, save as file.
 +
 +(defvar xwidget-webkit-download-dir "~/Downloads/"
@@ -427,13 +427,13 @@ index 775dddf8ef..ad37f61ace 100644
 +      )))
 +
 +;;; xwidget webkit session
- 
+
  (defvar xwidget-webkit-last-session-buffer nil)
- 
+
 @@ -303,7 +467,7 @@ function findactiveelement(doc){
- 
+
  "
- 
+
 -  "javascript that finds the active element."
 +  "Javascript that finds the active element."
    ;; Yes it's ugly, because:
@@ -441,7 +441,7 @@ index 775dddf8ef..ad37f61ace 100644
    ;; - the js "for each" construct misbehaved on the "frames" collection
 @@ -313,29 +477,35 @@ function findactiveelement(doc){
    )
- 
+
  (defun xwidget-webkit-insert-string ()
 -  "Prompt for a string and insert it in the active field in the
 +  "Prompt for a string and insert it in the active field in the \
@@ -485,13 +485,13 @@ index 775dddf8ef..ad37f61ace 100644
 -          xww
 -          (format "findactiveelement(document).value='%s'" str)))))))
 +     'xwidget-webkit-insert-string-cb)))
- 
+
  (defvar xwidget-xwbl)
  (defun xwidget-webkit-begin-edit-textarea (xw text)
 @@ -444,11 +614,23 @@ For example, use this to display an anchor."
    (ignore-errors
      (recenter-top-bottom)))
- 
+
 +;; Utility functions, wanted in `window.el'
 +
 +(defun xwidget-window-inside-pixel-width (window)
@@ -511,7 +511,7 @@ index 775dddf8ef..ad37f61ace 100644
 -                  (window-pixel-height window)))
 +                  (xwidget-window-inside-pixel-width window)
 +                  (xwidget-window-inside-pixel-height window)))
- 
+
  (defun xwidget-webkit-adjust-size (w h)
    "Manually set webkit size to width W, height H."
 @@ -487,10 +669,12 @@ For example, use this to display an anchor."
@@ -542,7 +542,7 @@ index 775dddf8ef..ad37f61ace 100644
 +  "Go forward in history."
 +  (interactive)
 +  (xwidget-webkit-goto-history (xwidget-webkit-current-session) 1))
- 
+
  (defun xwidget-webkit-reload ()
 -  "Reload current url."
 +  "Reload current URL."
@@ -550,7 +550,7 @@ index 775dddf8ef..ad37f61ace 100644
 -  (xwidget-webkit-execute-script (xwidget-webkit-current-session)
 -                                 "history.go(0);"))
 +  (xwidget-webkit-goto-history (xwidget-webkit-current-session) 0))
- 
+
  (defun xwidget-webkit-current-url ()
 -  "Get the webkit url and place it on the kill-ring."
 +  "Get the current xwidget webkit URL."
@@ -566,12 +566,12 @@ index 775dddf8ef..ad37f61ace 100644
 +  "Message the current xwidget webkit URL and place it on the `kill-ring'."
 +  (interactive)
 +  (message "url: %s" (kill-new (or (xwidget-webkit-current-url) ""))))
- 
+
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  (defun xwidget-webkit-get-selection (proc)
 @@ -533,10 +721,9 @@ For example, use this to display an anchor."
     proc))
- 
+
  (defun xwidget-webkit-copy-selection-as-kill ()
 -  "Get the webkit selection and put it on the kill-ring."
 +  "Get the webkit selection and put it on the `kill-ring'."
@@ -579,11 +579,11 @@ index 775dddf8ef..ad37f61ace 100644
 -  (xwidget-webkit-get-selection (lambda (selection) (kill-new selection))))
 -
 +  (xwidget-webkit-get-selection #'kill-new))
- 
+
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; Xwidget plist management (similar to the process plist functions)
 diff --git a/nextstep/templates/Info.plist.in b/nextstep/templates/Info.plist.in
-index f791ade7b9..6779b0aa32 100644
+index 652cedf056..f0219f5287 100644
 --- a/nextstep/templates/Info.plist.in
 +++ b/nextstep/templates/Info.plist.in
 @@ -675,15 +675,23 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
@@ -621,7 +621,7 @@ index f791ade7b9..6779b0aa32 100644
  </dict>
  </plist>
 diff --git a/src/Makefile.in b/src/Makefile.in
-index ab63b92627..fb3620097b 100644
+index 76aa6a1ec5..81286283ed 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
 @@ -434,6 +434,7 @@ SOME_MACHINE_OBJECTS = dosfns.o msdos.o \
@@ -633,7 +633,7 @@ index ab63b92627..fb3620097b 100644
    w32menu.o w32proc.o w32reg.o w32select.o w32term.o w32xfns.o \
    w16select.o widget.o xfont.o ftfont.o xftfont.o ftxfont.o gtkutil.o \
 diff --git a/src/emacs.c b/src/emacs.c
-index c5a760d29f..4c84b895dc 100644
+index 53d5d4d846..d931ed36bd 100644
 --- a/src/emacs.c
 +++ b/src/emacs.c
 @@ -1870,7 +1870,6 @@ Using an Emacs configured with --with-x-toolkit=lucid does not have this problem
@@ -647,7 +647,7 @@ index c5a760d29f..4c84b895dc 100644
 @@ -1947,6 +1946,10 @@ Using an Emacs configured with --with-x-toolkit=lucid does not have this problem
  #endif /* HAVE_W32NOTIFY */
  #endif /* WINDOWSNT */
- 
+
 +#ifdef HAVE_XWIDGETS
 +      syms_of_xwidget ();
 +#endif /* HAVE_XWIDGETS */
@@ -656,7 +656,7 @@ index c5a760d29f..4c84b895dc 100644
        syms_of_profiler ();
        syms_of_pdumper ();
 diff --git a/src/nsterm.m b/src/nsterm.m
-index ed32a271ec..db98ed1f60 100644
+index ab571e4a1a..45b4aa6ac5 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -49,6 +49,7 @@ Updated by Christian Limpach (chris@nice.ch)
@@ -667,26 +667,26 @@ index ed32a271ec..db98ed1f60 100644
  #include "fontset.h"
  #include "composite.h"
  #include "ccl.h"
-@@ -2419,7 +2420,7 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2433,7 +2434,7 @@ so some key presses (TAB) are swallowed by the system.  */
  }
- 
+
  static int
 -ns_note_mouse_movement (struct frame *frame, CGFloat x, CGFloat y)
 +ns_note_mouse_movement (struct frame *frame, CGFloat x, CGFloat y, BOOL dragging)
  /*   ------------------------------------------------------------------------
       Called by EmacsView on mouseMovement events.  Passes on
       to emacs mainstream code if we moved off of a rect of interest
-@@ -2428,17 +2429,24 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2442,17 +2443,24 @@ so some key presses (TAB) are swallowed by the system.  */
  {
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (frame);
    NSRect *r;
 +  BOOL force_update = NO;
- 
+
    // NSTRACE ("note_mouse_movement");
- 
+
    dpyinfo->last_mouse_motion_frame = frame;
    r = &dpyinfo->last_mouse_glyph;
- 
+
 +  /* If the last rect is too large (ex, xwidget webkit), update at
 +     every move, or resizing by dragging modeline or vertical split is
 +     very hard to make its way.  */
@@ -695,7 +695,7 @@ index ed32a271ec..db98ed1f60 100644
 +
    /* Note, this doesn't get called for enter/leave, since we don't have a
       position.  Those are taken care of in the corresponding NSView methods.  */
- 
+
 -  /* Has movement gone beyond last rect we were tracking?  */
 -  if (x < r->origin.x || x >= r->origin.x + r->size.width
 +  /* Has movement gone beyond last rect we were tracking? */
@@ -703,10 +703,10 @@ index ed32a271ec..db98ed1f60 100644
        || y < r->origin.y || y >= r->origin.y + r->size.height)
      {
        ns_update_begin (frame);
-@@ -4230,6 +4238,10 @@ overwriting cursor (usually when cursor on a tab).  */
+@@ -4244,6 +4252,10 @@ overwriting cursor (usually when cursor on a tab).  */
          }
        break;
- 
+
 +    case XWIDGET_GLYPH:
 +      x_draw_xwidget_glyph_string (s);
 +      break;
@@ -714,23 +714,23 @@ index ed32a271ec..db98ed1f60 100644
      case STRETCH_GLYPH:
        ns_dumpglyphs_stretch (s);
        break;
-@@ -6896,6 +6908,7 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -6910,6 +6922,7 @@ - (void)mouseMoved: (NSEvent *)e
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (emacsframe);
    Lisp_Object frame;
    NSPoint pt;
 +  BOOL dragging;
- 
+
    NSTRACE_WHEN (NSTRACE_GROUP_EVENTS, "[EmacsView mouseMoved:]");
- 
-@@ -6938,7 +6951,8 @@ - (void)mouseMoved: (NSEvent *)e
+
+@@ -6952,7 +6965,8 @@ - (void)mouseMoved: (NSEvent *)e
        last_mouse_window = window;
      }
- 
+
 -  if (!ns_note_mouse_movement (emacsframe, pt.x, pt.y))
 +  dragging = (e.type == NSEventTypeLeftMouseDragged);
 +  if (!ns_note_mouse_movement (emacsframe, pt.x, pt.y, dragging))
      help_echo_string = previous_help_echo_string;
- 
+
    XSETFRAME (frame, emacsframe);
 diff --git a/src/nsxwidget.h b/src/nsxwidget.h
 new file mode 100644
@@ -1450,17 +1450,17 @@ index 0000000000..0d628b533a
 +  xv->xvWindow.needsDisplay = YES;
 +}
 diff --git a/src/xwidget.c b/src/xwidget.c
-index ea8987f5b3..54a55e27ef 100644
+index ecb3793629..2f893c90c4 100644
 --- a/src/xwidget.c
 +++ b/src/xwidget.c
 @@ -18,18 +18,37 @@ You should have received a copy of the GNU General Public License
  along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.  */
- 
+
  #include <config.h>
 +#include <stdio.h> /* FIXME: Emacs error? message? instead of printf.  */
- 
+
  #include "xwidget.h"
- 
+
  #include "lisp.h"
  #include "blockinput.h"
 +#include "dispextern.h"
@@ -1470,7 +1470,7 @@ index ea8987f5b3..54a55e27ef 100644
  #include "sysstdio.h"
 +#include "termhooks.h"
 +#include "window.h"
- 
+
 +/* Include xwidget bottom end headers.  */
 +#if defined (USE_GTK)
  #include <webkit2/webkit2.h>
@@ -1488,11 +1488,11 @@ index ea8987f5b3..54a55e27ef 100644
 +# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 +#endif
 +#endif
- 
+
  static struct xwidget *
  allocate_xwidget (void)
 @@ -48,6 +67,7 @@ allocate_xwidget_view (void)
- 
+
  static struct xwidget_view *xwidget_view_lookup (struct xwidget *,
  						 struct window *);
 +#if defined (USE_GTK)
@@ -1504,8 +1504,8 @@ index ea8987f5b3..54a55e27ef 100644
                           WebKitPolicyDecisionType,
                           gpointer);
 +#endif
- 
- 
+
+
  DEFUN ("make-xwidget",
 @@ -78,8 +99,10 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
     Lisp_Object title, Lisp_Object width, Lisp_Object height,
@@ -1525,7 +1525,7 @@ index ea8987f5b3..54a55e27ef 100644
 -  xw->widgetwindow_osr = NULL;
 -  xw->widget_osr = NULL;
    xw->plist = Qnil;
- 
+
 +#if defined (USE_GTK)
 +  xw->widgetwindow_osr = NULL;
 +  xw->widget_osr = NULL;
@@ -1533,29 +1533,29 @@ index ea8987f5b3..54a55e27ef 100644
      {
        block_input ();
 @@ -152,6 +176,9 @@ Returns the newly constructed xwidget, or nil if construction fails.  */)
- 
+
        unblock_input ();
      }
 +#elif defined (NS_IMPL_COCOA)
 +  nsxwidget_init (xw);
 +#endif
- 
+
    return val;
  }
 @@ -187,6 +214,7 @@ xwidget_hidden (struct xwidget_view *xv)
    return xv->hidden;
  }
- 
+
 +#if defined (USE_GTK)
  static void
  xwidget_show_view (struct xwidget_view *xv)
  {
 @@ -225,8 +253,9 @@ offscreen_damage_event (GtkWidget *widget, GdkEvent *event,
- 
+
    return FALSE;
  }
 +#endif /* USE_GTK */
- 
+
 -static void
 +void
  store_xwidget_event_string (struct xwidget *xw, const char *eventname,
@@ -1564,7 +1564,7 @@ index ea8987f5b3..54a55e27ef 100644
 @@ -240,7 +269,27 @@ store_xwidget_event_string (struct xwidget *xw, const char *eventname,
    kbd_buffer_store_event (&event);
  }
- 
+
 -static void
 +void
 +store_xwidget_response_callback_event (struct xwidget *xw,
@@ -1592,8 +1592,8 @@ index ea8987f5b3..54a55e27ef 100644
                                   Lisp_Object argument)
 @@ -256,6 +305,7 @@ store_xwidget_js_callback_event (struct xwidget *xw,
  }
- 
- 
+
+
 +#if defined (USE_GTK)
  void
  webkit_view_load_changed_cb (WebKitWebView *webkitwebview,
@@ -1603,24 +1603,24 @@ index ea8987f5b3..54a55e27ef 100644
    return FALSE;
  }
 +#endif /* USE_GTK */
- 
- 
+
+
  /* Initializes and does initial placement of an xwidget view on screen.  */
 @@ -495,8 +546,10 @@ xwidget_init_view (struct xwidget *xww,
                     int x, int y)
  {
- 
+
 +#if defined (USE_GTK)
    if (!xg_gtk_initialized)
      error ("xwidget_init_view: GTK has not been initialized");
 +#endif
- 
+
    struct xwidget_view *xv = allocate_xwidget_view ();
    Lisp_Object val;
 @@ -507,6 +560,7 @@ xwidget_init_view (struct xwidget *xww,
    XSETWINDOW (xv->w, s->w);
    XSETXWIDGET (xv->model, xww);
- 
+
 +#if defined (USE_GTK)
    if (EQ (xww->type, Qwebkit))
      {
@@ -1633,7 +1633,7 @@ index ea8987f5b3..54a55e27ef 100644
 +  nsxwidget_init_view (xv, xww, s, x, y);
 +  nsxwidget_resize_view(xv, xww->width, xww->height);
 +#endif
- 
+
    return xv;
  }
 @@ -576,24 +634,59 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
@@ -1645,11 +1645,11 @@ index ea8987f5b3..54a55e27ef 100644
    int clip_bottom;
    int clip_top;
    int clip_left;
- 
+
    int x = s->x;
 -  int y = s->y + (s->height / 2) - (xww->height / 2);
 +  int y = s->y;
- 
+
    /* Do initialization here in the display loop because there is no
       other time to know things like window placement etc.  Do not
       create a new view if we have found one that is usable.  */
@@ -1679,7 +1679,7 @@ index ea8987f5b3..54a55e27ef 100644
 +      xv = xwidget_init_view (xww, s, x, y);
 +    }
 +#endif
- 
+
    window_box (s->w, TEXT_AREA, &text_area_x, &text_area_y,
                &text_area_width, &text_area_height);
 +
@@ -1700,7 +1700,7 @@ index ea8987f5b3..54a55e27ef 100644
    clip_right = max (clip_left,
  		    min (xww->width, text_area_x + text_area_width - x));
 @@ -616,8 +709,14 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
- 
+
    /* Has it moved?  */
    if (moved)
 -    gtk_fixed_move (GTK_FIXED (FRAME_GTK_WIDGET (s->f)),
@@ -1713,7 +1713,7 @@ index ea8987f5b3..54a55e27ef 100644
 +      nsxwidget_move_view (xv, x + clip_left, y + clip_top);
 +#endif
 +    }
- 
+
    /* Clip the widget window if some parts happen to be outside
       drawable area.  An Emacs window is not a gtk window.  A gtk window
 @@ -628,10 +727,16 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
@@ -1730,7 +1730,7 @@ index ea8987f5b3..54a55e27ef 100644
 +                             clip_bottom - clip_top);
 +      nsxwidget_move_widget_in_view (xv, -clip_left, -clip_top);
 +#endif
- 
+
        xv->clip_right = clip_right;
        xv->clip_bottom = clip_bottom;
 @@ -645,22 +750,66 @@ x_draw_xwidget_glyph_string (struct glyph_string *s)
@@ -1745,7 +1745,7 @@ index ea8987f5b3..54a55e27ef 100644
 +#endif
      }
  }
- 
+
 -/* Macro that checks WEBKIT_IS_WEB_VIEW (xw->widget_osr) first.  */
 +static bool
 +xwidget_is_web_view (struct xwidget *xw)
@@ -1768,7 +1768,7 @@ index ea8987f5b3..54a55e27ef 100644
  	     stdout);							\
        return Qnil;							\
      }
- 
+
 +DEFUN ("xwidget-webkit-uri",
 +       Fxwidget_webkit_uri, Sxwidget_webkit_uri,
 +       1, 1, 0,
@@ -1834,7 +1834,7 @@ index ea8987f5b3..54a55e27ef 100644
 +#endif
    return Qnil;
  }
- 
+
 @@ -684,10 +858,14 @@ DEFUN ("xwidget-webkit-zoom",
    if (FLOATP (factor))
      {
@@ -1860,12 +1860,12 @@ index ea8987f5b3..54a55e27ef 100644
 +     is `defun', we can counter by pinning the FUN's symbol.  */
 +  if (!NILP (fun) && !SYMBOLP (fun) && !NILP (Ffboundp (fun)))
      wrong_type_argument (Qinvalid_function, fun);
- 
+
    script = ENCODE_SYSTEM (script);
 @@ -732,6 +913,7 @@ argument procedure FUN.*/)
    /* Protect script and fun during GC.  */
    intptr_t idx = save_script_callback (xw, script, fun);
- 
+
 +#if defined (USE_GTK)
    /* JavaScript execution happens asynchronously.  If an elisp
       callback function is provided we pass it to the C callback
@@ -1879,10 +1879,10 @@ index ea8987f5b3..54a55e27ef 100644
 +#endif
    return Qnil;
  }
- 
+
 @@ -760,6 +945,7 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
    xw->height = h;
- 
+
    /* If there is an offscreen widget resize it first.  */
 +#if defined (USE_GTK)
    if (xw->widget_osr)
@@ -1895,7 +1895,7 @@ index ea8987f5b3..54a55e27ef 100644
 +#elif defined (NS_IMPL_COCOA)
 +  nsxwidget_resize (xw);
 +#endif
- 
+
    for (Lisp_Object tail = Vxwidget_view_list; CONSP (tail); tail = XCDR (tail))
      {
 @@ -775,8 +964,14 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
@@ -1912,7 +1912,7 @@ index ea8987f5b3..54a55e27ef 100644
 +            }
          }
      }
- 
+
 @@ -795,9 +990,13 @@ Emacs allocated area accordingly.  */)
    (Lisp_Object xwidget)
  {
@@ -1925,7 +1925,7 @@ index ea8987f5b3..54a55e27ef 100644
 +  return nsxwidget_get_size(XXWIDGET (xwidget));
 +#endif
  }
- 
+
  DEFUN ("xwidgetp",
 @@ -874,14 +1073,19 @@ DEFUN ("delete-xwidget-view",
  {
@@ -1947,11 +1947,11 @@ index ea8987f5b3..54a55e27ef 100644
 +
    return Qnil;
  }
- 
+
 @@ -987,7 +1191,10 @@ syms_of_xwidget (void)
    defsubr (&Sxwidget_query_on_exit_flag);
    defsubr (&Sset_xwidget_query_on_exit_flag);
- 
+
 +  defsubr (&Sxwidget_webkit_uri);
 +  defsubr (&Sxwidget_webkit_title);
    defsubr (&Sxwidget_webkit_goto_uri);
@@ -2022,12 +2022,12 @@ index ea8987f5b3..54a55e27ef 100644
      }
  }
 diff --git a/src/xwidget.h b/src/xwidget.h
-index 99fa8bbd61..600e5ecd68 100644
+index 1b6368daab..057d200c3b 100644
 --- a/src/xwidget.h
 +++ b/src/xwidget.h
 @@ -29,7 +29,13 @@ struct xwidget_view;
  struct window;
- 
+
  #ifdef HAVE_XWIDGETS
 -# include <gtk/gtk.h>
 +
@@ -2037,13 +2037,13 @@ index 99fa8bbd61..600e5ecd68 100644
 +#import <AppKit/NSView.h>
 +#import "nsxwidget.h"
 +#endif
- 
+
  struct xwidget
  {
 @@ -54,9 +60,25 @@ struct xwidget
    int height;
    int width;
- 
+
 +#if defined (USE_GTK)
    /* For offscreen widgets, unused if not osr.  */
    GtkWidget *widget_osr;
@@ -2063,13 +2063,13 @@ index 99fa8bbd61..600e5ecd68 100644
 +  struct xwidget_view *xv;
 +# endif
 +#endif
- 
+
    /* Kill silently if Emacs is exited.  */
    bool_bf kill_without_query : 1;
 @@ -75,9 +97,20 @@ struct xwidget_view
    /* The "live" instance isn't drawn.  */
    bool hidden;
- 
+
 +#if defined (USE_GTK)
    GtkWidget *widget;
    GtkWidget *widgetwindow;
@@ -2087,6 +2087,5 @@ index 99fa8bbd61..600e5ecd68 100644
    int x;
    int y;
    int clip_right;
--- 
-2.24.1
-
+--
+2.24.0
