@@ -1,4 +1,4 @@
-From 4f32e55eca0d46b52dda119602db440da2a22f7c Mon Sep 17 00:00:00 2001
+From 1f221c34e3acfd412936351775363cd948dbe6da Mon Sep 17 00:00:00 2001
 From: Boris Buliga <boris@d12frosted.io>
 Date: Sat, 4 Jan 2020 15:54:37 +0200
 Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
@@ -656,7 +656,7 @@ index c5a760d29f..4c84b895dc 100644
        syms_of_profiler ();
        syms_of_pdumper ();
 diff --git a/src/nsterm.m b/src/nsterm.m
-index ed32a271ec..db98ed1f60 100644
+index d7a06e3174..da8c5f3fac 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -49,6 +49,7 @@ Updated by Christian Limpach (chris@nice.ch)
@@ -667,7 +667,7 @@ index ed32a271ec..db98ed1f60 100644
  #include "fontset.h"
  #include "composite.h"
  #include "ccl.h"
-@@ -2419,7 +2420,7 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2415,7 +2416,7 @@ so some key presses (TAB) are swallowed by the system.  */
  }
  
  static int
@@ -676,7 +676,7 @@ index ed32a271ec..db98ed1f60 100644
  /*   ------------------------------------------------------------------------
       Called by EmacsView on mouseMovement events.  Passes on
       to emacs mainstream code if we moved off of a rect of interest
-@@ -2428,17 +2429,24 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2424,17 +2425,24 @@ so some key presses (TAB) are swallowed by the system.  */
  {
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (frame);
    NSRect *r;
@@ -703,7 +703,7 @@ index ed32a271ec..db98ed1f60 100644
        || y < r->origin.y || y >= r->origin.y + r->size.height)
      {
        ns_update_begin (frame);
-@@ -4230,6 +4238,10 @@ overwriting cursor (usually when cursor on a tab).  */
+@@ -4226,6 +4234,10 @@ overwriting cursor (usually when cursor on a tab).  */
          }
        break;
  
@@ -714,7 +714,7 @@ index ed32a271ec..db98ed1f60 100644
      case STRETCH_GLYPH:
        ns_dumpglyphs_stretch (s);
        break;
-@@ -6896,6 +6908,7 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -6892,6 +6904,7 @@ - (void)mouseMoved: (NSEvent *)e
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (emacsframe);
    Lisp_Object frame;
    NSPoint pt;
@@ -722,7 +722,7 @@ index ed32a271ec..db98ed1f60 100644
  
    NSTRACE_WHEN (NSTRACE_GROUP_EVENTS, "[EmacsView mouseMoved:]");
  
-@@ -6938,7 +6951,8 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -6934,7 +6947,8 @@ - (void)mouseMoved: (NSEvent *)e
        last_mouse_window = window;
      }
  

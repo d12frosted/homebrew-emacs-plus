@@ -1,4 +1,4 @@
-From eca8d174eefe8e2c0b09a2488802b90cfb002ed9 Mon Sep 17 00:00:00 2001
+From 2572413342084a6983d8b44c3ad92ab6285f3948 Mon Sep 17 00:00:00 2001
 From: Boris Buliga <boris@d12frosted.io>
 Date: Sat, 4 Jan 2020 15:55:21 +0200
 Subject: [PATCH] [patch] no-frame-refocus-cocoa
@@ -8,7 +8,7 @@ Subject: [PATCH] [patch] no-frame-refocus-cocoa
  1 file changed, 9 deletions(-)
 
 diff --git a/src/frame.c b/src/frame.c
-index 88d6f22fc0..4ab5787b8d 100644
+index 51fc78ab70..96b135745b 100644
 --- a/src/frame.c
 +++ b/src/frame.c
 @@ -2056,15 +2056,6 @@ delete_frame (Lisp_Object frame, Lisp_Object force)
