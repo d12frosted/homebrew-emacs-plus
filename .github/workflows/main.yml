@@ -17,6 +17,7 @@ jobs:
           - '--with-no-titlebar'
           - '--HEAD'
           - '--HEAD --with-xwidgets'
+          - '--HEAD --with-emacs-27-branch'
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.ref }}
