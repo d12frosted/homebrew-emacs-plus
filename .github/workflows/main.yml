@@ -16,6 +16,7 @@ jobs:
           - '--build-from-source'
           - '--with-no-titlebar'
           - '--HEAD'
+          - '--HEAD --with-no-titlebar'
           - '--HEAD --with-xwidgets'
           - '--HEAD --with-emacs-27-branch'
 
