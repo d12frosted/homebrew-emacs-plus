@@ -51,6 +51,8 @@ class EmacsPlus < Formula
          "Don't remove the ctags executable that Emacs provides"
   option "with-x11", "Experimental: build with x11 support"
   option "with-no-titlebar", "Experimental: build without titlebar"
+  option "with-debug",
+         "Build with debug symbols and debugger friendly optimizations"
 
   # Emacs 27.x only
   option "with-xwidgets",
@@ -240,6 +242,10 @@ class EmacsPlus < Formula
       args << "--with-xml2"
     else
       args << "--without-xml2"
+    end
+
+    if build.with? "debug"
+      ENV.append "CFLAGS", "-g -Og"
     end
 
     if build.with? "dbus"
