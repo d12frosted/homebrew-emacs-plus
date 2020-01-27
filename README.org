@@ -61,7 +61,7 @@ of arguments.
 
 #+BEGIN_SRC bash
   $ brew uninstall emacs-plus
-  $ brew uninstall emacs-plus [options]
+  $ brew install emacs-plus [options]
 #+END_SRC
 
 ** Options
