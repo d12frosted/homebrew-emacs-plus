@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches:
+      - master
   pull_request:
   schedule:
     - cron:  '0 10 * * *'
@@ -22,7 +24,7 @@ jobs:
           - '--HEAD --with-emacs-27-branch'
 
     env:
-      HOMEBREW_GITHUB_REF: ${{ github.ref }}
+      HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
       HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
 
     steps:
