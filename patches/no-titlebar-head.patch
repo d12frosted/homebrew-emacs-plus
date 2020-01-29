@@ -1,6 +1,6 @@
-From 48669a9d97ae2ddff5e955069397991632a3c3e6 Mon Sep 17 00:00:00 2001
-From: Boris Buliga <boris@d12frosted.io>
-Date: Sat, 4 Jan 2020 15:54:13 +0200
+From cb1ef1aaa5ee9dd504b6cf92ca5114663cb188fd Mon Sep 17 00:00:00 2001
+From: Golem <golem@d12frosted.io>
+Date: Thu, 9 Jan 2020 07:21:27 +0200
 Subject: [PATCH] [patch] no-titlebar-head
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] [patch] no-titlebar-head
  1 file changed, 8 insertions(+), 58 deletions(-)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 57573ef8d7..d7a06e3174 100644
+index 9d427b9b38..2ea62ea9cb 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -470,11 +470,9 @@ - (NSColor *)colorUsingDefaultColorSpace
+@@ -473,11 +473,9 @@ - (NSColor *)colorUsingDefaultColorSpace
  
  /* These flags will be OR'd or XOR'd with the NSWindow's styleMask
     property depending on what we're doing.  */
@@ -24,7 +24,7 @@ index 57573ef8d7..d7a06e3174 100644
  
  /* TODO: Get rid of need for these forward declarations.  */
  static void ns_condemn_scroll_bars (struct frame *f);
-@@ -1829,23 +1827,11 @@ Hide the window (X11 semantics)
+@@ -1906,23 +1904,11 @@ Hide the window (X11 semantics)
      {
        block_input ();
  
@@ -52,7 +52,7 @@ index 57573ef8d7..d7a06e3174 100644
  
        /* At this point it seems we don't have an active NSResponder,
           so some key presses (TAB) are swallowed by the system.  */
-@@ -7020,36 +7006,7 @@ - (void) updateFrameSize: (BOOL) delay
+@@ -7038,36 +7024,7 @@ - (void) updateFrameSize: (BOOL) delay
    NSTRACE_MSG  ("Original columns: %d", cols);
    NSTRACE_MSG  ("Original rows: %d", rows);
  
@@ -90,9 +90,9 @@ index 57573ef8d7..d7a06e3174 100644
  
    neww = (int)wr.size.width - emacsframe->border_width;
    newh = (int)wr.size.height - extra;
-@@ -7424,11 +7381,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
-   maximizing_resize = NO;
- #endif
+@@ -7446,11 +7403,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+ 
+   [self createDrawingBufferWithRect:r];
  
 -  win = [[EmacsWindow alloc]
 +  win = [[EmacsFSWindow alloc]
@@ -104,7 +104,7 @@ index 57573ef8d7..d7a06e3174 100644
                          backing: NSBackingStoreBuffered
                            defer: YES];
  
-@@ -7461,11 +7416,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7483,11 +7438,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
  
@@ -117,5 +117,5 @@ index 57573ef8d7..d7a06e3174 100644
  
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
 -- 
-2.24.1
+2.25.0
 
