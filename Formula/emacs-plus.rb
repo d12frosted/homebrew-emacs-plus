@@ -167,7 +167,12 @@ class EmacsPlus < Formula
   #
 
   if build.with? "no-titlebar"
-    if build.head?
+    if build.with? "emacs-27-branch"
+      patch do
+        url (PatchUrlResolver.url "no-titlebar-emacs-27")
+        sha256 "9b0e1c370a4206f47cf2ad016c203972ca6d245fb6bcf151f3c7ba2df7b07fda"
+      end
+    elsif build.head?
       patch do
         url (PatchUrlResolver.url "no-titlebar-head")
         sha256 "d4645c7d2ca42b5e6fb45e1da8d98a5ed6bf126455f9e7118e2cc650c5df174c"
