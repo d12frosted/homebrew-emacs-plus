@@ -1,14 +1,14 @@
-From 6319de77e2b29540d25c17fb4818d7acbdd55f34 Mon Sep 17 00:00:00 2001
+From 056e5949bd162caf44e40deac66f6d060aa598fc Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
-Date: Fri, 31 Jan 2020 21:55:59 +0200
+Date: Thu, 9 Jan 2020 07:21:27 +0200
 Subject: [PATCH] [patch] no-titlebar-emacs-27
 
 ---
- src/nsterm.m | 76 +++++++---------------------------------------------
- 1 file changed, 9 insertions(+), 67 deletions(-)
+ src/nsterm.m | 65 +++++++---------------------------------------------
+ 1 file changed, 8 insertions(+), 57 deletions(-)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index c1d1d41117..91028c3816 100644
+index c1d1d41117..f19ea70b22 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -470,11 +470,9 @@ - (NSColor *)colorUsingDefaultColorSpace
@@ -33,16 +33,16 @@ index c1d1d41117..91028c3816 100644
 -          FRAME_UNDECORATED (f) = false;
 -          [window setStyleMask: ((window.styleMask | FRAME_DECORATED_FLAGS)
 -                                  ^ FRAME_UNDECORATED_FLAGS)];
-+      [window setToolbar: nil];
-+      /* Do I need to release the toolbar here?  */
- 
+-
 -          [view createToolbar: f];
 -        }
 -      else
 -        {
 -          [window setToolbar: nil];
 -          /* Do I need to release the toolbar here?  */
--
++      [window setToolbar: nil];
++      /* Do I need to release the toolbar here?  */
+ 
 -          FRAME_UNDECORATED (f) = true;
 -          [window setStyleMask: ((window.styleMask | FRAME_UNDECORATED_FLAGS)
 -                                 ^ FRAME_DECORATED_FLAGS)];
@@ -104,7 +104,7 @@ index c1d1d41117..91028c3816 100644
                          backing: NSBackingStoreBuffered
                            defer: YES];
  
-@@ -7462,20 +7417,7 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7462,10 +7417,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
  
@@ -112,20 +112,9 @@ index c1d1d41117..91028c3816 100644
 -  if (! FRAME_UNDECORATED (f))
 -    [self createToolbar: f];
 -
--#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
--#ifndef NSAppKitVersionNumber10_10
--#define NSAppKitVersionNumber10_10 1343
--#endif
--
--  if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_10
--      && FRAME_NS_APPEARANCE (f) != ns_appearance_aqua)
--    win.appearance = [NSAppearance
--                          appearanceNamed: NSAppearanceNameVibrantDark];
--#endif
-+  [win setAppearance];
- 
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
-   if ([win respondsToSelector: @selector(titlebarAppearsTransparent)])
+ #ifndef NSAppKitVersionNumber10_10
+ #define NSAppKitVersionNumber10_10 1343
 -- 
 2.24.1
 
