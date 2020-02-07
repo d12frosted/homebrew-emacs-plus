@@ -56,7 +56,7 @@ In order to install without Spacemacs icon you should use following command.
 
 If you wish to reinstall =emacs-plus= with new options you should not use
 =reinstall= command of =brew= (not related to this formula, it's a general
-advice). Install you should =unstall= a package and then install it with new set
+advice). Install you should =uninstall= a package and then install it with new set
 of arguments.
 
 #+BEGIN_SRC bash
