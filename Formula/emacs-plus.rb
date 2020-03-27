@@ -357,6 +357,7 @@ class EmacsPlus < Formula
         resource(icon).stage do
           icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
         end
+        break
       end
 
       prefix.install "nextstep/Emacs.app"
