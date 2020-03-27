@@ -157,7 +157,7 @@ class EmacsPlus < Formula
     unless build.head?
       odie "--with-xwidgets is supported only on --HEAD"
     end
-    unless build.with? "cocoa"
+    unless build.with? "cocoa" and build.without? "x11"
       odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
     end
   end
@@ -305,7 +305,7 @@ class EmacsPlus < Formula
       system "./autogen.sh"
     end
 
-    if build.with? "cocoa"
+    if build.with? "cocoa" and build.without? "x11"
       args << "--with-ns" << "--disable-ns-self-contained"
 
       system "./configure", *args
