@@ -1,3 +1,4 @@
+# coding: utf-8
 class PatchUrlResolver
   def self.repo
     ENV["HOMEBREW_GITHUB_REPOSITORY"] or "d12frosted/homebrew-emacs-plus"
@@ -61,6 +62,8 @@ class EmacsPlus < Formula
          "Build with jansson support (--HEAD only)"
   option "with-emacs-27-branch",
          "Build from emacs-27-branch (--HEAD only)"
+  option "with-native-comp-branch",
+         "Build from native-comp branch (--HEAD only)"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -88,6 +91,8 @@ class EmacsPlus < Formula
 
   option "with-modern-icon", "Using a modern style Emacs icon by @tpanum"
 
+  option "with-gnu-head-icon", "Using a Bold GNU Head icon by Aurélio A. Heckert"
+
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
 
   # Deprecated options
@@ -103,6 +108,8 @@ class EmacsPlus < Formula
   head do
     if build.with? "emacs-27-branch"
       url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
+    elsif build.with? "native-comp-branch"
+      url "https://github.com/emacs-mirror/emacs.git", :branch => "feature/native-comp"
     else
       url "https://github.com/emacs-mirror/emacs.git"
     end
@@ -150,6 +157,12 @@ class EmacsPlus < Formula
   if build.with? "emacs-27-branch"
     unless build.head?
       odie "--with-emacs-27-branch is supported only on --HEAD"
+    end
+  end
+
+  if build.with? "native-comp-branch"
+    unless build.head?
+      odie "--with-native-comp-branch is supported only on --HEAD"
     end
   end
 
@@ -232,6 +245,11 @@ class EmacsPlus < Formula
       url "https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/#{icon}.icns"
       sha256 sha
     end
+  end
+
+  resource "gnu-head-icon" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/heckert_gnu.icns"
+    sha256 "b5899aaa3589b54c6f31aa081daf29d303047aa07b5ca1d0fd7f9333a829b6d3"
   end
 
   def install
@@ -332,7 +350,7 @@ class EmacsPlus < Formula
         EmacsIcon5 EmacsIcon6 EmacsIcon7 EmacsIcon8
         EmacsIcon9 emacs-card-blue-deep emacs-card-british-racing-green
         emacs-card-carmine emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
-       %w[modern-icon spacemacs-icon]).each do |icon|
+       %w[modern-icon gnu-head-icon spacemacs-icon]).each do |icon|
         next if build.without? icon
 
         rm "#{icons_dir}/Emacs.icns"
