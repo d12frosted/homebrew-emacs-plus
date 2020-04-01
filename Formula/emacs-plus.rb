@@ -171,7 +171,7 @@ class EmacsPlus < Formula
       odie "--with-xwidgets is supported only on --HEAD"
     end
     unless build.with? "cocoa" and build.without? "x11"
-      odie "--with-xwidgets is supported only on cocoa via xwidget webkit"
+      odie "--with-xwidgets is not available when building --with-x11"
     end
   end
 
