@@ -18,7 +18,6 @@ jobs:
           - ''
           - '--HEAD'
           - '--HEAD --with-no-titlebar'
-          - '--HEAD --with-xwidgets'
           - '--HEAD --with-emacs-27-branch'
           - '--HEAD --with-emacs-27-branch --with-no-titlebar'
 
