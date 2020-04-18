@@ -1,4 +1,4 @@
-From 07b1cf629475b5c6500b8f70874c4618acd1b0cb Mon Sep 17 00:00:00 2001
+From 17c38e9bdabcff690e29d09628cc40f69a940d0d Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:22:17 +0200
 Subject: [PATCH] [patch] fix-window-role
@@ -8,10 +8,10 @@ Subject: [PATCH] [patch] fix-window-role
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index c9932541a0..83d82ba21c 100644
+index a029af5a69..d57b558350 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -8526,7 +8526,7 @@ - (id)accessibilityAttributeValue:(NSString *)attribute
+@@ -8755,7 +8755,7 @@ - (id)accessibilityAttributeValue:(NSString *)attribute
    NSTRACE ("[EmacsWindow accessibilityAttributeValue:]");
  
    if ([attribute isEqualToString:NSAccessibilityRoleAttribute])
@@ -21,5 +21,5 @@ index c9932541a0..83d82ba21c 100644
    if ([attribute isEqualToString:NSAccessibilitySelectedTextAttribute]
        && curbuf && ! NILP (BVAR (curbuf, mark_active)))
 -- 
-2.25.0
+2.26.0
 

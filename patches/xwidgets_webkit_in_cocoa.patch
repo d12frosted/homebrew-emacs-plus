@@ -1,4 +1,4 @@
-From 41aca4c5848fce6673bdd7a7bc5ebe49d4718d54 Mon Sep 17 00:00:00 2001
+From 2ed1bb6113c876a126f55bd14aa80a3e4b5da253 Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:41 +0200
 Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
@@ -19,10 +19,10 @@ Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
  create mode 100644 src/nsxwidget.m
 
 diff --git a/configure.ac b/configure.ac
-index f604acb694..87928bef1a 100644
+index 719eb747ae..5b74b4f1e1 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -484,7 +484,7 @@ otherwise for the first of 'inotify', 'kqueue' or 'gfile' that is usable.])
+@@ -485,7 +485,7 @@ otherwise for the first of 'inotify', 'kqueue' or 'gfile' that is usable.])
   [with_file_notification=$with_features])
  
  OPTION_DEFAULT_OFF([xwidgets],
@@ -31,7 +31,7 @@ index f604acb694..87928bef1a 100644
  
  ## For the times when you want to build Emacs but don't have
  ## a suitable makeinfo, and can live without the manuals.
-@@ -2778,20 +2778,34 @@ fi
+@@ -2787,20 +2787,34 @@ fi
  
  
  dnl Enable xwidgets if GTK3 and WebKitGTK+ are available.
@@ -74,7 +74,7 @@ index f604acb694..87928bef1a 100644
    AC_DEFINE([HAVE_XWIDGETS], 1, [Define to 1 if you have xwidgets support.])
  fi
  AC_SUBST(XWIDGETS_OBJ)
-@@ -5715,7 +5729,8 @@ AS_ECHO(["  Does Emacs use -lXaw3d?                                 ${HAVE_XAW3D
+@@ -5739,7 +5753,8 @@ AS_ECHO(["  Does Emacs use -lXaw3d?                                 ${HAVE_XAW3D
    Does Emacs directly use zlib?                           ${HAVE_ZLIB}
    Does Emacs have dynamic modules support?                ${HAVE_MODULES}
    Does Emacs use toolkit scroll bars?                     ${USE_TOOLKIT_SCROLL_BARS}
@@ -633,10 +633,10 @@ index 552dd2e50a..28ada09f03 100644
    w32menu.o w32proc.o w32reg.o w32select.o w32term.o w32xfns.o \
    w16select.o widget.o xfont.o ftfont.o xftfont.o gtkutil.o \
 diff --git a/src/emacs.c b/src/emacs.c
-index c170333e60..4035dbcf20 100644
+index ea9c4cd79d..7bde301edd 100644
 --- a/src/emacs.c
 +++ b/src/emacs.c
-@@ -1853,7 +1853,6 @@ Using an Emacs configured with --with-x-toolkit=lucid does not have this problem
+@@ -1852,7 +1852,6 @@ Using an Emacs configured with --with-x-toolkit=lucid does not have this problem
        syms_of_xfns ();
        syms_of_xmenu ();
        syms_of_fontset ();
@@ -644,7 +644,7 @@ index c170333e60..4035dbcf20 100644
        syms_of_xsettings ();
  #ifdef HAVE_X_SM
        syms_of_xsmfns ();
-@@ -1930,6 +1929,10 @@ Using an Emacs configured with --with-x-toolkit=lucid does not have this problem
+@@ -1929,6 +1928,10 @@ Using an Emacs configured with --with-x-toolkit=lucid does not have this problem
  #endif /* HAVE_W32NOTIFY */
  #endif /* WINDOWSNT */
  
@@ -656,7 +656,7 @@ index c170333e60..4035dbcf20 100644
        syms_of_profiler ();
        syms_of_pdumper ();
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 2ea62ea9cb..c9932541a0 100644
+index a48756bc05..a029af5a69 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -49,6 +49,7 @@ Updated by Christian Limpach (chris@nice.ch)
@@ -667,7 +667,7 @@ index 2ea62ea9cb..c9932541a0 100644
  #include "fontset.h"
  #include "composite.h"
  #include "ccl.h"
-@@ -2492,7 +2493,7 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2606,7 +2607,7 @@ so some key presses (TAB) are swallowed by the system.  */
  }
  
  static int
@@ -676,7 +676,7 @@ index 2ea62ea9cb..c9932541a0 100644
  /*   ------------------------------------------------------------------------
       Called by EmacsView on mouseMovement events.  Passes on
       to emacs mainstream code if we moved off of a rect of interest
-@@ -2501,17 +2502,24 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2615,17 +2616,24 @@ so some key presses (TAB) are swallowed by the system.  */
  {
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (frame);
    NSRect *r;
@@ -703,7 +703,7 @@ index 2ea62ea9cb..c9932541a0 100644
        || y < r->origin.y || y >= r->origin.y + r->size.height)
      {
        ns_update_begin (frame);
-@@ -4248,6 +4256,10 @@ overwriting cursor (usually when cursor on a tab) */
+@@ -4349,6 +4357,10 @@ overwriting cursor (usually when cursor on a tab) */
        ns_unfocus (s->f);
        break;
  
@@ -714,7 +714,7 @@ index 2ea62ea9cb..c9932541a0 100644
      case STRETCH_GLYPH:
        ns_dumpglyphs_stretch (s);
        break;
-@@ -6910,6 +6922,7 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -7045,6 +7057,7 @@ - (void)mouseMoved: (NSEvent *)e
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (emacsframe);
    Lisp_Object frame;
    NSPoint pt;
@@ -722,7 +722,7 @@ index 2ea62ea9cb..c9932541a0 100644
  
    NSTRACE_WHEN (NSTRACE_GROUP_EVENTS, "[EmacsView mouseMoved:]");
  
-@@ -6952,7 +6965,8 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -7087,7 +7100,8 @@ - (void)mouseMoved: (NSEvent *)e
        last_mouse_window = window;
      }
  
@@ -1450,7 +1450,7 @@ index 0000000000..0d628b533a
 +  xv->xvWindow.needsDisplay = YES;
 +}
 diff --git a/src/xwidget.c b/src/xwidget.c
-index ea8987f5b3..54a55e27ef 100644
+index 0347f1e648..2d716f3dc8 100644
 --- a/src/xwidget.c
 +++ b/src/xwidget.c
 @@ -18,18 +18,37 @@ You should have received a copy of the GNU General Public License
@@ -1880,7 +1880,7 @@ index ea8987f5b3..54a55e27ef 100644
    return Qnil;
  }
  
-@@ -760,6 +945,7 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
+@@ -758,6 +943,7 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
    xw->height = h;
  
    /* If there is an offscreen widget resize it first.  */
@@ -1888,7 +1888,7 @@ index ea8987f5b3..54a55e27ef 100644
    if (xw->widget_osr)
      {
        gtk_window_resize (GTK_WINDOW (xw->widgetwindow_osr), xw->width,
-@@ -768,6 +954,9 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
+@@ -766,6 +952,9 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
        gtk_widget_set_size_request (GTK_WIDGET (xw->widget_osr), xw->width,
                                     xw->height);
      }
@@ -1898,7 +1898,7 @@ index ea8987f5b3..54a55e27ef 100644
  
    for (Lisp_Object tail = Vxwidget_view_list; CONSP (tail); tail = XCDR (tail))
      {
-@@ -775,8 +964,14 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
+@@ -773,8 +962,14 @@ DEFUN ("xwidget-resize", Fxwidget_resize, Sxwidget_resize, 3, 3, 0,
          {
            struct xwidget_view *xv = XXWIDGET_VIEW (XCAR (tail));
            if (XXWIDGET (xv->model) == xw)
@@ -1913,7 +1913,7 @@ index ea8987f5b3..54a55e27ef 100644
          }
      }
  
-@@ -795,9 +990,13 @@ Emacs allocated area accordingly.  */)
+@@ -793,9 +988,13 @@ Emacs allocated area accordingly.  */)
    (Lisp_Object xwidget)
  {
    CHECK_XWIDGET (xwidget);
@@ -1927,7 +1927,7 @@ index ea8987f5b3..54a55e27ef 100644
  }
  
  DEFUN ("xwidgetp",
-@@ -874,14 +1073,19 @@ DEFUN ("delete-xwidget-view",
+@@ -872,14 +1071,19 @@ DEFUN ("delete-xwidget-view",
  {
    CHECK_XWIDGET_VIEW (xwidget_view);
    struct xwidget_view *xv = XXWIDGET_VIEW (xwidget_view);
@@ -1948,7 +1948,7 @@ index ea8987f5b3..54a55e27ef 100644
    return Qnil;
  }
  
-@@ -987,7 +1191,10 @@ syms_of_xwidget (void)
+@@ -985,7 +1189,10 @@ syms_of_xwidget (void)
    defsubr (&Sxwidget_query_on_exit_flag);
    defsubr (&Sset_xwidget_query_on_exit_flag);
  
@@ -1959,7 +1959,7 @@ index ea8987f5b3..54a55e27ef 100644
    defsubr (&Sxwidget_webkit_zoom);
    defsubr (&Sxwidget_webkit_execute_script);
    DEFSYM (Qwebkit, "webkit");
-@@ -1158,11 +1365,19 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
+@@ -1156,11 +1363,19 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
  		     xwidget_end_redisplay (w->current_matrix);  */
  		  struct xwidget_view *xv
  		    = xwidget_view_lookup (glyph->u.xwidget, w);
@@ -1979,7 +1979,7 @@ index ea8987f5b3..54a55e27ef 100644
  		}
  	  }
      }
-@@ -1179,9 +1394,21 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
+@@ -1177,9 +1392,21 @@ xwidget_end_redisplay (struct window *w, struct glyph_matrix *matrix)
            if (XWINDOW (xv->w) == w)
              {
                if (xwidget_touched (xv))
@@ -2003,7 +2003,7 @@ index ea8987f5b3..54a55e27ef 100644
              }
          }
      }
-@@ -1200,6 +1427,7 @@ kill_buffer_xwidgets (Lisp_Object buffer)
+@@ -1198,6 +1425,7 @@ kill_buffer_xwidgets (Lisp_Object buffer)
        {
          CHECK_XWIDGET (xwidget);
          struct xwidget *xw = XXWIDGET (xwidget);
@@ -2011,7 +2011,7 @@ index ea8987f5b3..54a55e27ef 100644
          if (xw->widget_osr && xw->widgetwindow_osr)
            {
              gtk_widget_destroy (xw->widget_osr);
-@@ -1213,6 +1441,9 @@ kill_buffer_xwidgets (Lisp_Object buffer)
+@@ -1211,6 +1439,9 @@ kill_buffer_xwidgets (Lisp_Object buffer)
  		xfree (xmint_pointer (XCAR (cb)));
  	      ASET (xw->script_callbacks, idx, Qnil);
  	    }
@@ -2088,5 +2088,5 @@ index 99fa8bbd61..600e5ecd68 100644
    int y;
    int clip_right;
 -- 
-2.25.0
+2.26.0
 

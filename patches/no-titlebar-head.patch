@@ -1,14 +1,14 @@
-From cb1ef1aaa5ee9dd504b6cf92ca5114663cb188fd Mon Sep 17 00:00:00 2001
+From eadd8afb2fa420956a863f313e273ebf216f10f6 Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:27 +0200
 Subject: [PATCH] [patch] no-titlebar-head
 
 ---
- src/nsterm.m | 66 +++++++---------------------------------------------
- 1 file changed, 8 insertions(+), 58 deletions(-)
+ src/nsterm.m | 35 +++++++----------------------------
+ 1 file changed, 7 insertions(+), 28 deletions(-)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 9d427b9b38..2ea62ea9cb 100644
+index 9cd1c9d860..a48756bc05 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -473,11 +473,9 @@ - (NSColor *)colorUsingDefaultColorSpace
@@ -24,7 +24,7 @@ index 9d427b9b38..2ea62ea9cb 100644
  
  /* TODO: Get rid of need for these forward declarations.  */
  static void ns_condemn_scroll_bars (struct frame *f);
-@@ -1906,23 +1904,11 @@ Hide the window (X11 semantics)
+@@ -1985,23 +1983,11 @@ Hide the window (X11 semantics)
      {
        block_input ();
  
@@ -52,47 +52,9 @@ index 9d427b9b38..2ea62ea9cb 100644
  
        /* At this point it seems we don't have an active NSResponder,
           so some key presses (TAB) are swallowed by the system.  */
-@@ -7038,36 +7024,7 @@ - (void) updateFrameSize: (BOOL) delay
-   NSTRACE_MSG  ("Original columns: %d", cols);
-   NSTRACE_MSG  ("Original rows: %d", rows);
- 
--  if (! [self isFullscreen])
--    {
--      int toolbar_height;
--#ifdef NS_IMPL_GNUSTEP
--      // GNUstep does not always update the tool bar height.  Force it.
--      if (toolbar && [toolbar isVisible])
--          update_frame_tool_bar (emacsframe);
--#endif
--
--      toolbar_height = FRAME_TOOLBAR_HEIGHT (emacsframe);
--      if (toolbar_height < 0)
--        toolbar_height = 35;
--
--      extra = FRAME_NS_TITLEBAR_HEIGHT (emacsframe)
--        + toolbar_height;
--    }
--
--  if (wait_for_tool_bar)
--    {
--      /* The toolbar height is always 0 in fullscreen and undecorated
--         frames, so don't wait for it to become available.  */
--      if (FRAME_TOOLBAR_HEIGHT (emacsframe) == 0
--          && FRAME_UNDECORATED (emacsframe) == false
--          && ! [self isFullscreen])
--        {
--          NSTRACE_MSG ("Waiting for toolbar");
--          return;
--        }
--      wait_for_tool_bar = NO;
--    }
-+  wait_for_tool_bar = NO;
- 
-   neww = (int)wr.size.width - emacsframe->border_width;
-   newh = (int)wr.size.height - extra;
-@@ -7446,11 +7403,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
- 
-   [self createDrawingBufferWithRect:r];
+@@ -7538,11 +7524,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+   maximizing_resize = NO;
+ #endif
  
 -  win = [[EmacsWindow alloc]
 +  win = [[EmacsFSWindow alloc]
@@ -104,7 +66,7 @@ index 9d427b9b38..2ea62ea9cb 100644
                          backing: NSBackingStoreBuffered
                            defer: YES];
  
-@@ -7483,11 +7438,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7578,11 +7562,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
  
@@ -117,5 +79,5 @@ index 9d427b9b38..2ea62ea9cb 100644
  
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
 -- 
-2.25.0
+2.26.0
 

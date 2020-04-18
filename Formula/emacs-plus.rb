@@ -188,7 +188,7 @@ class EmacsPlus < Formula
     elsif build.head?
       patch do
         url (PatchUrlResolver.url "no-titlebar-head")
-        sha256 "d4645c7d2ca42b5e6fb45e1da8d98a5ed6bf126455f9e7118e2cc650c5df174c"
+        sha256 "4884ec1c8930df6da89a432d81e62b51dc185e9625fde9acc75353457ddc35c9"
       end
     else
       patch do
@@ -210,20 +210,20 @@ class EmacsPlus < Formula
   if build.with? "xwidgets"
     patch do
       url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa")
-      sha256 "6376e9e40686077b67c0e21115f0aa451b63ea5d8ee996a69f95cb3f693c9174"
+      sha256 "1b7319da0e2a11bf5776a99a5e767f325f8d2afddd2293c882b89ee943380d35"
     end
   end
 
   if build.with? "no-frame-refocus"
     patch do
       url (PatchUrlResolver.url "no-frame-refocus-cocoa")
-      sha256 "a140fa44eab0cf47b4fcc8cfb96132a8b40a4ba37b2e84b8c78129dbf6ca632c"
+      sha256 "267be4788e7ab58b54e3d50803263904cc8c7a67fd970157921086e942b269e5"
     end
   end
 
   patch do
     url (PatchUrlResolver.url "fix-window-role")
-    sha256 "ae92602a95564efe1aecec85563b116bf4211371a7c1f7e5d9c356107b4adf6d"
+    sha256 "96f22b2bdf6e5e64b81786eccbf6229f093defa52bcf2ec88c9ec19e1860ee55"
   end
 
   #

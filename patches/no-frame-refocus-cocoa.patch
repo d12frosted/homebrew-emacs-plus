@@ -1,4 +1,4 @@
-From 64420a91e8ff85bac798bbacc226d95e21231f19 Mon Sep 17 00:00:00 2001
+From 9f4e7f80c8ed165e8a15fc91c95b3777df766893 Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:55 +0200
 Subject: [PATCH] [patch] no-frame-refocus-cocoa
@@ -8,7 +8,7 @@ Subject: [PATCH] [patch] no-frame-refocus-cocoa
  1 file changed, 9 deletions(-)
 
 diff --git a/src/frame.c b/src/frame.c
-index 51fc78ab70..96b135745b 100644
+index c871e4fd99..470ab948bd 100644
 --- a/src/frame.c
 +++ b/src/frame.c
 @@ -2056,15 +2056,6 @@ delete_frame (Lisp_Object frame, Lisp_Object force)
@@ -28,5 +28,5 @@ index 51fc78ab70..96b135745b 100644
        do_switch_frame (frame1, 0, 1, Qnil);
        sf = SELECTED_FRAME ();
 -- 
-2.25.0
+2.26.0
 
