@@ -210,20 +210,20 @@ class EmacsPlus < Formula
   if build.with? "xwidgets"
     patch do
       url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa")
-      sha256 "1b7319da0e2a11bf5776a99a5e767f325f8d2afddd2293c882b89ee943380d35"
+      sha256 "c562bfd8c11189e58eae11a46252d503612ed538ebbf13de75eb3dbc36c94cb6"
     end
   end
 
   if build.with? "no-frame-refocus"
     patch do
       url (PatchUrlResolver.url "no-frame-refocus-cocoa")
-      sha256 "267be4788e7ab58b54e3d50803263904cc8c7a67fd970157921086e942b269e5"
+      sha256 "2c0a608b2ae4a43296fe76012ba6aabb431d9a2f7103dc8747fcb8a863d9b346"
     end
   end
 
   patch do
     url (PatchUrlResolver.url "fix-window-role")
-    sha256 "96f22b2bdf6e5e64b81786eccbf6229f093defa52bcf2ec88c9ec19e1860ee55"
+    sha256 "f6cd00bcd37be03d8d83c2e590ab7d259ae37632f5954267240ba9439f799359"
   end
 
   #

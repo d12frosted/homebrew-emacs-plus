@@ -1,4 +1,4 @@
-From 2ed1bb6113c876a126f55bd14aa80a3e4b5da253 Mon Sep 17 00:00:00 2001
+From 43c599937d840d98c2ee11c593cfd3db172b00ac Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:41 +0200
 Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
@@ -1450,7 +1450,7 @@ index 0000000000..0d628b533a
 +  xv->xvWindow.needsDisplay = YES;
 +}
 diff --git a/src/xwidget.c b/src/xwidget.c
-index 0347f1e648..2d716f3dc8 100644
+index 0347f1e648..6ff6e81ba6 100644
 --- a/src/xwidget.c
 +++ b/src/xwidget.c
 @@ -18,18 +18,37 @@ You should have received a copy of the GNU General Public License
@@ -1821,16 +1821,16 @@ index 0347f1e648..2d716f3dc8 100644
 +  (Lisp_Object xwidget, Lisp_Object rel_pos)
 +{
 +  WEBKIT_FN_INIT ();
-+  CHECK_RANGED_INTEGER (rel_pos, -1, 1); /* -1, 0, 1 */
++  rel_pos = check_integer_range (rel_pos, -1, 1); /* -1, 0, 1 */
 +#if defined (USE_GTK)
 +  WebKitWebView *wkwv = WEBKIT_WEB_VIEW (xw->widget_osr);
-+  switch (XFIXNAT (rel_pos)) {
++  switch (rel_pos) {
 +  case -1: webkit_web_view_go_back (wkwv); break;
 +  case 0: webkit_web_view_reload (wkwv); break;
 +  case 1: webkit_web_view_go_forward (wkwv); break;
 +  }
 +#elif defined (NS_IMPL_COCOA)
-+  nsxwidget_webkit_goto_history (xw, XFIXNAT (rel_pos));
++  nsxwidget_webkit_goto_history (xw, rel_pos);
 +#endif
    return Qnil;
  }

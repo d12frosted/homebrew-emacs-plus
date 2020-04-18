@@ -1,4 +1,4 @@
-From 17c38e9bdabcff690e29d09628cc40f69a940d0d Mon Sep 17 00:00:00 2001
+From 04593253983e0c10f67cc7e9b0052f72f8fc1c7c Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:22:17 +0200
 Subject: [PATCH] [patch] fix-window-role

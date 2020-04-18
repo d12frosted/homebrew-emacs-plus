@@ -1,4 +1,4 @@
-From 9f4e7f80c8ed165e8a15fc91c95b3777df766893 Mon Sep 17 00:00:00 2001
+From a72c8d0a0bfc1bb06ecfbd086d0a294f56649a8a Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:55 +0200
 Subject: [PATCH] [patch] no-frame-refocus-cocoa
