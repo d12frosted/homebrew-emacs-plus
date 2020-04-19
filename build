@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+#
+# Script for testing Formula locally without the need to uninstall Emacs.
+#
+# Usage example:
+#   $ ./build --without-spacemacs-icon --HEAD
+#
+
+SOURCE_FILE=Formula/emacs-plus.rb
+SOURCE_NAME=EmacsPlus
+
+TARGET_FILE=Formula/emacs-plus-local.rb
+TARGET_NAME=EmacsPlusLocal
+
+PACKAGE=emacs-plus-local
+
+function cleanup () {
+  rm -f "$TARGET_FILE"
+}
+
+trap cleanup INT TERM EXIT
+
+cp "$SOURCE_FILE" "$TARGET_FILE"
+
+sed -i -e "s/class $SOURCE_NAME/class $TARGET_NAME/g" "$TARGET_FILE"
+
+export HOMEBREW_GITHUB_REF
+HOMEBREW_GITHUB_REF=$(git rev-parse --abbrev-ref HEAD)
+
+brew uninstall $PACKAGE 2>/dev/null
+# shellcheck disable=SC2068
+brew install $TARGET_FILE $@
