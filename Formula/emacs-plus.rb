@@ -208,9 +208,16 @@ class EmacsPlus < Formula
   end
 
   if build.with? "xwidgets"
-    patch do
-      url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa")
-      sha256 "c562bfd8c11189e58eae11a46252d503612ed538ebbf13de75eb3dbc36c94cb6"
+    if build.with? "emacs-27-branch"
+      patch do
+        url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa-emacs-27")
+        sha256 "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40"
+      end
+    else
+      patch do
+        url (PatchUrlResolver.url "xwidgets_webkit_in_cocoa")
+        sha256 "c562bfd8c11189e58eae11a46252d503612ed538ebbf13de75eb3dbc36c94cb6"
+      end
     end
   end
 
