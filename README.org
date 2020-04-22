@@ -9,30 +9,6 @@ in =emacs-plus= and some new [[#options][additional options]] are available for 
 Patches are extracted from [[https://github.com/d12frosted/emacs-plus-basis][emacs-plus-basis]] repository. And maintained there. If
 you are adding new patch, please add them to =homebrew-emacs-plus= repository.
 
-** Upgrade from Emacs 25.x
-
-With release of Emacs 26.1 many options were removed from the formula, as
-features behind them are already in released version.
-
-But most of the users might suffer due to removal of =--natural-title-bar=
-option. In order to duplicate its behaviour add following lines to your
-=init.el= file.
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist
-               '(ns-transparent-titlebar . t))
-
-  (add-to-list 'default-frame-alist
-               '(ns-appearance . light)) ;; or dark - depending on your theme
-#+END_SRC
-
-In case for some reason you still want to use old Emacs 25 formula, it is
-available as =emacs-plus@25=.
-
-#+BEGIN_SRC bash
-  $ brew install emacs-plus@25 [all-your-favourite-options]
-#+END_SRC
-
 ** Install
 
 #+BEGIN_SRC bash
@@ -213,6 +189,30 @@ $ brew install cask --ignore-dependencies
   <img src="images/screenshot-01.png">
 </p>
 #+END_HTML
+
+** Upgrade from Emacs 25.x
+
+With release of Emacs 26.1 many options were removed from the formula, as
+features behind them are already in released version.
+
+But most of the users might suffer due to removal of =--natural-title-bar=
+option. In order to duplicate its behaviour add following lines to your
+=init.el= file.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist
+               '(ns-transparent-titlebar . t))
+
+  (add-to-list 'default-frame-alist
+               '(ns-appearance . light)) ;; or dark - depending on your theme
+#+END_SRC
+
+In case for some reason you still want to use old Emacs 25 formula, it is
+available as =emacs-plus@25=.
+
+#+BEGIN_SRC bash
+  $ brew install emacs-plus@25 [all-your-favourite-options]
+#+END_SRC
 
 ** Acknowledgements
 
