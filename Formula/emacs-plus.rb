@@ -64,6 +64,8 @@ class EmacsPlus < Formula
          "Build from emacs-27-branch (--HEAD only)"
   option "with-native-comp-branch",
          "Build from native-comp branch (--HEAD only)"
+  option "with-system-appearance-change",
+         "Built with support for system appearance changes (--HEAD only)"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -175,6 +177,12 @@ class EmacsPlus < Formula
     end
   end
 
+  if build.with? "system-appearance-change"
+    unless build.head?
+      odie "--with-system-appearance-change is supported only on --HEAD"
+    end
+  end
+
   #
   # Patches
   #
@@ -231,6 +239,20 @@ class EmacsPlus < Formula
   patch do
     url (PatchUrlResolver.url "fix-window-role")
     sha256 "f6cd00bcd37be03d8d83c2e590ab7d259ae37632f5954267240ba9439f799359"
+  end
+
+  if build.with? "system-appearance-change"
+    if build.with? "emacs-27-branch"
+      patch do
+        url (PatchUrlResolver.url "system-appearance-change-emacs-27")
+        sha256 "82252e2858a0eba95148661264e390eaf37349fec9c30881d3c1299bfaee8b21"
+      end
+    else
+      patch do
+        url (PatchUrlResolver.url "system-appearance-change")
+        sha256 "c9d3b0ed492c0e2aed6661c76efef3949e25b0c0297ddfb806b5d33639386eb5"
+      end
+    end
   end
 
   #
