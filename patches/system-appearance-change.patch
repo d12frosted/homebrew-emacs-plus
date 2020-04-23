@@ -1,0 +1,219 @@
+From df64e7ae925b889bbd820b665f5e1e3310d8b083 Mon Sep 17 00:00:00 2001
+From: "Nicolas G. Querol" <nicolas.gquerol@gmail.com>
+Date: Fri, 24 Apr 2020 20:25:23 +0200
+Subject: [PATCH] Add `ns-system-appearance-change-functions' hook
+
+This implements a new hook, effective only on macOS >= 10.14 (Mojave),
+that is called when the system changes its appearance (e.g. from light
+to dark). Users can then implement functions that takes this change
+into account, for instance to load a particular theme.
+
+The frame parameter `ns-appearance', if set, will result in this new
+hook not being called until this parameter is set back to `nil'.
+
+Minor changes are also made to select the right "dark" appearance
+(NSAppearanceNameDarkAqua) on macOS versions >= 10.14, the previous one
+(NSAppearanceNameVibrantDark) being deprecated.
+
+* src/frame.h (enum ns_appearance_type): Add new
+"ns_appearance_dark_aqua" case.
+
+* src/nsfns.m (defun x-create-frame): Use "dark aqua" appearance on
+macOS >= 10.14.
+
+* src/nsterm.m:
+  - (ns_set_appearance): Use "dark aqua" appearance on
+     macOS >= 10.14, reset appearance to the system one
+     if `ns-appearance' frame parameter is not set to
+     either `dark' or `light'.
+  - (initFrameFromEmacs): Use "dark aqua" appearance on
+     macOS >= 10.14.
+  - Add `viewDidChangeEffectiveAppearance' implementation,
+    to update the frame's appearance when the system appearance
+    changes. This method is called automatically by macOS.
+  - Add `ns-system-appearance-change-functions' hook variable and
+    symbol, to allow users to add functions that react to the
+    change of the system's appearance.
+
+Here is an example on how to use this new feature:
+
+    (add-hook 'ns-system-appearance-change-functions
+        #'(lambda (appearance)
+            (mapc #'disable-theme custom-enabled-themes)
+            (pcase appearance
+               ('light (load-theme 'tango t))
+               ('dark (load-theme 'tango-dark t)))))
+---
+ src/frame.h  |  7 +++--
+ src/nsfns.m  | 11 +++++++-
+ src/nsterm.m | 77 ++++++++++++++++++++++++++++++++++++++++++++++++----
+ 3 files changed, 85 insertions(+), 10 deletions(-)
+
+diff --git a/src/frame.h b/src/frame.h
+index 476bac67fa..82f2654347 100644
+--- a/src/frame.h
++++ b/src/frame.h
+@@ -69,9 +69,10 @@ #define EMACS_FRAME_H
+ #ifdef NS_IMPL_COCOA
+ enum ns_appearance_type
+   {
+-    ns_appearance_system_default,
+-    ns_appearance_aqua,
+-    ns_appearance_vibrant_dark
++   ns_appearance_system_default,
++   ns_appearance_aqua,
++   ns_appearance_vibrant_dark,
++   ns_appearance_dark_aqua
+   };
+ #endif
+ #endif /* HAVE_WINDOW_SYSTEM */
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 273fb5f759..74dbf63616 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -1269,14 +1269,23 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+   store_frame_param (f, Qundecorated, FRAME_UNDECORATED (f) ? Qt : Qnil);
+ 
+ #ifdef NS_IMPL_COCOA
++#ifndef NSAppKitVersionNumber10_14
++#define NSAppKitVersionNumber10_14 1671
++#endif
+   tem = gui_display_get_arg (dpyinfo, parms, Qns_appearance, NULL, NULL,
+                              RES_TYPE_SYMBOL);
++
+   if (EQ (tem, Qdark))
+-    FRAME_NS_APPEARANCE (f) = ns_appearance_vibrant_dark;
++    if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_14) {
++       FRAME_NS_APPEARANCE (f) = ns_appearance_dark_aqua;
++    } else {
++      FRAME_NS_APPEARANCE (f) = ns_appearance_vibrant_dark;
++    }
+   else if (EQ (tem, Qlight))
+     FRAME_NS_APPEARANCE (f) = ns_appearance_aqua;
+   else
+     FRAME_NS_APPEARANCE (f) = ns_appearance_system_default;
++
+   store_frame_param (f, Qns_appearance,
+                      (!NILP (tem) && !EQ (tem, Qunbound)) ? tem : Qnil);
+ 
+diff --git a/src/nsterm.m b/src/nsterm.m
+index a8f7540ea2..d9c6808793 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -2215,12 +2215,21 @@ so some key presses (TAB) are swallowed by the system.  */
+   if (NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
+     return;
+ 
+-  if (EQ (new_value, Qdark))
+-    FRAME_NS_APPEARANCE (f) = ns_appearance_vibrant_dark;
+-  else if (EQ (new_value, Qlight))
++  if (EQ (new_value, Qdark)) {
++#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
++#ifndef NSAppKitVersionNumber10_14
++#define NSAppKitVersionNumber10_14 1671
++#endif
++    if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_14)
++      FRAME_NS_APPEARANCE(f) = ns_appearance_dark_aqua;
++    else
++#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
++      FRAME_NS_APPEARANCE(f) = ns_appearance_vibrant_dark;
++  } else if (EQ(new_value, Qlight)) {
+     FRAME_NS_APPEARANCE (f) = ns_appearance_aqua;
+-  else
++  } else {
+     FRAME_NS_APPEARANCE (f) = ns_appearance_system_default;
++  }
+ 
+   [window setAppearance];
+ #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
+@@ -7595,7 +7604,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+   if (! FRAME_UNDECORATED (f))
+     [self createToolbar: f];
+ 
+-
+   [win setAppearance];
+ 
+ #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
+@@ -8380,6 +8388,37 @@ - (instancetype)toggleToolbar: (id)sender
+   return self;
+ }
+ 
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
++#ifndef NSAppKitVersionNumber10_14
++#define NSAppKitVersionNumber10_14 1671
++#endif
++- (void)viewDidChangeEffectiveAppearance
++{
++  NSTRACE ("[EmacsView viewDidChangeEffectiveAppearance:]");
++
++  if (NSAppKitVersionNumber < NSAppKitVersionNumber10_14)
++    return;
++
++  // If the frame's appearance is explicitly set (via the frame parameter
++  // `ns-appearance'), do nothing.
++  if (FRAME_NS_APPEARANCE (emacsframe) != ns_appearance_system_default)
++    return;
++
++  NSAppearanceName appearance =
++    [[NSApp effectiveAppearance] bestMatchFromAppearancesWithNames:@[
++      NSAppearanceNameAqua, NSAppearanceNameDarkAqua
++    ]];
++
++  BOOL has_dark_appearance = [appearance
++                               isEqualToString:NSAppearanceNameDarkAqua];
++
++  if (!NILP (Vns_system_appearance_change_functions))
++    pending_funcalls = Fcons(list3(Qrun_hook_with_args,
++                                   Qns_system_appearance_change_functions,
++                                   has_dark_appearance ? Qdark : Qlight),
++                             pending_funcalls);
++}
++#endif /* (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
+ 
+ #ifdef NS_DRAW_TO_BUFFER
+ - (void)createDrawingBuffer
+@@ -9016,7 +9055,16 @@ - (void)setAppearance
+   if (NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
+     return;
+ 
+-  if (FRAME_NS_APPEARANCE (f) == ns_appearance_vibrant_dark)
++#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
++#ifndef NSAppKitVersionNumber10_14
++#define NSAppKitVersionNumber10_14 1671
++#endif
++  if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_14
++       && FRAME_NS_APPEARANCE(f) == ns_appearance_dark_aqua)
++     appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
++  else
++#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
++  if (FRAME_NS_APPEARANCE(f) == ns_appearance_vibrant_dark)
+     appearance =
+       [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+   else if (FRAME_NS_APPEARANCE (f) == ns_appearance_aqua)
+@@ -9885,6 +9933,23 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
+ This variable is ignored on macOS < 10.7 and GNUstep.  Default is t.  */);
+   ns_use_mwheel_momentum = YES;
+ 
++  DEFVAR_LISP ("ns-system-appearance-change-functions",
++               Vns_system_appearance_change_functions,
++     doc: /* List of functions to call when the system appearance changes.
++Each function is called with a single argument, which corresponds to the new
++system appearance (`dark' or `light').
++
++This hook is also executed once at startup, when the first frame is created.
++
++If the parameter `ns-appearance' is set for a frame, this frame's appearance
++is considered fixed and no system appearance changes will be handled until
++it is unset; However, global (e.g. `load-theme') changes will still be applied
++to all frames.
++
++This variable is ignored on macOS < 10.14 and GNUstep.  Default is nil.  */);
++  Vns_system_appearance_change_functions = Qnil;
++  DEFSYM(Qns_system_appearance_change_functions, "ns-system-appearance-change-functions");
++
+   /* TODO: Move to common code.  */
+   DEFVAR_LISP ("x-toolkit-scroll-bars", Vx_toolkit_scroll_bars,
+ 	       doc: /* SKIP: real doc in xterm.c.  */);
+-- 
+2.26.2
+
