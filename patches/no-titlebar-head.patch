@@ -1,4 +1,4 @@
-From eadd8afb2fa420956a863f313e273ebf216f10f6 Mon Sep 17 00:00:00 2001
+From 1819aa42db3ec7d2375e51b0b4cc0df4f8930ab0 Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:27 +0200
 Subject: [PATCH] [patch] no-titlebar-head
@@ -8,7 +8,7 @@ Subject: [PATCH] [patch] no-titlebar-head
  1 file changed, 7 insertions(+), 28 deletions(-)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 9cd1c9d860..a48756bc05 100644
+index a8f7540ea2..53b152c5f5 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -473,11 +473,9 @@ - (NSColor *)colorUsingDefaultColorSpace
@@ -52,7 +52,7 @@ index 9cd1c9d860..a48756bc05 100644
  
        /* At this point it seems we don't have an active NSResponder,
           so some key presses (TAB) are swallowed by the system.  */
-@@ -7538,11 +7524,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7551,11 +7537,9 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
    maximizing_resize = NO;
  #endif
  
@@ -66,7 +66,7 @@ index 9cd1c9d860..a48756bc05 100644
                          backing: NSBackingStoreBuffered
                            defer: YES];
  
-@@ -7578,11 +7562,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7591,11 +7575,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
  
@@ -79,5 +79,5 @@ index 9cd1c9d860..a48756bc05 100644
  
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
 -- 
-2.26.0
+2.26.2
 

@@ -1,7 +1,9 @@
-From df64e7ae925b889bbd820b665f5e1e3310d8b083 Mon Sep 17 00:00:00 2001
+From 4d1328764fbd4aa1c4da37f5cd76e4bd4a4ce37c Mon Sep 17 00:00:00 2001
 From: "Nicolas G. Querol" <nicolas.gquerol@gmail.com>
 Date: Fri, 24 Apr 2020 20:25:23 +0200
-Subject: [PATCH] Add `ns-system-appearance-change-functions' hook
+Subject: [PATCH] [patch] system-appearance
+
+Author of this patch is Nicolas G. Querol aka ngquerol
 
 This implements a new hook, effective only on macOS >= 10.14 (Mojave),
 that is called when the system changes its appearance (e.g. from light
@@ -44,16 +46,16 @@ Here is an example on how to use this new feature:
                ('light (load-theme 'tango t))
                ('dark (load-theme 'tango-dark t)))))
 ---
- src/frame.h  |  7 +++--
+ src/frame.h  |  7 ++---
  src/nsfns.m  | 11 +++++++-
- src/nsterm.m | 77 ++++++++++++++++++++++++++++++++++++++++++++++++----
- 3 files changed, 85 insertions(+), 10 deletions(-)
+ src/nsterm.m | 76 ++++++++++++++++++++++++++++++++++++++++++++++++----
+ 3 files changed, 85 insertions(+), 9 deletions(-)
 
 diff --git a/src/frame.h b/src/frame.h
 index 476bac67fa..82f2654347 100644
 --- a/src/frame.h
 +++ b/src/frame.h
-@@ -69,9 +69,10 @@ #define EMACS_FRAME_H
+@@ -69,9 +69,10 @@ enum internal_border_part
  #ifdef NS_IMPL_COCOA
  enum ns_appearance_type
    {
@@ -97,10 +99,10 @@ index 273fb5f759..74dbf63616 100644
                       (!NILP (tem) && !EQ (tem, Qunbound)) ? tem : Qnil);
  
 diff --git a/src/nsterm.m b/src/nsterm.m
-index a8f7540ea2..d9c6808793 100644
+index aa6c1d286f..84bf04498e 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -2215,12 +2215,21 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -2202,12 +2202,21 @@ so some key presses (TAB) are swallowed by the system.  */
    if (NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
      return;
  
@@ -126,7 +128,7 @@ index a8f7540ea2..d9c6808793 100644
  
    [window setAppearance];
  #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
-@@ -8380,6 +8388,37 @@ - (instancetype)toggleToolbar: (id)sender
+@@ -8373,6 +8382,37 @@ - (instancetype)toggleToolbar: (id)sender
    return self;
  }
  
@@ -164,7 +166,7 @@ index a8f7540ea2..d9c6808793 100644
  
  #ifdef NS_DRAW_TO_BUFFER
  - (void)createDrawingBuffer
-@@ -9016,7 +9055,16 @@ - (void)setAppearance
+@@ -9009,7 +9049,16 @@ - (void)setAppearance
    if (NSAppKitVersionNumber < NSAppKitVersionNumber10_10)
      return;
  
@@ -182,7 +184,7 @@ index a8f7540ea2..d9c6808793 100644
      appearance =
        [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
    else if (FRAME_NS_APPEARANCE (f) == ns_appearance_aqua)
-@@ -9885,6 +9933,23 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
+@@ -9878,6 +9927,23 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
  This variable is ignored on macOS < 10.7 and GNUstep.  Default is t.  */);
    ns_use_mwheel_momentum = YES;
  

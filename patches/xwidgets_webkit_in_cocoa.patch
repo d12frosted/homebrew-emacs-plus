@@ -1,4 +1,4 @@
-From 43c599937d840d98c2ee11c593cfd3db172b00ac Mon Sep 17 00:00:00 2001
+From 9fdf3198b58758df3af5979b8be8a59c6477e092 Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:41 +0200
 Subject: [PATCH] [patch] xwidgets_webkit_in_cocoa
@@ -656,7 +656,7 @@ index ea9c4cd79d..7bde301edd 100644
        syms_of_profiler ();
        syms_of_pdumper ();
 diff --git a/src/nsterm.m b/src/nsterm.m
-index a48756bc05..a029af5a69 100644
+index 53b152c5f5..6f9b208953 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -49,6 +49,7 @@ Updated by Christian Limpach (chris@nice.ch)
@@ -703,7 +703,7 @@ index a48756bc05..a029af5a69 100644
        || y < r->origin.y || y >= r->origin.y + r->size.height)
      {
        ns_update_begin (frame);
-@@ -4349,6 +4357,10 @@ overwriting cursor (usually when cursor on a tab) */
+@@ -4362,6 +4370,10 @@ overwriting cursor (usually when cursor on a tab) */
        ns_unfocus (s->f);
        break;
  
@@ -714,7 +714,7 @@ index a48756bc05..a029af5a69 100644
      case STRETCH_GLYPH:
        ns_dumpglyphs_stretch (s);
        break;
-@@ -7045,6 +7057,7 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -7058,6 +7070,7 @@ - (void)mouseMoved: (NSEvent *)e
    struct ns_display_info *dpyinfo = FRAME_DISPLAY_INFO (emacsframe);
    Lisp_Object frame;
    NSPoint pt;
@@ -722,7 +722,7 @@ index a48756bc05..a029af5a69 100644
  
    NSTRACE_WHEN (NSTRACE_GROUP_EVENTS, "[EmacsView mouseMoved:]");
  
-@@ -7087,7 +7100,8 @@ - (void)mouseMoved: (NSEvent *)e
+@@ -7100,7 +7113,8 @@ - (void)mouseMoved: (NSEvent *)e
        last_mouse_window = window;
      }
  
@@ -2088,5 +2088,5 @@ index 99fa8bbd61..600e5ecd68 100644
    int y;
    int clip_right;
 -- 
-2.26.0
+2.26.2
 

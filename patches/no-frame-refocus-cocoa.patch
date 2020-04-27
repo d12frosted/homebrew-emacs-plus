@@ -1,4 +1,4 @@
-From a72c8d0a0bfc1bb06ecfbd086d0a294f56649a8a Mon Sep 17 00:00:00 2001
+From 7c14b8b6e6d4ed5ee88b6fd2857a2f07057fc058 Mon Sep 17 00:00:00 2001
 From: Golem <golem@d12frosted.io>
 Date: Thu, 9 Jan 2020 07:21:55 +0200
 Subject: [PATCH] [patch] no-frame-refocus-cocoa
@@ -28,5 +28,5 @@ index c871e4fd99..470ab948bd 100644
        do_switch_frame (frame1, 0, 1, Qnil);
        sf = SELECTED_FRAME ();
 -- 
-2.26.0
+2.26.2
 
