@@ -126,14 +126,6 @@ index a8f7540ea2..d9c6808793 100644
  
    [window setAppearance];
  #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
-@@ -7595,7 +7604,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
-   if (! FRAME_UNDECORATED (f))
-     [self createToolbar: f];
- 
--
-   [win setAppearance];
- 
- #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
 @@ -8380,6 +8388,37 @@ - (instancetype)toggleToolbar: (id)sender
    return self;
  }
