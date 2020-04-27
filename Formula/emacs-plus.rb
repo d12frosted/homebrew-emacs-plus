@@ -250,7 +250,7 @@ class EmacsPlus < Formula
     else
       patch do
         url (PatchUrlResolver.url "system-appearance")
-        sha256 "c9d3b0ed492c0e2aed6661c76efef3949e25b0c0297ddfb806b5d33639386eb5"
+        sha256 "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
       end
     end
   end
