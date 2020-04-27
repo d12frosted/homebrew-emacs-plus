@@ -208,6 +208,12 @@ $ brew install cask --ignore-dependencies
 </p>
 #+END_HTML
 
+#+BEGIN_HTML
+<p align="center">
+  <img src="images/screenshot-02.png">
+</p>
+#+END_HTML
+
 ** Upgrade from Emacs 25.x
 
 With release of Emacs 26.1 many options were removed from the formula, as
