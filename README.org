@@ -158,6 +158,24 @@ native macOS X Cocoa via embedding a native webkit window.
 
 More details can be seen here [[https://github.com/veshboo/emacs][Veshboo's emacs branch]].
 
+*** System appearance change
+
+This patch is enabled by default and can't be disabled. First of all, it adds
+support of macOS light and dark themes as set in =System Preferences > General >
+Appearance=. Secondly, it adds a hook, =ns-system-appearance-change-functions=,
+that is called once appearance is changed. Functions added to this hook will be
+called with one argument, a symbol that is either ='light= or ='dark=. This mainly
+allows loading a different theme to better match the system appearance.
+
+#+begin_src emacs-lisp
+  (add-hook 'ns-system-appearance-change-functions
+            #'(lambda (appearance)
+                (mapc #'disable-theme custom-enabled-themes)
+                (pcase appearance
+                  ('light (load-theme 'tango t))
+                  ('dark (load-theme 'tango-dark t)))))
+#+end_src
+
 ** Emacs configuration
 
 Emacs is a journey. And for some of you these projects might be inspiring.
