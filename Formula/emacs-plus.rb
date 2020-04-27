@@ -64,8 +64,6 @@ class EmacsPlus < Formula
          "Build from emacs-27-branch (--HEAD only)"
   option "with-native-comp-branch",
          "Build from native-comp branch (--HEAD only)"
-  option "with-system-appearance",
-         "Built with support for system appearance changes (--HEAD only)"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -177,12 +175,6 @@ class EmacsPlus < Formula
     end
   end
 
-  if build.with? "system-appearance"
-    unless build.head?
-      odie "--with-system-appearance is supported only on --HEAD"
-    end
-  end
-
   #
   # Patches
   #
@@ -241,17 +233,15 @@ class EmacsPlus < Formula
     sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   end
 
-  if build.with? "system-appearance"
-    if build.with? "emacs-27-branch"
-      patch do
-        url (PatchUrlResolver.url "system-appearance-emacs-27")
-        sha256 "82252e2858a0eba95148661264e390eaf37349fec9c30881d3c1299bfaee8b21"
-      end
-    else
-      patch do
-        url (PatchUrlResolver.url "system-appearance")
-        sha256 "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
-      end
+  if build.with? "emacs-27-branch"
+    patch do
+      url (PatchUrlResolver.url "system-appearance-emacs-27")
+      sha256 "82252e2858a0eba95148661264e390eaf37349fec9c30881d3c1299bfaee8b21"
+    end
+  elsif build.head?
+    patch do
+      url (PatchUrlResolver.url "system-appearance")
+      sha256 "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
     end
   end
 
