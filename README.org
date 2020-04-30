@@ -160,12 +160,11 @@ More details can be seen here [[https://github.com/veshboo/emacs][Veshboo's emac
 
 *** System appearance change
 
-This patch is enabled by default and can't be disabled. First of all, it adds
-support of macOS light and dark themes as set in =System Preferences > General >
-Appearance=. Secondly, it adds a hook, =ns-system-appearance-change-functions=,
-that is called once appearance is changed. Functions added to this hook will be
-called with one argument, a symbol that is either ='light= or ='dark=. This mainly
-allows loading a different theme to better match the system appearance.
+This patch is enabled by default and can't be disabled. It adds a hook,
+=ns-system-appearance-change-functions=, that is called once the system appearance is
+changed. Functions added to this hook will be called with one argument, a symbol
+that is either ='light= or ='dark=. This mainly allows loading a different theme
+to better match the system appearance.
 
 #+begin_src emacs-lisp
   (add-hook 'ns-system-appearance-change-functions
@@ -175,6 +174,10 @@ allows loading a different theme to better match the system appearance.
                   ('light (load-theme 'tango t))
                   ('dark (load-theme 'tango-dark t)))))
 #+end_src
+
+Note that this hook is run early in the startup process, so if you want your
+theme to match the system appearance when Emacs starts, you can register your
+function(s) in your =early-init.el=. The hook is NOT run in TTY Emacs sessions.
 
 ** Emacs configuration
 
