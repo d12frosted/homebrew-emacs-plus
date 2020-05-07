@@ -7,17 +7,38 @@ assignees: d12frosted
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+<!-- To help us debug your issue, please complete these sections: -->
 
-**Command used to install `emacs-plus`**
+## What you were trying to do
 
-```
+<!-- replace me -->
+
+## What happened (include command output)
+
+<pre>
 $ brew install emacs-plus [OPTIONS]
-```
+</pre>
 
-**Installation log**
+<details>
+  <summary>Command output</summary>
+  <pre>
 
-```
-output goes here
-```
+  <!-- replace this with the command output -->
+
+  </pre>
+</details>
+
+## Output of `brew config`
+
+<pre>
+$ brew config
+<!-- replace me -->
+</pre>
+
+
+## Output of `brew doctor`
+
+<pre>
+$ brew doctor
+<!-- replace me -->
+</pre>
