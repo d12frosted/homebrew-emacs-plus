@@ -9,6 +9,12 @@ assignees: d12frosted
 
 <!-- To help us debug your issue, please complete these sections: -->
 
+Please make sure to follow these steps (and mark the checkboxes):
+
+- [ ] run `brew update` and try to reproduce the issue again
+- [ ] run `brew doctor`, fix all issues and try to reproduce your issue again
+- [ ] run `brew config` and `brew doctor` and include their output
+
 ## What you were trying to do
 
 <!-- replace me -->
