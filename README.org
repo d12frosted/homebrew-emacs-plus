@@ -1,15 +1,53 @@
-* Emacs Plus
+#+begin_html
+<p align="center">
+  <img width="256px" src="images/emacs.png" alt="Banner">
+</p>
+<h1 align="center">Emacs Plus</h1>
+<p align="center">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+26%22">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg" alt="Emacs 26 CI Status Badge">
+  </a>
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+27%22">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2027/badge.svg" alt="Emacs 27 CI Status Badge">
+  </a>
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+28%22">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg" alt="Emacs 28 CI Status Badge">
+  </a>
+</p>
+#+end_html
 
-[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg]]
-[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2027/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2027/badge.svg]]
-[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg]]
+** About
 
-Emacs Plus is GNU Emacs formulae based on =emacs= [[https://github.com/Homebrew/homebrew-core/blob/master/Formula/emacs.rb][formulae]]. The difference is
-that some of the options available from =emacs= formulae are enabled by default
-in =emacs-plus= and some new [[#options][additional options]] are available for user.
+#+begin_html
+<img align="right" width="40%" src="images/screenshot-01.png" alt="Screenshot">
+#+end_html
 
-Patches are extracted from [[https://github.com/d12frosted/emacs-plus-basis][emacs-plus-basis]] repository. And maintained there. If
-you are adding new patch, please add them to =homebrew-emacs-plus= repository.
+Emacs Plus is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It
+offers a wide rage of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs
+Plus intent is to give the most of 'plus' stuff by default, leaving only
+controversial options as opt-in. Please refer to [[#options][→ Options]] section for more
+information.
+
+#+begin_src bash
+$ brew tap d12frosted/emacs-plus
+$ brew install emacs-plus [options]
+#+end_src
+
+Feel free to open an issue or contact me via email if you face any issues,
+questions or feature requests. I love pull requests, so do send them. You might
+want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better understanding on how to
+contribute.
+
+** Table of Contents :TOC:
+  - [[#about][About]]
+  - [[#install][Install]]
+  - [[#reinstall][Reinstall]]
+  - [[#options][Options]]
+  - [[#emacs-configuration][Emacs configuration]]
+  - [[#known-issues][Known Issues]]
+  - [[#screenshots][Screenshots]]
+  - [[#upgrade-from-emacs-25x][Upgrade from Emacs 25.x]]
+  - [[#acknowledgements][Acknowledgements]]
 
 ** Install
 

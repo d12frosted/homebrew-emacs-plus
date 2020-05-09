@@ -1,0 +1,5 @@
+#+TITLE: Development guidelines
+
+/Under construction/
+
+- [[https://github.com/d12frosted/emacs-plus-basis][→ emacs-plus-basis]]
