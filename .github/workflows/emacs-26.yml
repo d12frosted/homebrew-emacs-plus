@@ -8,6 +8,9 @@ on:
       - 'Formula/emacs-plus.rb'
       - 'patches/**'
   pull_request:
+    paths:
+      - 'Formula/emacs-plus.rb'
+      - 'patches/**'
   schedule:
     - cron:  '0 */12 * * *'
 
