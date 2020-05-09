@@ -38,13 +38,19 @@ questions or feature requests. I love pull requests, so do send them. You might
 want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better understanding on how to
 contribute.
 
-** Table of Contents :TOC:
+** Table of Contents :TOC_3:
   - [[#about][About]]
   - [[#install][Install]]
   - [[#reinstall][Reinstall]]
   - [[#options][Options]]
+    - [[#no-titlebar][No Titlebar]]
+    - [[#portable-dumper][Portable dumper]]
+    - [[#xwidgets-webkit][Xwidgets (webkit)]]
+    - [[#system-appearance-change][System appearance change]]
+    - [[#icons][Icons]]
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
+    - [[#emacs-dependency-in-other-formulas][=emacs= dependency in other formulas]]
   - [[#screenshots][Screenshots]]
   - [[#upgrade-from-emacs-25x][Upgrade from Emacs 25.x]]
   - [[#acknowledgements][Acknowledgements]]
@@ -163,6 +169,27 @@ loading a different theme to better match the system appearance.
 Note that this hook is run early in the startup process, so if you want your
 theme to match the system appearance when Emacs starts, you can register your
 function(s) in your =early-init.el=. The hook is NOT run in TTY Emacs sessions.
+
+*** Icons
+
+| Option                                                       | Author                                             | Image                                   | URL                                                          |
+|--------------------------------------------------------------+----------------------------------------------------+-----------------------------------------+--------------------------------------------------------------|
+| =--with-spacemacs-icon=                                      | [[https://github.com/nashamri][Nasser Alshammari]] | [[/icons/spacemacs_128.png]]            | [[https://github.com/nashamri/spacemacs-logo][Link]]         |
+| =--with-gnu-head-icon=                                       | [[https://github.com/aurium][Aurélio A. Heckert]]  | [[/icons/heckert_gnu_128.png]]          | [[https://www.gnu.org/graphics/heckert_gnu.html][Link]]      |
+| =--with-emacs-icons-project-EmacsIcon1=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon1_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon2=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon2_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon3=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon3_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon4=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon4_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon5=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon5_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon6=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon6_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon7=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon7_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon8=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon8_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-EmacsIcon9=                      | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/EmacsIcon9_128.png]]           | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-emacs-card-blue-deep=            | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-blue-deep_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-emacs-card-british-racing-green= | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-british-racing-green_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-emacs-card-carmine=              | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-carmine_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+| =--with-emacs-icons-project-emacs-card-green=                | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-green_128.png]]                                        | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
+
 
 ** Emacs configuration
 
