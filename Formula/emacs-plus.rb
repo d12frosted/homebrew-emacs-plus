@@ -62,8 +62,6 @@ class EmacsPlus < Formula
          "Build with jansson support (--HEAD only)"
   option "with-emacs-27-branch",
          "Build from emacs-27-branch (--HEAD only)"
-  option "with-native-comp-branch",
-         "Build from native-comp branch (--HEAD only)"
 
   # Update list from
   # https://raw.githubusercontent.com/emacsfodder/emacs-icons-project/master/icons.json
@@ -157,12 +155,6 @@ class EmacsPlus < Formula
   if build.with? "emacs-27-branch"
     unless build.head?
       odie "--with-emacs-27-branch is supported only on --HEAD"
-    end
-  end
-
-  if build.with? "native-comp-branch"
-    unless build.head?
-      odie "--with-native-comp-branch is supported only on --HEAD"
     end
   end
 
