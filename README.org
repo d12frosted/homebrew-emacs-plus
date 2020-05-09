@@ -1,6 +1,8 @@
 * Emacs Plus
 
-[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/CI/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/CI/badge.svg]]
+[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg]]
+[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2027/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2027/badge.svg]]
+[[https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg][file:https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg]]
 
 Emacs Plus is GNU Emacs formulae based on =emacs= [[https://github.com/Homebrew/homebrew-core/blob/master/Formula/emacs.rb][formulae]]. The difference is
 that some of the options available from =emacs= formulae are enabled by default

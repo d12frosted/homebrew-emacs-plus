@@ -1,9 +1,12 @@
-name: CI
+name: Emacs 27
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'Formula/emacs-plus.rb'
+      - 'patches/**'
   pull_request:
   schedule:
     - cron:  '0 */4 * * *'
@@ -15,10 +18,6 @@ jobs:
     strategy:
       matrix:
         build_opts:
-          - ''
-          - '--HEAD'
-          - '--HEAD --with-no-titlebar'
-          - '--HEAD --with-xwidgets'
           - '--HEAD --with-emacs-27-branch'
           - '--HEAD --with-emacs-27-branch --with-xwidgets'
           - '--HEAD --with-emacs-27-branch --with-no-titlebar'
