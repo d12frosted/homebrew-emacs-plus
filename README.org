@@ -92,7 +92,7 @@ of arguments.
 | =--with-ctags=               | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=                | build with dbus support                                                      |
 | =--with-debug=               | build with debug symbols and debugger friendly optimizations                 |
-| =--with-emacs-27-branch=     | build from =emacs-26= branch                                                 |
+| =--with-emacs-27-branch=     | build from =emacs-27= branch                                                 |
 | =--with-jansson=             | build with jansson support (=--HEAD= only)                                   |
 | =--with-mailutils=           | build with mailutils support                                                 |
 | =--with-no-frame-refocus=    | disables frame re-focus (ie. closing one frame does not refocus another one) |
