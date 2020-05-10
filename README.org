@@ -153,7 +153,7 @@ More details can be seen here [[https://github.com/veshboo/emacs][Veshboo's emac
 This patch is enabled by default and can't be disabled. It adds a hook,
 =ns-system-appearance-change-functions=, that is called once the system
 appearance is changed. Functions added to this hook will be called with one
-argument, a symbol that is either ='light= or ='dark=. This mainly allows
+argument, a symbol that is either =light= or =dark=. This mainly allows
 loading a different theme to better match the system appearance.
 
 #+begin_src emacs-lisp
