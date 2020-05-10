@@ -102,8 +102,8 @@ of arguments.
 | =--without-cocoa=            | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--without-gnutls=           | build without =gnutls= support                                               |
 | =--without-imagemagick@6=    | build without =imagemagick@6= support                                        |
-| =--without-librsvg=          | build without =librsvg== support                                             |
-| =--without-libxml2=          | build without =libxml2== support                                             |
+| =--without-librsvg=          | build without =librsvg= support                                              |
+| =--without-libxml2=          | build without =libxml2= support                                              |
 | =--without-little-cms2=      | build without =little-cms2= support                                          |
 | =--without-modules=          | build without dynamic modules support                                        |
 | =--without-multicolor-fonts= | build without a patch that enables multicolor font support                   |
