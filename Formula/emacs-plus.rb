@@ -38,14 +38,8 @@ class EmacsPlus < Formula
   # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
-  option "without-libxml2",
-         "Build without libxml2 support"
-  option "without-modules",
-         "Build without dynamic modules support"
   option "without-spacemacs-icon",
          "Build without Spacemacs icon by Nasser Alshammari"
-  option "without-multicolor-fonts",
-         "Build without a patch that enables multicolor font support"
 
   # Opt-in
   option "with-ctags",
@@ -124,11 +118,13 @@ class EmacsPlus < Formula
   end
 
   depends_on "pkg-config" => :build
-  depends_on "little-cms2" => :recommended
+
+  depends_on "gnutls"
+  depends_on "librsvg"
+  depends_on "little-cms2"
+
   depends_on :x11 => :optional
   depends_on "dbus" => :optional
-  depends_on "gnutls" => :recommended
-  depends_on "librsvg" => :recommended
   depends_on "mailutils" => :optional
 
   if build.head?
@@ -190,12 +186,10 @@ class EmacsPlus < Formula
     end
   end
 
-  if build.with? "multicolor-fonts"
-    unless build.head?
-      patch do
-        url (PatchUrlResolver.url "multicolor-fonts")
-        sha256 "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
-      end
+  unless build.head?
+    patch do
+      url (PatchUrlResolver.url "multicolor-fonts")
+      sha256 "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
     end
   end
 
@@ -272,11 +266,8 @@ class EmacsPlus < Formula
       --prefix=#{prefix}
     ]
 
-    if build.with? "libxml2"
-      args << "--with-xml2"
-    else
-      args << "--without-xml2"
-    end
+    args << "--with-xml2"
+    args << "--with-gnutls"
 
     if build.with? "debug"
       ENV.append "CFLAGS", "-g -Og"
@@ -286,12 +277,6 @@ class EmacsPlus < Formula
       args << "--with-dbus"
     else
       args << "--without-dbus"
-    end
-
-    if build.with? "gnutls"
-      args << "--with-gnutls"
-    else
-      args << "--without-gnutls"
     end
 
     # Note that if ./configure is passed --with-imagemagick but can't find the
@@ -324,8 +309,8 @@ class EmacsPlus < Formula
       args << "--with-json"
     end
 
-    args << "--with-modules" if build.with? "modules"
-    args << "--with-rsvg" if build.with? "librsvg"
+    args << "--with-modules"
+    args << "--with-rsvg"
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 

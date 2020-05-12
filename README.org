@@ -100,19 +100,15 @@ of arguments.
 | =--with-x11=                 | build with x11 support                                                       |
 | =--with-xwidgets=            | build [[#xwidgets-webkit][→ with xwidgets]] support (=--HEAD= only)                                |
 | =--without-cocoa=            | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--without-gnutls=           | build without =gnutls= support                                               |
 | =--without-imagemagick@6=    | build without =imagemagick@6= support                                        |
-| =--without-librsvg=          | build without =librsvg= support                                              |
-| =--without-libxml2=          | build without =libxml2= support                                              |
-| =--without-little-cms2=      | build without =little-cms2= support                                          |
-| =--without-modules=          | build without dynamic modules support                                        |
-| =--without-multicolor-fonts= | build without a patch that enables multicolor font support                   |
 | =--HEAD=                     | build from =master= branch (unless =--with-emacs-27-branch= is enabled)      |
 
 Note that by default =emacs-plus= builds the Cocoa version of Emacs with
-=gnutls=, =imagemagick=, =librsvg= and dynamic modules support by default. Also
-it changes default GNU Emacs icon to Spacemacs icon. If you wish to change
-defaults, just use =--without-FEATURE= flag.
+Spacemacs icon instead of the default GNU Emacs icon. If you wish to revert
+icon, just use =--without-spacemacs-icon= flag.
+
+=emacs-plus= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=,
+=little-cms2= and dynamic modules.
 
 Note that =--HEAD= builds are not really supported. They may fail to install,
 they may crash at run time. Or even worse, they may work as expected. So use
@@ -188,7 +184,6 @@ function(s) in your =early-init.el=. The hook is NOT run in TTY Emacs sessions.
 | =--with-emacs-icons-project-emacs-card-british-racing-green= | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-british-racing-green_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
 | =--with-emacs-icons-project-emacs-card-carmine=              | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-carmine_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
 | =--with-emacs-icons-project-emacs-card-green=                | [[https://github.com/jasonm23][Jason Milkins]]     | [[/icons/emacs-card-green_128.png]]                                        | [[https://github.com/emacsfodder/emacs-icons-project][Link]] |
-
 
 ** Emacs configuration
 
