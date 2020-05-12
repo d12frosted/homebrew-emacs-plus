@@ -1,5 +1,119 @@
 #+TITLE: Development guidelines
 
-/Under construction/
+Over the time =emacs-plus= grow with different utilities for adding new features
+and maintaining the formula. The goal of this document is to describe important
+bits of this process.
 
-- [[https://github.com/d12frosted/emacs-plus-basis][→ emacs-plus-basis]]
+* Table of Contents :TOC:
+- [[#pull-requests][Pull requests]]
+- [[#ci][CI]]
+- [[#options][Options]]
+- [[#patches][Patches]]
+- [[#head-and-patches][HEAD and patches]]
+- [[#building-locally][Building locally]]
+- [[#questions][Questions?]]
+
+* Pull requests
+
+Any change to the formula should go through pull requests. Exception for this
+guideline is resource hash fix (e.g. when patch is changed and for some reason
+hash is invalid).
+
+Pull requests give visibility to the users watching this repository. And thanks
+to [[#ci][→ CI]] pull requests changes are built in different configurations. So it's
+harder to break the formula.
+
+* CI
+
+We've been using GitHub workflows to run builds. Main targets are:
+
+- Emacs 26 (current release version)
+- Emacs 27 (next release version)
+- Emacs 28 (development version)
+
+Where it's applicable, we also run builds with different [[#options][→ options]]. The lesser
+options are available, the easier it is to cover all scenarios. Right now
+coverage is not the goal.
+
+* Options
+
+Rule of thumb here is simple. If the new feature (e.g. patch) is not
+experimental nor controversial, it's better to add it unconditionally. In ideal
+world, all features should be controllable via Emacs Lisp, not via compilation
+flag and the only options should be version and icon choice.
+
+* Patches
+
+Every patch must be added to this repository. No exceptions. Rationale is
+simple - external location is not controlled by =emacs-plus= maintainers, but if
+something happens to the patch outside this repository, =emacs-plus= suffers.
+
+In order to help with [[#pull-requests][→ Pull requests]] and [[#ci][→ CI]], =emacs-plus= has a helper
+=PatchUrlResolver=, which makes it possible to apply patches from other branches
+and even repositories.
+
+So instead of using static link to the patch
+
+#+begin_src ruby
+  patch do
+     url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/system-appearance.patch"
+     sha256 "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
+   end
+#+end_src
+
+One should use =PatchUrlResolver=:
+
+#+begin_src ruby
+  patch do
+    url (PatchUrlResolver.url "system-appearance")
+    sha256 "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
+  end
+#+end_src
+
+So even if you are preparing PR, add the patch to this repository.
+
+* HEAD and patches
+
+One of the most popular issues for =emacs-plus= breakage on =--HEAD= is
+incompatibility of custom patches and the latest state of the code. E.g. when
+one of the patches can't be applied cleanly.
+
+In order to ease the maintenance, all of the patches for =--HEAD= are added to [[https://github.com/d12frosted/emacs-plus-basis][→
+emacs-plus-basis]] repository. In the nutshell, it's just a mirror of =emacs=
+repository with patches applied on top. Every few hours, CI fetches the latest
+updates from =emacs= upstream and reapplies the patches (=rebase=). If it fails,
+there is a ready playground for fixing the patch.
+
+And once there is a need to move updated patches to =emacs-plus= repository,
+=extract_patches= script from [[https://github.com/d12frosted/emacs-plus-basis][→ emacs-plus-basis]] comes handy.
+
+#+begin_src bash
+  $ ./extract_patches path/to/homebrew-emacs-plus
+#+end_src
+
+It searches for commits with =[patch]= suffix in the title and extracts them as
+patch. It moves them to =homebrew-emacs-plus= directory and updates hash of
+patches in the formula.
+
+* Building locally
+
+Sometimes there is a need to test the build locally without uninstalling
+=emacs-plus= (otherwise it's impossible to make any further fixes or
+improvements if the build breaks). For this reason, =emacs-plus= repository has
+a =build= script, which installs =emacs-plus-local= with passed options.
+
+#+begin_src bash
+  $ ./build [options]
+  $ ./build --HEAD
+  $ ./build --HEAD --with-emacs-27-branch
+#+end_src
+
+This script is super simple. It makes a copy of =emacs-plus= named
+=emacs-plus-local= and installs it. That way you can play with formula without
+uninstalling =emacs-plus=.
+
+* Questions?
+
+Having questions is good. Asking them is even better. Feel free to open an issue
+or contact me via email (you can find it in my profile on GitHub or check the
+committer email).
