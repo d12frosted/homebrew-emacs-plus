@@ -85,6 +85,26 @@ class EmacsPlus < Formula
 
   option "with-gnu-head-icon", "Using a Bold GNU Head icon by Aurélio A. Heckert"
 
+  option "with-modern-icon-cg433n", "Use a modern style icon by @cg433n"
+
+  option "with-modern-icon-sjrmanning", "Use a modern style icon by @sjrmanning"
+
+  option "with-modern-icon-sexy-v1", "Use a modern style icon by Emacs is Sexy (v1)"
+
+  option "with-modern-icon-sexy-v2", "Use a modern style icon by Emacs is Sexy (v2)"
+
+  option "with-modern-icon-papirus", "Use a modern style icon by Papirus Development Team"
+
+  option "with-modern-icon-pen", "Use a modern style icon by Kentaro Ohkouchi"
+
+  option "with-modern-icon-black-variant", "Use a modern style icon by BlackVariant"
+
+  option "with-modern-icon-nuvola", "Use a modern style icon by David Vignoni (Nuvola Icon Theme)"
+
+  option "with-retro-icon-sink-bw", "Use a retro style icon by Unknown"
+
+  option "with-retro-icon-sink", "Use a retro style icon by Erik Mugele"
+
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
 
   # Deprecated options
@@ -257,6 +277,56 @@ class EmacsPlus < Formula
     sha256 "b5899aaa3589b54c6f31aa081daf29d303047aa07b5ca1d0fd7f9333a829b6d3"
   end
 
+  resource "modern-icon-cg433n" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-cg433n.icns"
+    sha256 "9a0b101faa6ab543337179024b41a6e9ea0ecaf837fc8b606a19c6a51d2be5dd"
+  end
+
+  resource "modern-icon-sjrmanning" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-sjrmanning.icns"
+    sha256 "fc267d801432da90de5c0d2254f6de16557193b6c062ccaae30d91b3ada01ab9"
+  end
+
+  resource "modern-icon-sexy-v1" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-sexy-v1.icns"
+    sha256 "1ea8515d1f6f225047be128009e53b9aa47a242e95823c07a67c6f8a26f8d820"
+  end
+
+  resource "modern-icon-sexy-v2" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-sexy-v2.icns"
+    sha256 "ecdc902435a8852d47e2c682810146e81f5ad72ee3d0c373c936eb4c1e0966e6"
+  end
+
+  resource "modern-icon-papirus" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-papirus.icns"
+    sha256 "50aef07397ab17073deb107e32a8c7b86a0e9dddf5a0f78c4fcff796099623f8"
+  end
+
+  resource "modern-icon-pen" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-pen.icns"
+    sha256 "4fda050447a9803d38dd6fd7d35386103735aec239151714e8bf60bf9d357d3b"
+  end
+
+  resource "modern-icon-nuvola" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-nuvola.icns"
+    sha256 "c3701e25ff46116fd694bc37d8ccec7ad9ae58bb581063f0792ea3c50d84d997"
+  end
+
+  resource "modern-icon-black-variant" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/modern-icon-black-variant.icns"
+    sha256 "a56a19fb5195925c09f38708fd6a6c58c283a1725f7998e3574b0826c6d9ac7e"
+  end
+
+  resource "retro-icon-sink-bw" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/retro-icon-sink-bw.icns"
+    sha256 "5cd836f86c8f5e1688d6b59bea4b57c8948026a9640257a7d2ec153ea7200571"
+  end
+
+  resource "retro-icon-sink" do
+    url "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/icons/retro-icon-sink.icns"
+    sha256 "be0ee790589a3e49345e1894050678eab2c75272a8d927db46e240a2466c6abc"
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
@@ -346,8 +416,12 @@ class EmacsPlus < Formula
         EmacsIcon5 EmacsIcon6 EmacsIcon7 EmacsIcon8
         EmacsIcon9 emacs-card-blue-deep emacs-card-british-racing-green
         emacs-card-carmine emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
-       %w[modern-icon gnu-head-icon spacemacs-icon]).each do |icon|
-        next if build.without? icon
+       %w[modern-icon gnu-head-icon spacemacs-icon
+        modern-icon-cg433n modern-icon-sjrmanning modern-icon-sexy-v1
+        modern-icon-sexy-v2 modern-icon-papirus modern-icon-pen
+        modern-icon-black-variant modern-icon-nuvola
+        retro-icon-sink-bw retro-icon-sink]).each do |icon| next if
+        build.without? icon
 
         rm "#{icons_dir}/Emacs.icns"
         resource(icon).stage do
