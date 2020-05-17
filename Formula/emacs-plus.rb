@@ -416,11 +416,11 @@ class EmacsPlus < Formula
         EmacsIcon5 EmacsIcon6 EmacsIcon7 EmacsIcon8
         EmacsIcon9 emacs-card-blue-deep emacs-card-british-racing-green
         emacs-card-carmine emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
-       %w[modern-icon gnu-head-icon spacemacs-icon
-        modern-icon-cg433n modern-icon-sjrmanning modern-icon-sexy-v1
+       %w[modern-icon gnu-head-icon modern-icon-cg433n
+        modern-icon-sjrmanning modern-icon-sexy-v1
         modern-icon-sexy-v2 modern-icon-papirus modern-icon-pen
         modern-icon-black-variant modern-icon-nuvola
-        retro-icon-sink-bw retro-icon-sink]).each do |icon| next if
+        retro-icon-sink-bw retro-icon-sink spacemacs-icon]).each do |icon| next if
         build.without? icon
 
         rm "#{icons_dir}/Emacs.icns"
