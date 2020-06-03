@@ -38,8 +38,6 @@ class EmacsPlus < Formula
   # Opt-out
   option "without-cocoa",
          "Build a non-Cocoa version of Emacs"
-  option "without-spacemacs-icon",
-         "Build without Spacemacs icon by Nasser Alshammari"
 
   # Opt-in
   option "with-ctags",
@@ -80,6 +78,8 @@ class EmacsPlus < Formula
   emacs_icons_project_icons.keys.each do |icon|
     option "with-emacs-icons-project-#{icon}", "Using Emacs icon project #{icon}"
   end
+
+  option "with-spacemacs-icon", "Build with Spacemacs icon by Nasser Alshammari"
 
   option "with-modern-icon", "Using a modern style Emacs icon by @tpanum"
 
