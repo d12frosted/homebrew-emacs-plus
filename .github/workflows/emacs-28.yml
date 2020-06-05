@@ -25,7 +25,6 @@ jobs:
           - ''
           - '--with-xwidgets'
           - '--with-no-titlebar'
-          - '--with-x11'
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
