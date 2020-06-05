@@ -4,26 +4,77 @@
 # Script for testing Formula locally without the need to uninstall Emacs.
 #
 # Usage example:
-#   $ ./build --without-spacemacs-icon --HEAD
+#   $ ./build 25 --without-spacemacs-icon --HEAD
 #
 
-SOURCE_FILE=Formula/emacs-plus.rb
-SOURCE_NAME=EmacsPlus
+SOURCE_FILE_26=Formula/emacs-plus.rb
+SOURCE_NAME_26=EmacsPlus
+
+SOURCE_FILE_27=Formula/emacs-plus@27.rb
+SOURCE_NAME_27=EmacsPlusAT27
+
+SOURCE_FILE_28=Formula/emacs-plus@28.rb
+SOURCE_NAME_28=EmacsPlusAT28
 
 TARGET_FILE=Formula/emacs-plus-local.rb
 TARGET_NAME=EmacsPlusLocal
 
 PACKAGE=emacs-plus-local
 
-function cleanup () {
+function cleanup {
   rm -f "$TARGET_FILE"
 }
 
 trap cleanup INT TERM EXIT
 
+function usage {
+  echo "Usage:
+  build VERSION [OPTIONS]
+
+Versions:
+  26                    Emacs 26 - emacs-plus    - current release
+  27                    Emacs 27 - emacs-plus@27 - next release
+  28                    Emacs 27 - emacs-plus@28 - development
+
+Consult each formula for the list of available options.
+"
+}
+
+VERSION=$1
+shift
+
+case $VERSION in
+  26)
+    SOURCE_FILE=$SOURCE_FILE_26
+    SOURCE_NAME=$SOURCE_NAME_26
+    ;;
+  27)
+    SOURCE_FILE=$SOURCE_FILE_27
+    SOURCE_NAME=$SOURCE_NAME_27
+    ;;
+  28)
+    SOURCE_FILE=$SOURCE_FILE_28
+    SOURCE_NAME=$SOURCE_NAME_28
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac
+
 cp "$SOURCE_FILE" "$TARGET_FILE"
 
 sed -i -e "s/class $SOURCE_NAME/class $TARGET_NAME/g" "$TARGET_FILE"
+
+case $VERSION in
+  26)
+    SOURCE_FILE=$SOURCE_FILE_26
+    SOURCE_NAME=$SOURCE_NAME_26
+    old_sha=cb589861c8a697869107d1cbacc9cc920a8e7257b5c371b7e590b05e7e04c92c
+    new_sha=1e056907643ab81b340cd5c65832c2a3d9066116606bc822da1c08cf34913c38
+    sed -i -e "s/$old_sha/$new_sha/g" "$TARGET_FILE"
+    ;;
+esac
 
 export HOMEBREW_GITHUB_REF
 HOMEBREW_GITHUB_REF=$(git rev-parse --abbrev-ref HEAD)

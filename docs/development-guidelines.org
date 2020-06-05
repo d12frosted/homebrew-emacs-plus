@@ -103,9 +103,12 @@ improvements if the build breaks). For this reason, =emacs-plus= repository has
 a =build= script, which installs =emacs-plus-local= with passed options.
 
 #+begin_src bash
-  $ ./build [options]
-  $ ./build --HEAD
-  $ ./build --HEAD --with-emacs-27-branch
+  $ ./build VERSION [options]
+  $ ./build 26
+  $ ./build 27
+  $ ./build 27 --with-no-titlebar
+  $ ./build 28
+  $ ./build 28 --with-no-titlebar
 #+end_src
 
 This script is super simple. It makes a copy of =emacs-plus= named
