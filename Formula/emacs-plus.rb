@@ -15,6 +15,21 @@ class EmacsPlus < Formula
     sha256 "cb589861c8a697869107d1cbacc9cc920a8e7257b5c371b7e590b05e7e04c92c" => :catalina
   end
 
+  if build.head?
+    odie <<~EOS
+
+         Emacs 27 and Emacs 28 are now separate formulas. Please use
+         emacs-plus@27 or emacs-plus@28.
+
+         $ brew install emacs-plus@27 [options]
+
+         or
+
+         $ brew install emacs-plus@28 [options]
+
+      EOS
+  end
+
   #
   # Dependencies
   #
