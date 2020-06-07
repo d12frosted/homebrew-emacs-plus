@@ -163,6 +163,9 @@ class EmacsPlus < Formula
       Please see https://github.com/d12frosted/homebrew-emacs-plus/issues/195
       for more information.
 
+      UPDATE: If you wish to install Emacs 27 or Emacs 28, use emacs-plus@27 or
+      emacs-plus@28 formula respectively.
+
     EOS
   end
 
