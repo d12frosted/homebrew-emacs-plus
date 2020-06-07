@@ -71,7 +71,7 @@ class EmacsPlusAT28 < Formula
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on "imagemagick@7" => :recommended
+  depends_on "imagemagick" => :recommended
   depends_on "dbus" => :optional
   depends_on "jansson" => :optional
   depends_on "mailutils" => :optional
@@ -228,15 +228,14 @@ class EmacsPlusAT28 < Formula
     # library it does not fail but imagemagick support will not be available.
     # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
     args <<
-      if build.with?("imagemagick@7")
+      if build.with?("imagemagick")
         "--with-imagemagick"
       else
         "--without-imagemagick"
       end
 
-    # Emacs 27.x (current HEAD) supports imagemagick7 but not Emacs 26.x
-    if build.with? "imagemagick@7"
-      imagemagick_lib_path = Formula["imagemagick@7"].opt_lib/"pkgconfig"
+    if build.with? "imagemagick"
+      imagemagick_lib_path = Formula["imagemagick"].opt_lib/"pkgconfig"
       ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
       ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
     end
