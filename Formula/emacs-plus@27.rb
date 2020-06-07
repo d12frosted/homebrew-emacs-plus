@@ -381,15 +381,6 @@ class EmacsPlusAT27 < Formula
 
       To link the application to default Homebrew App location:
         ln -s #{prefix}/Emacs.app /Applications
-
-      --natural-title-bar option was removed from this formula, in order to
-        duplicate its effect add following line to your init.el file
-        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-        (add-to-list 'default-frame-alist '(ns-appearance . dark))
-      or:
-        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-        (add-to-list 'default-frame-alist '(ns-appearance . light))
-
     EOS
   end
 
