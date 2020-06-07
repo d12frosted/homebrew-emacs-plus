@@ -1,0 +1,92 @@
+name: Bottling
+
+on:
+  pull_request:
+    paths:
+      - 'Formula/*.rb'
+      - 'Aliases/*'
+      - '.github/workflows/bottling.yml'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: jonchang/audit-action@master
+
+  build:
+    name: Build macOS bottles
+    runs-on: macos-latest
+    steps:
+      - name: Update Homebrew
+        run: brew update-reset
+
+      - uses: actions/checkout@master
+
+      - name: Build bottles
+        run: |
+          mkdir -p "$(dirname $(brew --repo ${{github.repository}}))"
+          cp -a "$GITHUB_WORKSPACE" "$(brew --repo ${{github.repository}})"
+          mkdir ~/bottles
+          cd ~/bottles
+          brew test-bot --cleanup --root-url=$HOMEBREW_BINTRAY_URL
+          cp -a ~/bottles $RUNNER_TEMP/
+        env:
+          HOMEBREW_BINTRAY_URL: https://dl.bintray.com/d12frosted/emacs-plus
+
+      - name: Upload bottles
+        uses: actions/upload-artifact@v1
+        with:
+          name: bottles
+          path: ${{runner.temp}}/bottles
+
+  # upload:
+  #   name: Upload bottles
+  #   runs-on: macos-latest
+  #   needs:
+  #     - build
+  #   steps:
+  #     - name: Update Homebrew
+  #       run: brew update-reset
+  #     - name: Setup tap
+  #       env:
+  #         PATCH_URL: ${{github.event.pull_request.patch_url}}
+  #       run: |
+  #         brew tap --full $GITHUB_REPOSITORY
+  #         brew pull --clean $PATCH_URL
+  #     - name: Get bottles
+  #       uses: actions/download-artifact@v1
+  #       with:
+  #         name: bottles
+  #         path: ./
+  #     - name: Create package
+  #       env:
+  #         HOMEBREW_BINTRAY_REPO: emacs-plus
+  #         HOMEBREW_BINTRAY_USER: d12frosted
+  #         HOMEBREW_BINTRAY_KEY: ${{secrets.HOMEBREW_BINTRAY_KEY}}
+  #       run: |
+  #         for package in $(ls -1 *.bottle.* | awk -F '--' '{print $1}' | uniq | tr '@' ':'); do
+  #           curl \
+  #             --user $HOMEBREW_BINTRAY_USER:$HOMEBREW_BINTRAY_KEY \
+  #             --header "Content-Type: application/json" \
+  #             --data " \
+  #               {\"name\": \"$package\", \
+  #               \"vcs_url\": \"https://github.com/${GITHUB_REPOSITORY}\", \
+  #               \"licenses\": [\"MIT\"], \
+  #               \"public_download_numbers\": true, \
+  #               \"public_stats\": true \
+  #               }" \
+  #             https://api.bintray.com/packages/$HOMEBREW_BINTRAY_USER/$HOMEBREW_BINTRAY_REPO || true
+  #         done
+  #     - name: Upload bottles
+  #       env:
+  #         HOMEBREW_BOTTLE_DOMAIN: https://dl.bintray.com/d12frosted
+  #         HOMEBREW_BINTRAY_USER: d12frosted
+  #         HOMEBREW_BINTRAY_KEY: ${{secrets.HOMEBREW_BINTRAY_KEY}}
+  #       run: brew test-bot --bintray-org=$HOMEBREW_BINTRAY_USER --ci-upload
+  #     - name: Push branch
+  #       env:
+  #         GITHUB_USER: ${{github.event.repository.owner.login}}
+  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #         BRANCH: ${{github.event.pull_request.head.ref}}
+  #       run: git -C $(brew --repository $GITHUB_REPOSITORY) push -f https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git HEAD:$BRANCH
