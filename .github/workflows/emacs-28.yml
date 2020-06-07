@@ -6,11 +6,11 @@ on:
       - master
     paths:
       - 'Formula/emacs-plus@28.rb'
-      - 'patches/**'
+      - 'patches/emacs-28/**'
   pull_request:
     paths:
       - 'Formula/emacs-plus@28.rb'
-      - 'patches/**'
+      - 'patches/emacs-28/**'
   schedule:
     - cron:  '0 */4 * * *'
 
