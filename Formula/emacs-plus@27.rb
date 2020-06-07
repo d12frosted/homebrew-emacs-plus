@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require_relative 'PatchUrlResolver'
+require_relative '../lib/PatchUrlResolver'
 
 class EmacsPlusAT27 < Formula
   desc "GNU Emacs text editor"
