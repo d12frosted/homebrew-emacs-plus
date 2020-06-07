@@ -7,8 +7,8 @@
 #   $ ./build 25 --without-spacemacs-icon --HEAD
 #
 
-SOURCE_FILE_26=Formula/emacs-plus.rb
-SOURCE_NAME_26=EmacsPlus
+SOURCE_FILE_26=Formula/emacs-plus@26.rb
+SOURCE_NAME_26=EmacsPlusAT26
 
 SOURCE_FILE_27=Formula/emacs-plus@27.rb
 SOURCE_NAME_27=EmacsPlusAT27
@@ -32,7 +32,7 @@ function usage {
   build VERSION [OPTIONS]
 
 Versions:
-  26                    Emacs 26 - emacs-plus    - current release
+  26                    Emacs 26 - emacs-plus@26 - current release
   27                    Emacs 27 - emacs-plus@27 - next release
   28                    Emacs 27 - emacs-plus@28 - development
 

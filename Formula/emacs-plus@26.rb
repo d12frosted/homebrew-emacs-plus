@@ -1,6 +1,6 @@
 require_relative "../Library/PatchUrlResolver"
 
-class EmacsPlus < Formula
+class EmacsPlusAT26 < Formula
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
   url "https://ftp.gnu.org/gnu/emacs/emacs-26.3.tar.xz"
@@ -9,8 +9,8 @@ class EmacsPlus < Formula
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    sha256 "6b59ea5c941b754f5008039be319e4437ebd66dc2e1a50fdf890cf226c078386" => :mojave
-    sha256 "cb589861c8a697869107d1cbacc9cc920a8e7257b5c371b7e590b05e7e04c92c" => :catalina
+    sha256 "b151ea95acc99d3d122bc3e0dcfca8df2bbfb37d166a2f5e3cd3e519c3611707" => :mojave
+    sha256 "144fce48c5382d812eb8f5539e0296d7e3e326ab5a71d2e901f5184890b83967" => :catalina
   end
 
   if build.head?

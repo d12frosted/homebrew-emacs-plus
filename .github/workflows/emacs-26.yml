@@ -5,12 +5,12 @@ on:
     branches:
       - master
     paths:
-      - 'Formula/emacs-plus.rb'
+      - 'Formula/emacs-plus@26.rb'
       - 'patches/emacs-26/**'
       - 'Library/**'
   pull_request:
     paths:
-      - 'Formula/emacs-plus.rb'
+      - 'Formula/emacs-plus@26.rb'
       - 'patches/emacs-26/**'
       - 'Library/**'
   schedule:
@@ -34,12 +34,12 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Build emacs-plus ${{ matrix.build_opts }}
-      run: brew install Formula/emacs-plus.rb ${{ matrix.build_opts }}
+      run: brew install Formula/emacs-plus@26.rb ${{ matrix.build_opts }}
 
     - name: Test installation
       if: contains(matrix.build_opts, '--HEAD') == false
-      run: brew test Formula/emacs-plus.rb
+      run: brew test Formula/emacs-plus@26.rb
 
     - name: Test installation (--HEAD)
       if: contains(matrix.build_opts, '--HEAD')
-      run: brew test Formula/emacs-plus.rb --HEAD
+      run: brew test Formula/emacs-plus@26.rb --HEAD
