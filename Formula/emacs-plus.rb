@@ -159,6 +159,10 @@ class EmacsPlus < Formula
         (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . light))
 
+      IMPORTANT: Emacs 26 is currently not supported on macOS Catalina 10.15.4+.
+      Please see https://github.com/d12frosted/homebrew-emacs-plus/issues/195
+      for more information.
+
     EOS
   end
 
