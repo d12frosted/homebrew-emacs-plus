@@ -1,6 +1,4 @@
-# coding: utf-8
-
-require_relative '../lib/PatchUrlResolver'
+require_relative "../lib/PatchUrlResolver"
 
 class EmacsPlusAT27 < Formula
   desc "GNU Emacs text editor"
@@ -32,22 +30,22 @@ class EmacsPlusAT27 < Formula
   #
   # code taken from emacs-mac formula
   emacs_icons_project_icons = {
-    "EmacsIcon1" => "50dbaf2f6d67d7050d63d987fe3743156b44556ab42e6d9eee92248c56011bd0",
-    "EmacsIcon2" => "8d63589b0302a67f13ab94b91683a8ad7c2b9e880eabe008056a246a22592963",
-    "EmacsIcon3" => "80dd2a4776739a081e0a42008e8444c729d41ba876b19fa9d33fde98ee3e0ebf",
-    "EmacsIcon4" => "8ce646ca895abe7f45029f8ff8f5eac7ab76713203e246b70dea1b8a21a6c135",
-    "EmacsIcon5" => "ca415df7ad60b0dc495626b0593d3e975b5f24397ad0f3d802455c3f8a3bd778",
-    "EmacsIcon6" => "12a1999eb006abac11535b7fe4299ebb3c8e468360faf074eb8f0e5dec1ac6b0",
-    "EmacsIcon7" => "f5067132ea12b253fb4a3ea924c75352af28793dcf40b3063bea01af9b2bd78c",
-    "EmacsIcon8" => "d330b15cec1bcdfb8a1e8f8913d8680f5328d59486596fc0a9439b54eba340a0",
-    "EmacsIcon9" => "f58f46e5ef109fff8adb963a97aea4d1b99ca09265597f07ee95bf9d1ed4472e",
-    "emacs-card-blue-deep" => "6bdb17418d2c620cf4132835cfa18dcc459a7df6ce51c922cece3c7782b3b0f9",
+    "EmacsIcon1"                      => "50dbaf2f6d67d7050d63d987fe3743156b44556ab42e6d9eee92248c56011bd0",
+    "EmacsIcon2"                      => "8d63589b0302a67f13ab94b91683a8ad7c2b9e880eabe008056a246a22592963",
+    "EmacsIcon3"                      => "80dd2a4776739a081e0a42008e8444c729d41ba876b19fa9d33fde98ee3e0ebf",
+    "EmacsIcon4"                      => "8ce646ca895abe7f45029f8ff8f5eac7ab76713203e246b70dea1b8a21a6c135",
+    "EmacsIcon5"                      => "ca415df7ad60b0dc495626b0593d3e975b5f24397ad0f3d802455c3f8a3bd778",
+    "EmacsIcon6"                      => "12a1999eb006abac11535b7fe4299ebb3c8e468360faf074eb8f0e5dec1ac6b0",
+    "EmacsIcon7"                      => "f5067132ea12b253fb4a3ea924c75352af28793dcf40b3063bea01af9b2bd78c",
+    "EmacsIcon8"                      => "d330b15cec1bcdfb8a1e8f8913d8680f5328d59486596fc0a9439b54eba340a0",
+    "EmacsIcon9"                      => "f58f46e5ef109fff8adb963a97aea4d1b99ca09265597f07ee95bf9d1ed4472e",
+    "emacs-card-blue-deep"            => "6bdb17418d2c620cf4132835cfa18dcc459a7df6ce51c922cece3c7782b3b0f9",
     "emacs-card-british-racing-green" => "ddf0dff6a958e3b6b74e6371f1a68c2223b21e75200be6b4ac6f0bd94b83e1a5",
-    "emacs-card-carmine" => "4d34f2f1ce397d899c2c302f2ada917badde049c36123579dd6bb99b73ebd7f9",
-    "emacs-card-green" => "f94ade7686418073f04b73937f34a1108786400527ed109af822d61b303048f7",
+    "emacs-card-carmine"              => "4d34f2f1ce397d899c2c302f2ada917badde049c36123579dd6bb99b73ebd7f9",
+    "emacs-card-green"                => "f94ade7686418073f04b73937f34a1108786400527ed109af822d61b303048f7",
   }
 
-  emacs_icons_project_icons.keys.each do |icon|
+  emacs_icons_project_icons.each_key do |icon|
     option "with-emacs-icons-project-#{icon}", "Using Emacs icon project #{icon}"
   end
 
@@ -72,16 +70,16 @@ class EmacsPlusAT27 < Formula
 
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
-  depends_on "texinfo" => :build
   depends_on "pkg-config" => :build
+  depends_on "texinfo" => :build
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on :x11 => :optional
-  depends_on "dbus" => :optional
-  depends_on "mailutils" => :optional
   depends_on "imagemagick@7" => :recommended
+  depends_on "dbus" => :optional
   depends_on "jansson" => :optional
+  depends_on "mailutils" => :optional
+  depends_on :x11 => :optional
 
   if build.with? "x11"
     depends_on "freetype" => :recommended
@@ -93,44 +91,9 @@ class EmacsPlusAT27 < Formula
   #
 
   if build.with? "xwidgets"
-    unless build.with? "cocoa" and build.without? "x11"
+    unless (build.with? "cocoa") && (build.without? "x11")
       odie "--with-xwidgets is not available when building --with-x11"
     end
-  end
-
-  #
-  # Patches
-  #
-
-  if build.with? "no-titlebar"
-    patch do
-      url (PatchUrlResolver.url "emacs-27/no-titlebar")
-      sha256 "fdf8dde63c2e1c4cb0b02354ce7f2102c5f8fd9e623f088860aee8d41d7ad38f"
-    end
-  end
-
-  if build.with? "xwidgets"
-    patch do
-      url (PatchUrlResolver.url "emacs-27/xwidgets_webkit_in_cocoa")
-      sha256 "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40"
-    end
-  end
-
-  if build.with? "no-frame-refocus"
-    patch do
-      url (PatchUrlResolver.url "emacs-27/no-frame-refocus-cocoa")
-      sha256 "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd"
-    end
-  end
-
-  patch do
-    url (PatchUrlResolver.url "emacs-27/fix-window-role")
-    sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  end
-
-  patch do
-    url (PatchUrlResolver.url "emacs-27/system-appearance")
-    sha256 "82252e2858a0eba95148661264e390eaf37349fec9c30881d3c1299bfaee8b21"
   end
 
   #
@@ -209,6 +172,41 @@ class EmacsPlusAT27 < Formula
     sha256 "be0ee790589a3e49345e1894050678eab2c75272a8d927db46e240a2466c6abc"
   end
 
+  #
+  # Patches
+  #
+
+  if build.with? "no-titlebar"
+    patch do
+      url (PatchUrlResolver.url "emacs-27/no-titlebar")
+      sha256 "fdf8dde63c2e1c4cb0b02354ce7f2102c5f8fd9e623f088860aee8d41d7ad38f"
+    end
+  end
+
+  if build.with? "xwidgets"
+    patch do
+      url (PatchUrlResolver.url "emacs-27/xwidgets_webkit_in_cocoa")
+      sha256 "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40"
+    end
+  end
+
+  if build.with? "no-frame-refocus"
+    patch do
+      url (PatchUrlResolver.url "emacs-27/no-frame-refocus-cocoa")
+      sha256 "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd"
+    end
+  end
+
+  patch do
+    url (PatchUrlResolver.url "emacs-27/fix-window-role")
+    sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
+  end
+
+  patch do
+    url (PatchUrlResolver.url "emacs-27/system-appearance")
+    sha256 "82252e2858a0eba95148661264e390eaf37349fec9c30881d3c1299bfaee8b21"
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
@@ -221,35 +219,33 @@ class EmacsPlusAT27 < Formula
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    if build.with? "debug"
-      ENV.append "CFLAGS", "-g -Og"
-    end
+    ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
 
-    if build.with? "dbus"
-      args << "--with-dbus"
-    else
-      args << "--without-dbus"
-    end
+    args <<
+      if build.with? "dbus"
+        "--with-dbus"
+      else
+        "--without-dbus"
+      end
 
     # Note that if ./configure is passed --with-imagemagick but can't find the
     # library it does not fail but imagemagick support will not be available.
     # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
-    if build.with?("imagemagick@7")
-      args << "--with-imagemagick"
-    else
-      args << "--without-imagemagick"
-    end
+    args <<
+      if build.with?("imagemagick@7")
+        "--with-imagemagick"
+      else
+        "--without-imagemagick"
+      end
 
     # Emacs 27.x (current HEAD) supports imagemagick7 but not Emacs 26.x
     if build.with? "imagemagick@7"
-      imagemagick_lib_path =  Formula["imagemagick@7"].opt_lib/"pkgconfig"
+      imagemagick_lib_path = Formula["imagemagick@7"].opt_lib/"pkgconfig"
       ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
       ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
     end
 
-    if build.with? "jansson"
-      args << "--with-json"
-    end
+    args << "--with-json" if build.with? "jansson"
 
     args << "--with-modules"
     args << "--with-rsvg"
@@ -259,7 +255,7 @@ class EmacsPlusAT27 < Formula
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
-    if build.with? "cocoa" and build.without? "x11"
+    if (build.with? "cocoa") && (build.without? "x11")
       args << "--with-ns" << "--disable-ns-self-contained"
 
       system "./configure", *args
@@ -268,10 +264,10 @@ class EmacsPlusAT27 < Formula
       if MacOS.version <= :mojave
         ohai "Force disabling of aligned_alloc on macOS <= Mojave"
         configure_h_filtered = File.read("src/config.h")
-                                 .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
-                                 .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
-                                 .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
-                                 .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
+                                   .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
+                                   .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
+                                   .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
+                                   .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
         File.open("src/config.h", "w") do |f|
           f.write(configure_h_filtered)
         end
@@ -282,16 +278,33 @@ class EmacsPlusAT27 < Formula
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
 
-      (%w[EmacsIcon1 EmacsIcon2 EmacsIcon3 EmacsIcon4
-        EmacsIcon5 EmacsIcon6 EmacsIcon7 EmacsIcon8
-        EmacsIcon9 emacs-card-blue-deep emacs-card-british-racing-green
-        emacs-card-carmine emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
-       %w[modern-icon gnu-head-icon modern-icon-cg433n
-        modern-icon-sjrmanning modern-icon-sexy-v1
-        modern-icon-sexy-v2 modern-icon-papirus modern-icon-pen
-        modern-icon-black-variant modern-icon-nuvola
-        retro-icon-sink-bw retro-icon-sink spacemacs-icon]).each do |icon| next if
-        build.without? icon
+      (%w[EmacsIcon1
+          EmacsIcon2
+          EmacsIcon3
+          EmacsIcon4
+          EmacsIcon5
+          EmacsIcon6
+          EmacsIcon7
+          EmacsIcon8
+          EmacsIcon9
+          emacs-card-blue-deep
+          emacs-card-british-racing-green
+          emacs-card-carmine
+          emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
+       %w[modern-icon
+          gnu-head-icon
+          modern-icon-cg433n
+          modern-icon-sjrmanning
+          modern-icon-sexy-v1
+          modern-icon-sexy-v2
+          modern-icon-papirus
+          modern-icon-pen
+          modern-icon-black-variant
+          modern-icon-nuvola
+          retro-icon-sink-bw
+          retro-icon-sink
+          spacemacs-icon]).each do |icon|
+        next if build.without? icon
 
         rm "#{icons_dir}/Emacs.icns"
         resource(icon).stage do
@@ -327,10 +340,10 @@ class EmacsPlusAT27 < Formula
       if MacOS.version <= :mojave
         ohai "Force disabling of aligned_alloc on macOS <= Mojave"
         configure_h_filtered = File.read("src/config.h")
-                                 .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
-                                 .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
-                                 .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
-                                 .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
+                                   .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
+                                   .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
+                                   .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
+                                   .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
         File.open("src/config.h", "w") do |f|
           f.write(configure_h_filtered)
         end
@@ -348,7 +361,17 @@ class EmacsPlusAT27 < Formula
     end
   end
 
-  plist_options manual: "emacs"
+  def caveats
+    <<~EOS
+      Emacs.app was installed to:
+        #{prefix}
+
+      To link the application to default Homebrew App location:
+        ln -s #{prefix}/Emacs.app /Applications
+    EOS
+  end
+
+  plist_options :manual => "emacs"
 
   def plist
     <<~EOS
@@ -371,16 +394,6 @@ class EmacsPlusAT27 < Formula
         <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
       </dict>
       </plist>
-    EOS
-  end
-
-  def caveats
-    <<~EOS
-      Emacs.app was installed to:
-        #{prefix}
-
-      To link the application to default Homebrew App location:
-        ln -s #{prefix}/Emacs.app /Applications
     EOS
   end
 

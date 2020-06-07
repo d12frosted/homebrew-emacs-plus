@@ -1,6 +1,4 @@
-# coding: utf-8
-
-require_relative '../lib/PatchUrlResolver'
+require_relative "../lib/PatchUrlResolver"
 
 class EmacsPlus < Formula
   desc "GNU Emacs text editor"
@@ -17,17 +15,15 @@ class EmacsPlus < Formula
 
   if build.head?
     odie <<~EOS
+      Emacs 27 and Emacs 28 are now separate formulas. Please use
+      emacs-plus@27 or emacs-plus@28.
 
-         Emacs 27 and Emacs 28 are now separate formulas. Please use
-         emacs-plus@27 or emacs-plus@28.
+      $ brew install emacs-plus@27 [options]
 
-         $ brew install emacs-plus@27 [options]
+      or
 
-         or
-
-         $ brew install emacs-plus@28 [options]
-
-      EOS
+      $ brew install emacs-plus@28 [options]
+    EOS
   end
 
   #
@@ -37,12 +33,11 @@ class EmacsPlus < Formula
   depends_on "pkg-config" => :build
 
   depends_on "gnutls"
-  depends_on "librsvg"
-  depends_on "little-cms2"
-
   # Emacs 26.x does not support ImageMagick 7:
   # Reported on 2017-03-04: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25967
   depends_on "imagemagick@6"
+  depends_on "librsvg"
+  depends_on "little-cms2"
 
   #
   # Patches
@@ -75,7 +70,7 @@ class EmacsPlus < Formula
     # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
     args << "--with-imagemagick"
 
-    imagemagick_lib_path =  Formula["imagemagick@6"].opt_lib/"pkgconfig"
+    imagemagick_lib_path = Formula["imagemagick@6"].opt_lib/"pkgconfig"
     ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
     ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
 
@@ -90,10 +85,10 @@ class EmacsPlus < Formula
     if MacOS.version <= :mojave
       ohai "Force disabling of aligned_alloc on macOS <= Mojave"
       configure_h_filtered = File.read("src/config.h")
-                               .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
-                               .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
-                               .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
-                               .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
+                                 .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
+                                 .gsub("#define HAVE_DECL_ALIGNED_ALLOC 1", "#undef HAVE_DECL_ALIGNED_ALLOC")
+                                 .gsub("#define HAVE_ALLOCA 1", "#undef HAVE_ALLOCA")
+                                 .gsub("#define HAVE_ALLOCA_H 1", "#undef HAVE_ALLOCA_H")
       File.open("src/config.h", "w") do |f|
         f.write(configure_h_filtered)
       end
@@ -107,40 +102,14 @@ class EmacsPlus < Formula
     # Replace the symlink with one that avoids starting Cocoa.
     (bin/"emacs").unlink # Kill the existing symlink
     (bin/"emacs").write <<~EOS
-        #!/bin/bash
-        exec #{prefix}/Emacs.app/Contents/MacOS/Emacs "$@"
-      EOS
+      #!/bin/bash
+      exec #{prefix}/Emacs.app/Contents/MacOS/Emacs "$@"
+    EOS
 
     # Follow MacPorts and don't install ctags from Emacs. This allows Vim
     # and Emacs and ctags to play together without violence.
     (bin/"ctags").unlink
     (man1/"ctags.1.gz").unlink
-  end
-
-  plist_options manual: "emacs"
-
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-        <key>Label</key>
-        <string>#{plist_name}</string>
-        <key>ProgramArguments</key>
-        <array>
-          <string>#{opt_bin}/emacs</string>
-          <string>--fg-daemon</string>
-        </array>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>StandardOutPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
-        <key>StandardErrorPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
-      </dict>
-      </plist>
-    EOS
   end
 
   def caveats
@@ -166,6 +135,32 @@ class EmacsPlus < Formula
       UPDATE: If you wish to install Emacs 27 or Emacs 28, use emacs-plus@27 or
       emacs-plus@28 formula respectively.
 
+    EOS
+  end
+
+  plist_options :manual => "emacs"
+
+  def plist
+    <<~EOS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+        <string>#{plist_name}</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>#{opt_bin}/emacs</string>
+          <string>--fg-daemon</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardOutPath</key>
+        <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
+        <key>StandardErrorPath</key>
+        <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
+      </dict>
+      </plist>
     EOS
   end
 
