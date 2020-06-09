@@ -1,4 +1,4 @@
-require_relative "../lib/PatchUrlResolver"
+require_relative "../Library/PatchUrlResolver"
 
 class EmacsPlus < Formula
   desc "GNU Emacs text editor"
