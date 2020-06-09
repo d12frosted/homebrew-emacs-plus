@@ -211,7 +211,7 @@ class EmacsPlusAT27 < Formula
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
-      --enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp
+      --enable-locallisppath=#{opt_prefix}/share/emacs/site-lisp/#{name}
       --infodir=#{info}/emacs
       --prefix=#{prefix}
     ]
