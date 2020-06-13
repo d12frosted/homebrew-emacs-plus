@@ -8,11 +8,13 @@ on:
       - 'Formula/emacs-plus@28.rb'
       - 'patches/emacs-28/**'
       - 'Library/**'
+      - '.github/workflows/emacs-28.yml'
   pull_request:
     paths:
       - 'Formula/emacs-plus@28.rb'
       - 'patches/emacs-28/**'
       - 'Library/**'
+      - '.github/workflows/emacs-28.yml'
   schedule:
     - cron:  '0 */4 * * *'
 
