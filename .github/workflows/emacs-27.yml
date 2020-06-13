@@ -7,10 +7,12 @@ on:
     paths:
       - 'Formula/emacs-plus@27.rb'
       - 'patches/emacs-27/**'
+      - 'Library/**'
   pull_request:
     paths:
       - 'Formula/emacs-plus@27.rb'
       - 'patches/emacs-27/**'
+      - 'Library/**'
   schedule:
     - cron:  '0 */4 * * *'
 
