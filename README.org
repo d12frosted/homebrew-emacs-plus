@@ -104,7 +104,7 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]]                                                     |
 | =--with-x11=              | build with x11 support                                                       |
-| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support (=--HEAD= only)                                |
+| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--without-imagemagick@7= | build without =imagemagick= support                                          |
 | =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                      |
