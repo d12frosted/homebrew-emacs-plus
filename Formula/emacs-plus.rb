@@ -53,6 +53,11 @@ class EmacsPlus < Formula
     sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   end
 
+  patch do
+    url (PatchUrlResolver.url "emacs-26/fix-unexec")
+    sha256 "a1fcfe8020301733a3846cf85b072b461b66e26d15b0154b978afb7a4ec3346b"
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
@@ -128,13 +133,8 @@ class EmacsPlus < Formula
         (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (add-to-list 'default-frame-alist '(ns-appearance . light))
 
-      IMPORTANT: Emacs 26 is currently not supported on macOS Catalina 10.15.4+.
-      Please see https://github.com/d12frosted/homebrew-emacs-plus/issues/195
-      for more information.
-
-      UPDATE: If you wish to install Emacs 27 or Emacs 28, use emacs-plus@27 or
+      If you wish to install Emacs 27 or Emacs 28, use emacs-plus@27 or
       emacs-plus@28 formula respectively.
-
     EOS
   end
 
