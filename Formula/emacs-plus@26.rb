@@ -7,12 +7,6 @@ class EmacsPlusAT26 < Formula
   mirror "https://ftpmirror.gnu.org/emacs/emacs-26.3.tar.xz"
   sha256 "4d90e6751ad8967822c6e092db07466b9d383ef1653feb2f95c93e7de66d3485"
 
-  bottle do
-    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    sha256 "b151ea95acc99d3d122bc3e0dcfca8df2bbfb37d166a2f5e3cd3e519c3611707" => :mojave
-    sha256 "144fce48c5382d812eb8f5539e0296d7e3e326ab5a71d2e901f5184890b83967" => :catalina
-  end
-
   if build.head?
     odie <<~EOS
       Emacs 27 and Emacs 28 are now separate formulas. Please use
