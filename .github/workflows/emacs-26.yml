@@ -25,6 +25,7 @@ jobs:
     strategy:
       matrix:
         build_opts:
+          - ''
           - '--build-from-source'
 
     env:
