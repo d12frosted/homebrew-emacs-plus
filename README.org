@@ -99,7 +99,7 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
-| =--with-jansson=          | build with jansson support (=--HEAD= only)                                   |
+| =--with-jansson=          | build with jansson support                                                   |
 | =--with-mailutils=        | build with mailutils support                                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]]                                                     |
