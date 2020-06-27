@@ -152,9 +152,10 @@ a different theme to better match the system appearance.
                   ('dark (load-theme 'tango-dark t)))))
 #+end_src
 
-Note that this hook is run early in the startup process, so if you want your
-theme to match the system appearance when Emacs starts, you can register your
-function(s) in your =early-init.el=. The hook is NOT run in TTY Emacs sessions.
+Note that this hook is also run once when Emacs is initialized, so simply
+adding the above to your =init.el= will allow matching the system appearance
+upon startup.
+The hook is NOT run in TTY Emacs sessions.
 
 *** Icons
 
