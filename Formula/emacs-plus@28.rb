@@ -200,7 +200,7 @@ class EmacsPlusAT28 < Formula
 
   patch do
     url (PatchUrlResolver.url "emacs-28/system-appearance")
-    sha256 "af45bec511779eaca94d0b11e4822306a84d6bc0264183d3366ed4d84f459d81"
+    sha256 "b4ccc981e461ac12661fc4cf0ad7211a1dcab61dccf4bd4eee49ca5f7d66c496"
   end
 
   def install
