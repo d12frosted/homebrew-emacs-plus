@@ -1,4 +1,4 @@
-require_relative "../Library/PatchUrlResolver"
+require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT26 < Formula
   desc "GNU Emacs text editor"
@@ -38,17 +38,17 @@ class EmacsPlusAT26 < Formula
   #
 
   patch do
-    url (PatchUrlResolver.url "emacs-26/multicolor-fonts")
+    url (UrlResolver.patch_url "emacs-26/multicolor-fonts")
     sha256 "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
   end
 
   patch do
-    url (PatchUrlResolver.url "emacs-26/fix-window-role")
+    url (UrlResolver.patch_url "emacs-26/fix-window-role")
     sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   end
 
   patch do
-    url (PatchUrlResolver.url "emacs-26/fix-unexec")
+    url (UrlResolver.patch_url "emacs-26/fix-unexec")
     sha256 "a1fcfe8020301733a3846cf85b072b461b66e26d15b0154b978afb7a4ec3346b"
   end
 

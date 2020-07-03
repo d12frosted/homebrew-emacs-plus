@@ -1,4 +1,4 @@
-class PatchUrlResolver
+class UrlResolver
   def self.repo
     (ENV["HOMEBREW_GITHUB_ACTOR"] or "d12frosted") + "/" + "homebrew-emacs-plus"
   end
@@ -12,7 +12,7 @@ class PatchUrlResolver
     end
   end
 
-  def self.url(name)
+  def self.patch_url(name)
     "https://raw.githubusercontent.com/#{repo}/#{branch}/patches/#{name}.patch"
   end
 end

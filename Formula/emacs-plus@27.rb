@@ -1,4 +1,4 @@
-require_relative "../Library/PatchUrlResolver"
+require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT27 < Formula
   desc "GNU Emacs text editor"
@@ -178,32 +178,32 @@ class EmacsPlusAT27 < Formula
 
   if build.with? "no-titlebar"
     patch do
-      url (PatchUrlResolver.url "emacs-27/no-titlebar")
+      url (UrlResolver.patch_url "emacs-27/no-titlebar")
       sha256 "fdf8dde63c2e1c4cb0b02354ce7f2102c5f8fd9e623f088860aee8d41d7ad38f"
     end
   end
 
   if build.with? "xwidgets"
     patch do
-      url (PatchUrlResolver.url "emacs-27/xwidgets_webkit_in_cocoa")
+      url (UrlResolver.patch_url "emacs-27/xwidgets_webkit_in_cocoa")
       sha256 "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40"
     end
   end
 
   if build.with? "no-frame-refocus"
     patch do
-      url (PatchUrlResolver.url "emacs-27/no-frame-refocus-cocoa")
+      url (UrlResolver.patch_url "emacs-27/no-frame-refocus-cocoa")
       sha256 "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd"
     end
   end
 
   patch do
-    url (PatchUrlResolver.url "emacs-27/fix-window-role")
+    url (UrlResolver.patch_url "emacs-27/fix-window-role")
     sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   end
 
   patch do
-    url (PatchUrlResolver.url "emacs-27/system-appearance")
+    url (UrlResolver.patch_url "emacs-27/system-appearance")
     sha256 "a267a67956ded98b6337fb92e6f3830555b2fe70c3e6f7aa6c1697a7398428dc"
   end
 
