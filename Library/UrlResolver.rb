@@ -15,4 +15,8 @@ class UrlResolver
   def self.patch_url(name)
     "https://raw.githubusercontent.com/#{repo}/#{branch}/patches/#{name}.patch"
   end
+
+  def self.icon_url(name)
+    "https://raw.githubusercontent.com/#{repo}/#{branch}/icons/#{name}.icns"
+  end
 end

@@ -49,7 +49,7 @@ contribute.
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
-    - [[#icons][Icons]]
+  - [[#icons][Icons]]
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
     - [[#emacs-dependency-in-other-formulas][=emacs= dependency in other formulas]]
@@ -157,35 +157,36 @@ adding the above to your =init.el= will allow matching the system appearance
 upon startup.
 The hook is NOT run in TTY Emacs sessions.
 
-*** Icons
+** Icons
 
-| Option                                                       | Author                     | Image                                          | URL    |
-|--------------------------------------------------------------+----------------------------+------------------------------------------------+--------|
-| =--with-spacemacs-icon=                                      | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]] |
-| =--with-gnu-head-icon=                                       | [[https://github.com/aurium][→ Aurélio A. Heckert]]       | [[/icons/heckert_gnu_128.png]]                     | [[https://www.gnu.org/graphics/heckert_gnu.html][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon1=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon1_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon2=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon2_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon3=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon3_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon4=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon4_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon5=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon5_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon6=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon6_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon7=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon7_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon8=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon8_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-EmacsIcon9=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon9_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-emacs-card-blue-deep=            | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-blue-deep_128.png]]            | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-emacs-card-british-racing-green= | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-british-racing-green_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-emacs-card-carmine=              | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-carmine_128.png]]              | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-emacs-icons-project-emacs-card-green=                | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-green_128.png]]                | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]] |
-| =--with-modern-icon-cg433n=                                  | [[https://github.com/cg433n][→ cg433n]]                   | [[/icons/modern-icon-cg433n.png]]                  | [[https://github.com/cg433n/emacs-mac-icon][→ Link]] |
-| =--with-modern-icon-sjrmanning=                              | [[https://github.com/sjrmanning][→ sjrmannings]]              | [[/icons/modern-icon-sjrmanning.png]]              | [[https://github.com/sjrmanning/emacs-icon][→ Link]] |
-| =--with-modern-icon-sexy-v1=                                 | [[https://emacs.sexy][→ Emacs is Sexy]]            | [[/icons/modern-icon-sexy-v1.png]]                 | [[https://emacs.sexy][→ Link]] |
-| =--with-modern-icon-sexy-v2=                                 | [[https://emacs.sexy][→ Emacs is Sexy]]            | [[/icons/modern-icon-sexy-v2.png]]                 | [[https://emacs.sexy][→ Link]] |
-| =--with-modern-icon-papirus=                                 | [[https://github.com/PapirusDevelopmentTeam][→ Papirus Development Team]] | [[/icons/modern-icon-papirus.png]]                 | [[https://github.com/PapirusDevelopmentTeam/papirus-icon-theme][→ Link]] |
-| =--with-modern-icon-pen=                                     | [[https://github.com/nanasess][→ Kentaro Ohkouchi]]         | [[/icons/modern-icon-pen.png]]                     | [[https://github.com/nanasess/EmacsIconCollections][→ Link]] |
-| =--with-modern-icon-black-variant=                           | [[https://www.deviantart.com/blackvariant/about][→ BlackVariant]]             | [[/icons/modern-icon-black-variant.png]]           | [[https://www.deviantart.com/blackvariant][→ Link]] |
-| =--with-modern-icon-nuvola=                                  | [[https://en.wikipedia.org/wiki/David_Vignoni][→ David Vignoni]]            | [[/icons/modern-icon-nuvola.png]]                  | [[https://commons.wikimedia.org/wiki/File:Nuvola_apps_emacs_vector.svg][→ Link]] |
-| =--with-retro-icon-sink-bw=                                  | Unknown                    | [[/icons/retro-icon-sink-bw.png]]                  | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]] |
-| =--with-retro-icon-sink=                                     | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/retro-icon-sink.png]]                     | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]] |
+| Option                                        | Author                     | Image                                          | URL     |
+|-----------------------------------------------+----------------------------+------------------------------------------------+---------|
+| =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
+| =--with-gnu-head-icon=                        | [[https://github.com/aurium][→ Aurélio A. Heckert]]       | [[/icons/gnu-head_128.png]]                        | [[https://www.gnu.org/graphics/heckert_gnu.html][→ Link]]  |
+| =--with-EmacsIcon1-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon1_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon2-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon2_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon3-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon3_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon4-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon4_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon5-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon5_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon6-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon6_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon7-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon7_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon8-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon8_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-EmacsIcon9-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/EmacsIcon9_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-emacs-card-blue-deep-icon=            | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-blue-deep_128.png]]            | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-emacs-card-british-racing-green-icon= | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-british-racing-green_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-emacs-card-carmine-icon=              | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-carmine_128.png]]              | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-emacs-card-green-icon=                | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-green_128.png]]                | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
+| =--with-modern-icon=                          | Unknown                    | [[/icons/modern.png]]                              | Unknown |
+| =--with-modern-cg433n-icon=                   | [[https://github.com/cg433n][→ cg433n]]                   | [[/icons/modern-cg433n.png]]                       | [[https://github.com/cg433n/emacs-mac-icon][→ Link]]  |
+| =--with-modern-sjrmanning-icon=               | [[https://github.com/sjrmanning][→ sjrmannings]]              | [[/icons/modern-sjrmanning.png]]                   | [[https://github.com/sjrmanning/emacs-icon][→ Link]]  |
+| =--with-modern-sexy-v1-icon=                  | [[https://emacs.sexy][→ Emacs is Sexy]]            | [[/icons/modern-sexy-v1.png]]                      | [[https://emacs.sexy][→ Link]]  |
+| =--with-modern-sexy-v2-icon=                  | [[https://emacs.sexy][→ Emacs is Sexy]]            | [[/icons/modern-sexy-v2.png]]                      | [[https://emacs.sexy][→ Link]]  |
+| =--with-modern-papirus-icon=                  | [[https://github.com/PapirusDevelopmentTeam][→ Papirus Development Team]] | [[/icons/modern-papirus.png]]                      | [[https://github.com/PapirusDevelopmentTeam/papirus-icon-theme][→ Link]]  |
+| =--with-modern-pen-icon=                      | [[https://github.com/nanasess][→ Kentaro Ohkouchi]]         | [[/icons/modern-pen.png]]                          | [[https://github.com/nanasess/EmacsIconCollections][→ Link]]  |
+| =--with-modern-black-variant-icon=            | [[https://www.deviantart.com/blackvariant/about][→ BlackVariant]]             | [[/icons/modern-black-variant.png]]                | [[https://www.deviantart.com/blackvariant][→ Link]]  |
+| =--with-modern-nuvola-icon=                   | [[https://en.wikipedia.org/wiki/David_Vignoni][→ David Vignoni]]            | [[/icons/modern-nuvola.png]]                       | [[https://commons.wikimedia.org/wiki/File:Nuvola_apps_emacs_vector.svg][→ Link]]  |
+| =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/retro-sink-bw.png]]                       | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
+| =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/retro-sink.png]]                          | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 
 ** Emacs configuration
 
@@ -230,5 +231,3 @@ $ brew install cask --ignore-dependencies
 
 Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][→ contributors]], issue reporters and bottle providers
 ([[https://github.com/wadkar][→ Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
-
-A Bold GNU Head icon made by [[http://wiki.colivre.net/Aurium/][→ Aurélio A. Heckert]]. Adapted from [[https://www.gnu.org/graphics/heckert_gnu.html][→ GNU.org]].
