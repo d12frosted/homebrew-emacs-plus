@@ -11,9 +11,6 @@ on:
       - '.github/workflows/online.yml'
   pull_request:
     paths:
-      - 'Formula/**'
-      - 'patches/**'
-      - 'Library/**'
       - '.github/workflows/online.yml'
   schedule:
     - cron:  '0 */12 * * *'
