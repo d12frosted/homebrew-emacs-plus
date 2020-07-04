@@ -176,7 +176,7 @@ The hook is NOT run in TTY Emacs sessions.
 | =--with-emacs-card-british-racing-green-icon= | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-british-racing-green_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-emacs-card-carmine-icon=              | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-carmine_128.png]]              | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-emacs-card-green-icon=                | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-green_128.png]]                | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
-| =--with-modern-icon=                          | Unknown                    | [[/icons/modern.png]]                              | Unknown |
+| =--with-modern-icon=                          | Unknown                    | [[/icons/modern_128.png]]                              | Unknown |
 | =--with-modern-cg433n-icon=                   | [[https://github.com/cg433n][→ cg433n]]                   | [[/icons/modern-cg433n.png]]                       | [[https://github.com/cg433n/emacs-mac-icon][→ Link]]  |
 | =--with-modern-sjrmanning-icon=               | [[https://github.com/sjrmanning][→ sjrmannings]]              | [[/icons/modern-sjrmanning.png]]                   | [[https://github.com/sjrmanning/emacs-icon][→ Link]]  |
 | =--with-modern-sexy-v1-icon=                  | [[https://emacs.sexy][→ Emacs is Sexy]]            | [[/icons/modern-sexy-v1.png]]                      | [[https://emacs.sexy][→ Link]]  |
