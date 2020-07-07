@@ -31,10 +31,9 @@ class EmacsBase < Formula
     "modern-pen"                      => "4fda050447a9803d38dd6fd7d35386103735aec239151714e8bf60bf9d357d3b",
     "modern-black-variant"            => "a56a19fb5195925c09f38708fd6a6c58c283a1725f7998e3574b0826c6d9ac7e",
     "modern-nuvola"                   => "c3701e25ff46116fd694bc37d8ccec7ad9ae58bb581063f0792ea3c50d84d997",
-  }
-  ICONS_CONFIG.freeze
+  }.freeze
 
-  def self.inject_icons
+  def self.inject_icon_options
     ICONS_CONFIG.each do |icon, sha|
       option "with-#{icon}-icon", "Using Emacs #{icon} icon"
       resource "#{icon}-icon" do

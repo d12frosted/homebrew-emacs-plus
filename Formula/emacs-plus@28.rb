@@ -57,7 +57,7 @@ class EmacsPlusAT28 < EmacsBase
   # Icons
   #
 
-  inject_icons
+  inject_icon_options
 
   #
   # Patches
@@ -162,40 +162,13 @@ class EmacsPlusAT28 < EmacsBase
       system "make", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
-
-      (%w[EmacsIcon1
-          EmacsIcon2
-          EmacsIcon3
-          EmacsIcon4
-          EmacsIcon5
-          EmacsIcon6
-          EmacsIcon7
-          EmacsIcon8
-          EmacsIcon9
-          emacs-card-blue-deep
-          emacs-card-british-racing-green
-          emacs-card-carmine
-          emacs-card-green].map { |i| "emacs-icons-project-#{i}" } +
-       %w[modern-icon
-          gnu-head-icon
-          modern-icon-cg433n
-          modern-icon-sjrmanning
-          modern-icon-sexy-v1
-          modern-icon-sexy-v2
-          modern-icon-papirus
-          modern-icon-pen
-          modern-icon-black-variant
-          modern-icon-nuvola
-          retro-icon-sink-bw
-          retro-icon-sink
-          spacemacs-icon]).each do |icon|
-        next if build.without? icon
+      ICONS_CONFIG.each_key do |icon|
+        next if build.without? "#{icon}-icon"
 
         rm "#{icons_dir}/Emacs.icns"
-        resource(icon).stage do
+        resource("#{icon}-icon").stage do
           icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
         end
-        break
       end
 
       prefix.install "nextstep/Emacs.app"
