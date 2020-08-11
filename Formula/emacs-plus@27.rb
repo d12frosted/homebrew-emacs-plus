@@ -2,8 +2,9 @@ require_relative "../Library/EmacsBase"
 require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT27 < EmacsBase
-  url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-27.0.91.tar.xz"
-  sha256 "96813dd385dec81ceb1868645939d49b81ca2c1feb42a58b4d38125ebd1345aa"
+  url "https://ftp.gnu.org/gnu/emacs/emacs-27.1.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-27.1.tar.xz"
+  sha256 "4a4c128f915fc937d61edfc273c98106711b540c9be3cd5d2e2b9b5b2f172e41"
 
   head do
     url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
