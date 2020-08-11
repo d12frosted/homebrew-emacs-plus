@@ -30,9 +30,10 @@ information.
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus [options]
-  $ brew install emacs-plus@27 [options]
-  $ brew install emacs-plus@28 [options]
+  $ brew install emacs-plus    [options] # install the latest release (Emacs 27)
+  $ brew install emacs-plus@26 [options] # install Emacs 26
+  $ brew install emacs-plus@27 [options] # install Emacs 27
+  $ brew install emacs-plus@28 [options] # install Emacs 28
 #+end_src
 
 Feel free to open an issue or contact me via email if you face any issues,
@@ -60,16 +61,18 @@ contribute.
 
 Emacs Plus contains separate formulas for different Emacs versions:
 
-- =emacs-plus= installs Emacs 26, current release version;
-- =emacs-plus@27= install Emacs 27, next release version;
+- =emacs-plus= install current release version (Emacs 27);
+- =emacs-plus@26= install Emacs 26, previous release version;
+- =emacs-plus@27= install Emacs 27, current release version;
 - =emacs-plus@28= install Emacs 28, development version.
 
-#+BEGIN_SRC bash
+  #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus [options]
-  $ brew install emacs-plus@27 [options]
-  $ brew install emacs-plus@28 [options]
-#+END_SRC
+  $ brew install emacs-plus    [options] # install the latest release (Emacs 27)
+  $ brew install emacs-plus@26 [options] # install Emacs 26
+  $ brew install emacs-plus@27 [options] # install Emacs 27
+  $ brew install emacs-plus@28 [options] # install Emacs 28
+#+end_src
 
 By default (without any addition options) this formula install Cocoa version of
 Emacs with support of =gnutls=, =imagemagick=, =librsvg=, =libxml2=, dynamic
