@@ -1,0 +1,48 @@
+name: Emacs (default)
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'Aliases/emacs-plus'
+      - '.github/workflows/emacs.yml'
+  pull_request:
+    paths:
+      - 'Aliases/emacs-plus'
+      - '.github/workflows/emacs.yml'
+  schedule:
+    - cron:  '0 */12 * * *'
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build_opts:
+          - ''
+          - '--build-from-source'
+
+    env:
+      HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
+      HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
+      HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build emacs-plus ${{ matrix.build_opts }}
+      uses: nick-invision/retry@v1
+      with:
+        timeout_minutes: 300
+        max_attempts: 2
+        command: brew install Aliases/$(readlink Aliases/emacs-plus) ${{ matrix.build_opts }}
+
+    - name: Test installation
+      if: contains(matrix.build_opts, '--HEAD') == false
+      run: brew test Aliases/$(readlink Aliases/emacs-plus)
+
+    - name: Test installation (--HEAD)
+      if: contains(matrix.build_opts, '--HEAD')
+      run: brew test Aliases/$(readlink Aliases/emacs-plus) --HEAD
