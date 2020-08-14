@@ -70,13 +70,6 @@ class EmacsPlusAT28 < EmacsBase
     end
   end
 
-  if build.with? "xwidgets"
-    patch do
-      url (UrlResolver.patch_url "emacs-28/xwidgets_webkit_in_cocoa")
-      sha256 "c281e09b27e3672a412e9b3fe24bdad430d2f374bd4d1b0b79d667a2e6f01805"
-    end
-  end
-
   if build.with? "no-frame-refocus"
     patch do
       url (UrlResolver.patch_url "emacs-28/no-frame-refocus-cocoa")
