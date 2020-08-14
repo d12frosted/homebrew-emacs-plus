@@ -6,19 +6,6 @@ class EmacsPlusAT26 < EmacsBase
   mirror "https://ftpmirror.gnu.org/emacs/emacs-26.3.tar.xz"
   sha256 "4d90e6751ad8967822c6e092db07466b9d383ef1653feb2f95c93e7de66d3485"
 
-  if build.head?
-    odie <<~EOS
-      Emacs 27 and Emacs 28 are now separate formulas. Please use
-      emacs-plus@27 or emacs-plus@28.
-
-      $ brew install emacs-plus@27 [options]
-
-      or
-
-      $ brew install emacs-plus@28 [options]
-    EOS
-  end
-
   #
   # Dependencies
   #
@@ -133,9 +120,6 @@ class EmacsPlusAT26 < EmacsBase
 
       To link the application to default Homebrew App location:
         ln -s #{prefix}/Emacs.app /Applications
-
-      If you wish to install Emacs 27 or Emacs 28, use emacs-plus@27 or
-      emacs-plus@28 formula respectively.
     EOS
   end
 
