@@ -27,9 +27,9 @@ class EmacsBase < Formula
     "modern-sjrmanning"               => "fc267d801432da90de5c0d2254f6de16557193b6c062ccaae30d91b3ada01ab9",
     "modern-sexy-v1"                  => "1ea8515d1f6f225047be128009e53b9aa47a242e95823c07a67c6f8a26f8d820",
     "modern-sexy-v2"                  => "ecdc902435a8852d47e2c682810146e81f5ad72ee3d0c373c936eb4c1e0966e6",
-    "modern-papirus"                  => "50aef07397ab17073deb107e32a8c7b86a0e9dddf5a0f78c4fcff796099623f8",
+    "modern-papirus"                  => "1ec7c6ddcec97e6182e4ffce6220796ee1cb0b5e00da40848713ce333337222b",
     "modern-pen"                      => "4fda050447a9803d38dd6fd7d35386103735aec239151714e8bf60bf9d357d3b",
-    "modern-black-variant"            => "a56a19fb5195925c09f38708fd6a6c58c283a1725f7998e3574b0826c6d9ac7e",
+    "modern-black-variant"            => "b066ee684e68519950bcca06f631a49fbd1f5a463d49114e5063b3a5f1654d0c",
     "modern-nuvola"                   => "c3701e25ff46116fd694bc37d8ccec7ad9ae58bb581063f0792ea3c50d84d997",
   }.freeze
 
