@@ -1,0 +1,39 @@
+From fe903c5ab7354b97f80ecf1b01ca3ff1027be446 Mon Sep 17 00:00:00 2001
+From: Eli Zaretskii <eliz@gnu.org>
+Date: Sat, 8 Feb 2020 15:41:36 +0200
+Subject: [PATCH] Allow composition of pure-ASCII strings in the mode line
+
+* src/composite.c (Fcomposition_get_gstring): Allow unibyte
+strings if they are pure ASCII, by copying text into a
+multibyte string.
+---
+ src/composite.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/composite.c b/src/composite.c
+index 53e6930b5f..05365cfb65 100644
+--- a/src/composite.c
++++ b/src/composite.c
+@@ -1746,7 +1746,18 @@ Otherwise (for terminal display), FONT-OBJECT must be a terminal ID, a
+       CHECK_STRING (string);
+       validate_subarray (string, from, to, SCHARS (string), &frompos, &topos);
+       if (! STRING_MULTIBYTE (string))
+-	error ("Attempt to shape unibyte text");
++	{
++	  ptrdiff_t i;
++
++	  for (i = SBYTES (string) - 1; i >= 0; i--)
++	    if (!ASCII_CHAR_P (SREF (string, i)))
++	      error ("Attempt to shape unibyte text");
++	  /* STRING is a pure-ASCII string, so we can convert it (or,
++	     rather, its copy) to multibyte and use that thereafter.  */
++	  Lisp_Object string_copy = Fconcat (1, &string);
++	  STRING_SET_MULTIBYTE (string_copy);
++	  string = string_copy;
++	}
+       frombyte = string_char_to_byte (string, frompos);
+     }
+ 
+-- 
+2.28.0
+
