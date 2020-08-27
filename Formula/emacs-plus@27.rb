@@ -99,6 +99,11 @@ class EmacsPlusAT27 < EmacsBase
     sha256 "a267a67956ded98b6337fb92e6f3830555b2fe70c3e6f7aa6c1697a7398428dc"
   end
 
+  patch do
+    url (UrlResolver.patch_url "emacs-27/ligatures-freeze-fix")
+    sha256 "782a222505ceea31f9032ed55e24dcbd0357b1178b916b536d3eb222c9dc1225"
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
