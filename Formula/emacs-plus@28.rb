@@ -18,7 +18,6 @@ class EmacsPlusAT28 < EmacsBase
   option "with-no-titlebar", "Experimental: build without titlebar"
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
-  option "with-jansson", "Build with jansson support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
 
   #
@@ -32,9 +31,9 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
+  depends_on "jansson"
   depends_on "imagemagick" => :recommended
   depends_on "dbus" => :optional
-  depends_on "jansson" => :optional
   depends_on "mailutils" => :optional
   depends_on :x11 => :optional
 
@@ -124,7 +123,6 @@ class EmacsPlusAT28 < EmacsBase
       ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
     end
 
-    args << "--with-json" if build.with? "jansson"
     args << "--with-modules"
     args << "--with-rsvg"
     args << "--without-pop" if build.with? "mailutils"
