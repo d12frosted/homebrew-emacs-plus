@@ -116,9 +116,13 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-nativecomp" if build.with? "native-comp"
 
     if build.with? "native-comp"
-      gcc_major_ver = Formula["gcc"].any_installed_version.major
-      ENV["CC"] = "gcc-#{gcc_major_ver}"
-      ENV["CPP"] = "cpp-#{gcc_major_ver}"
+      gcc_ver = Formula["gcc"].any_installed_version
+      gcc_ver_major = gcc_ver.major
+      ENV["CFLAGS"] = "-I/usr/local/Cellar/gcc/#{gcc_ver}/include -I#{Formula["gcc"].include}"
+      ENV["LDFLAGS"] = "-L/usr/local/Cellar/gcc/#{gcc_ver}/lib/gcc/#{gcc_ver_major} -I/usr/local/Cellar/gcc/#{gcc_ver}/include"
+      ENV["LIBRARY_PATH"] = "/usr/local/Cellar/gcc/#{gcc_ver}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
+      # ENV["CC"] = "gcc-#{gcc_ver_major}"
+      # ENV["CPP"] = "cpp-#{gcc_ver_major}"
     end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
