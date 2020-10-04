@@ -123,7 +123,7 @@ class EmacsPlusAT28 < EmacsBase
       ENV["CFLAGS"] = "-I#{Formula["gcc"].include} -I#{Formula["libgccjit"].include}"
       ENV["LDFLAGS"] = "-L#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
       ENV["LIBRARY_PATH"] = "#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
-      ENV["CC"] = gcc.to_s
+      ENV["CC"] = "/usr/bin/clang"
       # ENV["CPP"] = "cpp-#{gcc_ver_major}"
     end
 
