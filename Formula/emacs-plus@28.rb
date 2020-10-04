@@ -2,7 +2,6 @@ require_relative "../Library/EmacsBase"
 require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT28 < EmacsBase
-  url "https://github.com/emacs-mirror/emacs.git"
   version "28.0.50"
 
   #
@@ -19,6 +18,7 @@ class EmacsPlusAT28 < EmacsBase
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
+  option "with-native-comp", "Build from feature/native-comp branch"
 
   #
   # Dependencies
@@ -42,6 +42,13 @@ class EmacsPlusAT28 < EmacsBase
     depends_on "fontconfig" => :recommended
   end
 
+  if build.with? "native-comp"
+    depends_on "libgccjit" => :recommended
+    depends_on "gcc" => :build
+    depends_on "gmp" => :build
+    depends_on "libjpeg" => :build
+  end
+
   #
   # Incompatible options
   #
@@ -50,6 +57,16 @@ class EmacsPlusAT28 < EmacsBase
     unless (build.with? "cocoa") && (build.without? "x11")
       odie "--with-xwidgets is not available when building --with-x11"
     end
+  end
+
+  #
+  # URL
+  #
+
+  if build.with? "native-comp"
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "feature/native-comp"
+  else
+    url "https://github.com/emacs-mirror/emacs.git"
   end
 
   #
@@ -97,6 +114,25 @@ class EmacsPlusAT28 < EmacsBase
 
     args << "--with-xml2"
     args << "--with-gnutls"
+
+    args << "--with-nativecomp" if build.with? "native-comp"
+
+    if build.with? "native-comp"
+      gcc_ver = Formula["gcc"].any_installed_version
+      gcc_ver_major = gcc_ver.major
+      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+
+      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["gmp"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libjpeg"].include}"
+
+      ENV.append "LDFLAGS", "-L#{gcc_lib}"
+      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["gmp"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libjpeg"].include}"
+    end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
 
@@ -152,6 +188,22 @@ class EmacsPlusAT28 < EmacsBase
       system "make"
       system "make", "install"
 
+      if build.with? "native-comp"
+        contents_dir = buildpath/"nextstep/Emacs.app/Contents"
+        contents_dir.install "native-lisp"
+
+        # Change .eln files dylib ID to avoid that after the post-install phase
+        # all of the *.eln files end up with the same ID. See:
+        # https://github.com/Homebrew/brew/issues/9526 and
+        # https://github.com/Homebrew/brew/pull/10075
+        Dir.glob(contents_dir/"native-lisp/*/*.eln").each do |f|
+          fo = MachO::MachOFile.new(f)
+          ohai "Change dylib_id of ELN files before post_install phase"
+          fo.dylib_id = "#{contents_dir}/" + f
+          fo.write!
+        end
+      end
+
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
         next if build.without? "#{icon}-icon"
@@ -162,6 +214,7 @@ class EmacsPlusAT28 < EmacsBase
         end
       end
 
+      # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
 
       # Replace the symlink with one that avoids starting Cocoa.
