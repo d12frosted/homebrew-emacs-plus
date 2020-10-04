@@ -118,10 +118,12 @@ class EmacsPlusAT28 < EmacsBase
     if build.with? "native-comp"
       gcc_ver = Formula["gcc"].any_installed_version
       gcc_ver_major = gcc_ver.major
-      ENV["CFLAGS"] = "-I/usr/local/Cellar/gcc/#{gcc_ver}/include -I#{Formula["libgccjit"].include}"
-      ENV["LDFLAGS"] = "-L/usr/local/Cellar/gcc/#{gcc_ver}/lib/gcc/#{gcc_ver_major} -I/usr/local/Cellar/gcc/#{gcc_ver}/include"
-      ENV["LIBRARY_PATH"] = "/usr/local/Cellar/gcc/#{gcc_ver}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
-      # ENV["CC"] = "gcc-#{gcc_ver_major}"
+      gcc = Formula["gcc"].opt_bin/"gcc-#{gcc_ver_major}"
+
+      ENV["CFLAGS"] = "-I#{Formula["gcc"].include} -I#{Formula["libgccjit"].include}"
+      ENV["LDFLAGS"] = "-L#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+      ENV["LIBRARY_PATH"] = "#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
+      ENV["CC"] = gcc.to_s
       # ENV["CPP"] = "cpp-#{gcc_ver_major}"
     end
 
