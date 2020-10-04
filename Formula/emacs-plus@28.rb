@@ -2,7 +2,6 @@ require_relative "../Library/EmacsBase"
 require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT28 < EmacsBase
-  url "https://github.com/emacs-mirror/emacs.git"
   version "28.0.50"
 
   #
@@ -19,6 +18,7 @@ class EmacsPlusAT28 < EmacsBase
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
+  option "with-native-comp", "Build from feature/native-comp branch"
 
   #
   # Dependencies
@@ -42,6 +42,11 @@ class EmacsPlusAT28 < EmacsBase
     depends_on "fontconfig" => :recommended
   end
 
+  if build.with? "native-comp"
+    depends_on "libgccjit" => :recommended
+    depends_on "gcc" => :recommended
+  end
+
   #
   # Incompatible options
   #
@@ -50,6 +55,16 @@ class EmacsPlusAT28 < EmacsBase
     unless (build.with? "cocoa") && (build.without? "x11")
       odie "--with-xwidgets is not available when building --with-x11"
     end
+  end
+
+  #
+  # URL
+  #
+
+  if build.with? "native-comp"
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "feature/native-comp"
+  else
+    url "https://github.com/emacs-mirror/emacs.git"
   end
 
   #
@@ -97,6 +112,14 @@ class EmacsPlusAT28 < EmacsBase
 
     args << "--with-xml2"
     args << "--with-gnutls"
+
+    args << "--with-nativecomp" if build.with? "native-comp"
+
+    if build.with? "native-comp"
+      gcc_major_ver = Formula["gcc"].any_installed_version.major
+      ENV["CC"] = "gcc-#{gcc_major_ver}"
+      ENV["CPP"] = "cpp-#{gcc_major_ver}"
+    end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
 

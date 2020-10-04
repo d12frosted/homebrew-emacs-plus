@@ -29,6 +29,7 @@ jobs:
           - ""
           - "--with-xwidgets"
           - "--with-no-titlebar"
+          - "--with-native-comp"
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
