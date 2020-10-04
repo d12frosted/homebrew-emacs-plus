@@ -44,7 +44,9 @@ class EmacsPlusAT28 < EmacsBase
 
   if build.with? "native-comp"
     depends_on "libgccjit" => :recommended
-    depends_on "gcc" => :recommended
+    depends_on "gcc" => :build
+    depends_on "gmp" => :build
+    depends_on "libjpeg" => :build
   end
 
   #
@@ -118,17 +120,25 @@ class EmacsPlusAT28 < EmacsBase
     if build.with? "native-comp"
       gcc_ver = Formula["gcc"].any_installed_version
       gcc_ver_major = gcc_ver.major
+      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
 
       # gcc = Formula["gcc"].opt_bin/"gcc-#{gcc_ver_major}"
       # ENV["CC"] = gcc.to_s
-      ENV["CC"] = "/usr/bin/clang"
+      # ENV["CC"] = "/usr/bin/clang"
       # ENV["CPP"] = "cpp-#{gcc_ver_major}"
 
-      ENV.append "CFLAGS", "-I#{Formula["gcc"].include} -I#{Formula["libgccjit"].include}"
-      ENV.append "LDFLAGS", "-L#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major} -I#{Formula["gcc"].include} -I#{Formula["libgccjit"].include}"
-      # ENV["CFLAGS"] = "-I#{Formula["gcc"].include} -I#{Formula["libgccjit"].include}"
-      # ENV["LDFLAGS"] = "-L#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major} -I#{Formula["gcc"].include} -I#{Formula["libgccjit"].include}"
-      ENV["LIBRARY_PATH"] = "#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
+      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["gmp"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libjpeg"].include}"
+
+      ENV.append "LDFLAGS", "-L#{gcc_lib}"
+      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["gmp"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libjpeg"].include}"
+
+      # ENV["LIBRARY_PATH"] = "#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
     end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
