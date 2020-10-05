@@ -137,8 +137,6 @@ class EmacsPlusAT28 < EmacsBase
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["gmp"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["libjpeg"].include}"
-
-      # ENV["LIBRARY_PATH"] = "#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}:${LIBRARY_PATH:-}"
     end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
@@ -203,6 +201,11 @@ class EmacsPlusAT28 < EmacsBase
         resource("#{icon}-icon").stage do
           icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
         end
+      end
+
+      if build.with? "native-comp"
+        contents_dir = buildpath/"nextstep/Emacs.app/Contents"
+        contents_dir.install "native-lisp"
       end
 
       prefix.install "nextstep/Emacs.app"
