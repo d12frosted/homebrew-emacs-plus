@@ -1,6 +1,7 @@
-From f1488d050826e1d72866a63314d2dcd3617ff4ba Mon Sep 17 00:00:00 2001
+Patch to make emacs 27 aware of the macOS 10.14+ system appearance changes.
+From 43963fc1a2c37657067710243bfeda6c7dd06a67 Mon Sep 17 00:00:00 2001
 From: "Nicolas G. Querol" <nicolas.gquerol@gmail.com>
-Date: Sat, 27 Jun 2020 18:04:38 +0200
+Date: Sun, 8 Nov 2020 19:07:31 +0100
 Subject: [PATCH] Add `ns-system-appearance-change-functions' hook
 
 This implements a new hook, effective only on macOS >= 10.14 (Mojave),
@@ -32,23 +33,27 @@ macOS >= 10.14.
   - Add `ns-system-appearance-change-functions' hook variable and
     symbol, to allow users to add functions that react to the
     change of the system's appearance.
+  - Add `ns-system-appearance' variable, to allow users to consult
+    the current system appearance.
 
 Here is an example on how to use this new feature:
 
-    (add-hook 'ns-system-appearance-change-functions
-        #'(lambda (appearance)
-            (mapc #'disable-theme custom-enabled-themes)
-            (pcase appearance
-               ('light (load-theme 'tango t))
-               ('dark (load-theme 'tango-dark t)))))
+    (defun my/load-theme (appearance)
+      "Load theme, taking current system APPEARANCE into consideration."
+      (mapc #'disable-theme custom-enabled-themes)
+      (pcase appearance
+        ('light (load-theme 'tango t))
+        ('dark (load-theme 'tango-dark t))))
 
-The hook is executed once at Emacs startup, and then every time the
-system appearance changes.
+    (add-hook 'ns-system-appearance-change-functions #'my/load-theme)
+
+The hook being run on each system appearance change as well as at
+startup time, Emacs should then always load the appropriate theme.
 ---
  src/frame.h  |   1 +
- src/nsfns.m  |  13 +++++-
- src/nsterm.m | 122 +++++++++++++++++++++++++++++++++++++++++++++++----
- 3 files changed, 126 insertions(+), 10 deletions(-)
+ src/nsfns.m  |  13 ++++-
+ src/nsterm.m | 139 ++++++++++++++++++++++++++++++++++++++++++++++++---
+ 3 files changed, 143 insertions(+), 10 deletions(-)
 
 diff --git a/src/frame.h b/src/frame.h
 index a54b8623e5..46a7c34cb7 100644
@@ -89,7 +94,7 @@ index 0f879fe390..5a4dd3a157 100644
  
    tem = gui_display_get_arg (dpyinfo, parms, Qns_transparent_titlebar,
 diff --git a/src/nsterm.m b/src/nsterm.m
-index ac467840a2..0065bf66ab 100644
+index 3dd915e370..6dddd01c90 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -2027,16 +2027,35 @@ so some key presses (TAB) are swallowed by the system.  */
@@ -140,7 +145,7 @@ index ac467840a2..0065bf66ab 100644
  
  @implementation EmacsApp
  
-@@ -5811,6 +5831,13 @@ - (void)applicationDidFinishLaunching: (NSNotification *)notification
+@@ -5811,6 +5831,18 @@ - (void)applicationDidFinishLaunching: (NSNotification *)notification
  	 object:nil];
  #endif
  
@@ -149,12 +154,17 @@ index ac467840a2..0065bf66ab 100644
 +         forKeyPath:NSStringFromSelector(@selector(effectiveAppearance))
 +            options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew
 +            context:&kEmacsAppKVOContext];
++
++  pending_funcalls = Fcons(list3(Qrun_hook_with_args,
++                                 Qns_system_appearance_change_functions,
++                                 Vns_system_appearance),
++                           pending_funcalls);
 +#endif
 +
  #ifdef NS_IMPL_COCOA
    /* Some functions/methods in CoreFoundation/Foundation increase the
       maximum number of open files for the process in their first call.
-@@ -5849,6 +5876,50 @@ - (void)antialiasThresholdDidChange:(NSNotification *)notification
+@@ -5849,6 +5881,54 @@ - (void)antialiasThresholdDidChange:(NSNotification *)notification
  #endif
  }
  
@@ -195,17 +205,21 @@ index ac467840a2..0065bf66ab 100644
 +
 +  BOOL is_dark_appearance =
 +    [appearance_name isEqualToString:NSAppearanceNameDarkAqua];
++  Lisp_Object effective_appearance = is_dark_appearance ? Qdark : Qlight;
 +
-+  pending_funcalls = Fcons (list3 (Qrun_hook_with_args,
-+                                   Qns_system_appearance_change_functions,
-+                                   is_dark_appearance ? Qdark : Qlight),
-+                            pending_funcalls);
++  Vns_system_appearance = effective_appearance;
++
++  safe_call2 (Qrun_hook_with_args,
++              Qns_system_appearance_change_functions,
++              effective_appearance);
++
++  Fredisplay(Qnil);
 +#endif /* (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
 +}
  
  /* Termination sequences:
      C-x C-c:
-@@ -6013,6 +6084,14 @@ - (void)applicationDidResignActive: (NSNotification *)notification
+@@ -6013,6 +6093,14 @@ - (void)applicationDidResignActive: (NSNotification *)notification
    ns_send_appdefined (-1);
  }
  
@@ -220,7 +234,7 @@ index ac467840a2..0065bf66ab 100644
  
  
  /* ==========================================================================
-@@ -7492,12 +7571,27 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7492,12 +7580,27 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
  #ifndef NSAppKitVersionNumber10_10
  #define NSAppKitVersionNumber10_10 1343
@@ -252,17 +266,25 @@ index ac467840a2..0065bf66ab 100644
  #endif
  
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
-@@ -9606,6 +9700,18 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
+@@ -9606,6 +9709,26 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
  This variable is ignored on macOS < 10.7 and GNUstep.  Default is t.  */);
    ns_use_mwheel_momentum = YES;
  
++  DEFVAR_LISP ("ns-system-appearance", Vns_system_appearance,
++               doc: /* Current system appearance, i.e. `dark' or `light'.
++
++This variable is ignored on macOS < 10.14 and GNUstep.  Default is nil.  */);
++  Vns_system_appearance = Qnil;
++  DEFSYM(Qns_system_appearance, "ns-system-appearance");
++
 +  DEFVAR_LISP ("ns-system-appearance-change-functions",
 +               Vns_system_appearance_change_functions,
 +     doc: /* List of functions to call when the system appearance changes.
 +Each function is called with a single argument, which corresponds to the new
 +system appearance (`dark' or `light').
 +
-+This hook is also run once at startup.
++This hook is also run once at startup, so that the initial system appearance
++can be taken into account.
 +
 +This variable is ignored on macOS < 10.14 and GNUstep.  Default is nil.  */);
 +  Vns_system_appearance_change_functions = Qnil;
@@ -272,5 +294,7 @@ index ac467840a2..0065bf66ab 100644
    DEFVAR_LISP ("x-toolkit-scroll-bars", Vx_toolkit_scroll_bars,
  	       doc: /* SKIP: real doc in xterm.c.  */);
 -- 
-2.27.0
+2.29.2
+
+
 

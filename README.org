@@ -146,17 +146,21 @@ argument, a symbol that is either =light= or =dark=. This mainly allows loading
 a different theme to better match the system appearance.
 
 #+begin_src emacs-lisp
-  (add-hook 'ns-system-appearance-change-functions
-            #'(lambda (appearance)
-                (mapc #'disable-theme custom-enabled-themes)
-                (pcase appearance
-                  ('light (load-theme 'tango t))
-                  ('dark (load-theme 'tango-dark t)))))
+  (defun my/apply-theme (appearance)
+    "Load theme, taking current system APPEARANCE into consideration."
+    (mapc #'disable-theme custom-enabled-themes)
+    (pcase appearance
+      ('light (load-theme 'tango t))
+      ('dark (load-theme 'tango-dark t))))
+
+  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
 #+end_src
 
-Note that this hook is also run once when Emacs is initialized, so simply
-adding the above to your =init.el= will allow matching the system appearance
-upon startup.
+Note that this hook is also run once when Emacs is initialized, so simply adding
+the above to your =init.el= will allow matching the system appearance upon
+startup. You can also determine what the current system appearance is by
+inspecting the value of the =ns-system-appearance= variable.
+
 The hook is NOT run in TTY Emacs sessions.
 
 ** Icons
