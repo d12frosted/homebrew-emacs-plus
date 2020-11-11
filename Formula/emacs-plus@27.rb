@@ -12,7 +12,8 @@ class EmacsPlusAT27 < EmacsBase
 
   bottle do
     root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    sha256 "4828aec2b77a363fd8235d94b5b21fadede153d3b3350e95ed92a1947a1329a3" => :catalina
+    rebuild 1
+    sha256 "855fadbcc6969986445776fe0764ad443bc8aeee4833c74510e6aaec986e4837" => :catalina
   end
 
   #
