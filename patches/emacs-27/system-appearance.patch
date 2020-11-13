@@ -1,7 +1,7 @@
 Patch to make emacs 27 aware of the macOS 10.14+ system appearance changes.
-From 43963fc1a2c37657067710243bfeda6c7dd06a67 Mon Sep 17 00:00:00 2001
+From 51e1c6a119feeffc2e6d61130fed404c5e6b78d5 Mon Sep 17 00:00:00 2001
 From: "Nicolas G. Querol" <nicolas.gquerol@gmail.com>
-Date: Sun, 8 Nov 2020 19:07:31 +0100
+Date: Wed, 11 Nov 2020 11:38:05 +0100
 Subject: [PATCH] Add `ns-system-appearance-change-functions' hook
 
 This implements a new hook, effective only on macOS >= 10.14 (Mojave),
@@ -52,8 +52,8 @@ startup time, Emacs should then always load the appropriate theme.
 ---
  src/frame.h  |   1 +
  src/nsfns.m  |  13 ++++-
- src/nsterm.m | 139 ++++++++++++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 143 insertions(+), 10 deletions(-)
+ src/nsterm.m | 154 ++++++++++++++++++++++++++++++++++++++++++++++++---
+ 3 files changed, 158 insertions(+), 10 deletions(-)
 
 diff --git a/src/frame.h b/src/frame.h
 index a54b8623e5..46a7c34cb7 100644
@@ -94,7 +94,7 @@ index 0f879fe390..5a4dd3a157 100644
  
    tem = gui_display_get_arg (dpyinfo, parms, Qns_transparent_titlebar,
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 3dd915e370..6dddd01c90 100644
+index 3dd915e370..0e632e8cd9 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -2027,16 +2027,35 @@ so some key presses (TAB) are swallowed by the system.  */
@@ -164,7 +164,7 @@ index 3dd915e370..6dddd01c90 100644
  #ifdef NS_IMPL_COCOA
    /* Some functions/methods in CoreFoundation/Foundation increase the
       maximum number of open files for the process in their first call.
-@@ -5849,6 +5881,54 @@ - (void)antialiasThresholdDidChange:(NSNotification *)notification
+@@ -5849,6 +5881,69 @@ - (void)antialiasThresholdDidChange:(NSNotification *)notification
  #endif
  }
  
@@ -188,38 +188,53 @@ index 3dd915e370..6dddd01c90 100644
 +                          context:context];
 +}
 +
-+- (void)systemAppearanceDidChange:(NSAppearance *)newAppearance
-+{
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
 +#ifndef NSAppKitVersionNumber10_14
 +#define NSAppKitVersionNumber10_14 1671
 +#endif
-+
++- (void)systemAppearanceDidChange:(NSAppearance *)newAppearance
++{
 +  if (NSAppKitVersionNumber < NSAppKitVersionNumber10_14)
 +    return;
 +
 +  NSAppearanceName appearance_name =
-+      [newAppearance bestMatchFromAppearancesWithNames:@[
-+        NSAppearanceNameAqua, NSAppearanceNameDarkAqua
-+      ]];
++    [newAppearance bestMatchFromAppearancesWithNames:@[
++      NSAppearanceNameAqua, NSAppearanceNameDarkAqua
++    ]];
 +
 +  BOOL is_dark_appearance =
 +    [appearance_name isEqualToString:NSAppearanceNameDarkAqua];
-+  Lisp_Object effective_appearance = is_dark_appearance ? Qdark : Qlight;
++  Lisp_Object effective_appearance =
 +
-+  Vns_system_appearance = effective_appearance;
++  Vns_system_appearance = is_dark_appearance ? Qdark : Qlight;
++
++  run_system_appearance_change_hook ();
++}
++
++static inline void run_system_appearance_change_hook (void)
++{
++  if (NILP (Vns_system_appearance_change_functions))
++    return;
++
++  block_input ();
++
++  bool owfi = waiting_for_input;
++  waiting_for_input = false;
 +
 +  safe_call2 (Qrun_hook_with_args,
 +              Qns_system_appearance_change_functions,
-+              effective_appearance);
++              Vns_system_appearance);
++  Fredisplay(Qt);
 +
-+  Fredisplay(Qnil);
-+#endif /* (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
++  waiting_for_input = owfi;
++
++  unblock_input ();
 +}
++#endif /* (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
  
  /* Termination sequences:
      C-x C-c:
-@@ -6013,6 +6093,14 @@ - (void)applicationDidResignActive: (NSNotification *)notification
+@@ -6013,6 +6108,14 @@ - (void)applicationDidResignActive: (NSNotification *)notification
    ns_send_appdefined (-1);
  }
  
@@ -234,7 +249,7 @@ index 3dd915e370..6dddd01c90 100644
  
  
  /* ==========================================================================
-@@ -7492,12 +7580,27 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
+@@ -7492,12 +7595,27 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
  #ifndef NSAppKitVersionNumber10_10
  #define NSAppKitVersionNumber10_10 1343
@@ -266,7 +281,7 @@ index 3dd915e370..6dddd01c90 100644
  #endif
  
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
-@@ -9606,6 +9709,26 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
+@@ -9606,6 +9724,26 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
  This variable is ignored on macOS < 10.7 and GNUstep.  Default is t.  */);
    ns_use_mwheel_momentum = YES;
  
