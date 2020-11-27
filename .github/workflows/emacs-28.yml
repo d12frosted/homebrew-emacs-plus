@@ -5,30 +5,29 @@ on:
     branches:
       - master
     paths:
-      - 'Formula/emacs-plus@28.rb'
-      - 'patches/emacs-28/**'
-      - 'Library/**'
-      - '.github/workflows/emacs-28.yml'
+      - "Formula/emacs-plus@28.rb"
+      - "patches/emacs-28/**"
+      - "Library/**"
+      - ".github/workflows/emacs-28.yml"
   pull_request:
     paths:
-      - 'Formula/emacs-plus@28.rb'
-      - 'patches/emacs-28/**'
-      - 'Library/**'
-      - '.github/workflows/emacs-28.yml'
+      - "Formula/emacs-plus@28.rb"
+      - "patches/emacs-28/**"
+      - "Library/**"
+      - ".github/workflows/emacs-28.yml"
   schedule:
-    - cron:  '0 */4 * * *'
+    - cron: "0 */4 * * *"
 
 jobs:
   build:
-
     runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
         build_opts:
-          - ''
-          - '--with-xwidgets'
-          - '--with-no-titlebar'
+          - ""
+          - "--with-xwidgets"
+          - "--with-no-titlebar"
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
@@ -36,18 +35,18 @@ jobs:
       HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-    - name: Build emacs-plus@28 ${{ matrix.build_opts }}
-      run: brew install emacs-plus@28.rb ${{ matrix.build_opts }}
-      working-directory: Formula
+      - name: Build emacs-plus@28 ${{ matrix.build_opts }}
+        run: brew install emacs-plus@28.rb ${{ matrix.build_opts }}
+        working-directory: Formula
 
-    - name: Test installation
-      if: contains(matrix.build_opts, '--HEAD') == false
-      run: brew test emacs-plus@28.rb
-      working-directory: Formula
+      - name: Test installation
+        if: contains(matrix.build_opts, '--HEAD') == false
+        run: brew test emacs-plus@28.rb
+        working-directory: Formula
 
-    - name: Test installation (--HEAD)
-      if: contains(matrix.build_opts, '--HEAD')
-      run: brew test emacs-plus@28.rb --HEAD
-      working-directory: Formula
+      - name: Test installation (--HEAD)
+        if: contains(matrix.build_opts, '--HEAD')
+        run: brew test emacs-plus@28.rb --HEAD
+        working-directory: Formula

@@ -5,29 +5,28 @@ on:
     branches:
       - master
     paths:
-      - 'Formula/**'
-      - 'patches/**'
-      - 'Library/**'
-      - '.github/workflows/online.yml'
+      - "Formula/**"
+      - "patches/**"
+      - "Library/**"
+      - ".github/workflows/online.yml"
   pull_request:
     paths:
-      - '.github/workflows/online.yml'
+      - ".github/workflows/online.yml"
   schedule:
-    - cron:  '0 */12 * * *'
+    - cron: "0 */12 * * *"
 
 jobs:
   build:
-
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-    - name: Tap emacs-plus
-      run: brew tap d12frosted/emacs-plus
+      - name: Tap emacs-plus
+        run: brew tap d12frosted/emacs-plus
 
-    - name: Build emacs-plus
-      run: brew install emacs-plus
+      - name: Build emacs-plus
+        run: brew install emacs-plus
 
-    - name: Test installation
-      run: brew test emacs-plus
+      - name: Test installation
+        run: brew test emacs-plus
