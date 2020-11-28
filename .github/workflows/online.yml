@@ -17,10 +17,17 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-10.15, macos-11.0]
 
     steps:
       - uses: actions/checkout@v1
+
+      - name: Use XCode 12.2 for Big Sur
+        if: contains(matrix.os, 'macos-11.0')
+        run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
 
       - name: Tap emacs-plus
         run: brew tap d12frosted/emacs-plus

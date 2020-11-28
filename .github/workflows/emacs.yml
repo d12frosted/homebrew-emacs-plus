@@ -16,9 +16,10 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-10.15, macos-11.0]
         build_opts:
           - ""
           - "--build-from-source"
@@ -30,6 +31,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+
+      - name: Use XCode 12.2 for Big Sur
+        if: contains(matrix.os, 'macos-11.0')
+        run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
 
       - name: Build emacs-plus ${{ matrix.build_opts }}
         uses: nick-invision/retry@v1
