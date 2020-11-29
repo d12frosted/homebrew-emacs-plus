@@ -30,6 +30,7 @@ jobs:
           - "--with-xwidgets"
           - "--with-no-titlebar"
           - "--with-native-comp"
+          - "--with-x11"
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
@@ -46,6 +47,10 @@ jobs:
       - name: Update brew
         if: contains(matrix.build_opts, '--with-native-comp')
         run: brew update
+
+      - name: Install xquartz
+        if: contains(matrix.build_opts, '--with-x11')
+        run: brew cask install xquartz
 
       - name: Build emacs-plus@28 ${{ matrix.build_opts }}
         run: brew install emacs-plus@28.rb ${{ matrix.build_opts }}
