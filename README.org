@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:                     ec037164-cec0-4b3a-b942-a2b3a34a28ca
+:END:
 #+begin_html
 <p align="center">
   <img width="256px" src="images/emacs.png" alt="Banner">
@@ -17,6 +20,9 @@
 #+end_html
 
 ** About
+:PROPERTIES:
+:ID:                     94ea0bf6-320c-4aab-9e7a-6902e1f69f15
+:END:
 
 #+begin_html
 <img align="right" width="40%" src="images/screenshot-01.png" alt="Screenshot">
@@ -42,6 +48,9 @@ want to check [[docs/development-guidelines.org][→ Development guidelines]] to
 contribute.
 
 ** Table of Contents :TOC_3:
+:PROPERTIES:
+:ID:                     fe0f0130-b518-4b40-b440-5564066f5a88
+:END:
   - [[#about][About]]
   - [[#install][Install]]
   - [[#reinstall][Reinstall]]
@@ -58,6 +67,9 @@ contribute.
   - [[#acknowledgements][Acknowledgements]]
 
 ** Install
+:PROPERTIES:
+:ID:                     5a91bfc6-30cd-4740-9aea-59b25a5a9e33
+:END:
 
 Emacs Plus contains separate formulas for different Emacs versions:
 
@@ -80,6 +92,9 @@ modules and multicolor fonts. Please see the list of available options to
 disable any bit of default behaviour or add even more stuff.
 
 ** Reinstall
+:PROPERTIES:
+:ID:                     1d1501a1-21c7-4a98-ae12-51ee049ae175
+:END:
 
 If you wish to reinstall =emacs-plus= with new options you should not use
 =reinstall= command of =brew= (not related to this formula, it's a general
@@ -92,10 +107,16 @@ set of arguments.
 #+END_SRC
 
 ** Emacs 26 options
+:PROPERTIES:
+:ID:                     c3fb3ff5-0c6e-4588-a61f-771bee738edd
+:END:
 
 Emacs 26 comes without any available options due to [[https://github.com/d12frosted/homebrew-emacs-plus/issues/195][→ #195]].
 
 ** Emacs 27 and Emacs 28 options
+:PROPERTIES:
+:ID:                     231811b8-e149-41b1-9d6a-d508a3512c87
+:END:
 
 | Option                    | Description                                                                  |
 |---------------------------+------------------------------------------------------------------------------|
@@ -117,6 +138,9 @@ By default =emacs-plus= builds the Cocoa version of Emacs.
 =little-cms2= and dynamic modules.
 
 *** No Titlebar
+:PROPERTIES:
+:ID:                     ec120d87-5570-4259-a434-5909129b7b7c
+:END:
 
 This patch is enabled with the =--with-no-titlebar= option. It is meant for use
 with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]], [[https://github.com/koekeishiya/chunkwm][→ chunkwm]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that
@@ -128,6 +152,9 @@ If you see gaps between your emacs frames and other windows, try this:
 #+END_SRC
 
 *** Xwidgets (webkit)
+:PROPERTIES:
+:ID:                     6cd905b9-dd43-4888-b717-c5abbb08a25d
+:END:
 
 Browse the web in Emacs as in modern browser.
 
@@ -138,6 +165,9 @@ with X11 and hence not practical option on macOS. This version enables
 More details can be seen here [[https://github.com/veshboo/emacs][→ Veshboo's emacs branch]].
 
 *** System appearance change
+:PROPERTIES:
+:ID:                     8cef837f-359b-4528-ac0e-0977e1bf37f3
+:END:
 
 This patch is enabled by default and can't be disabled. It adds a hook,
 =ns-system-appearance-change-functions=, that is called once the system
@@ -164,6 +194,9 @@ inspecting the value of the =ns-system-appearance= variable.
 The hook is NOT run in TTY Emacs sessions.
 
 ** Icons
+:PROPERTIES:
+:ID:                     2d6e4b1c-b60a-4331-ab11-beb95cd7e98c
+:END:
 
 | Option                                        | Author                     | Image                                          | URL     |
 |-----------------------------------------------+----------------------------+------------------------------------------------+---------|
@@ -195,6 +228,9 @@ The hook is NOT run in TTY Emacs sessions.
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/retro-sink.png]]                          | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 
 ** Emacs configuration
+:PROPERTIES:
+:ID:                     9cd35d94-be09-408d-8f2b-99510f163cfb
+:END:
 
 Emacs is a journey. And for some of you these projects might be inspiring.
 
@@ -204,11 +240,17 @@ Emacs is a journey. And for some of you these projects might be inspiring.
 - [[https://github.com/bbatsov/prelude][→ Prelude]]
 
 ** Known Issues
+:PROPERTIES:
+:ID:                     a77b29d2-548b-48db-bad3-677269970bdd
+:END:
 
 Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][→ Issues]] page for a list of all known issues. But here are
 several you should be aware of.
 
 *** =emacs= dependency in other formulas
+:PROPERTIES:
+:ID:                     85ede619-c294-4c9e-985b-4312aa64baf5
+:END:
 
 In some cases (like when installing =cask=) regular =emacs= package will be
 required. In such cases you might want to install all dependencies manually
@@ -220,6 +262,9 @@ $ brew install cask --ignore-dependencies
 #+END_SRC
 
 ** Screenshots
+:PROPERTIES:
+:ID:                     17fd372f-d33c-440d-96b0-f251c01b1190
+:END:
 
 #+BEGIN_HTML
 <p align="center">
@@ -234,6 +279,13 @@ $ brew install cask --ignore-dependencies
 #+END_HTML
 
 ** Acknowledgements
+:PROPERTIES:
+:ID:                     86cfc483-d4f1-4f56-9304-b5df5a10b875
+:END:
 
-Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][→ contributors]], issue reporters and bottle providers
-([[https://github.com/wadkar][→ Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
+Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][→ contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][→
+Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
+
+Special thanks to patrons [[https://www.patreon.com/d12frosted][supporting]] existence of this project:
+
+- [[https://github.com/jidicula][→ Johanan Idicula]]
