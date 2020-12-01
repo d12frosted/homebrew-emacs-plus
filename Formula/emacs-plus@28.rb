@@ -122,11 +122,6 @@ class EmacsPlusAT28 < EmacsBase
       gcc_ver_major = gcc_ver.major
       gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
 
-      # gcc = Formula["gcc"].opt_bin/"gcc-#{gcc_ver_major}"
-      # ENV["CC"] = gcc.to_s
-      # ENV["CC"] = "/usr/bin/clang"
-      # ENV["CPP"] = "cpp-#{gcc_ver_major}"
-
       ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
       ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
       ENV.append "CFLAGS", "-I#{Formula["gmp"].include}"
@@ -192,6 +187,9 @@ class EmacsPlusAT28 < EmacsBase
 
       system "make"
       system "make", "install"
+      # system "false"
+
+      (buildpath/"nextstep/Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
@@ -203,11 +201,7 @@ class EmacsPlusAT28 < EmacsBase
         end
       end
 
-      if build.with? "native-comp"
-        contents_dir = buildpath/"nextstep/Emacs.app/Contents"
-        contents_dir.install "native-lisp"
-      end
-
+      # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
 
       # Replace the symlink with one that avoids starting Cocoa.
