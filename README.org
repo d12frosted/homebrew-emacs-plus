@@ -7,6 +7,9 @@
 </p>
 <h1 align="center">Emacs Plus</h1>
 <p align="center">
+  <a href="https://patreon.com/d12frosted">
+    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dd12frosted%26type%3Dpatrons&style=flat" alt="Support me on Patreon">
+  </a>
   <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+26%22">
     <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg" alt="Emacs 26 CI Status Badge">
   </a>
