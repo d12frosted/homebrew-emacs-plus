@@ -35,7 +35,6 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "imagemagick" => :recommended
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
-  depends_on :x11 => :optional
 
   if build.with? "x11"
     depends_on "freetype" => :recommended
