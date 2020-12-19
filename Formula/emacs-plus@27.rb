@@ -50,6 +50,7 @@ class EmacsPlusAT27 < EmacsBase
   if build.with? "x11"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
+    depends_on "libx11" => :recommended
   end
 
   #
