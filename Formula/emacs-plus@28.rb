@@ -187,11 +187,10 @@ class EmacsPlusAT28 < EmacsBase
 
       system "make"
       system "make", "install"
-      # system "false"
-      
+
       if build.with? "native-comp"
        (buildpath/"nextstep/Emacs.app/Contents").install "native-lisp" 
-        
+
         # Change .eln files dylib ID to avoid that after the
         # post-install phase all of the *.eln files end up with the
         # same ID. See: https://github.com/Homebrew/brew/issues/9526
