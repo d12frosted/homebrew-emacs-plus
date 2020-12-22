@@ -188,8 +188,21 @@ class EmacsPlusAT28 < EmacsBase
       system "make"
       system "make", "install"
       # system "false"
-
-      (buildpath/"nextstep/Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
+      
+      if build.with? "native-comp"
+       (buildpath/"nextstep/Emacs.app/Contents").install "native-lisp" 
+        
+        # Change .eln files dylib ID to avoid that after the
+        # post-install phase all of the *.eln files end up with the
+        # same ID. See: https://github.com/Homebrew/brew/issues/9526
+        # and https://github.com/Homebrew/brew/pull/10075
+        Dir.glob(contents_dir/"native-lisp/*/*.eln").each do |f|
+          fo = MachO::MachOFile.new(f)
+          ohai "Change dylib_id of ELN files before post_install phase"
+          fo.dylib_id = "#{contents_dir}/" + f
+          fo.write!
+        end
+      end
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
