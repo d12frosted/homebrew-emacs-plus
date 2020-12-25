@@ -40,7 +40,7 @@ class EmacsPlusAT27 < EmacsBase
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "gnutls"
-  depends_on "librsvg"
+  depends_on "librsvg" => :recommended
   depends_on "little-cms2"
   depends_on "jansson"
   depends_on "imagemagick" => :recommended
