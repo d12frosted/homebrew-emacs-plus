@@ -37,9 +37,9 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "mailutils" => :optional
 
   if build.with? "x11"
+    depends_on "libxaw"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
-    depends_on "libx11" => :recommended
   end
 
   if build.with? "native-comp"
