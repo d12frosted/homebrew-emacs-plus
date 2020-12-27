@@ -30,6 +30,7 @@ jobs:
           - "--with-xwidgets"
           - "--with-no-titlebar"
           - "--with-native-comp"
+          - "--without-imagemagick --with-no-titlebar"
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
