@@ -40,7 +40,7 @@ jobs:
       HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2.3.4
 
       - name: Use XCode 12.2 for Big Sur
         if: contains(matrix.os, 'macos-11.0')
