@@ -104,6 +104,7 @@ class EmacsPlusAT28 < EmacsBase
   end
 
   def install
+    make_flags = []
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -132,6 +133,8 @@ class EmacsPlusAT28 < EmacsBase
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["gmp"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["libjpeg"].include}"
+
+      make_flags << "NATIVE_FULL_AOT=1"
     end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
@@ -185,7 +188,7 @@ class EmacsPlusAT28 < EmacsBase
         end
       end
 
-      system "make"
+      system "make", *make_flags
       system "make", "install"
 
       if build.with? "native-comp"
