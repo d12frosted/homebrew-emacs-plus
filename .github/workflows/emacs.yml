@@ -37,7 +37,7 @@ jobs:
         run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
 
       - name: Build emacs-plus ${{ matrix.build_opts }}
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2.2.0
         with:
           timeout_minutes: 300
           max_attempts: 2
