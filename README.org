@@ -59,6 +59,7 @@ contribute.
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
+    - [[#gccemacs][gccemacs]]
   - [[#icons][Icons]]
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
@@ -131,6 +132,7 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--without-imagemagick=   | build without =imagemagick= support                                          |
 | =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                      |
+| =--with-native-comp=  | build from =native-comp= branch aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28=)        |
 
 By default =emacs-plus= builds the Cocoa version of Emacs.
 
@@ -192,6 +194,37 @@ startup. You can also determine what the current system appearance is by
 inspecting the value of the =ns-system-appearance= variable.
 
 The hook is NOT run in TTY Emacs sessions.
+
+*** gccemacs
+:PROPERTIES:
+:ID:                     7fab3512-2894-42b8-ad90-74298e4ff212
+:END:
+
+#+begin_quote
+gccemacs is a modified Emacs capable of compiling and running Emacs Lisp as
+native code in form of re-loadable elf files. As the name suggests this is
+achieved blending together Emacs and the gcc infrastructure.
+
+[[https://akrl.sdf.org/gccemacs.html][→ Andrea Corallo]]
+#+end_quote
+
+While =gccemacs= gives performance boost in many scenarios, this feature is
+still experimental and might require time and effort from your side for it to
+work! Use at our own risk :)
+
+Please see official [[https://akrl.sdf.org/gccemacs.html][→ gccemacs documentation]] for more information.
+
+Knows issues:
+
+- =ld: library not found for -lSystem=. On Big Sur, one must install =libgccjit=
+  from sources:
+  - =$ brew uninstall gcc libgccjit=
+  - =$ brew install gcc=
+  - =$ brew install libgccjit -s=
+- Errors during compilation of your =init.el=. Try running Emacs with =-Q=
+  option and give it some time to compile everything (maybe run =M-x= to force
+  compilation) - you shall see buffer =*Async-native-compile-log*= in the list
+  of buffers.
 
 ** Icons
 :PROPERTIES:
