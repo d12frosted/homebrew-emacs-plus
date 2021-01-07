@@ -216,11 +216,9 @@ Please see official [[https://akrl.sdf.org/gccemacs.html][→ gccemacs documenta
 
 Knows issues:
 
-- =ld: library not found for -lSystem=. On Big Sur, one must install =libgccjit=
-  from sources:
-  - =$ brew uninstall gcc libgccjit=
-  - =$ brew install gcc=
-  - =$ brew install libgccjit -s=
+- =ld: library not found for -lSystem=. This only happens on older
+  versions of =gcc= installed by Homebrew. Please execute =$ brew
+  reinstall gcc libgccjit= to resolve this issue.
 - Errors during compilation of your =init.el=. Try running Emacs with =-Q=
   option and give it some time to compile everything (maybe run =M-x= to force
   compilation) - you shall see buffer =*Async-native-compile-log*= in the list
