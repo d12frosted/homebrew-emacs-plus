@@ -31,6 +31,7 @@ class EmacsBase < Formula
     "modern-pen"                      => "4fda050447a9803d38dd6fd7d35386103735aec239151714e8bf60bf9d357d3b",
     "modern-black-variant"            => "b066ee684e68519950bcca06f631a49fbd1f5a463d49114e5063b3a5f1654d0c",
     "modern-nuvola"                   => "c3701e25ff46116fd694bc37d8ccec7ad9ae58bb581063f0792ea3c50d84d997",
+    "cacodemon"                       => "5a8d53896f72992bc7158aaaa47665df4009be646deee39af6f8e76893568728",
   }.freeze
 
   def self.inject_icon_options

@@ -248,7 +248,7 @@ Knows issues:
 | =--with-emacs-card-british-racing-green-icon= | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-british-racing-green_128.png]] | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-emacs-card-carmine-icon=              | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-carmine_128.png]]              | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-emacs-card-green-icon=                | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/emacs-card-green_128.png]]                | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
-| =--with-modern-icon=                          | Unknown                    | [[/icons/modern_128.png]]                              | Unknown |
+| =--with-modern-icon=                          | Unknown                    | [[/icons/modern_128.png]]                          | Unknown |
 | =--with-modern-cg433n-icon=                   | [[https://github.com/cg433n][→ cg433n]]                   | [[/icons/modern-cg433n.png]]                       | [[https://github.com/cg433n/emacs-mac-icon][→ Link]]  |
 | =--with-modern-sjrmanning-icon=               | [[https://github.com/sjrmanning][→ sjrmannings]]              | [[/icons/modern-sjrmanning.png]]                   | [[https://github.com/sjrmanning/emacs-icon][→ Link]]  |
 | =--with-modern-sexy-v1-icon=                  | [[https://emacs.sexy][→ Emacs is Sexy]]            | [[/icons/modern-sexy-v1.png]]                      | [[https://emacs.sexy][→ Link]]  |
@@ -259,6 +259,7 @@ Knows issues:
 | =--with-modern-nuvola-icon=                   | [[https://en.wikipedia.org/wiki/David_Vignoni][→ David Vignoni]]            | [[/icons/modern-nuvola.png]]                       | [[https://commons.wikimedia.org/wiki/File:Nuvola_apps_emacs_vector.svg][→ Link]]  |
 | =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/retro-sink-bw.png]]                       | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/retro-sink.png]]                          | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
+| =--with-cacodemon-icon=                       | [[https://gitlab.com/wildwestrom][Christian Westrom]]          | [[/icons/cacodemon_128.png]]                       | [[https://gitlab.com/wildwestrom/emacs-doom-icon][→ Link]]  |
 
 ** Emacs configuration
 :PROPERTIES:
