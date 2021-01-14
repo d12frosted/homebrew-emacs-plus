@@ -217,11 +217,7 @@ Please see official [[https://akrl.sdf.org/gccemacs.html][→ gccemacs documenta
 Knows issues:
 
 - =ld: library not found for -lSystem=. 
-  - =$ brew reinstall gcc libgccjit=
-  - =$ sudo ln -s /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk /Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk=
-  - =$ sudo ln -s /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk=
-  - =$ export LIBRARY_PATH = "$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"=
-  - =$ brew reinstall gcc libgccjit=
+  This only happens on older versions of gcc installed by homebrew. Please execute =$ brew reinstall gcc libgccjit= to resolve this issue
 
 
 - Errors during compilation of your =init.el=. Try running Emacs with =-Q=
