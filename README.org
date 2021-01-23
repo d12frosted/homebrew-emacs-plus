@@ -257,7 +257,9 @@ Knows issues:
 | =--with-modern-nuvola-icon=                   | [[https://en.wikipedia.org/wiki/David_Vignoni][→ David Vignoni]]            | [[/icons/modern-nuvola.png]]                       | [[https://commons.wikimedia.org/wiki/File:Nuvola_apps_emacs_vector.svg][→ Link]]  |
 | =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/retro-sink-bw.png]]                       | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/retro-sink.png]]                          | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
-| =--with-cacodemon-icon=                       | [[https://gitlab.com/wildwestrom][Christian Westrom]]          | [[/icons/cacodemon_128.png]]                       | [[https://gitlab.com/wildwestrom/emacs-doom-icon][→ Link]]  |
+| =--with-cacodemon-icon=                       | [[https://gitlab.com/wildwestrom][→ Christian Westrom]]        | [[/icons/cacodemon_128.png]]                       | [[https://gitlab.com/wildwestrom/emacs-doom-icon][→ Link]]  |
+| =--with-elrumo1-icon=                         | [[https://github.com/elrumo][→ Elias]]                    | [[/icons/elrumo1_128.png]]                         | [[https://github.com/d12frosted/homebrew-emacs-plus/issues/303#issuecomment-763928162][→ Link]]  |
+| =--with-elrumo2-icon=                         | [[https://github.com/elrumo][→ Elias]]                    | [[/icons/elrumo2_128.png]]                         | [[https://github.com/d12frosted/homebrew-emacs-plus/issues/303#issuecomment-763928162][→ Link]]  |
 
 ** Emacs configuration
 :PROPERTIES:
