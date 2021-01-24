@@ -39,6 +39,7 @@ class EmacsBase < Formula
   def self.inject_icon_options
     ICONS_CONFIG.each do |icon, sha|
       option "with-#{icon}-icon", "Using Emacs #{icon} icon"
+      next if build.without? "#{icon}-icon"
       resource "#{icon}-icon" do
         url (UrlResolver.icon_url icon)
         sha256 sha
