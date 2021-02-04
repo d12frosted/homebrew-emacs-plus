@@ -10,12 +10,6 @@ class EmacsPlusAT27 < EmacsBase
     url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
   end
 
-  bottle do
-    root_url "https://dl.bintray.com/d12frosted/emacs-plus"
-    rebuild 2
-    sha256 "06c30223f006bcc87ef30b9f0675b73d884af68505f7de4ffbda6d52e4a4f075" => :catalina
-  end
-
   #
   # Options
   #
