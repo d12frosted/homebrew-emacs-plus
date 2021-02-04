@@ -33,7 +33,7 @@ class EmacsBase < Formula
     "modern-bokehlicia-captiva"       => "8534f309b72812ba99375ebe2eb1d814bd68aec8898add2896594f4eecb10238",
     "modern-cg433n"                   => "9a0b101faa6ab543337179024b41a6e9ea0ecaf837fc8b606a19c6a51d2be5dd",
     "modern-doom"                     => "39378a10b3d7e804461eec8bb9967de0cec7b8f1151150bbe2ba16f21001722b",
-    "modern-doom3"                    => "3ac398d8d691687320d3a88cd8e634c8cfb7ca358bfe6c30108667f2486438b3",
+    "modern-doom3"                    => "02e8535317b70c0674c608ed3b8bfee4badc8d1f4a96b99d980744c185948d24",
     "modern-mzaplotnik"               => "1f77c52d3dbcdb0b869f47264ff3c2ac9f411e92ec71061a09771b7feac2ecc6",
     "modern-nuvola"                   => "c3701e25ff46116fd694bc37d8ccec7ad9ae58bb581063f0792ea3c50d84d997",
     "modern-orange"                   => "e2f5d733f97b0a92a84b5fe0bcd4239937d8cb9de440d96e298b38d052e21b43",
