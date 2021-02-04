@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15, macos-11.0]
+        os: [macos-11.0]
         build_opts:
           - ""
           - "--with-xwidgets"
