@@ -115,7 +115,7 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    args << "--with-nativecomp" if build.with? "native-comp"
+    args << "--with-native-compilation" if build.with? "native-comp"
 
     if build.with? "native-comp"
       gcc_ver = Formula["gcc"].any_installed_version
