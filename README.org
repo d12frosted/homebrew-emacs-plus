@@ -97,10 +97,15 @@ disable any bit of default behaviour or add even more stuff.
 :ID:                     1d1501a1-21c7-4a98-ae12-51ee049ae175
 :END:
 
-If you wish to reinstall =emacs-plus= with new options you should not use
-=reinstall= command of =brew= (not related to this formula, it's a general
-advice). Instead, you should =uninstall= a package and then install it with new
-set of arguments.
+If you wish to reinstall =emacs-plus= with you should not use =reinstall=
+command of =brew= (not related to this formula, it's a general advice). Instead,
+you should =uninstall= a package and then =install= it with desired options.
+
+Avoid =reinstall= even if you want to =reinstall= with the same set of options,
+otherwise you will likely to get compilation errors! For example, [[https://github.com/d12frosted/homebrew-emacs-plus/issues/218][#218]] and [[https://github.com/d12frosted/homebrew-emacs-plus/issues/321][#321]].
+
+In short, =brew= doesn't really support options. They break time to time
+([[https://github.com/Homebrew/brew/issues/4793][brew#4793]], [[https://github.com/Homebrew/brew/issues/7397][brew#7397]], [[https://github.com/Homebrew/brew/issues/7498][brew#7498]] to show a few).
 
 #+BEGIN_SRC bash
   $ brew uninstall emacs-plus
