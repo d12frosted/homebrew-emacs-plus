@@ -250,7 +250,7 @@ class EmacsPlusAT28 < EmacsBase
         #{prefix}
 
       To link the application to default Homebrew App location:
-        ln -s #{prefix}/Emacs.app /Applications
+        cp -r #{prefix}/Emacs.app /Applications
     EOS
   end
 
