@@ -29,7 +29,6 @@ jobs:
           - ""
           - "--with-xwidgets"
           - "--with-no-titlebar"
-          - "--with-x11"
           - "--HEAD"
           - "--HEAD --with-xwidgets"
           - "--HEAD --with-no-titlebar"
