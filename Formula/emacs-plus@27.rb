@@ -103,15 +103,6 @@ class EmacsPlusAT27 < EmacsBase
     sha256 "782a222505ceea31f9032ed55e24dcbd0357b1178b916b536d3eb222c9dc1225"
   end
 
-  stable do
-    # Back-ported patch for configure and configure.guess to allow configure to complete
-    # for aarch64-apple-darwin targets.
-    patch do
-      url (UrlResolver.patch_url "emacs-27/arm")
-      sha256 "eeed4c0de763c08810d184501b64de3653adb84cc651497bdb4158ba3448312a"
-    end
-  end
-
   def install
     args = %W[
       --disable-dependency-tracking
