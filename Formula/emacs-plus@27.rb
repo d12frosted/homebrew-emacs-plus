@@ -103,6 +103,14 @@ class EmacsPlusAT27 < EmacsBase
     sha256 "782a222505ceea31f9032ed55e24dcbd0357b1178b916b536d3eb222c9dc1225"
   end
 
+  stable do
+    # fix code signing on ARM
+    patch do
+      url (UrlResolver.patch_url "emacs-27/arm")
+      sha256 "344fee330fec4071e29c900093fdf1e2d8a7328df1c75b17e6e9d9a954835741"
+    end
+  end
+
   def install
     args = %W[
       --disable-dependency-tracking
