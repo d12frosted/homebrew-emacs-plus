@@ -54,6 +54,7 @@ class EmacsBase < Formula
     "retro-sink"                      => "be0ee790589a3e49345e1894050678eab2c75272a8d927db46e240a2466c6abc",
     "retro-sink-bw"                   => "5cd836f86c8f5e1688d6b59bea4b57c8948026a9640257a7d2ec153ea7200571",
     "spacemacs"                       => "b3db8b7cfa4bc5bce24bc4dc1ede3b752c7186c7b54c09994eab5ec4eaa48900",
+    "nobu417-big-sur"                 => "e9ec41167c38842a3f6555d3142909211a2aa7e3ff91621b9a576b3847d3b565",
   }.freeze
 
   def self.inject_icon_options
