@@ -64,7 +64,7 @@ class EmacsPlusAT28 < EmacsBase
   #
 
   if build.with? "native-comp"
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "feature/native-comp"
+    url "https://github.com/emacs-mirror/emacs.git", :revision => "978afd788fd0496540f715b83f18ed390ca8d5a4"
   else
     url "https://github.com/emacs-mirror/emacs.git"
   end
