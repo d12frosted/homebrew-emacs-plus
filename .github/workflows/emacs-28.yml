@@ -40,7 +40,6 @@ jobs:
     steps:
       - name: env test
         run: |
-          echo "Environment variables"
           echo "HOMEBREW_GITHUB_REF              = $HOMEBREW_GITHUB_REF"
           echo "HOMEBREW_GITHUB_REPOSITORY       = $HOMEBREW_GITHUB_REPOSITORY"
           echo "HOMEBREW_GITHUB_ACTOR            = $HOMEBREW_GITHUB_ACTOR"
