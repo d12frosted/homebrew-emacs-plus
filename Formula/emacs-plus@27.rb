@@ -1,7 +1,7 @@
 require_relative "../Library/EmacsBase"
-require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT27 < EmacsBase
+  init 27
   url "https://ftp.gnu.org/gnu/emacs/emacs-27.2.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-27.2.tar.xz"
   sha256 "b4a7cc4e78e63f378624e0919215b910af5bb2a0afc819fad298272e9f40c1b9"
@@ -67,49 +67,17 @@ class EmacsPlusAT27 < EmacsBase
   # Patches
   #
 
-  if build.with? "no-titlebar"
-    patch do
-      url (UrlResolver.patch_url "emacs-27/no-titlebar")
-      sha256 "fdf8dde63c2e1c4cb0b02354ce7f2102c5f8fd9e623f088860aee8d41d7ad38f"
-    end
-  end
+  local_patch "no-titlebar", sha: "fdf8dde63c2e1c4cb0b02354ce7f2102c5f8fd9e623f088860aee8d41d7ad38f" if build.with? "no-titlebar"
+  local_patch "xwidgets_webkit_in_cocoa", sha: "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40" if build.with? "xwidgets"
+  local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
+  local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
+  local_patch "system-appearance", sha: "d774e9da082352999fe3e9d2daa1065ea9bdaa670267caeebf86e01a77dc1d40"
+  local_patch "ligatures-freeze-fix", sha: "782a222505ceea31f9032ed55e24dcbd0357b1178b916b536d3eb222c9dc1225"
+  local_patch "arm", sha: "344fee330fec4071e29c900093fdf1e2d8a7328df1c75b17e6e9d9a954835741" if build.stable?
 
-  if build.with? "xwidgets"
-    patch do
-      url (UrlResolver.patch_url "emacs-27/xwidgets_webkit_in_cocoa")
-      sha256 "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40"
-    end
-  end
-
-  if build.with? "no-frame-refocus"
-    patch do
-      url (UrlResolver.patch_url "emacs-27/no-frame-refocus-cocoa")
-      sha256 "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd"
-    end
-  end
-
-  patch do
-    url (UrlResolver.patch_url "emacs-27/fix-window-role")
-    sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  end
-
-  patch do
-    url (UrlResolver.patch_url "emacs-27/system-appearance")
-    sha256 "d774e9da082352999fe3e9d2daa1065ea9bdaa670267caeebf86e01a77dc1d40"
-  end
-
-  patch do
-    url (UrlResolver.patch_url "emacs-27/ligatures-freeze-fix")
-    sha256 "782a222505ceea31f9032ed55e24dcbd0357b1178b916b536d3eb222c9dc1225"
-  end
-
-  stable do
-    # fix code signing on ARM
-    patch do
-      url (UrlResolver.patch_url "emacs-27/arm")
-      sha256 "344fee330fec4071e29c900093fdf1e2d8a7328df1c75b17e6e9d9a954835741"
-    end
-  end
+  #
+  # Install
+  #
 
   def install
     args = %W[
@@ -242,7 +210,7 @@ class EmacsPlusAT27 < EmacsBase
 
       To link the application to default Homebrew App location:
         ln -s #{prefix}/Emacs.app /Applications
-    
+
       If you wish to install Emacs 26 or Emacs 28, use emacs-plus@26 or
       emacs-plus@28 formula respectively.
     EOS
