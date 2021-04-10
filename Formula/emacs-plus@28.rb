@@ -196,7 +196,7 @@ class EmacsPlusAT28 < EmacsBase
         # all of the *.eln files end up with the same ID. See:
         # https://github.com/Homebrew/brew/issues/9526 and
         # https://github.com/Homebrew/brew/pull/10075
-        Dir.glob(contents_dir/"native-lisp/*/*.eln").each do |f|
+        Dir.glob(contents_dir/"native-lisp/**/*.eln").each do |f|
           fo = MachO::MachOFile.new(f)
           ohai "Change dylib_id of ELN files before post_install phase"
           fo.dylib_id = "#{contents_dir}/" + f
