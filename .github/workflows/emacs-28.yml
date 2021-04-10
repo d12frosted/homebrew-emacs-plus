@@ -35,8 +35,16 @@ jobs:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
       HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
       HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
+      HOMEBREW_GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
     steps:
+      - name: env test
+        run: |
+          echo "HOMEBREW_GITHUB_REF              = $HOMEBREW_GITHUB_REF"
+          echo "HOMEBREW_GITHUB_REPOSITORY       = $HOMEBREW_GITHUB_REPOSITORY"
+          echo "HOMEBREW_GITHUB_ACTOR            = $HOMEBREW_GITHUB_ACTOR"
+          echo "HOMEBREW_GITHUB_REPOSITORY_OWNER = $HOMEBREW_GITHUB_REPOSITORY_OWNER"
+
       - uses: actions/checkout@v2.3.4
 
       - name: Use XCode 12.2 for Big Sur
