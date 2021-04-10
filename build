@@ -77,8 +77,8 @@ cd Formula && {
       ;;
   esac
 
-  export HOMEBREW_GITHUB_REF
-  HOMEBREW_GITHUB_REF=$(git rev-parse --abbrev-ref HEAD)
+  export HOMEBREW_EMACS_PLUS_MODE
+  HOMEBREW_EMACS_PLUS_MODE=local
 
   brew uninstall $PACKAGE 2>/dev/null
   # shellcheck disable=SC2068

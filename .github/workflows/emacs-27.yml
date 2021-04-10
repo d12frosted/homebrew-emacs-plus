@@ -34,9 +34,7 @@ jobs:
           - "--HEAD --with-no-titlebar"
 
     env:
-      HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
-      HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
-      HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
+      HOMEBREW_EMACS_PLUS_MODE: local
 
     steps:
       - uses: actions/checkout@v2.3.4
