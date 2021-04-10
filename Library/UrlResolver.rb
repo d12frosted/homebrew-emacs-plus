@@ -1,6 +1,6 @@
 class UrlResolver
   def self.repo
-    (ENV["HOMEBREW_GITHUB_ACTOR"] or "d12frosted") + "/" + "homebrew-emacs-plus"
+    (ENV["HOMEBREW_GITHUB_REPOSITORY_OWNER"] or ENV["HOMEBREW_GITHUB_ACTOR"] or "d12frosted") + "/" + "homebrew-emacs-plus"
   end
 
   def self.branch
