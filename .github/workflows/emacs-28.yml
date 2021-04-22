@@ -30,6 +30,7 @@ jobs:
           - "--with-xwidgets"
           - "--with-no-titlebar"
           - "--with-native-comp"
+          - "--with-x11"
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
@@ -42,6 +43,10 @@ jobs:
       - name: Use XCode 12.2 for Big Sur
         if: contains(matrix.os, 'macos-11.0')
         run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
+        
+      - name: Install xquartz
+        if: contains(matrix.build_opts, '--with-x11')
+        run: brew install --cask xquartz
 
       - name: Build emacs-plus@28 ${{ matrix.build_opts }}
         run: brew install emacs-plus@28.rb ${{ matrix.build_opts }}
