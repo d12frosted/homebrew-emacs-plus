@@ -18,7 +18,7 @@ class EmacsPlusAT28 < EmacsBase
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
-  option "with-native-comp", "Build from feature/native-comp branch"
+  option "with-native-comp", "Build with native compilation"
 
   #
   # Dependencies
@@ -63,11 +63,7 @@ class EmacsPlusAT28 < EmacsBase
   # URL
   #
 
-  if build.with? "native-comp"
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "feature/native-comp"
-  else
-    url "https://github.com/emacs-mirror/emacs.git"
-  end
+  url "https://github.com/emacs-mirror/emacs.git"
 
   #
   # Icons
