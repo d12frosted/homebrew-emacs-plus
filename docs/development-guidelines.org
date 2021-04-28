@@ -66,8 +66,10 @@ Every patch must be added to this repository. No exceptions. Rationale is
 simple - external location is not controlled by =emacs-plus= maintainers, but if
 something happens to the patch outside this repository, =emacs-plus= suffers.
 
-In order to help with [[#pull-requests][→ Pull requests]] and [[#ci][→ CI]], =emacs-plus= has some utilities
-that load resources and patches from the local copy of repository, even on CI.
+In order to help with [[#pull-requests][→ Pull requests]] and [[#ci][→ CI]], =emacs-plus= has a helper
+=UrlResolver=, which makes it possible to apply patches from other branches and
+even repositories.
+
 So instead of using static link to the patch
 
 #+begin_src ruby
@@ -77,10 +79,13 @@ So instead of using static link to the patch
    end
 #+end_src
 
-One should use =local_patch= utility function provided by =EmacsBase=:
+One should use =UrlResolver=:
 
 #+begin_src ruby
-  local_patch "system-appearance", sha: "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
+  patch do
+    url (UrlResolver.patch_url "system-appearance")
+    sha256 "2a0ce452b164eee3689ee0c58e1f47db368cb21b724cda56c33f6fe57d95e9b7"
+  end
 #+end_src
 
 So even if you are preparing PR, add the patch to this repository.
