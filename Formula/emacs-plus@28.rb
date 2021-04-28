@@ -1,7 +1,7 @@
 require_relative "../Library/EmacsBase"
+require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT28 < EmacsBase
-  init 28
   version "28.0.50"
 
   #
@@ -75,14 +75,29 @@ class EmacsPlusAT28 < EmacsBase
   # Patches
   #
 
-  local_patch "no-titlebar", sha: "990af9b0e0031bd8118f53e614e6b310739a34175a1001fbafc45eeaa4488c0a" if build.with? "no-titlebar"
-  local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
-  local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  local_patch "system-appearance", sha: "22b541e2893171e45b54593f82a0f5d2c4e62b0e4497fc0351fc89108d6f0084"
+  if build.with? "no-titlebar"
+    patch do
+      url (UrlResolver.patch_url "emacs-28/no-titlebar")
+      sha256 "990af9b0e0031bd8118f53e614e6b310739a34175a1001fbafc45eeaa4488c0a"
+    end
+  end
 
-  #
-  # Install
-  #
+  if build.with? "no-frame-refocus"
+    patch do
+      url (UrlResolver.patch_url "emacs-28/no-frame-refocus-cocoa")
+      sha256 "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd"
+    end
+  end
+
+  patch do
+    url (UrlResolver.patch_url "emacs-28/fix-window-role")
+    sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
+  end
+
+  patch do
+    url (UrlResolver.patch_url "emacs-28/system-appearance")
+    sha256 "22b541e2893171e45b54593f82a0f5d2c4e62b0e4497fc0351fc89108d6f0084"
+  end
 
   def install
     args = %W[

@@ -1,23 +1,22 @@
 class UrlResolver
-  def initialize(version, mode)
-    @version = version
-    @formula_name = "emacs-plus@#{version}"
-    @formula_dir = mode == "local" ? Dir.pwd : (UrlResolver.formula_root @formula_name)
+  def self.repo
+    (ENV["HOMEBREW_GITHUB_ACTOR"] or "d12frosted") + "/" + "homebrew-emacs-plus"
   end
 
-  def self.formula_root name
-    begin
-      Formula[@formula_name].path.to_s.delete_suffix "/Formula/#@formula_name.rb"
-    rescue
-      Dir.pwd
+  def self.branch
+    ref = ENV["HOMEBREW_GITHUB_REF"]
+    if ref
+      ref.sub("refs/heads/", "")
+    else
+      "master"
     end
   end
 
-  def patch_url name
-    "#@formula_dir/patches/emacs-#@version/#{name}.patch"
+  def self.patch_url(name)
+    "https://raw.githubusercontent.com/#{repo}/#{branch}/patches/#{name}.patch"
   end
 
-  def icon_url name
-    "#@formula_dir/icons/#{name}.icns"
+  def self.icon_url(name)
+    "https://raw.githubusercontent.com/#{repo}/#{branch}/icons/#{name}.icns"
   end
 end
