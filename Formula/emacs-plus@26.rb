@@ -1,7 +1,7 @@
 require_relative "../Library/EmacsBase"
+require_relative "../Library/UrlResolver"
 
 class EmacsPlusAT26 < EmacsBase
-  init 26
   url "https://ftp.gnu.org/gnu/emacs/emacs-26.3.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-26.3.tar.xz"
   sha256 "4d90e6751ad8967822c6e092db07466b9d383ef1653feb2f95c93e7de66d3485"
@@ -29,13 +29,20 @@ class EmacsPlusAT26 < EmacsBase
   # Patches
   #
 
-  local_patch "multicolor-fonts", sha: "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
-  local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  local_patch "fix-unexec", sha: "a1fcfe8020301733a3846cf85b072b461b66e26d15b0154b978afb7a4ec3346b"
+  patch do
+    url (UrlResolver.patch_url "emacs-26/multicolor-fonts")
+    sha256 "7597514585c036c01d848b1b2cc073947518522ba6710640b1c027ff47c99ca7"
+  end
 
-  #
-  # Install
-  #
+  patch do
+    url (UrlResolver.patch_url "emacs-26/fix-window-role")
+    sha256 "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
+  end
+
+  patch do
+    url (UrlResolver.patch_url "emacs-26/fix-unexec")
+    sha256 "a1fcfe8020301733a3846cf85b072b461b66e26d15b0154b978afb7a4ec3346b"
+  end
 
   def install
     args = %W[
