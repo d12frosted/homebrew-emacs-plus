@@ -1,23 +1,22 @@
+TAP_OWNER = "d12frosted"
+TAP_REPO = "emacs-plus"
+
 class UrlResolver
   def initialize(version, mode)
+    name = "#{TAP_REPO}@#{version}"
+    tap = Tap.new TAP_OWNER, TAP_REPO
     @version = version
-    @formula_name = "emacs-plus@#{version}"
-    @formula_dir = mode == "local" ? Dir.pwd : (UrlResolver.formula_root @formula_name)
-  end
-
-  def self.formula_root name
-    begin
-      Formula[name].path.to_s.delete_suffix "/Formula/#name.rb"
-    rescue
-      Dir.pwd
-    end
+    @formula_root =
+      mode == "local" || !tap.installed? ?
+        Dir.pwd :
+        (tap.path.to_s.delete_suffix "/Formula/#{name}.rb")
   end
 
   def patch_url name
-    "#@formula_dir/patches/emacs-#@version/#{name}.patch"
+    "#{@formula_root}/patches/emacs-#@version/#{name}.patch"
   end
 
   def icon_url name
-    "#@formula_dir/icons/#{name}.icns"
+    "#{@formula_root}/icons/#{name}.icns"
   end
 end
