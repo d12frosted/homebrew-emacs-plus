@@ -50,7 +50,7 @@ jobs:
 
       - name: Install xquartz
         if: contains(matrix.build_opts, '--with-x11')
-        run: brew cask install xquartz
+        run: brew install --cask xquartz
 
       - name: Build emacs-plus@28 ${{ matrix.build_opts }}
         run: brew install emacs-plus@28.rb ${{ matrix.build_opts }}
