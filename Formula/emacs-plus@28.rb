@@ -10,6 +10,7 @@ class EmacsPlusAT28 < EmacsBase
 
   # Opt-out
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
+  option "without-compress-install", "Don't compress some files (.el, .info, etc.)"
 
   # Opt-in
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
@@ -144,6 +145,7 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-rsvg"
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
+    args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
     system "./autogen.sh"
