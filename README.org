@@ -349,3 +349,4 @@ Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
 Special thanks to patrons [[https://www.patreon.com/d12frosted][supporting]] existence of this project:
 
 - [[https://github.com/jidicula][→ Johanan Idicula]]
+- [[http://github.com/lyndondrake][→ Lyndon Drake]]
