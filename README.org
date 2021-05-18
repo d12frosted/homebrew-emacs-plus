@@ -137,7 +137,7 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--without-imagemagick=   | build without =imagemagick= support                                          |
 | =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                      |
-| =--with-native-comp=  | build from =native-comp= branch aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28=)        |
+| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28=)      |
 
 By default =emacs-plus= builds the Cocoa version of Emacs.
 
