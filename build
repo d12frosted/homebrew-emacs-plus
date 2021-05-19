@@ -81,4 +81,4 @@ HOMEBREW_EMACS_PLUS_MODE=local
 
 brew uninstall $PACKAGE 2>/dev/null
 # shellcheck disable=SC2068
-brew install ./$TARGET_FILE $@
+brew install --formula ./$TARGET_FILE $@
