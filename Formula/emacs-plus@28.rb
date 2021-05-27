@@ -47,6 +47,7 @@ class EmacsPlusAT28 < EmacsBase
     depends_on "gcc" => :build
     depends_on "gmp" => :build
     depends_on "libjpeg" => :build
+    depends_on "zlib" => :build
   end
 
   #
