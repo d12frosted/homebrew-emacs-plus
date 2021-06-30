@@ -64,7 +64,7 @@ class EmacsPlusAT28 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git"
+  url "https://github.com/emacs-mirror/emacs.git", revision: "4d63a033a726a8da33bda8d18a503e88bfb794fb"
 
   #
   # Icons
