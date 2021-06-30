@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-11.0]
+        os: [macos-11]
         build_opts:
           - ""
           - "--with-xwidgets"
@@ -38,9 +38,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.4
 
-      - name: Use XCode 12.2 for Big Sur
-        if: contains(matrix.os, 'macos-11.0')
-        run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
+      - name: Use XCode 12.5 for Big Sur
+        if: contains(matrix.os, 'macos-11')
+        run: sudo xcode-select -s "/Applications/Xcode_12.5.app"
 
       - name: Install xquartz
         if: contains(matrix.build_opts, '--with-x11')
