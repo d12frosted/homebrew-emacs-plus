@@ -1,0 +1,28 @@
+>From 0517874eb4bce2cbbcdf58516c43d50b0174c0ec Mon Sep 17 00:00:00 2001
+From: Alan Third <alan@idiocy.org>
+Date: Tue, 29 Jun 2021 22:02:43 +0100
+Subject: [PATCH] Fix NS native comp search path (bug#49270)
+
+* configure.ac (NS_SELF_CONTAINED): We need to make lispdirrel the
+same as lispdir when building a self contained app bundle as they're
+both relative paths.
+---
+ configure.ac | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configure.ac b/configure.ac
+index c8920d877e..6e2cda947a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2025,6 +2025,7 @@ AC_DEFUN
+      infodir="\${ns_appresdir}/info"
+      mandir="\${ns_appresdir}/man"
+      lispdir="\${ns_appresdir}/lisp"
++     lispdirrel="\${ns_appresdir}/lisp"
+      test "$locallisppathset" = no && locallisppath="\${ns_appresdir}/site-lisp"
+      INSTALL_ARCH_INDEP_EXTRA=
+   fi
+-- 
+2.29.2
+
+
