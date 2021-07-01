@@ -20,12 +20,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0]
+        os: [macos-11]
 
     steps:
-      - name: Use XCode 12.2 for Big Sur
-        if: contains(matrix.os, 'macos-11.0')
-        run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
+      - name: Use XCode 12.5 for Big Sur
+        if: contains(matrix.os, 'macos-11')
+        run: sudo xcode-select -s "/Applications/Xcode_12.5.app"
 
       - name: Tap emacs-plus
         run: brew tap d12frosted/emacs-plus
@@ -40,12 +40,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0]
+        os: [macos-11]
 
     steps:
-      - name: Use XCode 12.2 for Big Sur
-        if: contains(matrix.os, 'macos-11.0')
-        run: sudo xcode-select -s "/Applications/Xcode_12.2.app"
+      - name: Use XCode 12.5 for Big Sur
+        if: contains(matrix.os, 'macos-11')
+        run: sudo xcode-select -s "/Applications/Xcode_12.5.app"
 
       - name: Build emacs-plus
         run: brew install d12frosted/homebrew-emacs-plus/emacs-plus
