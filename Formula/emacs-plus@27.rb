@@ -209,7 +209,7 @@ class EmacsPlusAT27 < EmacsBase
         #{prefix}
 
       To link the application to default Homebrew App location:
-        ln -s #{prefix}/Emacs.app /Applications
+        cp -r #{prefix}/Emacs.app /Applications
 
       If you wish to install Emacs 26 or Emacs 28, use emacs-plus@26 or
       emacs-plus@28 formula respectively.
