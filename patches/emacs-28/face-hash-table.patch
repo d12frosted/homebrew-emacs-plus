@@ -1,0 +1,357 @@
+diff --git a/lisp/custom.el b/lisp/custom.el
+index 1db3f4fd39..f392bd8d36 100644
+--- a/lisp/custom.el
++++ b/lisp/custom.el
+@@ -926,7 +926,7 @@ custom-push-theme
+ 	  ;; the value to a fake theme, `changed'.  If the theme is
+ 	  ;; later disabled, we use this to bring back the old value.
+ 	  ;;
+-	  ;; For faces, we just use `face-new-frame-defaults' to
++	  ;; For faces, we just use `face--new-frame-defaults' to
+ 	  ;; recompute when the theme is disabled.
+ 	  (when (and (eq prop 'theme-value)
+ 		     (boundp symbol))
+diff --git a/lisp/faces.el b/lisp/faces.el
+index 308da9367d..b61ba57998 100644
+--- a/lisp/faces.el
++++ b/lisp/faces.el
+@@ -176,10 +176,29 @@ face-font-registry-alternatives
+ ;;; Creation, copying.
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
++(make-obsolete-variable
++ 'face-new-frame-defaults
++ "use `face--new-frame-defaults' or `face-alist' instead."
++ "28.1")
++
++(defun frame-face-alist (&optional frame)
++  "Return an alist of frame-local faces defined on FRAME.
++This alist is a copy of the contents of `frame--face-hash-table'.
++For internal use only."
++  (declare (obsolete frame--face-hash-table "28.1"))
++  (let ((faces))
++    (maphash (lambda (face spec)
++               (let ((face-id  (car (gethash face face--new-frame-defaults))))
++                 (push `(,face-id ,face . ,spec) faces)))
++             (frame--face-hash-table frame))
++    (mapcar #'cdr (sort faces (lambda (f1 f2) (< (car f1) (car f2)))))))
+ 
+ (defun face-list ()
+   "Return a list of all defined faces."
+-  (mapcar #'car face-new-frame-defaults))
++  (let ((faces))
++    (maphash (lambda (face spec) (push `(,(car spec) . ,face) faces))
++             face--new-frame-defaults)
++    (mapcar #'cdr (sort faces (lambda (f1 f2) (< (car f1) (car f2)))))))
+ 
+ (defun make-face (face)
+   "Define a new face with name FACE, a symbol.
+@@ -2115,6 +2134,8 @@ x-create-frame-with-faces
+     (unwind-protect
+ 	(progn
+ 	  (x-setup-function-keys frame)
++	  (dolist (face (nreverse (face-list)))
++	    (face-spec-recalc face frame))
+ 	  (x-handle-reverse-video frame parameters)
+ 	  (frame-set-background-mode frame t)
+ 	  (face-set-after-frame-default frame parameters)
+@@ -2145,7 +2166,7 @@ x-create-frame-with-faces
+ (defun face-set-after-frame-default (frame &optional parameters)
+   "Initialize the frame-local faces of FRAME.
+ Calculate the face definitions using the face specs, custom theme
+-settings, X resources, and `face-new-frame-defaults'.
++settings, X resources, and `face--new-frame-defaults'.
+ Finally, apply any relevant face attributes found amongst the
+ frame parameters in PARAMETERS."
+   ;; The `reverse' is so that `default' goes first.
+@@ -2154,7 +2175,7 @@ face-set-after-frame-default
+ 	(progn
+ 	  ;; Initialize faces from face spec and custom theme.
+ 	  (face-spec-recalc face frame)
+-	  ;; Apply attributes specified by face-new-frame-defaults
++	  ;; Apply attributes specified by face--new-frame-defaults
+ 	  (internal-merge-in-global-face face frame))
+       ;; Don't let invalid specs prevent frame creation.
+       (error nil)))
+diff --git a/lisp/frame.el b/lisp/frame.el
+index aff1d479ec..94e0cf3c6a 100644
+--- a/lisp/frame.el
++++ b/lisp/frame.el
+@@ -1231,7 +1231,7 @@ frame-set-background-mode
+                          ;; during startup with -rv on the command
+                          ;; line for the initial frame, because frames
+                          ;; are not recorded in the pdump file.
+-                         (assq face (frame-face-alist frame))
++                         (gethash face (frame--face-hash-table))
+                          (face-spec-match-p face
+                                             (face-user-default-spec face)
+                                             frame)))
+diff --git a/lisp/progmodes/elisp-mode.el b/lisp/progmodes/elisp-mode.el
+index a56c7093e7..7ed2d3d08c 100644
+--- a/lisp/progmodes/elisp-mode.el
++++ b/lisp/progmodes/elisp-mode.el
+@@ -1325,8 +1325,7 @@ elisp--eval-defun-1
+ 	((eq (car form) 'custom-declare-face)
+ 	 ;; Reset the face.
+ 	 (let ((face-symbol (eval (nth 1 form) lexical-binding)))
+-	   (setq face-new-frame-defaults
+-		 (assq-delete-all face-symbol face-new-frame-defaults))
++	   (remhash face-symbol face--new-frame-defaults)
+ 	   (put face-symbol 'face-defface-spec nil)
+ 	   (put face-symbol 'face-override-spec nil))
+ 	 form)
+diff --git a/src/frame.c b/src/frame.c
+index 623e4ba2cd..b105268d42 100644
+--- a/src/frame.c
++++ b/src/frame.c
+@@ -1018,6 +1018,10 @@ make_frame (bool mini_p)
+   rw->total_lines = FRAME_LINES (f) - (mini_p ? 1 : 0);
+   rw->pixel_height = rw->total_lines * FRAME_LINE_HEIGHT (f);
+ 
++  fset_face_hash_table
++    (f, make_hash_table (hashtest_eq, DEFAULT_HASH_SIZE, DEFAULT_REHASH_SIZE,
++                         DEFAULT_REHASH_THRESHOLD, Qnil, false));
++
+   if (mini_p)
+     {
+       mw->top_line = rw->total_lines;
+@@ -1326,7 +1330,7 @@ DEFUN ("make-terminal-frame", Fmake_terminal_frame, Smake_terminal_frame,
+ {
+   struct frame *f;
+   struct terminal *t = NULL;
+-  Lisp_Object frame, tem;
++  Lisp_Object frame;
+   struct frame *sf = SELECTED_FRAME ();
+ 
+ #ifdef MSDOS
+@@ -1408,14 +1412,16 @@ DEFUN ("make-terminal-frame", Fmake_terminal_frame, Smake_terminal_frame,
+   store_in_alist (&parms, Qminibuffer, Qt);
+   Fmodify_frame_parameters (frame, parms);
+ 
+-  /* Make the frame face alist be frame-specific, so that each
++  /* Make the frame face hash be frame-specific, so that each
+      frame could change its face definitions independently.  */
+-  fset_face_alist (f, Fcopy_alist (sf->face_alist));
+-  /* Simple Fcopy_alist isn't enough, because we need the contents of
+-     the vectors which are the CDRs of associations in face_alist to
++  fset_face_hash_table (f, Fcopy_hash_table (sf->face_hash_table));
++  /* Simple copy_hash_table isn't enough, because we need the contents of
++     the vectors which are the values in face_hash_table to
+      be copied as well.  */
+-  for (tem = f->face_alist; CONSP (tem); tem = XCDR (tem))
+-    XSETCDR (XCAR (tem), Fcopy_sequence (XCDR (XCAR (tem))));
++  ptrdiff_t idx = 0;
++  struct Lisp_Hash_Table *table = XHASH_TABLE (f->face_hash_table);
++  for (idx = 0; idx < table->count; ++idx)
++    set_hash_value_slot (table, idx, Fcopy_sequence (HASH_VALUE (table, idx)));
+ 
+   f->can_set_window_size = true;
+   f->after_make_frame = true;
+diff --git a/src/frame.h b/src/frame.h
+index cad3df5ae1..a8ad011889 100644
+--- a/src/frame.h
++++ b/src/frame.h
+@@ -158,8 +158,8 @@ #define EMACS_FRAME_H
+      There are four additional elements of nil at the end, to terminate.  */
+   Lisp_Object menu_bar_items;
+ 
+-  /* Alist of elements (FACE-NAME . FACE-VECTOR-DATA).  */
+-  Lisp_Object face_alist;
++  /* Hash table of FACE-NAME keys and FACE-VECTOR-DATA values.  */
++  Lisp_Object face_hash_table;
+ 
+   /* A vector that records the entire structure of this frame's menu bar.
+      For the format of the data, see extensive comments in xmenu.c.
+@@ -672,9 +672,9 @@ fset_condemned_scroll_bars (struct frame *f, Lisp_Object val)
+   f->condemned_scroll_bars = val;
+ }
+ INLINE void
+-fset_face_alist (struct frame *f, Lisp_Object val)
++fset_face_hash_table (struct frame *f, Lisp_Object val)
+ {
+-  f->face_alist = val;
++  f->face_hash_table = val;
+ }
+ #if defined (HAVE_WINDOW_SYSTEM)
+ INLINE void
+diff --git a/src/xfaces.c b/src/xfaces.c
+index fed7b3336a..207f0d6a36 100644
+--- a/src/xfaces.c
++++ b/src/xfaces.c
+@@ -95,9 +95,10 @@ Copyright (C) 1993-1994, 1998-2021 Free Software Foundation, Inc.
+    with the symbol `face' in slot 0, and a slot for each of the face
+    attributes mentioned above.
+ 
+-   There is also a global face alist `Vface_new_frame_defaults'.  Face
+-   definitions from this list are used to initialize faces of newly
+-   created frames.
++   There is also a global face map `Vface_new_frame_defaults',
++   containing conses of (FACE_ID . FACE_DEFINITION).  Face definitions
++   from this table are used to initialize faces of newly created
++   frames.
+ 
+    A face doesn't have to specify all attributes.  Those not specified
+    have a value of `unspecified'.  Faces specifying all attributes but
+@@ -1965,13 +1966,11 @@ lface_from_face_name_no_resolve (struct frame *f, Lisp_Object face_name,
+   Lisp_Object lface;
+ 
+   if (f)
+-    lface = assq_no_quit (face_name, f->face_alist);
++    lface = Fgethash (face_name, f->face_hash_table, Qnil);
+   else
+-    lface = assq_no_quit (face_name, Vface_new_frame_defaults);
++    lface = CDR (Fgethash (face_name, Vface_new_frame_defaults, Qnil));
+ 
+-  if (CONSP (lface))
+-    lface = XCDR (lface);
+-  else if (signal_p)
++  if (signal_p && NILP (lface))
+     signal_error ("Invalid face", face_name);
+ 
+   check_lface (lface);
+@@ -2870,11 +2869,6 @@ DEFUN ("internal-make-lisp-face", Finternal_make_lisp_face,
+   /* Add a global definition if there is none.  */
+   if (NILP (global_lface))
+     {
+-      global_lface = make_vector (LFACE_VECTOR_SIZE, Qunspecified);
+-      ASET (global_lface, 0, Qface);
+-      Vface_new_frame_defaults = Fcons (Fcons (face, global_lface),
+-					Vface_new_frame_defaults);
+-
+       /* Assign the new Lisp face a unique ID.  The mapping from Lisp
+ 	 face id to Lisp face is given by the vector lface_id_to_name.
+ 	 The mapping from Lisp face to Lisp face id is given by the
+@@ -2884,9 +2878,14 @@ DEFUN ("internal-make-lisp-face", Finternal_make_lisp_face,
+ 	  xpalloc (lface_id_to_name, &lface_id_to_name_size, 1, MAX_FACE_ID,
+ 		   sizeof *lface_id_to_name);
+ 
++      Lisp_Object face_id = make_fixnum (next_lface_id);
+       lface_id_to_name[next_lface_id] = face;
+-      Fput (face, Qface, make_fixnum (next_lface_id));
++      Fput (face, Qface, face_id);
+       ++next_lface_id;
++
++      global_lface = make_vector (LFACE_VECTOR_SIZE, Qunspecified);
++      ASET (global_lface, 0, Qface);
++      Fputhash (face, Fcons (face_id, global_lface), Vface_new_frame_defaults);
+     }
+   else if (f == NULL)
+     for (i = 1; i < LFACE_VECTOR_SIZE; ++i)
+@@ -2899,7 +2898,7 @@ DEFUN ("internal-make-lisp-face", Finternal_make_lisp_face,
+ 	{
+ 	  lface = make_vector (LFACE_VECTOR_SIZE, Qunspecified);
+ 	  ASET (lface, 0, Qface);
+-	  fset_face_alist (f, Fcons (Fcons (face, lface), f->face_alist));
++          Fputhash (face, lface, f->face_hash_table);
+ 	}
+       else
+ 	for (i = 1; i < LFACE_VECTOR_SIZE; ++i)
+@@ -3060,7 +3059,7 @@ DEFUN ("internal-set-lisp-face-attribute", Finternal_set_lisp_face_attribute,
+       f = NULL;
+       lface = lface_from_face_name (NULL, face, true);
+ 
+-      /* When updating face-new-frame-defaults, we put :ignore-defface
++      /* When updating face--new-frame-defaults, we put :ignore-defface
+ 	 where the caller wants `unspecified'.  This forces the frame
+ 	 defaults to ignore the defface value.  Otherwise, the defface
+ 	 will take effect, which is generally not what is intended.
+@@ -3645,7 +3644,7 @@ update_face_from_frame_parameter (struct frame *f, Lisp_Object param,
+   /* If there are no faces yet, give up.  This is the case when called
+      from Fx_create_frame, and we do the necessary things later in
+      face-set-after-frame-defaults.  */
+-  if (NILP (f->face_alist))
++  if (XFIXNAT (Fhash_table_count (f->face_hash_table)) == 0)
+     return;
+ 
+   if (EQ (param, Qforeground_color))
+@@ -4311,14 +4310,13 @@ DEFUN ("internal-lisp-face-empty-p", Finternal_lisp_face_empty_p,
+   return i == LFACE_VECTOR_SIZE ? Qt : Qnil;
+ }
+ 
+-
+-DEFUN ("frame-face-alist", Fframe_face_alist, Sframe_face_alist,
++DEFUN ("frame--face-hash-table", Fframe_face_hash_table, Sframe_face_hash_table,
+        0, 1, 0,
+-       doc: /* Return an alist of frame-local faces defined on FRAME.
++       doc: /* Return a hash table of frame-local faces defined on FRAME.
+ For internal use only.  */)
+   (Lisp_Object frame)
+ {
+-  return decode_live_frame (frame)->face_alist;
++  return decode_live_frame (frame)->face_hash_table;
+ }
+ 
+ 
+@@ -6835,30 +6833,32 @@ DEFUN ("show-face-resources", Fshow_face_resources, Sshow_face_resources,
+ 
+ #ifdef HAVE_PDUMPER
+ /* All the faces defined during loadup are recorded in
+-   face-new-frame-defaults, with the last face first in the list.  We
+-   need to set next_lface_id to the next face ID number, so that any
+-   new faces defined in this session will have face IDs different from
+-   those defined during loadup.  We also need to set up the
+-   lface_id_to_name[] array for the faces that were defined during
+-   loadup.  */
++   face-new-frame-defaults.  We need to set next_lface_id to the next
++   face ID number, so that any new faces defined in this session will
++   have face IDs different from those defined during loadup.  We also
++   need to set up the lface_id_to_name[] array for the faces that were
++   defined during loadup.  */
+ void
+ init_xfaces (void)
+ {
+-  if (CONSP (Vface_new_frame_defaults))
++  int nfaces = XFIXNAT (Fhash_table_count (Vface_new_frame_defaults));
++  if (nfaces > 0)
+     {
+       /* Allocate the lface_id_to_name[] array.  */
+-      lface_id_to_name_size = next_lface_id =
+-	XFIXNAT (Flength (Vface_new_frame_defaults));
++      lface_id_to_name_size = next_lface_id = nfaces;
+       lface_id_to_name = xnmalloc (next_lface_id, sizeof *lface_id_to_name);
+ 
+       /* Store the faces.  */
+-      Lisp_Object tail;
+-      int i = next_lface_id - 1;
+-      for (tail = Vface_new_frame_defaults; CONSP (tail); tail = XCDR (tail))
++      struct Lisp_Hash_Table* table = XHASH_TABLE (Vface_new_frame_defaults);
++      for (ptrdiff_t idx = 0; idx < nfaces; ++idx)
+ 	{
+-	  Lisp_Object lface = XCAR (tail);
+-	  eassert (i >= 0);
+-	  lface_id_to_name[i--] = XCAR (lface);
++	  Lisp_Object lface = HASH_KEY (table, idx);
++	  Lisp_Object face_id = CAR (HASH_VALUE (table, idx));
++          if (FIXNATP (face_id)) {
++              int id = XFIXNAT (face_id);
++              eassert (id >= 0);
++              lface_id_to_name[id] = lface;
++            }
+ 	}
+     }
+   face_attr_sym[0] = Qface;
+@@ -7014,7 +7014,7 @@ syms_of_xfaces (void)
+   defsubr (&Sinternal_copy_lisp_face);
+   defsubr (&Sinternal_merge_in_global_face);
+   defsubr (&Sface_font);
+-  defsubr (&Sframe_face_alist);
++  defsubr (&Sframe_face_hash_table);
+   defsubr (&Sdisplay_supports_face_attributes_p);
+   defsubr (&Scolor_distance);
+   defsubr (&Sinternal_set_font_selection_order);
+@@ -7038,9 +7038,12 @@ syms_of_xfaces (void)
+ the "specifity" of a face specification and should be let-bound
+ only for this purpose.  */);
+ 
+-  DEFVAR_LISP ("face-new-frame-defaults", Vface_new_frame_defaults,
+-    doc: /* List of global face definitions (for internal use only.)  */);
+-  Vface_new_frame_defaults = Qnil;
++  DEFVAR_LISP ("face--new-frame-defaults", Vface_new_frame_defaults,
++    doc: /* Hash table of global face definitions (for internal use only.)  */);
++  Vface_new_frame_defaults =
++    /* 33 entries is enough to fit all basic faces */
++    make_hash_table (hashtest_eq, 33, DEFAULT_REHASH_SIZE,
++                     DEFAULT_REHASH_THRESHOLD, Qnil, false);
+ 
+   DEFVAR_LISP ("face-default-stipple", Vface_default_stipple,
+     doc: /* Default stipple pattern used on monochrome displays.
