@@ -1,0 +1,29 @@
+diff --git a/configure.ac b/configure.ac
+index 830f33844b..38f0df1d88 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3445,6 +3445,14 @@ AC_DEFUN
+ fi   # "${HAVE_X11}" != "yes"
+ 
+ HAVE_HARFBUZZ=no
++case "$host" in
++    *-*-darwin*)
++	HAVE_DARWIN=yes
++	;;
++    *)
++	HAVE_DARWIN=no
++	;;
++esac
+ ### On MS-Windows we use hb_font_get_nominal_glyph, which appeared
+ ### in HarfBuzz version 1.2.3
+ if test "${HAVE_W32}" = "yes"; then
+@@ -3453,7 +3461,8 @@ AC_DEFUN
+   harfbuzz_required_ver=0.9.42
+ fi
+ if test "${HAVE_X11}" = "yes" && test "${HAVE_FREETYPE}" = "yes" \
+-        || test "${HAVE_W32}" = "yes"; then
++        || test "${HAVE_W32}" = "yes" \
++	|| test "${HAVE_DARWIN}" = "yes"; then
+   if test "${with_harfbuzz}" != "no"; then
+     EMACS_CHECK_MODULES([HARFBUZZ], [harfbuzz >= $harfbuzz_required_ver])
+     if test "$HAVE_HARFBUZZ" = "yes"; then

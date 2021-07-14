@@ -124,8 +124,8 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 :ID:                     231811b8-e149-41b1-9d6a-d508a3512c87
 :END:
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -135,11 +135,12 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--without-imagemagick=   | build without =imagemagick= support                                          |
-| =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                      |
-| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28=)      |
+| =--without-imagemagick=   | build without =imagemagick= support                                            |
+| =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                          |
+| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28=)        |
+| =--without-modern-fonts=  | don't include harfbuzz & cairo for modern font rendering                     |
 
-By default =emacs-plus= builds the Cocoa version of Emacs.
+By default =emacs-plus= builds the Cocoa version of Emacs and includes harfbuzz and cairo for modern font rendering.
 
 =emacs-plus= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=,
 =little-cms2= and dynamic modules.
