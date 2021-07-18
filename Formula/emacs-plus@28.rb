@@ -10,7 +10,6 @@ class EmacsPlusAT28 < EmacsBase
 
   # Opt-out
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
-  option "without-modern-fonts", "Disable modern font rendering (not recommended)"
 
   # Opt-in
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
@@ -36,12 +35,6 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "imagemagick" => :recommended
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
-
-  if build.with? "modern-fonts"
-    depends_on "freetype"
-    depends_on "cairo"
-    depends_on "harfbuzz"
-  end
 
   if build.with? "x11"
     depends_on "libxaw"
@@ -83,7 +76,6 @@ class EmacsPlusAT28 < EmacsBase
   # Patches
   #
 
-  local_patch "fix-harfbuzz-check", sha: "e2ffd7aa07ef8ab3f046f4c68fa65eb49c80536e2c40a309ac2a16f45cfe9f25" if build.with? "modern-fonts"
   local_patch "no-titlebar", sha: "990af9b0e0031bd8118f53e614e6b310739a34175a1001fbafc45eeaa4488c0a" if build.with? "no-titlebar"
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
@@ -133,9 +125,6 @@ class EmacsPlusAT28 < EmacsBase
       else
         "--without-dbus"
       end
-
-    args << "--without-harfbuzz" if build.without? "modern-fonts"
-    args << "--without-cairo" if build.without? "modern-fonts"
 
     # Note that if ./configure is passed --with-imagemagick but can't find the
     # library it does not fail but imagemagick support will not be available.
