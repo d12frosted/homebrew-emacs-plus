@@ -64,7 +64,7 @@ class EmacsPlusAT28 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git", revision: "4d63a033a726a8da33bda8d18a503e88bfb794fb"
+  url "https://github.com/emacs-mirror/emacs.git"
 
   #
   # Icons
@@ -169,23 +169,21 @@ class EmacsPlusAT28 < EmacsBase
       end
 
       system "make"
-      system "make", "install"
 
       if build.with? "native-comp"
-        contents_dir = buildpath/"nextstep/Emacs.app/Contents"
-        contents_dir.install "native-lisp"
-
         # Change .eln files dylib ID to avoid that after the post-install phase
         # all of the *.eln files end up with the same ID. See:
         # https://github.com/Homebrew/brew/issues/9526 and
         # https://github.com/Homebrew/brew/pull/10075
-        Dir.glob(contents_dir/"native-lisp/**/*.eln").each do |f|
+        Dir.glob(buildpath/"native-lisp/**/*.eln").each do |f|
           fo = MachO::MachOFile.new(f)
           ohai "Change dylib_id of ELN files before post_install phase"
-          fo.dylib_id = "#{contents_dir}/" + f
+          fo.dylib_id = "#{buildpath}/" + f
           fo.write!
         end
       end
+
+      system "make", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
