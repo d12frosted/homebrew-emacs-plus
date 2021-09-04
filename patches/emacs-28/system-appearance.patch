@@ -1,5 +1,6 @@
 Patch to make emacs 28 aware of the macOS 10.14+ system appearance changes.
-From 3ad6f30e1753a63b6c8b6ddea3ba1ee76bf605f1 Mon Sep 17 00:00:00 2001
+
+From 6e73cd55ebfd3b0967357b3c3ead16d2f8539526 Mon Sep 17 00:00:00 2001
 From: "Nicolas G. Querol" <nicolas.gquerol@gmail.com>
 Date: Wed, 11 Nov 2020 12:35:47 +0100
 Subject: [PATCH] Add `ns-system-appearance-change-functions' hook
@@ -52,11 +53,11 @@ startup time, Emacs should then always load the appropriate theme.
 ---
  src/frame.h  |   3 +-
  src/nsfns.m  |  13 ++++-
- src/nsterm.m | 156 +++++++++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 154 insertions(+), 18 deletions(-)
+ src/nsterm.m | 153 ++++++++++++++++++++++++++++++++++++++++++++++-----
+ 3 files changed, 153 insertions(+), 16 deletions(-)
 
 diff --git a/src/frame.h b/src/frame.h
-index 16ecfd311c..b0dcb3098e 100644
+index a8ad011889..e7f7fdafe1 100644
 --- a/src/frame.h
 +++ b/src/frame.h
 @@ -71,7 +71,8 @@ #define EMACS_FRAME_H
@@ -70,10 +71,10 @@ index 16ecfd311c..b0dcb3098e 100644
  #endif
  #endif /* HAVE_WINDOW_SYSTEM */
 diff --git a/src/nsfns.m b/src/nsfns.m
-index c7956497c4..dcfc66e1dc 100644
+index 07bcab1816..4766eb91ae 100644
 --- a/src/nsfns.m
 +++ b/src/nsfns.m
-@@ -1253,14 +1253,25 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+@@ -1256,14 +1256,25 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
    store_frame_param (f, Qundecorated, FRAME_UNDECORATED (f) ? Qt : Qnil);
  
  #ifdef NS_IMPL_COCOA
@@ -101,10 +102,10 @@ index c7956497c4..dcfc66e1dc 100644
                       (!NILP (tem) && !EQ (tem, Qunbound)) ? tem : Qnil);
  
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 4fad521b74..1dea6f6739 100644
+index 4bdc67c10b..0d2f3e0b2b 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -2194,13 +2194,25 @@ so some key presses (TAB) are swallowed by the system.  */
+@@ -1889,11 +1889,25 @@ Hide the window (X11 semantics)
      return;
  
    if (EQ (new_value, Qdark))
@@ -128,15 +129,13 @@ index 4fad521b74..1dea6f6739 100644
 +    }
    else
 -    FRAME_NS_APPEARANCE (f) = ns_appearance_system_default;
--
--  [window setAppearance];
 +    {
 +      FRAME_NS_APPEARANCE (f) = ns_appearance_system_default;
 +    }
- #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
- }
  
-@@ -5739,6 +5751,7 @@ Needs to be here because ns_initialize_display_info () uses AppKit classes.
+   [window setAppearance];
+ #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
+@@ -5381,6 +5395,7 @@ Needs to be here because ns_initialize_display_info () uses AppKit classes.
  
     ========================================================================== */
  
@@ -144,7 +143,7 @@ index 4fad521b74..1dea6f6739 100644
  
  @implementation EmacsApp
  
-@@ -5984,6 +5997,18 @@ - (void)applicationDidFinishLaunching: (NSNotification *)notification
+@@ -5626,6 +5641,18 @@ - (void)applicationDidFinishLaunching: (NSNotification *)notification
  	 object:nil];
  #endif
  
@@ -163,7 +162,7 @@ index 4fad521b74..1dea6f6739 100644
  #ifdef NS_IMPL_COCOA
    /* Some functions/methods in CoreFoundation/Foundation increase the
       maximum number of open files for the process in their first call.
-@@ -6022,6 +6047,68 @@ - (void)antialiasThresholdDidChange:(NSNotification *)notification
+@@ -5664,6 +5691,68 @@ - (void)antialiasThresholdDidChange:(NSNotification *)notification
  #endif
  }
  
@@ -232,7 +231,7 @@ index 4fad521b74..1dea6f6739 100644
  
  /* Termination sequences:
      C-x C-c:
-@@ -6186,6 +6273,14 @@ - (void)applicationDidResignActive: (NSNotification *)notification
+@@ -5828,6 +5917,14 @@ - (void)applicationDidResignActive: (NSNotification *)notification
    ns_send_appdefined (-1);
  }
  
@@ -247,7 +246,7 @@ index 4fad521b74..1dea6f6739 100644
  
  
  /* ==========================================================================
-@@ -9037,17 +9132,27 @@ - (void)setAppearance
+@@ -8805,17 +8902,26 @@ - (void)setAppearance
  #define NSAppKitVersionNumber10_10 1343
  #endif
  
@@ -264,28 +263,27 @@ index 4fad521b74..1dea6f6739 100644
 +     return;
  
 -  [self setAppearance:appearance];
-+   if (FRAME_NS_APPEARANCE (f) == ns_appearance_vibrant_dark)
 +#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
 +#ifndef NSAppKitVersionNumber10_14
 +#define NSAppKitVersionNumber10_14 1671
 +#endif
-+     if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_14
-+         && FRAME_NS_APPEARANCE(f) == ns_appearance_dark_aqua)
-+       appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-+     else
++   if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_14
++       && FRAME_NS_APPEARANCE(f) == ns_appearance_dark_aqua)
++     appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
++   else
 +#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101400 */
-+       if (FRAME_NS_APPEARANCE(f) == ns_appearance_vibrant_dark)
-+         appearance =
-+           [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
-+       else if (FRAME_NS_APPEARANCE (f) == ns_appearance_aqua)
-+         appearance =
-+           [NSAppearance appearanceNamed:NSAppearanceNameAqua];
++     if (FRAME_NS_APPEARANCE(f) == ns_appearance_vibrant_dark)
++       appearance =
++         [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
++     else if (FRAME_NS_APPEARANCE (f) == ns_appearance_aqua)
++       appearance =
++         [NSAppearance appearanceNamed:NSAppearanceNameAqua];
 +
 +   [self setAppearance:appearance];
  #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
  }
  
-@@ -9909,6 +10014,25 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
+@@ -9952,6 +10058,25 @@ Nil means use fullscreen the old (< 10.7) way.  The old way works better with
  This variable is ignored on macOS < 10.7 and GNUstep.  Default is t.  */);
    ns_use_mwheel_momentum = YES;
  
@@ -311,8 +309,8 @@ index 4fad521b74..1dea6f6739 100644
    /* TODO: Move to common code.  */
    DEFVAR_LISP ("x-toolkit-scroll-bars", Vx_toolkit_scroll_bars,
  	       doc: /* SKIP: real doc in xterm.c.  */);
+
+base-commit: e5c481b61c26bcf83779db9fb3ac6b96bc50ab2e
 -- 
-2.29.2
-
-
+2.33.0
 
