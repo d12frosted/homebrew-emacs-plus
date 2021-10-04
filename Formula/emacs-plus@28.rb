@@ -64,7 +64,7 @@ class EmacsPlusAT28 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git"
+  url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-28"
 
   #
   # Icons
