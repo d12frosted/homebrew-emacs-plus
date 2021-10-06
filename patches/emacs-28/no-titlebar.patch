@@ -1,26 +1,21 @@
-From 1e0a3fd9c7b9507e7820c3308a8183be7acab019 Mon Sep 17 00:00:00 2001
-From: Masahiro Nakamura <tsuucat@icloud.com>
-Date: Fri, 27 Aug 2021 01:12:07 +0900
-Subject: [PATCH] no-titlebar-head
-
----
- src/nsterm.m | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 1c1f0c8f23..13138b3339 100644
+index 3676418c9b..9599ee933e 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -433,7 +433,7 @@ - (NSColor *)colorUsingDefaultColorSpace
+@@ -433,9 +433,9 @@ - (NSColor *)colorUsingDefaultColorSpace
  
  /* These flags will be OR'd or XOR'd with the NSWindow's styleMask
     property depending on what we're doing.  */
 -#define FRAME_DECORATED_FLAGS (NSWindowStyleMaskTitled              \
-+#define FRAME_DECORATED_FLAGS (NSWindowStyleMaskBorderless          \
-                                | NSWindowStyleMaskResizable         \
-                                | NSWindowStyleMaskMiniaturizable    \
+-                               | NSWindowStyleMaskResizable         \
+-                               | NSWindowStyleMaskMiniaturizable    \
++#define FRAME_DECORATED_FLAGS (NSWindowStyleMaskBorderless       \
++                               | NSWindowStyleMaskResizable      \
++                               | NSWindowStyleMaskMiniaturizable \
                                 | NSWindowStyleMaskClosable)
-@@ -8293,10 +8293,6 @@ - (instancetype) initWithEmacsFrame:(struct frame *)f
+ #define FRAME_UNDECORATED_FLAGS NSWindowStyleMaskBorderless
+ 
+@@ -8294,10 +8294,6 @@ - (instancetype) initWithEmacsFrame:(struct frame *)f
        if ([col alphaComponent] != (EmacsCGFloat) 1.0)
          [self setOpaque:NO];
  
@@ -31,6 +26,3 @@ index 1c1f0c8f23..13138b3339 100644
        /* macOS Sierra automatically enables tabbed windows.  We can't
           allow this to be enabled until it's available on a Free system.
           Currently it only happens by accident and is buggy anyway.  */
--- 
-2.28.0
-
