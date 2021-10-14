@@ -19,6 +19,7 @@ class EmacsPlusAT28 < EmacsBase
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
   option "with-native-comp", "Build with native compilation"
+  option "with-tab-bar", "Build with tab-bar support"
 
   #
   # Dependencies
@@ -80,6 +81,7 @@ class EmacsPlusAT28 < EmacsBase
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
+  local_patch "tab-bar", sha: "d5b0387d00d9fef9920f075eea9714075a93bce0f21c1b8d688f90dc904787be" if build.with? "tab-bar"
 
   #
   # Install

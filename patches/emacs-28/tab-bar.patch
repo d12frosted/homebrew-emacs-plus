@@ -1,0 +1,181 @@
+* src/nsfns.m (ns_change_tab_bar_height): New function
+* src/nsfns.m (ns_set_tab_bar_lines): Check tab bar height and set tab
+bar accordingly
+* src/nsterm.m (ns_clear_under_internal_border): Clear internal border
+correctly when there is a tab bar
+* src/nsterm.m (ns_create_terminal): Add ns_change_tab_bar_height
+* src/nsterm.m (mouseDown): Handle tab bar mouse click events
+---
+ src/nsfns.m  | 63 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ src/nsterm.h |  1 +
+ src/nsterm.m | 42 ++++++++++++++++++++++++++---------
+ 3 files changed, 93 insertions(+), 13 deletions(-)
+
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 906c5c934f..797d0ce782 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -609,13 +609,72 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+     }
+ }
+ 
++void
++ns_change_tab_bar_height (struct frame *f, int height)
++{
++  int unit = FRAME_LINE_HEIGHT (f);
++  int old_height = FRAME_TAB_BAR_HEIGHT (f);
++  int lines = (height + unit - 1) / unit;
++  Lisp_Object fullscreen = get_frame_param (f, Qfullscreen);
++
++  /* Make sure we redisplay all windows in this frame.  */
++  fset_redisplay (f);
++
++  /* Recalculate tab bar and frame text sizes.  */
++  FRAME_TAB_BAR_HEIGHT (f) = height;
++  FRAME_TAB_BAR_LINES (f) = lines;
++  store_frame_param (f, Qtab_bar_lines, make_fixnum (lines));
++
++  if (FRAME_NS_WINDOW (f) && FRAME_TAB_BAR_HEIGHT (f) == 0)
++    {
++      clear_frame (f);
++      clear_current_matrices (f);
++    }
++
++  if ((height < old_height) && WINDOWP (f->tab_bar_window))
++    clear_glyph_matrix (XWINDOW (f->tab_bar_window)->current_matrix);
++
++  if (!f->tab_bar_resized)
++    {
++      /* As long as tab_bar_resized is false, effectively try to change
++	 F's native height.  */
++      if (NILP (fullscreen) || EQ (fullscreen, Qfullwidth))
++	adjust_frame_size (f, FRAME_TEXT_WIDTH (f), FRAME_TEXT_HEIGHT (f),
++			   1, false, Qtab_bar_lines);
++      else
++	adjust_frame_size (f, -1, -1, 4, false, Qtab_bar_lines);
++
++      f->tab_bar_resized = f->tab_bar_redisplayed;
++    }
++  else
++    /* Any other change may leave the native size of F alone.  */
++    adjust_frame_size (f, -1, -1, 3, false, Qtab_bar_lines);
++
++  /* adjust_frame_size might not have done anything, garbage frame
++     here.  */
++  adjust_frame_glyphs (f);
++  SET_FRAME_GARBAGED (f);
++}
+ 
+ /* tabbar support */
+ static void
+ ns_set_tab_bar_lines (struct frame *f, Lisp_Object value, Lisp_Object oldval)
+ {
+-  /* Currently unimplemented.  */
+-  NSTRACE ("ns_set_tab_bar_lines");
++  int olines = FRAME_TAB_BAR_LINES (f);
++  int nlines;
++
++  /* Treat tab bars like menu bars.  */
++  if (FRAME_MINIBUF_ONLY_P (f))
++    return;
++
++  /* Use VALUE only if an int >= 0.  */
++  if (RANGED_FIXNUMP (0, value, INT_MAX))
++    nlines = XFIXNAT (value);
++  else
++    nlines = 0;
++
++  if (nlines != olines && (olines == 0 || nlines == 0))
++    ns_change_tab_bar_height (f, nlines * FRAME_LINE_HEIGHT (f));
+ }
+ 
+ 
+diff --git a/src/nsterm.h b/src/nsterm.h
+index 46733e6949..4bbcf43973 100644
+--- a/src/nsterm.h
++++ b/src/nsterm.h
+@@ -1136,6 +1136,7 @@ ns_query_color (void *col, Emacs_Color *color_def, bool setPixel);
+                                     Lisp_Object oldval);
+ extern void ns_set_scroll_bar_default_width (struct frame *f);
+ extern void ns_set_scroll_bar_default_height (struct frame *f);
++extern void ns_change_tab_bar_height (struct frame *f, int height);
+ extern const char *ns_get_string_resource (void *_rdb,
+                                            const char *name,
+                                            const char *class);
+diff --git a/src/nsterm.m b/src/nsterm.m
+index a6c2e7505b..515d4c8054 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -2721,11 +2721,10 @@ Hide the window (X11 semantics)
+ 
+   if (FRAME_LIVE_P (f) && FRAME_INTERNAL_BORDER_WIDTH (f) > 0)
+     {
+-      int border_width = FRAME_INTERNAL_BORDER_WIDTH (f);
+-      NSView *view = FRAME_NS_VIEW (f);
+-      NSRect edge_rect, frame_rect = [view bounds];
+-      NSRectEdge edge[] = {NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
+-
++      int border = FRAME_INTERNAL_BORDER_WIDTH (f);
++      int width = FRAME_PIXEL_WIDTH (f);
++      int height = FRAME_PIXEL_HEIGHT (f);
++      int margin = FRAME_TOP_MARGIN_HEIGHT (f);
+       int face_id =
+         (FRAME_PARENT_FRAME (f)
+          ? (!NILP (Vface_remapping_alist)
+@@ -2747,12 +2746,12 @@ Hide the window (X11 semantics)
+ 
+       ns_focus (f, NULL, 1);
+       [ns_lookup_indexed_color (NS_FACE_BACKGROUND (face), f) set];
+-      for (int i = 0; i < 4 ; i++)
+-        {
+-          NSDivideRect (frame_rect, &edge_rect, &frame_rect, border_width, edge[i]);
+ 
+-          NSRectFill (edge_rect);
+-        }
++      NSRectFill (NSMakeRect (0, margin, width, border));
++      NSRectFill (NSMakeRect (0, 0, border, height));
++      NSRectFill (NSMakeRect (0, margin, width, border));
++      NSRectFill (NSMakeRect (width - border, 0, border, height));
++      NSRectFill (NSMakeRect (0, height - border, width, border));
+       ns_unfocus (f);
+     }
+ }
+@@ -5066,6 +5065,7 @@ static Lisp_Object ns_new_font (struct frame *f, Lisp_Object font_object,
+   terminal->free_pixmap = ns_free_pixmap;
+   terminal->delete_frame_hook = ns_destroy_window;
+   terminal->delete_terminal_hook = ns_delete_terminal;
++  terminal->change_tab_bar_height_hook = ns_change_tab_bar_height;
+   /* Other hooks are NULL by default.  */
+ 
+   return terminal;
+@@ -6675,7 +6675,27 @@ - (void)mouseDown: (NSEvent *)theEvent
+     }
+   else
+     {
+-      emacs_event->kind = MOUSE_CLICK_EVENT;
++      Lisp_Object tab_bar_arg = Qnil;
++      bool tab_bar_p;
++
++      if (WINDOWP (emacsframe->tab_bar_window)
++	  && WINDOW_TOTAL_LINES (XWINDOW (emacsframe->tab_bar_window)))
++	{
++	  Lisp_Object window;
++	  int x = lrint (p.x);
++	  int y = lrint (p.y);
++
++	  window = window_from_coordinates (emacsframe, x, y, 0, true, true);
++	  tab_bar_p = EQ (window, emacsframe->tab_bar_window);
++
++	  if (tab_bar_p)
++	    tab_bar_arg = handle_tab_bar_click (emacsframe, x, y, EV_UDMODIFIERS (theEvent) & down_modifier,
++						EV_MODIFIERS (theEvent) | EV_UDMODIFIERS (theEvent));
++	}
++
++      if (!(tab_bar_p && NILP (tab_bar_arg)))
++	emacs_event->kind = MOUSE_CLICK_EVENT;
++      emacs_event->arg = tab_bar_arg;
+       emacs_event->code = EV_BUTTON (theEvent);
+       emacs_event->modifiers = EV_MODIFIERS (theEvent)
+                              | EV_UDMODIFIERS (theEvent);
+2.31.1
+
