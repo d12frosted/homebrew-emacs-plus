@@ -76,7 +76,7 @@ class EmacsPlusAT28 < EmacsBase
   # Patches
   #
 
-  local_patch "no-titlebar", sha: "69c246224fa7dc4bcb84a8286e8f67eb519e2699319010054a9f71a301a9e3bd" if build.with? "no-titlebar"
+  local_patch "no-titlebar", sha: "2fa80efc5cda7e96d88a5d145c9313092a6e53d38825c41967c745f08778c41b" if build.with? "no-titlebar"
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
