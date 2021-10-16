@@ -16,6 +16,9 @@ SOURCE_NAME_27=EmacsPlusAT27
 SOURCE_FILE_28=Formula/emacs-plus@28.rb
 SOURCE_NAME_28=EmacsPlusAT28
 
+SOURCE_FILE_29=Formula/emacs-plus@29.rb
+SOURCE_NAME_29=EmacsPlusAT29
+
 TARGET_FILE=Formula/emacs-plus-local.rb
 TARGET_NAME=EmacsPlusLocal
 
@@ -32,9 +35,10 @@ function usage {
   build VERSION [OPTIONS]
 
 Versions:
-  26                    Emacs 26 - emacs-plus@26 - current release
-  27                    Emacs 27 - emacs-plus@27 - next release
-  28                    Emacs 27 - emacs-plus@28 - development
+  26                    Emacs 26 - emacs-plus@26 - previous release
+  27                    Emacs 27 - emacs-plus@27 - current release
+  28                    Emacs 28 - emacs-plus@28 - next release
+  29                    Emacs 29 - emacs-plus@29 - development (master)
 
 Consult each formula for the list of available options.
 "
@@ -55,6 +59,10 @@ case $VERSION in
   28)
     SOURCE_FILE=$SOURCE_FILE_28
     SOURCE_NAME=$SOURCE_NAME_28
+    ;;
+  29)
+    SOURCE_FILE=$SOURCE_FILE_29
+    SOURCE_NAME=$SOURCE_NAME_29
     ;;
   *)
     usage

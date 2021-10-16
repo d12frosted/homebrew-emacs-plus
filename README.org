@@ -40,6 +40,7 @@ information.
   $ brew install emacs-plus@26 [options] # install Emacs 26
   $ brew install emacs-plus@27 [options] # install Emacs 27
   $ brew install emacs-plus@28 [options] # install Emacs 28
+  $ brew install emacs-plus@29 [options] # install Emacs 29 (master)
 #+end_src
 
 Feel free to open an issue or contact me via email if you face any issues,
@@ -77,7 +78,8 @@ Emacs Plus contains separate formulas for different Emacs versions:
 - =emacs-plus= install current release version (Emacs 27);
 - =emacs-plus@26= install Emacs 26, previous release version;
 - =emacs-plus@27= install Emacs 27, current release version;
-- =emacs-plus@28= install Emacs 28, development version.
+- =emacs-plus@28= install Emacs 28, next release version.
+- =emacs-plus@29= install Emacs 29, development version.
 
   #+begin_src bash
   $ brew tap d12frosted/emacs-plus
@@ -85,6 +87,7 @@ Emacs Plus contains separate formulas for different Emacs versions:
   $ brew install emacs-plus@26 [options] # install Emacs 26
   $ brew install emacs-plus@27 [options] # install Emacs 27
   $ brew install emacs-plus@28 [options] # install Emacs 28
+  $ brew install emacs-plus@29 [options] # install Emacs 29
 #+end_src
 
 By default (without any addition options) this formula install Cocoa version of
@@ -119,7 +122,7 @@ In short, =brew= doesn't really support options. They break time to time
 
 Emacs 26 comes without any available options due to [[https://github.com/d12frosted/homebrew-emacs-plus/issues/195][→ #195]].
 
-** Emacs 27 and Emacs 28 options
+** Emacs 27, Emacs 28 and Emacs 29 options
 :PROPERTIES:
 :ID:                     231811b8-e149-41b1-9d6a-d508a3512c87
 :END:
@@ -137,7 +140,7 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--without-imagemagick=   | build without =imagemagick= support                                          |
 | =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                      |
-| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28=)      |
+| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28= and =emacs-plus@29=)      |
 
 By default =emacs-plus= builds the Cocoa version of Emacs.
 
