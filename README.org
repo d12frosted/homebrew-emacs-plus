@@ -16,6 +16,9 @@
   <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+28%22">
     <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg" alt="Emacs 28 CI Status Badge">
   </a>
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+29%22">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2029/badge.svg" alt="Emacs 29 CI Status Badge">
+  </a>
 </p>
 #+end_html
 
@@ -56,7 +59,7 @@ contribute.
   - [[#install][Install]]
   - [[#reinstall][Reinstall]]
   - [[#emacs-26-options][Emacs 26 options]]
-  - [[#emacs-27-and-emacs-28-options][Emacs 27 and Emacs 28 options]]
+  - [[#emacs-27-emacs-28-and-emacs-29-options][Emacs 27, Emacs 28 and Emacs 29 options]]
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
@@ -127,20 +130,20 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 :ID:                     231811b8-e149-41b1-9d6a-d508a3512c87
 :END:
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
-| =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
-| =--with-dbus=             | build with dbus support                                                      |
-| =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
-| =--with-mailutils=        | build with mailutils support                                                 |
-| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
-| =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]]                                                     |
-| =--with-x11=              | build with x11 support                                                       |
-| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--without-imagemagick=   | build without =imagemagick= support                                          |
-| =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                      |
-| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28= and =emacs-plus@29=)      |
+| Option                    | Description                                                                                 |
+|---------------------------+---------------------------------------------------------------------------------------------|
+| =--with-ctags=            | don't remove the ctags executable that Emacs provides                                       |
+| =--with-dbus=             | build with dbus support                                                                     |
+| =--with-debug=            | build with debug symbols and debugger friendly optimizations                                |
+| =--with-mailutils=        | build with mailutils support                                                                |
+| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one)                |
+| =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]]                                                                    |
+| =--with-x11=              | build with x11 support                                                                      |
+| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                               |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                                          |
+| =--without-imagemagick=   | build without =imagemagick= support                                                         |
+| =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                                     |
+| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28= and =emacs-plus@29=) |
 
 By default =emacs-plus= builds the Cocoa version of Emacs.
 
