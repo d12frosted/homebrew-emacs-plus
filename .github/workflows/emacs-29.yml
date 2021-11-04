@@ -28,7 +28,7 @@ jobs:
         build_opts:
           - ""
           - "--with-xwidgets"
-          # - "--with-no-titlebar" # it's currently broken
+          - "--with-no-titlebar"
           - "--with-native-comp"
           - "--with-x11"
 
