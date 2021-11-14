@@ -94,7 +94,8 @@ Emacs Plus contains separate formulas for different Emacs versions:
 #+end_src
 
 By default (without any addition options) this formula install Cocoa version of
-Emacs with support of =gnutls=, =imagemagick=, =librsvg=, =libxml2=, dynamic
+Emacs with support of =gnutls=, =imagemagick= (not included by default with
+emacs-plus@28 and emacs-plus@29), =librsvg=, =libxml2=, dynamic
 modules and multicolor fonts. Please see the list of available options to
 disable any bit of default behaviour or add even more stuff.
 
@@ -141,7 +142,8 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--with-x11=              | build with x11 support                                                                      |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                               |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                                          |
-| =--without-imagemagick=   | build without =imagemagick= support                                                         |
+| =--without-imagemagick=   | build without =imagemagick= support (only for emacs-plus@27)                                |
+| =--with-imagemagick=      | build with =imagemagick= support (only for emacs-plus@28 and emacs-plus@29)                 |
 | =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                                     |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28= and =emacs-plus@29=) |
 
