@@ -32,7 +32,7 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "librsvg"
   depends_on "little-cms2"
   depends_on "jansson"
-  depends_on "imagemagick" => :recommended
+  depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
 
