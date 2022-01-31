@@ -28,7 +28,6 @@ jobs:
         build_opts:
           - ""
           - "--with-xwidgets"
-          - "--with-no-titlebar"
           - "--with-native-comp"
           - "--with-x11"
 
