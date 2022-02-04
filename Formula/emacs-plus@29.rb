@@ -80,19 +80,6 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
 
   #
-  # no-titlebar deprecation
-  #
-
-  option "with-no-titlebar", "Deprecated, will be removed on 01.03.2022"
-  if build.with? "no-titlebar"
-    odie <<~EOS
-      --with-no-titlebar is not available anymore, instead add the following in early-init.el
-
-        (add-to-list 'default-frame-alist '(undecorated . t))
-    EOS
-  end
-
-  #
   # Install
   #
 
