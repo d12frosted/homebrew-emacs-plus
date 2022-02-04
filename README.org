@@ -138,12 +138,12 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                                |
 | =--with-mailutils=        | build with mailutils support                                                                |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one)                |
-| =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]]                                                                    |
+| =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]] (only for =emacs-plus@27= and =emacs-plus@28=)                     |
 | =--with-x11=              | build with x11 support                                                                      |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                               |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                                          |
-| =--without-imagemagick=   | build without =imagemagick= support (only for emacs-plus@27)                                |
-| =--with-imagemagick=      | build with =imagemagick= support (only for emacs-plus@28 and emacs-plus@29)                 |
+| =--without-imagemagick=   | build without =imagemagick= support (only for =emacs-plus@27=)                              |
+| =--with-imagemagick=      | build with =imagemagick= support (only for =emacs-plus@28= and =emacs-plus@29=)             |
 | =--HEAD=                  | build from =emacs-27= branch (only for =emacs-plus@27=)                                     |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]] (only for =emacs-plus@28= and =emacs-plus@29=) |
 
@@ -157,14 +157,18 @@ By default =emacs-plus= builds the Cocoa version of Emacs.
 :ID:                     ec120d87-5570-4259-a434-5909129b7b7c
 :END:
 
-This patch is enabled with the =--with-no-titlebar= option. It is meant for use
-with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]], [[https://github.com/koekeishiya/chunkwm][→ chunkwm]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that
-the titlebar you will never need to click on won't take up screen real estate.
-If you see gaps between your emacs frames and other windows, try this:
+This patch is enabled with the =--with-no-titlebar= option for =emacs-plus@27= and =emacs-plus@28=. It is meant for use with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]], [[https://github.com/koekeishiya/chunkwm][→ chunkwm]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that
+the titlebar won't take up screen real estate. If you see gaps between your emacs frames and other windows, try this:
 
 #+BEGIN_SRC emacs-lisp
   (setq frame-resize-pixelwise t)
 #+END_SRC
+
+In =emacs-plus@29= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(undecorated . t))
+#+end_src
 
 *** Xwidgets (webkit)
 :PROPERTIES:
