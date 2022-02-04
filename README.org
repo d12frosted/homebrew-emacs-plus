@@ -1,6 +1,3 @@
-:PROPERTIES:
-:ID:                     ec037164-cec0-4b3a-b942-a2b3a34a28ca
-:END:
 #+begin_html
 <p align="center">
   <img width="256px" src="images/emacs.png" alt="Banner">
@@ -23,19 +20,14 @@
 #+end_html
 
 ** About
-:PROPERTIES:
-:ID:                     94ea0bf6-320c-4aab-9e7a-6902e1f69f15
-:END:
 
 #+begin_html
 <img align="right" width="40%" src="images/screenshot-01.png" alt="Screenshot">
 #+end_html
 
-Emacs Plus is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It
-offers a wide rage of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs
-Plus intent is to give the most of 'plus' stuff by default, leaving only
-controversial options as opt-in. Please refer to [[#options][→ Options]] section for more
-information.
+Emacs Plus is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide rage of extra
+functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs Plus intent is to give the most of 'plus' stuff by default,
+leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
@@ -46,15 +38,11 @@ information.
   $ brew install emacs-plus@29 [options] # install Emacs 29 (master)
 #+end_src
 
-Feel free to open an issue or contact me via email if you face any issues,
-questions or feature requests. I love pull requests, so do send them. You might
-want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better understanding on how to
-contribute.
+Feel free to open an issue or contact me via email if you face any issues, questions or feature requests. I
+love pull requests, so do send them. You might want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better
+understanding on how to contribute.
 
 ** Table of Contents :TOC_3:
-:PROPERTIES:
-:ID:                     fe0f0130-b518-4b40-b440-5564066f5a88
-:END:
   - [[#about][About]]
   - [[#install][Install]]
   - [[#reinstall][Reinstall]]
@@ -72,9 +60,6 @@ contribute.
   - [[#acknowledgements][Acknowledgements]]
 
 ** Install
-:PROPERTIES:
-:ID:                     5a91bfc6-30cd-4740-9aea-59b25a5a9e33
-:END:
 
 Emacs Plus contains separate formulas for different Emacs versions:
 
@@ -93,26 +78,22 @@ Emacs Plus contains separate formulas for different Emacs versions:
   $ brew install emacs-plus@29 [options] # install Emacs 29
 #+end_src
 
-By default (without any addition options) this formula install Cocoa version of
-Emacs with support of =gnutls=, =imagemagick= (not included by default with
-emacs-plus@28 and emacs-plus@29), =librsvg=, =libxml2=, dynamic
-modules and multicolor fonts. Please see the list of available options to
-disable any bit of default behaviour or add even more stuff.
+By default (without any addition options) this formula install Cocoa version of Emacs with support of
+=gnutls=, =imagemagick= (not included by default with emacs-plus@28 and emacs-plus@29), =librsvg=, =libxml2=,
+dynamic modules and multicolor fonts. Please see the list of available options to disable any bit of default
+behaviour or add even more stuff.
 
 ** Reinstall
-:PROPERTIES:
-:ID:                     1d1501a1-21c7-4a98-ae12-51ee049ae175
-:END:
 
-If you wish to reinstall =emacs-plus= with you should not use =reinstall=
-command of =brew= (not related to this formula, it's a general advice). Instead,
-you should =uninstall= a package and then =install= it with desired options.
+If you wish to reinstall =emacs-plus= with you should not use =reinstall= command of =brew= (not related to
+this formula, it's a general advice). Instead, you should =uninstall= a package and then =install= it with
+desired options.
 
-Avoid =reinstall= even if you want to =reinstall= with the same set of options,
-otherwise you will likely to get compilation errors! For example, [[https://github.com/d12frosted/homebrew-emacs-plus/issues/218][#218]] and [[https://github.com/d12frosted/homebrew-emacs-plus/issues/321][#321]].
+Avoid =reinstall= even if you want to =reinstall= with the same set of options, otherwise you will likely to
+get compilation errors! For example, [[https://github.com/d12frosted/homebrew-emacs-plus/issues/218][#218]] and [[https://github.com/d12frosted/homebrew-emacs-plus/issues/321][#321]].
 
-In short, =brew= doesn't really support options. They break time to time
-([[https://github.com/Homebrew/brew/issues/4793][brew#4793]], [[https://github.com/Homebrew/brew/issues/7397][brew#7397]], [[https://github.com/Homebrew/brew/issues/7498][brew#7498]] to show a few).
+In short, =brew= doesn't really support options. They break time to time ([[https://github.com/Homebrew/brew/issues/4793][brew#4793]], [[https://github.com/Homebrew/brew/issues/7397][brew#7397]], [[https://github.com/Homebrew/brew/issues/7498][brew#7498]] to
+show a few).
 
 #+BEGIN_SRC bash
   $ brew uninstall emacs-plus
@@ -120,16 +101,10 @@ In short, =brew= doesn't really support options. They break time to time
 #+END_SRC
 
 ** Emacs 26 options
-:PROPERTIES:
-:ID:                     c3fb3ff5-0c6e-4588-a61f-771bee738edd
-:END:
 
 Emacs 26 comes without any available options due to [[https://github.com/d12frosted/homebrew-emacs-plus/issues/195][→ #195]].
 
 ** Emacs 27, Emacs 28 and Emacs 29 options
-:PROPERTIES:
-:ID:                     231811b8-e149-41b1-9d6a-d508a3512c87
-:END:
 
 | Option                    | Description                                                                                 |
 |---------------------------+---------------------------------------------------------------------------------------------|
@@ -149,50 +124,41 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 
 By default =emacs-plus= builds the Cocoa version of Emacs.
 
-=emacs-plus= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=,
-=little-cms2= and dynamic modules.
+=emacs-plus= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic
+modules.
 
 *** No Titlebar
-:PROPERTIES:
-:ID:                     ec120d87-5570-4259-a434-5909129b7b7c
-:END:
 
-This patch is enabled with the =--with-no-titlebar= option for =emacs-plus@27= and =emacs-plus@28=. It is meant for use with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]], [[https://github.com/koekeishiya/chunkwm][→ chunkwm]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that
-the titlebar won't take up screen real estate. If you see gaps between your emacs frames and other windows, try this:
+This patch is enabled with the =--with-no-titlebar= option for =emacs-plus@27= and =emacs-plus@28=. It is
+meant for use with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]], [[https://github.com/koekeishiya/chunkwm][→ chunkwm]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that the titlebar won't
+take up screen real estate. If you see gaps between your emacs frames and other windows, try this:
 
 #+BEGIN_SRC emacs-lisp
   (setq frame-resize-pixelwise t)
 #+END_SRC
 
-In =emacs-plus@29= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
+In =emacs-plus@29= this option is not available anymore as you can achieve the same result using Emacs Lisp by
+adding the following line in your =early-init.el= file:
 
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(undecorated . t))
 #+end_src
 
 *** Xwidgets (webkit)
-:PROPERTIES:
-:ID:                     6cd905b9-dd43-4888-b717-c5abbb08a25d
-:END:
 
 Browse the web in Emacs as in modern browser.
 
-The original [[https://www.emacswiki.org/emacs/EmacsXWidgets][→ Emacs xwidgets]] builds and works on macOS however must be used
-with X11 and hence not practical option on macOS. This version enables
-=xwidgets= on native macOS Cocoa via embedding a native webkit window.
+The original [[https://www.emacswiki.org/emacs/EmacsXWidgets][→ Emacs xwidgets]] builds and works on macOS however must be used with X11 and hence not practical
+option on macOS. This version enables =xwidgets= on native macOS Cocoa via embedding a native webkit window.
 
 More details can be seen here [[https://github.com/veshboo/emacs][→ Veshboo's emacs branch]].
 
 *** System appearance change
-:PROPERTIES:
-:ID:                     8cef837f-359b-4528-ac0e-0977e1bf37f3
-:END:
 
 This patch is enabled by default and can't be disabled. It adds a hook,
-=ns-system-appearance-change-functions=, that is called once the system
-appearance is changed. Functions added to this hook will be called with one
-argument, a symbol that is either =light= or =dark=. This mainly allows loading
-a different theme to better match the system appearance.
+=ns-system-appearance-change-functions=, that is called once the system appearance is changed. Functions added
+to this hook will be called with one argument, a symbol that is either =light= or =dark=. This mainly allows
+loading a different theme to better match the system appearance.
 
 #+begin_src emacs-lisp
   (defun my/apply-theme (appearance)
@@ -205,46 +171,35 @@ a different theme to better match the system appearance.
   (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
 #+end_src
 
-Note that this hook is also run once when Emacs is initialized, so simply adding
-the above to your =init.el= will allow matching the system appearance upon
-startup. You can also determine what the current system appearance is by
-inspecting the value of the =ns-system-appearance= variable.
+Note that this hook is also run once when Emacs is initialized, so simply adding the above to your =init.el=
+will allow matching the system appearance upon startup. You can also determine what the current system
+appearance is by inspecting the value of the =ns-system-appearance= variable.
 
 The hook is NOT run in TTY Emacs sessions.
 
 *** gccemacs
-:PROPERTIES:
-:ID:                     7fab3512-2894-42b8-ad90-74298e4ff212
-:END:
 
 #+begin_quote
-gccemacs is a modified Emacs capable of compiling and running Emacs Lisp as
-native code in form of re-loadable elf files. As the name suggests this is
-achieved blending together Emacs and the gcc infrastructure.
+gccemacs is a modified Emacs capable of compiling and running Emacs Lisp as native code in form of re-loadable
+elf files. As the name suggests this is achieved blending together Emacs and the gcc infrastructure.
 
 [[https://akrl.sdf.org/gccemacs.html][→ Andrea Corallo]]
 #+end_quote
 
-While =gccemacs= gives performance boost in many scenarios, this feature is
-still experimental and might require time and effort from your side for it to
-work! Use at our own risk :)
+While =gccemacs= gives performance boost in many scenarios, this feature is still experimental and might
+require time and effort from your side for it to work! Use at our own risk :)
 
 Please see official [[https://akrl.sdf.org/gccemacs.html][→ gccemacs documentation]] for more information.
 
 Knows issues:
 
-- =ld: library not found for -lSystem=. This only happens on older
-  versions of =gcc= installed by Homebrew. Please execute =$ brew
-  reinstall gcc libgccjit= to resolve this issue.
-- Errors during compilation of your =init.el=. Try running Emacs with =-Q=
-  option and give it some time to compile everything (maybe run =M-x= to force
-  compilation) - you shall see buffer =*Async-native-compile-log*= in the list
-  of buffers.
+- =ld: library not found for -lSystem=. This only happens on older versions of =gcc= installed by Homebrew.
+  Please execute =$ brew reinstall gcc libgccjit= to resolve this issue.
+- Errors during compilation of your =init.el=. Try running Emacs with =-Q= option and give it some time to
+  compile everything (maybe run =M-x= to force compilation) - you shall see buffer
+  =*Async-native-compile-log*= in the list of buffers.
 
 ** Icons
-:PROPERTIES:
-:ID:                     2d6e4b1c-b60a-4331-ab11-beb95cd7e98c
-:END:
 
 | Option                                        | Author                     | Image                                          | URL     |
 |-----------------------------------------------+----------------------------+------------------------------------------------+---------|
@@ -300,9 +255,6 @@ Knows issues:
 | =--with-nobu417-big-sur-icon=                 | [[https://github.com/nobu417][→ Nobuyuki Sato]]            | [[/icons/nobu417-big-sur_128.png]]                 | [[https://github.com/nobu417/emacs-icon-replacement-for-macos-big-sur][→ Link]]  |
 
 ** Emacs configuration
-:PROPERTIES:
-:ID:                     9cd35d94-be09-408d-8f2b-99510f163cfb
-:END:
 
 Emacs is a journey. And for some of you these projects might be inspiring.
 
@@ -312,21 +264,13 @@ Emacs is a journey. And for some of you these projects might be inspiring.
 - [[https://github.com/bbatsov/prelude][→ Prelude]]
 
 ** Known Issues
-:PROPERTIES:
-:ID:                     a77b29d2-548b-48db-bad3-677269970bdd
-:END:
 
-Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][→ Issues]] page for a list of all known issues. But here are
-several you should be aware of.
+Please checkout [[https://github.com/d12frosted/homebrew-emacs-plus/issues][→ Issues]] page for a list of all known issues. But here are several you should be aware of.
 
 *** =emacs= dependency in other formulas
-:PROPERTIES:
-:ID:                     85ede619-c294-4c9e-985b-4312aa64baf5
-:END:
 
-In some cases (like when installing =cask=) regular =emacs= package will be
-required. In such cases you might want to install all dependencies manually
-(except for =emacs=) and then install desired package with
+In some cases (like when installing =cask=) regular =emacs= package will be required. In such cases you might
+want to install all dependencies manually (except for =emacs=) and then install desired package with
 =--ignore-dependencies= option.
 
 #+BEGIN_SRC bash
@@ -334,9 +278,6 @@ $ brew install cask --ignore-dependencies
 #+END_SRC
 
 ** Screenshots
-:PROPERTIES:
-:ID:                     17fd372f-d33c-440d-96b0-f251c01b1190
-:END:
 
 #+BEGIN_HTML
 <p align="center">
@@ -351,12 +292,8 @@ $ brew install cask --ignore-dependencies
 #+END_HTML
 
 ** Acknowledgements
-:PROPERTIES:
-:ID:                     86cfc483-d4f1-4f56-9304-b5df5a10b875
-:END:
 
-Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][→ contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][→
-Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
+Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][→ contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][→ Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
 
 Special thanks to patrons [[https://www.patreon.com/d12frosted][supporting]] existence of this project:
 
