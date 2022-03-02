@@ -32,7 +32,7 @@ jobs:
       HOMEBREW_EMACS_PLUS_MODE: local
 
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
 
       - name: Build emacs-plus@26 ${{ matrix.build_opts }}
         run: brew install ./Formula/emacs-plus@26.rb ${{ matrix.build_opts }}
