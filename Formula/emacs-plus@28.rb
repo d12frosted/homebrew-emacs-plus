@@ -2,7 +2,13 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT28 < EmacsBase
   init 28
-  version "28.0.50"
+  url "https://ftp.gnu.org/gnu/emacs/emacs-28.1.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-28.1.tar.xz"
+  sha256 "28b1b3d099037a088f0a4ca251d7e7262eab5ea1677aabffa6c4426961ad75e1"
+
+  head do
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-28"
+  end
 
   #
   # Options
@@ -59,12 +65,6 @@ class EmacsPlusAT28 < EmacsBase
       odie "--with-xwidgets is not available when building --with-x11"
     end
   end
-
-  #
-  # URL
-  #
-
-  url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-28"
 
   #
   # Icons
