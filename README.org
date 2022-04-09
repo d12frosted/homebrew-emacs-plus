@@ -274,6 +274,8 @@ Knows issues:
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/retro-sink.png]]                          | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
 | =--with-nobu417-big-sur-icon=                 | [[https://github.com/nobu417][→ Nobuyuki Sato]]            | [[/icons/nobu417-big-sur_128.png]]                 | [[https://github.com/nobu417/emacs-icon-replacement-for-macos-big-sur][→ Link]]  |
+| =--with-memeplex-wide-icon=                   | [[https://github.com/memeplex][→ memeplex]]                 | [[/icons/memeplex-wide_128.png]]                   | [[https://github.com/d12frosted/homebrew-emacs-plus/issues/419#issuecomment-966735773][→ Link]]  |
+| =--with-memeplex-slim-icon=                   | [[https://github.com/memeplex][→ memeplex]]                 | [[/icons/memeplex-slim_128.png]]                   | [[https://github.com/d12frosted/homebrew-emacs-plus/issues/419#issuecomment-966735773][→ Link]]  |
 
 ** Emacs configuration
 
