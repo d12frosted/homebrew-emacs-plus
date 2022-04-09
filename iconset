@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+set -e
+
+tmp_dir=$(mktemp -d)
+icons_data_file="Library/Icons.rb"
+icons_dir="icons"
+original_dir="icons/original"
+preview_dir="icons/preview"
+count_total=0
+count_step=0
+
+function check() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+check convert || {
+  echo "You need to install 'convert' tool as part of 'imagemagick'"
+  exit 1
+}
+
+check png2icns || {
+  echo "You need to install 'png2icns' tool as part of 'libicns'"
+  exit 1
+}
+
+check sha256sum || {
+  echo "You need to install 'sha256sum' tool"
+  exit 1
+}
+
+function process() {
+  local name="${1%.png}"
+  local size="${#count_total}"
+  local sha256=
+
+  count_step=$((count_step+1))
+  printf "[%${size}d/%d] %s\n" $count_step $count_total "$name"
+
+  cp "${original_dir}/${name}.png" "${tmp_dir}/${name}.png"
+
+  (
+    cd "$tmp_dir"
+    convert "${name}.png" -resize 1024x1024! "${name}_1024.png"
+    convert "${name}.png" -resize  512x512!  "${name}_512.png"
+    # convert "${name}.png" -resize  512x512!  "${name}_256@2x.png"
+    convert "${name}.png" -resize  256x256!  "${name}_256.png"
+    # convert "${name}.png" -resize  256x256!  "${name}_128@2x.png"
+    convert "${name}.png" -resize  128x128!  "${name}_128.png"
+    # convert "${name}.png" -resize   64x64!   "${name}_32@2x.png"
+    convert "${name}.png" -resize   32x32!   "${name}_32.png"
+    # convert "${name}.png" -resize   32x32!   "${name}_16@2x.png"
+    convert "${name}.png" -resize   16x16!   "${name}_16.png"
+
+    png2icns "${name}.icns" "${name}_1024.png" "${name}_512.png" "${name}_256.png" "${name}_128.png" "${name}_32.png" "${name}_16.png"
+  )
+
+  cp "${tmp_dir}/${name}.icns" "$icons_dir/${name}.icns"
+  cp "${tmp_dir}/${name}_128.png" "$preview_dir/${name}_128.png"
+
+  sha256=$(sha256sum "$icons_dir/${name}.icns" | cut -f 1 -d " ")
+  echo "  \"$name\" => \"$sha256\"," >> "$icons_data_file"
+
+  sed -i "s/\(.*\)\(# iconset end\).*/\1- \"--with-$name-icon\"\n\1\2/" .github/workflows/emacs.yml
+}
+
+for f in "$original_dir"/*.png; do
+  count_total=$((count_total+1))
+done
+
+sed -ni '1,/# iconset begin/p;/# iconset end/,$p' .github/workflows/emacs.yml
+rm "$icons_data_file"
+echo "ICONS_CONFIG = {" >> "$icons_data_file"
+
+for f in "$original_dir"/*.png; do
+  process "${f#"$original_dir"/}"
+done
+
+echo "}.freeze" >> "$icons_data_file"
+
+echo "-> done."
