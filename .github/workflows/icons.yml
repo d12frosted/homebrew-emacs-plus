@@ -1,0 +1,90 @@
+name: Icons
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "Library/**"
+      - "icons/**"
+      - ".github/workflows/icons.yml"
+  pull_request:
+    paths:
+      - "Library/**"
+      - "icons/**"
+      - ".github/workflows/icons.yml"
+
+jobs:
+  build:
+    runs-on: macos-11
+    strategy:
+      matrix:
+        icon:
+          # iconset begin
+          - cacodemon
+          - elrumo1
+          - elrumo2
+          - emacs-card-blue-deep
+          - emacs-card-british-racing-green
+          - emacs-card-carmine
+          - emacs-card-green
+          - EmacsIcon1
+          - EmacsIcon2
+          - EmacsIcon3
+          - EmacsIcon4
+          - EmacsIcon5
+          - EmacsIcon6
+          - EmacsIcon7
+          - EmacsIcon8
+          - EmacsIcon9
+          - gnu-head
+          - memeplex-slim
+          - memeplex-wide
+          - modern-alecive-flatwoken
+          - modern-asingh4242
+          - modern-azhilin
+          - modern-bananxan
+          - modern-black-dragon
+          - modern-black-gnu-head
+          - modern-black-variant
+          - modern-bokehlicia-captiva
+          - modern-cg433n
+          - modern-doom3
+          - modern-doom
+          - modern-mzaplotnik
+          - modern-nuvola
+          - modern-orange
+          - modern-paper
+          - modern-papirus
+          - modern-pen-3d
+          - modern-pen-black
+          - modern-pen-lds56
+          - modern-pen
+          - modern
+          - modern-purple-flat
+          - modern-sexy-v1
+          - modern-sexy-v2
+          - modern-sjrmanning
+          - modern-vscode
+          - modern-yellow
+          - nobu417-big-sur
+          - retro-emacs-logo
+          - retro-gnu-meditate-levitate
+          - retro-sink-bw
+          - retro-sink
+          - spacemacs
+          # iconset end
+
+    env:
+      HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
+      HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
+      HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build emacs-plus ${{ matrix.build_opts }}
+        run: brew install Aliases/$(readlink Aliases/emacs-plus) --with-${{ matrix.icon }}-icon
+
+      - name: Test installation
+        run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
