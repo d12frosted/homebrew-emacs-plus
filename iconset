@@ -7,6 +7,7 @@ icons_data_file="Library/Icons.rb"
 icons_dir="icons"
 original_dir="icons/original"
 preview_dir="icons/preview"
+workflow=".github/workflows/icons.yml"
 count_total=0
 count_step=0
 
@@ -61,14 +62,14 @@ function process() {
   sha256=$(sha256sum "$icons_dir/${name}.icns" | cut -f 1 -d " ")
   echo "  \"$name\" => \"$sha256\"," >> "$icons_data_file"
 
-  sed -i "s/\(.*\)\(# iconset end\).*/\1- \"--with-$name-icon\"\n\1\2/" .github/workflows/emacs.yml
+  sed -i "s/\(.*\)\(# iconset end\).*/\1- $name\n\1\2/" "$workflow"
 }
 
 for f in "$original_dir"/*.png; do
   count_total=$((count_total+1))
 done
 
-sed -ni '1,/# iconset begin/p;/# iconset end/,$p' .github/workflows/emacs.yml
+sed -ni '1,/# iconset begin/p;/# iconset end/,$p' "$workflow"
 rm "$icons_data_file"
 echo "ICONS_CONFIG = {" >> "$icons_data_file"
 
