@@ -34,6 +34,7 @@ function process() {
   local name="${1%.png}"
   local size="${#count_total}"
   local sha256=
+  local icns_file="$icons_dir/${name}.icns"
   local workflow="${workflows_dir}/icon-${name}.yml"
 
   count_step=$((count_step+1))
@@ -57,8 +58,14 @@ function process() {
     png2icns "${name}.icns" "${name}_1024.png" "${name}_512.png" "${name}_256.png" "${name}_128.png" "${name}_32.png" "${name}_16.png"
   )
 
-  cp "${tmp_dir}/${name}.icns" "$icons_dir/${name}.icns"
-  cp "${tmp_dir}/${name}_128.png" "$preview_dir/${name}_128.png"
+  cp "${tmp_dir}/${name}.icns" "$icns_file"
+
+  # since png contains time-related metadata and we want to avoid
+  # dummy changes, let's copy preview ONLY when icns file changes
+  if ! git diff --exit-code "$icns_file" >/dev/null ||
+      ! git ls-files --error-unmatch "$icns_file" 2>/dev/null; then
+    cp "${tmp_dir}/${name}_128.png" "$preview_dir/${name}_128.png"
+  fi
 
   sha256=$(sha256sum "$icons_dir/${name}.icns" | cut -f 1 -d " ")
   echo "  \"$name\" => \"$sha256\"," >> "$icons_data_file"
