@@ -7,10 +7,12 @@ on:
     paths:
       - "Aliases/emacs-plus"
       - ".github/workflows/emacs.yml"
+      - "Library/**"
   pull_request:
     paths:
       - "Aliases/emacs-plus"
       - ".github/workflows/emacs.yml"
+      - "Library/**"
   schedule:
     - cron: "0 */12 * * *"
 
@@ -23,6 +25,7 @@ jobs:
         build_opts:
           - ""
           - "--build-from-source"
+          - "--with-spacemacs-icon"
 
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
