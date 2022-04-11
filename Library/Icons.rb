@@ -9,6 +9,7 @@ ICONS_CONFIG = {
   "EmacsIcon8" => "1ae845bf48695fde38ad5768169b076fdd66940d52481a12e58084d6ad4aebf7",
   "EmacsIcon9" => "80cc969f51c7c3c44c1a0db78df9bd9eadf011050a1e21e96484e80e6a3a6eb9",
   "cacodemon" => "f442a0c434838bde5139993b4a78ef3f065a9a037a7cfc1d9f550da99d8d13b1",
+  "dragon" => "8f46731b1a7ca331fd74d1783e1c4124ccbda1d084235df90a11f7155ee9a6e9",
   "elrumo1" => "4ae418082b8a66aa122f7162425cfd410756bd6e75560cf1745aa7f841f66d02",
   "elrumo2" => "5eaa76a52b86d5cedb0d43afa7682ad553712e71eed03fe97ea4461f660627db",
   "emacs-card-blue-deep" => "66d66fd534dd92fbfe8d80a1b15383197d3d3c8e63fc3a2e253a99c47fdb06d4",
