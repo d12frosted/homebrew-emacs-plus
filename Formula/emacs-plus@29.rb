@@ -3,6 +3,7 @@ require_relative "../Library/EmacsBase"
 class EmacsPlusAT29 < EmacsBase
   init 29
   version "29.0.50"
+  env :std
 
   #
   # Options
@@ -181,6 +182,14 @@ class EmacsPlusAT29 < EmacsBase
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
 
+      # inject PATH to Info.plist
+      path = ENV['PATH'].split("#{HOMEBREW_PREFIX}/Library/Homebrew/shims/shared:").last
+      system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PATH string' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "/usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PATH #{path}' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "/usr/libexec/PlistBuddy -c 'Print :LSEnvironment' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "touch '#{prefix}/Emacs.app'"
+
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
@@ -238,30 +247,6 @@ class EmacsPlusAT29 < EmacsBase
   end
 
   plist_options :manual => "emacs"
-
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-        <key>Label</key>
-        <string>#{plist_name}</string>
-        <key>ProgramArguments</key>
-        <array>
-          <string>#{opt_bin}/emacs</string>
-          <string>--fg-daemon</string>
-        </array>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>StandardOutPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
-        <key>StandardErrorPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
-      </dict>
-      </plist>
-    EOS
-  end
 
   test do
     assert_equal "4", shell_output("#{bin}/emacs --batch --eval=\"(print (+ 2 2))\"").strip
