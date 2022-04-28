@@ -80,6 +80,7 @@ class EmacsPlusAT28 < EmacsBase
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
+  local_patch "fix-MAC_LIBS-inference-on-Intel", sha: "e336dd571732fffb3c71fa31c35084f6529dc1e432f35aed3406f1eae14e5a32" if build.with? "native-comp"
 
   #
   # Install
