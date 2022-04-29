@@ -24,6 +24,7 @@ class EmacsPlusAT29 < EmacsBase
   # Dependencies
   #
 
+  depends_on "make" => :build
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
   depends_on "pkg-config" => :build
@@ -166,8 +167,8 @@ class EmacsPlusAT29 < EmacsBase
         end
       end
 
-      system "make"
-      system "make", "install"
+      system "gmake"
+      system "gmake", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
@@ -224,8 +225,8 @@ class EmacsPlusAT29 < EmacsBase
         end
       end
 
-      system "make"
-      system "make", "install"
+      system "gmake"
+      system "gmake", "install"
     end
 
     # Follow MacPorts and don't install ctags from Emacs. This allows Vim
