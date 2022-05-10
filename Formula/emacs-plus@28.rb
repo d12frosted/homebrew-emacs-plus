@@ -5,6 +5,7 @@ class EmacsPlusAT28 < EmacsBase
   url "https://ftp.gnu.org/gnu/emacs/emacs-28.1.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-28.1.tar.xz"
   sha256 "28b1b3d099037a088f0a4ca251d7e7262eab5ea1677aabffa6c4426961ad75e1"
+  env :std
 
   head do
     url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-28"
@@ -30,6 +31,7 @@ class EmacsPlusAT28 < EmacsBase
   # Dependencies
   #
 
+  depends_on "make" => :build
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
   depends_on "pkg-config" => :build
@@ -80,6 +82,7 @@ class EmacsPlusAT28 < EmacsBase
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
+  local_patch "fix-MAC_LIBS-inference-on-Intel", sha: "e336dd571732fffb3c71fa31c35084f6529dc1e432f35aed3406f1eae14e5a32" if build.with? "native-comp"
 
   #
   # Install
@@ -98,23 +101,6 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-gnutls"
 
     args << "--with-native-compilation" if build.with? "native-comp"
-
-    if build.with? "native-comp"
-      gcc_ver = Formula["gcc"].any_installed_version
-      gcc_ver_major = gcc_ver.major
-      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
-
-      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
-      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
-      ENV.append "CFLAGS", "-I#{Formula["gmp"].include}"
-      ENV.append "CFLAGS", "-I#{Formula["libjpeg"].include}"
-
-      ENV.append "LDFLAGS", "-L#{gcc_lib}"
-      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
-      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
-      ENV.append "LDFLAGS", "-I#{Formula["gmp"].include}"
-      ENV.append "LDFLAGS", "-I#{Formula["libjpeg"].include}"
-    end
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
 
@@ -167,8 +153,8 @@ class EmacsPlusAT28 < EmacsBase
         end
       end
 
-      system "make"
-      system "make", "install"
+      system "gmake"
+      system "gmake", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
@@ -217,8 +203,8 @@ class EmacsPlusAT28 < EmacsBase
         end
       end
 
-      system "make"
-      system "make", "install"
+      system "gmake"
+      system "gmake", "install"
     end
 
     # Follow MacPorts and don't install ctags from Emacs. This allows Vim
