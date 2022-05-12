@@ -169,6 +169,14 @@ class EmacsPlusAT28 < EmacsBase
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
 
+      # inject PATH to Info.plist
+      path = ENV['PATH'].split("#{HOMEBREW_PREFIX}/Library/Homebrew/shims/shared:").last
+      system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PATH string' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "/usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PATH #{path}' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "/usr/libexec/PlistBuddy -c 'Print :LSEnvironment' '#{prefix}/Emacs.app/Contents/Info.plist'"
+      system "touch '#{prefix}/Emacs.app'"
+
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
