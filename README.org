@@ -185,9 +185,11 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 
 *** Injected PATH
 
-> Ever find that a command works in your shell, but not in Emacs?
->
-> (c) @purcell
+#+begin_quote
+Ever find that a command works in your shell, but not in Emacs?
+
+(c) @purcell
+#+end_quote
 
 In macOS applications are started in the login environment, meaning that all user defined environment variables are not available in application process. In the most cases it's not a big deal, but in Emacs it becomes a source of troubles as we want to use binaries from the non-standard locations (for example, those installed via package managers).
 
