@@ -25,7 +25,7 @@
 <img align="right" width="40%" src="images/screenshot-01.png" alt="Screenshot">
 #+end_html
 
-Emacs Plus is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide rage of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs Plus intent is to give the most of 'plus' stuff by default, leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
+Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide rage of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs+ intent is to give the most of 'plus' stuff by default, leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
@@ -42,11 +42,18 @@ Feel free to open an issue or contact me via email if you face any issues, quest
   - [[#about][About]]
   - [[#install][Install]]
   - [[#reinstall][Reinstall]]
-  - [[#emacs-29-options][Emacs 29 options]]
-  - [[#emacs-28-options][Emacs 28 options]]
+  - [[#emacs-29][Emacs 29]]
+    - [[#included][Included]]
+    - [[#options][Options]]
+  - [[#emacs-28][Emacs 28]]
+    - [[#included-1][Included]]
+    - [[#options-1][Options]]
   - [[#emacs-27-options][Emacs 27 options]]
-  - [[#emacs-26-options][Emacs 26 options]]
-  - [[#options-explained][Options explained]]
+    - [[#included-2][Included]]
+    - [[#options-2][Options]]
+  - [[#emacs-26][Emacs 26]]
+  - [[#features-explained][Features explained]]
+    - [[#injected-path][Injected PATH]]
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
@@ -92,7 +99,17 @@ In short, =brew= doesn't really support options. They break time to time ([[http
   $ brew install emacs-plus [options]
 #+END_SRC
 
-** Emacs 29 options
+** Emacs 29
+
+*** Included
+
+By default =emacs-plus@29= uses the following features.
+
+- Injected =PATH= value from user shell (see separate section explaining this feature).
+- Cocoa version, e.g. builds =Emacs.app=.
+- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic modules.
+
+*** Options
 
 | Option                    | Description                                                                  |
 |---------------------------+------------------------------------------------------------------------------|
@@ -107,12 +124,17 @@ In short, =brew= doesn't really support options. They break time to time ([[http
 | =--with-imagemagick=      | build with =imagemagick= support                                             |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 
-By default =emacs-plus@29= builds the Cocoa version of Emacs.
+** Emacs 28
 
-=emacs-plus@29= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic
-modules.
+*** Included
 
-** Emacs 28 options
+By default =emacs-plus@28= uses the following features.
+
+- Injected =PATH= value from user shell (see separate section explaining this feature).
+- Cocoa version, e.g. builds =Emacs.app=.
+- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic modules.
+
+*** Options
 
 | Option                    | Description                                                                  |
 |---------------------------+------------------------------------------------------------------------------|
@@ -130,12 +152,16 @@ modules.
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 |                           |                                                                              |
 
-By default =emacs-plus@28= builds the Cocoa version of Emacs.
-
-=emacs-plus@28= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic
-modules.
-
 ** Emacs 27 options
+
+*** Included
+
+By default =emacs-plus@27= uses the following features.
+
+- Cocoa version, e.g. builds =Emacs.app=.
+- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic modules.
+
+*** Options
 
 | Option                    | Description                                                                  |
 |---------------------------+------------------------------------------------------------------------------|
@@ -151,16 +177,23 @@ modules.
 | =--without-imagemagick=   | build without =imagemagick= support                                          |
 | =--HEAD=                  | build from =emacs-27= branch                                                 |
 
-By default =emacs-plus@27= builds the Cocoa version of Emacs.
-
-=emacs-plus@27= unconditionally enables support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic
-modules.
-
-** Emacs 26 options
+** Emacs 26
 
 Emacs 26 comes without any available options due to [[https://github.com/d12frosted/homebrew-emacs-plus/issues/195][→ #195]].
 
-** Options explained
+** Features explained
+
+*** Injected PATH
+
+> Ever find that a command works in your shell, but not in Emacs?
+>
+> (c) @purcell
+
+In macOS applications are started in the login environment, meaning that all user defined environment variables are not available in application process. In the most cases it's not a big deal, but in Emacs it becomes a source of troubles as we want to use binaries from the non-standard locations (for example, those installed via package managers).
+
+There is a wonderful solution to overcome this problem, [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]]. As with any package that is not preinstalled with Emacs, you need to discover it first, and then install it. And while being a well known package and popular package (top 100 on MELPA), not everyone install it. In addition, with =native-comp= feature you might need it's functionality before any package is bootstrapped.
+
+All that being said, during installation Emacs+ injects value of =PATH= into =Emacs.app/Info.plist= file, making this value available whenever you start =Emacs.app= from Finder, Docker, Spotlight or via =launchd=. This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]], but if needed you can still fall back to this wonderful package, especially if you need other variables.
 
 *** No Titlebar
 
