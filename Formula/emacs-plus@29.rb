@@ -232,6 +232,30 @@ class EmacsPlusAT29 < EmacsBase
 
   plist_options :manual => "emacs"
 
+  def plist
+    <<~EOS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+        <string>#{plist_name}</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>#{opt_bin}/emacs</string>
+          <string>--fg-daemon</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardOutPath</key>
+        <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
+        <key>StandardErrorPath</key>
+        <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
+      </dict>
+      </plist>
+    EOS
+  end
+
   test do
     assert_equal "4", shell_output("#{bin}/emacs --batch --eval=\"(print (+ 2 2))\"").strip
   end
