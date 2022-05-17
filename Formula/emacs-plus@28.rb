@@ -34,6 +34,9 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "make" => :build
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
+  depends_on "gnu-tar" => :build
+  depends_on "awk" => :build
+  depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "gnutls"
@@ -85,10 +88,21 @@ class EmacsPlusAT28 < EmacsBase
   local_patch "fix-MAC_LIBS-inference-on-Intel", sha: "e336dd571732fffb3c71fa31c35084f6529dc1e432f35aed3406f1eae14e5a32" if build.with? "native-comp"
 
   #
+  # Initialize
+  #
+
+  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+    super
+    expand_path
+  end
+
+  #
   # Install
   #
 
   def install
+    expand_path
+
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules

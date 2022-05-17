@@ -60,4 +60,24 @@ class EmacsBase < Formula
     system "/usr/libexec/PlistBuddy -c 'Print :LSEnvironment' '#{plist}'"
     system "touch '#{app}'"
   end
+
+  def expand_path
+    # Expand PATH to include all dependencies and Superenv.bin as
+    # dependencies can override standard tools.
+    path = PATH.new()
+    path.append(deps.map { |dep| dep.to_formula.libexec/"gnubin" })
+    path.append(deps.map { |dep| dep.to_formula.opt_bin })
+    path.append(ENV['PATH'])
+    ENV['PATH'] = path.existing
+
+    # TODO: remove this debug info
+    if verbose?
+      puts "PATH value was changed to:"
+      path.each_entry { |x|
+        puts x
+      }
+      system "which", "tar"
+      system "which", "ls"
+    end
+  end
 end
