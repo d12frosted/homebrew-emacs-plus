@@ -27,6 +27,9 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "make" => :build
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
+  depends_on "gnu-tar" => :build
+  depends_on "awk" => :build
+  depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "gnutls"
@@ -82,10 +85,21 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
 
   #
+  # Initialize
+  #
+
+  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+    super
+    expand_path
+  end
+
+  #
   # Install
   #
 
   def install
+    expand_path
+
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
