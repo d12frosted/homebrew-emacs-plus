@@ -167,12 +167,7 @@ class EmacsPlusAT29 < EmacsBase
       prefix.install "nextstep/Emacs.app"
 
       # inject PATH to Info.plist
-      path = ENV['PATH'].split("#{HOMEBREW_PREFIX}/Library/Homebrew/shims/shared:").last
-      system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict' '#{prefix}/Emacs.app/Contents/Info.plist'"
-      system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PATH string' '#{prefix}/Emacs.app/Contents/Info.plist'"
-      system "/usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PATH #{path}' '#{prefix}/Emacs.app/Contents/Info.plist'"
-      system "/usr/libexec/PlistBuddy -c 'Print :LSEnvironment' '#{prefix}/Emacs.app/Contents/Info.plist'"
-      system "touch '#{prefix}/Emacs.app'"
+      inject_path
 
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
@@ -227,6 +222,10 @@ class EmacsPlusAT29 < EmacsBase
 
       To link the application to default Homebrew App location:
         ln -s #{prefix}/Emacs.app /Applications
+
+      Your PATH value was injected into Emacs.app/Contents/Info.plist
+
+      Report any issues to http://github.com/d12frosted/homebrew-emacs-plus
     EOS
   end
 

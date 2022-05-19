@@ -32,4 +32,32 @@ class EmacsBase < Formula
       end
     end
   end
+
+  def inject_path
+    ohai "Injecting PATH value to Emacs.app/Contents/Info.plist"
+    app = "#{prefix}/Emacs.app"
+    plist = "#{app}/Contents/Info.plist"
+    path_full = PATH.new(ENV['PATH'])
+
+    if verbose?
+      puts "Full PATH, including entries required for build: #{path_full}"
+    end
+
+
+    shared_idx = path_full.find_index { |x|
+      x.end_with? "/Library/Homebrew/shims/shared"
+    }
+    path = path_full.drop(shared_idx + 1)
+
+    puts "Patching plist at #{plist} with following PATH value:"
+    path.each_entry { |x|
+      puts x
+    }
+
+    system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict' '#{plist}'"
+    system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PATH string' '#{plist}'"
+    system "/usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PATH #{path}' '#{plist}'"
+    system "/usr/libexec/PlistBuddy -c 'Print :LSEnvironment' '#{plist}'"
+    system "touch '#{app}'"
+  end
 end
