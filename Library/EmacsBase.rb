@@ -47,7 +47,7 @@ class EmacsBase < Formula
     shared_idx = path_full.find_index { |x|
       x.end_with? "/Library/Homebrew/shims/shared"
     }
-    path = path_full.drop(shared_idx + 1)
+    path = PATH.new(path_full.drop(shared_idx + 1))
 
     puts "Patching plist at #{plist} with following PATH value:"
     path.each_entry { |x|
