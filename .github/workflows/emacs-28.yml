@@ -16,7 +16,7 @@ on:
       - "Library/**"
       - ".github/workflows/emacs-28.yml"
   schedule:
-    - cron: "0 */4 * * *"
+    - cron: "0 2 * * *"
 
 jobs:
   build:
