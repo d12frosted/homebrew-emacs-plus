@@ -48,7 +48,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
   - [[#emacs-28][Emacs 28]]
     - [[#included-1][Included]]
     - [[#options-1][Options]]
-  - [[#emacs-27-options][Emacs 27 options]]
+  - [[#emacs-27][Emacs 27]]
     - [[#included-2][Included]]
     - [[#options-2][Options]]
   - [[#emacs-26][Emacs 26]]
@@ -152,7 +152,7 @@ By default =emacs-plus@28= uses the following features.
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 |                           |                                                                              |
 
-** Emacs 27 options
+** Emacs 27
 
 *** Included
 
@@ -195,7 +195,11 @@ In macOS applications are started in the login environment, meaning that all use
 
 There is a wonderful solution to overcome this problem, [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]]. As with any package that is not preinstalled with Emacs, you need to discover it first, and then install it. And while being a well known package and popular package (top 100 on MELPA), not everyone install it. In addition, with =native-comp= feature you might need it's functionality before any package is bootstrapped.
 
-All that being said, during installation Emacs+ injects value of =PATH= into =Emacs.app/Info.plist= file, making this value available whenever you start =Emacs.app= from Finder, Docker, Spotlight or via =launchd=. This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]], but if needed you can still fall back to this wonderful package, especially if you need other variables.
+All that being said, during installation Emacs+ injects value of =PATH= into =Emacs.app/Contents/Info.plist= file, making this value available whenever you start =Emacs.app= from Finder, Docker, Spotlight, =open= command in Terminal or via =launchd=. This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]], but if needed you can still fall back to this wonderful package, especially if you need other variables.
+
+In case you have a non-trivial setup relying on specific value of =PATH= inherited from current terminal session, it is advised to start Emacs using =/opt/homebrew/bin/emacs= instead of =open -n -a /path/to/Emacs.app=, because =open= messes around with =PATH= value even without Emacs+ injection. You can find more information in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]].
+
+And if for some reason PATH injection doesn't work for you, report it either in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]] or open a new issue.
 
 *** No Titlebar
 
