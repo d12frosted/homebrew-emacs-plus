@@ -17,7 +17,7 @@ index 7c8638a471..dcbb25c063 100644
                                                  grep libgccjit.h))"
 -          MAC_LIBS="-L$(dirname $($BREW ls -v libgccjit| \
 -                                            grep libgccjit.so\$))"
-+          MAC_LIBS="-L$(dirname $($BREW ls -v libgccjit | grep libgccjit.dylib\$ || $BREW ls -v libgccjit | grep libgccjit.so\$))"
++          MAC_LIBS="-L$(dirname $($BREW ls -v libgccjit | grep libgccjit.dylib\$ | tail -1 || $BREW ls -v libgccjit | grep libgccjit.so\$))"
          fi
        fi
  
