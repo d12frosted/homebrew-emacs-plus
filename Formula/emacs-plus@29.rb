@@ -19,6 +19,7 @@ class EmacsPlusAT29 < EmacsBase
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
   option "with-native-comp", "Build with native compilation"
+  option "with-compress-install", "Build with compressed install optimization"
 
   #
   # Dependencies
@@ -114,6 +115,7 @@ class EmacsPlusAT29 < EmacsBase
     args << "--with-gnutls"
 
     args << "--with-native-compilation" if build.with? "native-comp"
+    args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
 
@@ -229,7 +231,9 @@ class EmacsPlusAT29 < EmacsBase
     # and Emacs and ctags to play together without violence.
     if build.without? "ctags"
       (bin/"ctags").unlink
-      (man1/"ctags.1.gz").unlink
+      if build.with? "compress-install"
+        (man1/"ctags.1.gz").unlink
+      end
     end
   end
 
