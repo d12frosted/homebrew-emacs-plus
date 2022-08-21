@@ -33,6 +33,7 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
+  depends_on "xz" => :build
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
@@ -53,7 +54,6 @@ class EmacsPlusAT29 < EmacsBase
     depends_on "gmp" => :build
     depends_on "libjpeg" => :build
     depends_on "zlib" => :build
-    depends_on "xz" => :build
   end
 
   #
