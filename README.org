@@ -125,7 +125,7 @@ By default =emacs-plus@29= uses the following features.
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 
 *** No title bar
-Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#no-titlebar][this method]].
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
 
 ** Emacs 28
 
