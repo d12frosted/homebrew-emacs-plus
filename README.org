@@ -124,7 +124,8 @@ By default =emacs-plus@29= uses the following features.
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 
-Please note, that ~--with-no-titlebar~ is no longer needed, the same can be achieved with [[https://github.com/d12frosted/homebrew-emacs-plus#no-titlebar][this method]].
+*** No Title Bar
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#no-titlebar][this method]].
 
 ** Emacs 28
 
