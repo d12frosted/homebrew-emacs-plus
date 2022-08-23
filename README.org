@@ -212,6 +212,8 @@ This patch is enabled with the =--with-no-titlebar= option for =emacs-plus@27= a
   (setq frame-resize-pixelwise t)
 #+END_SRC
 
+**** Emacs 29
+
 In =emacs-plus@29= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
 
 #+begin_src emacs-lisp
