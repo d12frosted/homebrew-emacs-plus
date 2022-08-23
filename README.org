@@ -111,8 +111,8 @@ By default =emacs-plus@29= uses the following features.
 
 *** Options
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -121,8 +121,10 @@ By default =emacs-plus@29= uses the following features.
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=      | build with =imagemagick= support                                             |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
+
+Please note, that ~--with-no-titlebar~ is no longer needed, the same can be achieved with [[https://github.com/d12frosted/homebrew-emacs-plus#no-titlebar][this method]].
 
 ** Emacs 28
 
@@ -136,8 +138,8 @@ By default =emacs-plus@28= uses the following features.
 
 *** Options
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -147,10 +149,10 @@ By default =emacs-plus@28= uses the following features.
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=      | build with =imagemagick= support                                             |
-| =--HEAD=                  | build from =emacs-28= branch                                                 |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
+| =--HEAD=                  | build from =emacs-28= branch                                                   |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
-|                           |                                                                              |
+|                         |                                                                              |
 
 ** Emacs 27
 
@@ -163,8 +165,8 @@ By default =emacs-plus@27= uses the following features.
 
 *** Options
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -174,8 +176,8 @@ By default =emacs-plus@27= uses the following features.
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--without-imagemagick=   | build without =imagemagick= support                                          |
-| =--HEAD=                  | build from =emacs-27= branch                                                 |
+| =--without-imagemagick=   | build without =imagemagick= support                                            |
+| =--HEAD=                  | build from =emacs-27= branch                                                   |
 
 ** Emacs 26
 
@@ -261,8 +263,8 @@ Knows issues:
 
 ** Icons
 
-| Option                                        | Author                     | Image                                                  | URL     |
-|-----------------------------------------------+----------------------------+--------------------------------------------------------+---------|
+| Option                                      | Author                     | Image                                                  | URL     |
+|---------------------------------------------+----------------------------+--------------------------------------------------------+---------|
 | =--with-EmacsIcon1-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon1_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-EmacsIcon2-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon2_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-EmacsIcon3-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon3_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
