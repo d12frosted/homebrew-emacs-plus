@@ -232,6 +232,8 @@ class EmacsPlusAT29 < EmacsBase
       (bin/"ctags").unlink
       if build.with? "compress-install"
         (man1/"ctags.1.gz").unlink
+      else
+        (man1/"ctags.1").unlink
       end
     end
   end
