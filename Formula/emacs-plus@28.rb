@@ -182,6 +182,7 @@ class EmacsPlusAT28 < EmacsBase
 
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
+      (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
 
       # inject PATH to Info.plist
       inject_path
