@@ -117,6 +117,7 @@ class EmacsPlusAT29 < EmacsBase
     args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
+    ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     args <<
       if build.with? "dbus"
