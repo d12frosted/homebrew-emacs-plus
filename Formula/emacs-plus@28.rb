@@ -117,6 +117,7 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-native-compilation" if build.with? "native-comp"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
+    ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     args <<
       if build.with? "dbus"
