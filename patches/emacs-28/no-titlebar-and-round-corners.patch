@@ -1,0 +1,25 @@
+diff --git a/src/nsterm.m b/src/nsterm.m
+index 1643ba5..4feca66 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -434,6 +434,7 @@ - (NSColor *)colorUsingDefaultColorSpace
+ /* These flags will be OR'd or XOR'd with the NSWindow's styleMask
+    property depending on what we're doing.  */
+ #define FRAME_DECORATED_FLAGS (NSWindowStyleMaskTitled              \
++                               | NSFullSizeContentViewWindowMask    \
+                                | NSWindowStyleMaskResizable         \
+                                | NSWindowStyleMaskMiniaturizable    \
+                                | NSWindowStyleMaskClosable)
+@@ -8323,6 +8324,12 @@ - (instancetype) initWithEmacsFrame:(struct frame *)f
+ #endif
+     }
+ 
++ [self setTitlebarAppearsTransparent:YES];
++ [self setTitleVisibility:NSWindowTitleHidden];
++ [[self standardWindowButton:NSWindowCloseButton] setHidden:YES];
++ [[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
++ [[self standardWindowButton:NSWindowZoomButton] setHidden:YES];
++
+   return self;
+ }
+ 
