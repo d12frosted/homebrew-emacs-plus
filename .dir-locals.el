@@ -1,2 +1,1 @@
-((org-mode . ((fill-column . 80)
-              (vulpea-id-auto-targets . nil))))
+((org-mode . ((vulpea-id-auto-targets . nil))))
