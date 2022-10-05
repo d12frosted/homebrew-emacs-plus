@@ -73,6 +73,12 @@ class EmacsPlusAT28 < EmacsBase
     end
   end
 
+  if build.with? "no-titlebar"
+    if build.with? "no-titlebar-and-round-corners"
+      odie "--with-no-titlebar and --with-no-titlebar-and-round-corners are mutually exclusive"
+    end
+  end
+
   #
   # Icons
   #
