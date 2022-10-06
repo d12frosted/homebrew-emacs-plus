@@ -1,14 +1,14 @@
-From a87a6317a49c4381c74fbdafb872eb7365a7a9f7 Mon Sep 17 00:00:00 2001
+From 58edc380df99983ad670338148196bc3241c636d Mon Sep 17 00:00:00 2001
 From: Boris Buliga <boris@d12frosted.io>
 Date: Wed, 5 Oct 2022 14:22:00 +0300
 Subject: [PATCH] remove title bar but keep corners rounded
 
 ---
- src/nsterm.m | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ src/nsterm.m | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 1643ba5427..34afdd4a10 100644
+index 1643ba5427..ec57bc0b7d 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -434,6 +434,7 @@ - (NSColor *)colorUsingDefaultColorSpace
@@ -19,17 +19,7 @@ index 1643ba5427..34afdd4a10 100644
                                 | NSWindowStyleMaskResizable         \
                                 | NSWindowStyleMaskMiniaturizable    \
                                 | NSWindowStyleMaskClosable)
-@@ -8311,9 +8312,6 @@ - (instancetype) initWithEmacsFrame:(struct frame *)f
-       if ([col alphaComponent] != (EmacsCGFloat) 1.0)
-         [self setOpaque:NO];
- 
--      /* toolbar support */
--      [self createToolbar:f];
--
-       /* macOS Sierra automatically enables tabbed windows.  We can't
-          allow this to be enabled until it's available on a Free system.
-          Currently it only happens by accident and is buggy anyway.  */
-@@ -8323,12 +8321,19 @@ - (instancetype) initWithEmacsFrame:(struct frame *)f
+@@ -8323,12 +8324,19 @@ - (instancetype) initWithEmacsFrame:(struct frame *)f
  #endif
      }
  
