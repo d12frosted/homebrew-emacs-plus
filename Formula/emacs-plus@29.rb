@@ -87,6 +87,7 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
   local_patch "poll", sha: "92faf072ff19d5813ad25e616ee2c3028d581706f86087bd549244b5baf60f3f" if build.with? "poll"
+  local_patch "round-undecorated-frame", sha: "21fbd590a1438ed438cee6b1ed1e48a52e3a0d6dfbbdac54801b7781549cf261"
 
   #
   # Initialize
