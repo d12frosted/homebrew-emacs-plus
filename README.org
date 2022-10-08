@@ -209,7 +209,7 @@ And if for some reason PATH injection doesn't work for you, report it either in 
 
 *** No Titlebar
 
-| =--with-no-titlebar=                              | =--with-no-titlebar-and-round-corners=           |
+| square corners                                    | round corners                                    |
 |---------------------------------------------------+--------------------------------------------------|
 | [[/images/screenshot-no-titlebar-square-corners.png]] | [[/images/screenshot-no-titlebar-round-corners.png]] |
 
@@ -233,7 +233,11 @@ In =emacs-plus@29= this option is not available anymore as you can achieve the s
   (add-to-list 'default-frame-alist '(undecorated . t))
 #+end_src
 
-Round corners are currently not available. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/320][→ #320]] for progress.
+Add the following line instead for round corners:
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(undecorated-round . t))
+#+end_src
 
 *** Xwidgets (webkit)
 
