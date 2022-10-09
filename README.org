@@ -60,6 +60,9 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#system-appearance-change][System appearance change]]
     - [[#gccemacs][gccemacs]]
   - [[#icons][Icons]]
+  - [[#spotlight-alias][Spotlight Alias]]
+    - [[#apple-silicon][Apple Silicon]]
+    - [[#intel][Intel]]
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
     - [[#emacs-dependency-in-other-formulas][=emacs= dependency in other formulas]]
@@ -336,6 +339,20 @@ Knows issues:
 | =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/preview/retro-sink-bw_128.png]]                   | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/preview/retro-sink_128.png]]                      | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
+** Spotlight Alias
+*** Apple Silicon
+Symlinking (via ~ln -s~) ~Emacs.app~ won't be visible in Spotlight (It did not work for me even after reboot). However creating an Alias through Finder worked.
+Source: https://apple.stackexchange.com/a/32495/449886
+1. Goto ~emacs-plus~ install location in Finder
+2. Right-click ~Emacs.app~ -> ~Create Alias~
+3. Move the ~Emacs alias~ into ~/Applications~ and rename it as you wish.
+
+You should now be able to launch Emacs from Spotlight (no reboot was needed for me).
+Note: If it doesn't work for you, there is a comments thread in the SO post that talks about potential workarounds.
+
+*** Intel
+I did not test this. But, it's likely the same steps above will work.
+
 
 ** Emacs configuration
 
