@@ -1,4 +1,4 @@
-From c27f5a68b69cb971dcb0218f265fbf450baf5fd5 Mon Sep 17 00:00:00 2001
+From 8ec8ac02f54d80ab16cec99e7b9e59bc06376154 Mon Sep 17 00:00:00 2001
 From: Boris Buliga <boris@d12frosted.io>
 Date: Sat, 8 Oct 2022 13:21:21 +0300
 Subject: [PATCH] provide a way to make undecorated frame with round corners
@@ -12,7 +12,7 @@ Subject: [PATCH] provide a way to make undecorated frame with round corners
  5 files changed, 69 insertions(+), 1 deletion(-)
 
 diff --git a/src/frame.c b/src/frame.c
-index 91b9bec82c..4c4c276573 100644
+index 91b9bec82c..6a3db12054 100644
 --- a/src/frame.c
 +++ b/src/frame.c
 @@ -970,6 +970,7 @@ make_frame (bool mini_p)
@@ -35,7 +35,7 @@ index 91b9bec82c..4c4c276573 100644
    DEFSYM (Qicon, "icon");
    DEFSYM (Qminibuffer, "minibuffer");
    DEFSYM (Qundecorated, "undecorated");
-+  DEFSYM (Qundecorated_round, "undecorated_round");
++  DEFSYM (Qundecorated_round, "undecorated-round");
    DEFSYM (Qno_special_glyphs, "no-special-glyphs");
    DEFSYM (Qparent_frame, "parent-frame");
    DEFSYM (Qskip_taskbar, "skip-taskbar");
