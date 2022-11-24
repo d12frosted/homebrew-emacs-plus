@@ -1,8 +1,8 @@
 diff --git a/configure.ac b/configure.ac
-index 4590ed3506..97deca5047 100644
+index cc4e59ee5ac..e21ce3c7ea6 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1728,6 +1728,18 @@ AC_DEFINE_UNQUOTED([SYSTEM_TYPE], ["$SYSTEM_TYPE"],
+@@ -1758,6 +1758,18 @@ AC_DEFUN
    [The type of system you are compiling for; sets 'system-type'.])
  AC_SUBST([SYSTEM_TYPE])
  
@@ -21,16 +21,16 @@ index 4590ed3506..97deca5047 100644
  
  pre_PKG_CONFIG_CFLAGS=$CFLAGS
  pre_PKG_CONFIG_LIBS=$LIBS
-@@ -6529,7 +6541,7 @@ optsep=
+@@ -6620,7 +6632,7 @@ AC_DEFUN
  emacs_config_features=
  for opt in ACL BE_APP CAIRO DBUS FREETYPE GCONF GIF GLIB GMP GNUTLS GPM GSETTINGS \
   HARFBUZZ IMAGEMAGICK JPEG JSON LCMS2 LIBOTF LIBSELINUX LIBSYSTEMD LIBXML2 \
 - M17N_FLT MODULES NATIVE_COMP NOTIFY NS OLDXMENU PDUMPER PGTK PNG RSVG SECCOMP \
 + M17N_FLT MODULES NATIVE_COMP NOTIFY NS OLDXMENU PDUMPER PGTK PNG POLL RSVG SECCOMP \
-  SOUND SQLITE3 THREADS TIFF TOOLKIT_SCROLL_BARS \
+  SOUND SQLITE3 THREADS TIFF TOOLKIT_SCROLL_BARS TREE_SITTER \
   UNEXEC WEBP X11 XAW3D XDBE XFT XIM XINPUT2 XPM XWIDGETS X_TOOLKIT \
   ZLIB; do
-@@ -6539,7 +6551,7 @@ for opt in ACL BE_APP CAIRO DBUS FREETYPE GCONF GIF GLIB GMP GNUTLS GPM GSETTING
+@@ -6630,7 +6642,7 @@ AC_DEFUN
        UNEXEC) val=${with_unexec} ;;
        GLIB) val=${emacs_cv_links_glib} ;;
        NOTIFY|ACL) eval val=\${${opt}_SUMMARY} ;;
@@ -39,7 +39,7 @@ index 4590ed3506..97deca5047 100644
        THREADS) val=${threads_enabled} ;;
        *) eval val=\${HAVE_$opt} ;;
      esac
-@@ -6611,6 +6623,7 @@ AS_ECHO(["  Does Emacs use -lXaw3d?                                 ${HAVE_XAW3D
+@@ -6703,6 +6715,7 @@ AC_DEFUN
    Does Emacs have native lisp compiler?                   ${HAVE_NATIVE_COMP}
    Does Emacs use version 2 of the X Input Extension?      ${HAVE_XINPUT2}
    Does Emacs generate a smaller-size Japanese dictionary? ${with_small_ja_dic}
@@ -48,10 +48,10 @@ index 4590ed3506..97deca5047 100644
  
  if test -n "${EMACSDATA}"; then
 diff --git a/src/nsterm.m b/src/nsterm.m
-index d6290449b4..2d3de25975 100644
+index 507f2a9e7da..eecc35dc324 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -4726,7 +4726,7 @@ in certain situations (rapid incoming events).
+@@ -4744,7 +4744,7 @@ in certain situations (rapid incoming events).
        return -1;
      }
  
@@ -60,7 +60,7 @@ index d6290449b4..2d3de25975 100644
    for (k = 0; k < nfds; k++)
      {
        if (readfds && FD_ISSET(k, readfds)) ++nr;
-@@ -6057,15 +6057,15 @@ - (void)applicationDidFinishLaunching: (NSNotification *)notification
+@@ -6064,15 +6064,15 @@ - (void)applicationDidFinishLaunching: (NSNotification *)notification
       maximum number of open files for the process in their first call.
       We make dummy calls to them and then reduce the resource limit
       here, since pselect cannot handle file descriptors that are
@@ -80,10 +80,10 @@ index d6290449b4..2d3de25975 100644
      }
    if ([NSApp activationPolicy] == NSApplicationActivationPolicyProhibited) {
 diff --git a/src/process.c b/src/process.c
-index 7a133cda00..1b818e5bde 100644
+index 5144c5d6c92..e28ac5482b9 100644
 --- a/src/process.c
 +++ b/src/process.c
-@@ -48,7 +48,7 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.  */
+@@ -48,7 +48,7 @@ #define PIPECONN1_P(p) false
  #ifdef HAVE_SETRLIMIT
  # include <sys/resource.h>
  
@@ -92,7 +92,7 @@ index 7a133cda00..1b818e5bde 100644
     NOFILE_LIMIT is the initial limit on the number of open files,
     which should be restored in child processes.  */
  static struct rlimit nofile_limit;
-@@ -299,7 +299,7 @@ static void child_signal_read (int, void *);
+@@ -298,7 +298,7 @@ network_lookup_address_info_1 (Lisp_Object host, const char *service,
  static void child_signal_notify (void);
  
  /* Indexed by descriptor, gives the process (if any) for that descriptor.  */
@@ -101,7 +101,7 @@ index 7a133cda00..1b818e5bde 100644
  static void wait_for_socket_fds (Lisp_Object, char const *);
  
  /* Alist of elements (NAME . PROCESS).  */
-@@ -311,18 +311,18 @@ static Lisp_Object Vprocess_alist;
+@@ -310,18 +310,18 @@ network_lookup_address_info_1 (Lisp_Object host, const char *service,
     output from the process is to read at least one char.
     Always -1 on systems that support FIONREAD.  */
  
@@ -124,7 +124,7 @@ index 7a133cda00..1b818e5bde 100644
  #define DATAGRAM_CHAN_P(chan)	(datagram_address[chan].sa != 0)
  #define DATAGRAM_CONN_P(proc)                                           \
    (PROCESSP (proc) &&                                                   \
-@@ -460,8 +460,113 @@ static struct fd_callback_data
+@@ -459,8 +459,113 @@ make_lisp_proc (struct Lisp_Process *p)
    /* If this fd is currently being selected on by a thread, this
       points to the thread.  Otherwise it is NULL.  */
    struct thread_state *waiting_thread;
@@ -239,7 +239,7 @@ index 7a133cda00..1b818e5bde 100644
  
  /* Add a file descriptor FD to be monitored for when read is possible.
     When read is possible, call FUNC with argument DATA.  */
-@@ -471,7 +576,7 @@ add_read_fd (int fd, fd_callback func, void *data)
+@@ -470,7 +575,7 @@ add_read_fd (int fd, fd_callback func, void *data)
  {
    add_keyboard_wait_descriptor (fd);
  
@@ -248,7 +248,7 @@ index 7a133cda00..1b818e5bde 100644
    fd_callback_info[fd].func = func;
    fd_callback_info[fd].data = data;
  }
-@@ -486,14 +591,14 @@ add_non_keyboard_read_fd (int fd, fd_callback func, void *data)
+@@ -485,14 +590,14 @@ add_non_keyboard_read_fd (int fd, fd_callback func, void *data)
  static void
  add_process_read_fd (int fd)
  {
@@ -265,7 +265,7 @@ index 7a133cda00..1b818e5bde 100644
    fd_callback_info[fd].flags |= PROCESS_FD;
  }
  
-@@ -504,7 +609,7 @@ delete_read_fd (int fd)
+@@ -503,7 +608,7 @@ delete_read_fd (int fd)
  {
    delete_keyboard_wait_descriptor (fd);
  
@@ -274,7 +274,7 @@ index 7a133cda00..1b818e5bde 100644
    if (fd_callback_info[fd].flags == 0)
      {
        fd_callback_info[fd].func = 0;
-@@ -518,7 +623,7 @@ delete_read_fd (int fd)
+@@ -517,7 +622,7 @@ delete_read_fd (int fd)
  void
  add_write_fd (int fd, fd_callback func, void *data)
  {
@@ -283,7 +283,7 @@ index 7a133cda00..1b818e5bde 100644
  
    fd_callback_info[fd].func = func;
    fd_callback_info[fd].data = data;
-@@ -530,7 +635,7 @@ add_write_fd (int fd, fd_callback func, void *data)
+@@ -529,7 +634,7 @@ add_write_fd (int fd, fd_callback func, void *data)
  static void
  add_non_blocking_write_fd (int fd)
  {
@@ -292,7 +292,7 @@ index 7a133cda00..1b818e5bde 100644
    eassert (fd_callback_info[fd].func == NULL);
  
    fd_callback_info[fd].flags |= FOR_WRITE | NON_BLOCKING_CONNECT_FD;
-@@ -544,7 +649,7 @@ recompute_max_desc (void)
+@@ -543,7 +648,7 @@ recompute_max_desc (void)
  {
    int fd;
  
@@ -301,7 +301,7 @@ index 7a133cda00..1b818e5bde 100644
    for (fd = max_desc; fd >= 0; --fd)
      {
        if (fd_callback_info[fd].flags != 0)
-@@ -553,7 +658,7 @@ recompute_max_desc (void)
+@@ -552,7 +657,7 @@ recompute_max_desc (void)
  	  break;
  	}
      }
@@ -310,7 +310,7 @@ index 7a133cda00..1b818e5bde 100644
  }
  
  /* Stop monitoring file descriptor FD for when write is possible.  */
-@@ -561,7 +666,7 @@ recompute_max_desc (void)
+@@ -560,7 +665,7 @@ recompute_max_desc (void)
  void
  delete_write_fd (int fd)
  {
@@ -319,7 +319,7 @@ index 7a133cda00..1b818e5bde 100644
    if ((fd_callback_info[fd].flags & NON_BLOCKING_CONNECT_FD) != 0)
      {
        if (--num_pending_connects < 0)
-@@ -584,7 +689,7 @@ compute_input_wait_mask (fd_set *mask)
+@@ -583,7 +688,7 @@ compute_input_wait_mask (fd_set *mask)
    int fd;
  
    FD_ZERO (mask);
@@ -328,7 +328,7 @@ index 7a133cda00..1b818e5bde 100644
    for (fd = 0; fd <= max_desc; ++fd)
      {
        if (fd_callback_info[fd].thread != NULL
-@@ -607,7 +712,7 @@ compute_non_process_wait_mask (fd_set *mask)
+@@ -606,7 +711,7 @@ compute_non_process_wait_mask (fd_set *mask)
    int fd;
  
    FD_ZERO (mask);
@@ -337,7 +337,7 @@ index 7a133cda00..1b818e5bde 100644
    for (fd = 0; fd <= max_desc; ++fd)
      {
        if (fd_callback_info[fd].thread != NULL
-@@ -631,7 +736,7 @@ compute_non_keyboard_wait_mask (fd_set *mask)
+@@ -630,7 +735,7 @@ compute_non_keyboard_wait_mask (fd_set *mask)
    int fd;
  
    FD_ZERO (mask);
@@ -346,7 +346,7 @@ index 7a133cda00..1b818e5bde 100644
    for (fd = 0; fd <= max_desc; ++fd)
      {
        if (fd_callback_info[fd].thread != NULL
-@@ -655,7 +760,7 @@ compute_write_mask (fd_set *mask)
+@@ -654,7 +759,7 @@ compute_write_mask (fd_set *mask)
    int fd;
  
    FD_ZERO (mask);
@@ -355,7 +355,7 @@ index 7a133cda00..1b818e5bde 100644
    for (fd = 0; fd <= max_desc; ++fd)
      {
        if (fd_callback_info[fd].thread != NULL
-@@ -677,7 +782,7 @@ clear_waiting_thread_info (void)
+@@ -676,7 +781,7 @@ clear_waiting_thread_info (void)
  {
    int fd;
  
@@ -364,7 +364,7 @@ index 7a133cda00..1b818e5bde 100644
    for (fd = 0; fd <= max_desc; ++fd)
      {
        if (fd_callback_info[fd].waiting_thread == current_thread)
-@@ -969,10 +1074,10 @@ update_processes_for_thread_death (Lisp_Object dying_thread)
+@@ -968,10 +1073,10 @@ update_processes_for_thread_death (Lisp_Object dying_thread)
  	  struct Lisp_Process *proc = XPROCESS (process);
  
  	  pset_thread (proc, Qnil);
@@ -377,7 +377,7 @@ index 7a133cda00..1b818e5bde 100644
  	  if (proc->outfd >= 0)
  	    fd_callback_info[proc->outfd].thread = NULL;
  	}
-@@ -1456,10 +1561,10 @@ If THREAD is nil, the process is unlocked.  */)
+@@ -1455,10 +1560,10 @@ DEFUN ("set-process-thread", Fset_process_thread, Sset_process_thread,
  
    proc = XPROCESS (process);
    pset_thread (proc, thread);
@@ -390,7 +390,7 @@ index 7a133cda00..1b818e5bde 100644
    if (proc->outfd >= 0)
      fd_callback_info[proc->outfd].thread = tstate;
  
-@@ -2206,7 +2311,7 @@ create_process (Lisp_Object process, char **new_argv, Lisp_Object current_dir)
+@@ -2205,7 +2310,7 @@ create_process (Lisp_Object process, char **new_argv, Lisp_Object current_dir)
        close_process_fd (&pp->open_fd[SUBPROCESS_STDIN]);
      }
  
@@ -399,7 +399,7 @@ index 7a133cda00..1b818e5bde 100644
      report_file_errno ("Creating pipe", Qnil, EMFILE);
  
  #ifndef WINDOWSNT
-@@ -2218,7 +2323,7 @@ create_process (Lisp_Object process, char **new_argv, Lisp_Object current_dir)
+@@ -2217,7 +2322,7 @@ create_process (Lisp_Object process, char **new_argv, Lisp_Object current_dir)
    fcntl (outchannel, F_SETFL, O_NONBLOCK);
  
    /* Record this as an active process, with its channels.  */
@@ -408,7 +408,7 @@ index 7a133cda00..1b818e5bde 100644
    chan_process[inchannel] = process;
    p->infd = inchannel;
    p->outfd = outchannel;
-@@ -2316,7 +2421,7 @@ create_pty (Lisp_Object process)
+@@ -2315,7 +2420,7 @@ create_pty (Lisp_Object process)
    if (pty_fd >= 0)
      {
        p->open_fd[SUBPROCESS_STDIN] = pty_fd;
@@ -417,7 +417,7 @@ index 7a133cda00..1b818e5bde 100644
  	report_file_errno ("Opening pty", Qnil, EMFILE);
  #if ! defined (USG) || defined (USG_SUBTTY_WORKS)
        /* On most USG systems it does not work to open the pty's tty here,
-@@ -2339,7 +2444,7 @@ create_pty (Lisp_Object process)
+@@ -2338,7 +2443,7 @@ create_pty (Lisp_Object process)
  
        /* Record this as an active process, with its channels.
  	 As a result, child_setup will close Emacs's side of the pipes.  */
@@ -426,7 +426,7 @@ index 7a133cda00..1b818e5bde 100644
        chan_process[pty_fd] = process;
        p->infd = pty_fd;
        p->outfd = pty_fd;
-@@ -2425,7 +2530,7 @@ usage:  (make-pipe-process &rest ARGS)  */)
+@@ -2424,7 +2529,7 @@ DEFUN ("make-pipe-process", Fmake_pipe_process, Smake_pipe_process,
    outchannel = p->open_fd[WRITE_TO_SUBPROCESS];
    inchannel = p->open_fd[READ_FROM_SUBPROCESS];
  
@@ -435,7 +435,7 @@ index 7a133cda00..1b818e5bde 100644
      report_file_errno ("Creating pipe", Qnil, EMFILE);
  
    fcntl (inchannel, F_SETFL, O_NONBLOCK);
-@@ -2436,7 +2541,7 @@ usage:  (make-pipe-process &rest ARGS)  */)
+@@ -2435,7 +2540,7 @@ DEFUN ("make-pipe-process", Fmake_pipe_process, Smake_pipe_process,
  #endif
  
    /* Record this as an active process, with its channels.  */
@@ -444,7 +444,7 @@ index 7a133cda00..1b818e5bde 100644
    chan_process[inchannel] = proc;
    p->infd = inchannel;
    p->outfd = outchannel;
-@@ -2767,7 +2872,7 @@ set up yet, this function will block until socket setup has completed.  */)
+@@ -2766,7 +2871,7 @@ DEFUN ("process-datagram-address", Fprocess_datagram_address, Sprocess_datagram_
      return Qnil;
  
    channel = XPROCESS (process)->infd;
@@ -453,7 +453,7 @@ index 7a133cda00..1b818e5bde 100644
    return conv_sockaddr_to_lisp (datagram_address[channel].sa,
  				datagram_address[channel].len);
  }
-@@ -2796,7 +2901,7 @@ set up yet, this function will block until socket setup has completed.  */)
+@@ -2795,7 +2900,7 @@ DEFUN ("set-process-datagram-address", Fset_process_datagram_address, Sset_proce
    channel = XPROCESS (process)->infd;
  
    len = get_lisp_to_sockaddr_size (address, &family);
@@ -462,7 +462,7 @@ index 7a133cda00..1b818e5bde 100644
    if (len == 0 || datagram_address[channel].len != len)
      return Qnil;
    conv_lisp_to_sockaddr (family, address, datagram_address[channel].sa, len);
-@@ -3170,13 +3275,13 @@ usage:  (make-serial-process &rest ARGS)  */)
+@@ -3169,13 +3274,13 @@ DEFUN ("make-serial-process", Fmake_serial_process, Smake_serial_process,
  
    fd = serial_open (port);
    p->open_fd[SUBPROCESS_STDIN] = fd;
@@ -478,7 +478,7 @@ index 7a133cda00..1b818e5bde 100644
    chan_process[fd] = proc;
  
    buffer = plist_get (contact, QCbuffer);
-@@ -3348,7 +3453,7 @@ finish_after_tls_connection (Lisp_Object proc)
+@@ -3347,7 +3452,7 @@ finish_after_tls_connection (Lisp_Object proc)
  		    plist_get (contact, QChost),
  		    plist_get (contact, QCservice));
  
@@ -487,7 +487,7 @@ index 7a133cda00..1b818e5bde 100644
    if (NILP (result))
      {
        pset_status (p, list2 (Qfailed,
-@@ -3394,7 +3499,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
+@@ -3393,7 +3498,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
    if (!NILP (use_external_socket_p))
      {
        socket_to_use = external_sock_fd;
@@ -496,7 +496,7 @@ index 7a133cda00..1b818e5bde 100644
  
        /* Ensure we don't consume the external socket twice.  */
        external_sock_fd = -1;
-@@ -3437,7 +3542,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
+@@ -3436,7 +3541,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
  	      continue;
  	    }
  	  /* Reject file descriptors that would be too large.  */
@@ -505,7 +505,7 @@ index 7a133cda00..1b818e5bde 100644
  	    {
  	      emacs_close (s);
  	      s = -1;
-@@ -3575,7 +3680,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
+@@ -3574,7 +3679,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
  	      if (errno == EINTR)
  		goto retry_select;
  	      else
@@ -514,7 +514,7 @@ index 7a133cda00..1b818e5bde 100644
  	    }
  	  eassert (sc > 0);
  
-@@ -3608,7 +3713,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
+@@ -3607,7 +3712,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
  #ifdef DATAGRAM_SOCKETS
        if (p->socktype == SOCK_DGRAM)
  	{
@@ -523,7 +523,7 @@ index 7a133cda00..1b818e5bde 100644
  	  if (datagram_address[s].sa)
  	    emacs_abort ();
  
-@@ -3673,7 +3778,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
+@@ -3672,7 +3777,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
    inch = s;
    outch = s;
  
@@ -532,7 +532,7 @@ index 7a133cda00..1b818e5bde 100644
    chan_process[inch] = proc;
  
    fcntl (inch, F_SETFL, O_NONBLOCK);
-@@ -3700,7 +3805,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
+@@ -3699,7 +3804,7 @@ connect_network_socket (Lisp_Object proc, Lisp_Object addrinfos,
        if (! (connecting_status (p->status)
  	     && EQ (XCDR (p->status), addrinfos)))
  	pset_status (p, Fcons (Qconnect, addrinfos));
@@ -541,7 +541,7 @@ index 7a133cda00..1b818e5bde 100644
        if ((fd_callback_info[inch].flags & NON_BLOCKING_CONNECT_FD) == 0)
  	add_non_blocking_write_fd (inch);
      }
-@@ -4778,7 +4883,7 @@ deactivate_process (Lisp_Object proc)
+@@ -4777,7 +4882,7 @@ deactivate_process (Lisp_Object proc)
      close_process_fd (&p->open_fd[i]);
  
    inchannel = p->infd;
@@ -550,7 +550,7 @@ index 7a133cda00..1b818e5bde 100644
    if (inchannel >= 0)
      {
        p->infd  = -1;
-@@ -4914,7 +5019,7 @@ server_accept_connection (Lisp_Object server, int channel)
+@@ -4913,7 +5018,7 @@ server_accept_connection (Lisp_Object server, int channel)
  
    s = accept4 (channel, &saddr.sa, &len, SOCK_CLOEXEC);
  
@@ -559,7 +559,7 @@ index 7a133cda00..1b818e5bde 100644
      {
        emacs_close (s);
        s = -1;
-@@ -5018,7 +5123,7 @@ server_accept_connection (Lisp_Object server, int channel)
+@@ -5017,7 +5122,7 @@ server_accept_connection (Lisp_Object server, int channel)
    Lisp_Object name = Fformat (nargs, args);
    Lisp_Object proc = make_process (name);
  
@@ -568,7 +568,7 @@ index 7a133cda00..1b818e5bde 100644
    chan_process[s] = proc;
  
    fcntl (s, F_SETFL, O_NONBLOCK);
-@@ -5301,7 +5406,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
+@@ -5300,7 +5405,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
        if (! NILP (wait_for_cell) && ! NILP (XCAR (wait_for_cell)))
  	break;
  
@@ -577,7 +577,7 @@ index 7a133cda00..1b818e5bde 100644
  
  #if defined HAVE_GETADDRINFO_A || defined HAVE_GNUTLS
        {
-@@ -5434,7 +5539,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
+@@ -5433,7 +5538,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
  	     because otherwise we wouldn't run into a timeout
  	     below.  */
  	  int fd = child_signal_read_fd;
@@ -586,7 +586,7 @@ index 7a133cda00..1b818e5bde 100644
  	  if (0 <= fd)
  	    FD_CLR (fd, &Atemp);
  
-@@ -5528,7 +5633,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
+@@ -5527,7 +5632,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
  	 an asynchronous process.  Otherwise this might deadlock if we
  	 receive a SIGCHLD during `pselect'.  */
        int child_fd = child_signal_read_fd;
@@ -595,7 +595,7 @@ index 7a133cda00..1b818e5bde 100644
        if (0 <= child_fd)
          FD_SET (child_fd, &Available);
  
-@@ -5648,7 +5753,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
+@@ -5647,7 +5752,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
  	     And if so, we need to skip the select which could block. */
  	  FD_ZERO (&tls_available);
  	  tls_nfds = 0;
@@ -604,7 +604,7 @@ index 7a133cda00..1b818e5bde 100644
  	    if (! NILP (chan_process[channel])
  		&& FD_ISSET (channel, &Available))
  	      {
-@@ -5710,7 +5815,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
+@@ -5709,7 +5814,7 @@ wait_reading_process_output (intmax_t time_limit, int nsecs, int read_kbd,
  	      else if (nfds > 0)
  		/* Slow path, merge one by one.  Note: nfds does not need
  		   to be accurate, just positive is enough. */
@@ -613,7 +613,7 @@ index 7a133cda00..1b818e5bde 100644
  		  if (FD_ISSET(channel, &tls_available))
  		    FD_SET(channel, &Available);
  	    }
-@@ -6104,7 +6209,7 @@ read_process_output (Lisp_Object proc, int channel)
+@@ -6103,7 +6208,7 @@ read_process_output (Lisp_Object proc, int channel)
  {
    ssize_t nbytes;
    struct Lisp_Process *p = XPROCESS (proc);
@@ -622,7 +622,7 @@ index 7a133cda00..1b818e5bde 100644
    struct coding_system *coding = proc_decode_coding_system[channel];
    int carryover = p->decoding_carryover;
    ptrdiff_t readmax = clip_to_bounds (1, read_process_output_max, PTRDIFF_MAX);
-@@ -6269,7 +6374,7 @@ read_and_dispose_of_process_output (struct Lisp_Process *p, char *chars,
+@@ -6268,7 +6373,7 @@ read_and_dispose_of_process_output (struct Lisp_Process *p, char *chars,
  	 proc_encode_coding_system[p->outfd] surely points to a
  	 valid memory because p->outfd will be changed once EOF is
  	 sent to the process.  */
@@ -631,7 +631,7 @@ index 7a133cda00..1b818e5bde 100644
        if (NILP (p->encode_coding_system) && p->outfd >= 0
  	  && proc_encode_coding_system[p->outfd])
  	{
-@@ -6500,7 +6605,7 @@ send_process (Lisp_Object proc, const char *buf, ptrdiff_t len,
+@@ -6499,7 +6604,7 @@ send_process (Lisp_Object proc, const char *buf, ptrdiff_t len,
    if (p->outfd < 0)
      error ("Output file descriptor of %s is closed", SDATA (p->name));
  
@@ -640,7 +640,7 @@ index 7a133cda00..1b818e5bde 100644
    coding = proc_encode_coding_system[p->outfd];
    Vlast_coding_system_used = CODING_ID_NAME (coding->id);
  
-@@ -6613,7 +6718,7 @@ send_process (Lisp_Object proc, const char *buf, ptrdiff_t len,
+@@ -6612,7 +6717,7 @@ send_process (Lisp_Object proc, const char *buf, ptrdiff_t len,
            if (outfd < 0)
              error ("Output file descriptor of %s is closed",
                     SDATA (p->name));
@@ -649,7 +649,7 @@ index 7a133cda00..1b818e5bde 100644
  #ifdef DATAGRAM_SOCKETS
  	  if (DATAGRAM_CHAN_P (outfd))
  	    {
-@@ -7065,7 +7170,7 @@ traffic.  */)
+@@ -7064,7 +7169,7 @@ DEFUN ("continue-process", Fcontinue_process, Scontinue_process, 0, 2, 0,
        struct Lisp_Process *p;
  
        p = XPROCESS (process);
@@ -658,7 +658,7 @@ index 7a133cda00..1b818e5bde 100644
        if (EQ (p->command, Qt)
  	  && p->infd >= 0
  	  && (!EQ (p->filter, Qt) || EQ (p->status, Qlisten)))
-@@ -7209,7 +7314,7 @@ process has been transmitted to the serial port.  */)
+@@ -7208,7 +7313,7 @@ DEFUN ("process-send-eof", Fprocess_send_eof, Sprocess_send_eof, 0, 1, 0,
  
  
    outfd = XPROCESS (proc)->outfd;
@@ -667,7 +667,7 @@ index 7a133cda00..1b818e5bde 100644
    if (outfd >= 0)
      coding = proc_encode_coding_system[outfd];
  
-@@ -7257,13 +7362,13 @@ process has been transmitted to the serial port.  */)
+@@ -7256,13 +7361,13 @@ DEFUN ("process-send-eof", Fprocess_send_eof, Sprocess_send_eof, 0, 1, 0,
        p->open_fd[WRITE_TO_SUBPROCESS] = new_outfd;
        p->outfd = new_outfd;
  
@@ -683,7 +683,7 @@ index 7a133cda00..1b818e5bde 100644
  	  *proc_encode_coding_system[new_outfd]
  	    = *proc_encode_coding_system[old_outfd];
  	  memset (proc_encode_coding_system[old_outfd], 0,
-@@ -7336,7 +7441,7 @@ child_signal_init (void)
+@@ -7335,7 +7440,7 @@ child_signal_init (void)
    int fds[2];
    if (emacs_pipe (fds) < 0)
      report_file_error ("Creating pipe for child signal", Qnil);
@@ -718,7 +718,7 @@ index 7a133cda00..1b818e5bde 100644
    add_read_fd (fd, timerfd_callback, NULL);
    fd_callback_info[fd].flags &= ~KEYBOARD_FD;
  }
-@@ -8076,7 +8180,7 @@ void
+@@ -8076,7 +8180,7 @@ remove_slash_colon (Lisp_Object name)
  add_keyboard_wait_descriptor (int desc)
  {
  #ifdef subprocesses /* Actually means "not MSDOS".  */
@@ -727,7 +727,7 @@ index 7a133cda00..1b818e5bde 100644
    fd_callback_info[desc].flags &= ~PROCESS_FD;
    fd_callback_info[desc].flags |= (FOR_READ | KEYBOARD_FD);
    if (desc > max_desc)
-@@ -8090,7 +8194,7 @@ void
+@@ -8090,7 +8194,7 @@ add_keyboard_wait_descriptor (int desc)
  delete_keyboard_wait_descriptor (int desc)
  {
  #ifdef subprocesses
@@ -754,7 +754,7 @@ index 7a133cda00..1b818e5bde 100644
    if (!proc_encode_coding_system[outch])
      proc_encode_coding_system[outch] = xmalloc (sizeof (struct coding_system));
    setup_coding_system (p->encode_coding_system,
-@@ -8388,7 +8492,7 @@ void
+@@ -8388,7 +8492,7 @@ catch_child_signal (void)
  restore_nofile_limit (void)
  {
  #ifdef HAVE_SETRLIMIT
@@ -763,7 +763,7 @@ index 7a133cda00..1b818e5bde 100644
      setrlimit (RLIMIT_NOFILE, &nofile_limit);
  #endif
  }
-@@ -8449,13 +8553,13 @@ init_process_emacs (int sockfd)
+@@ -8458,13 +8562,13 @@ init_process_emacs (int sockfd)
      }
  
  #ifdef HAVE_SETRLIMIT
@@ -780,7 +780,7 @@ index 7a133cda00..1b818e5bde 100644
        if (setrlimit (RLIMIT_NOFILE, &rlim) != 0)
  	nofile_limit.rlim_cur = 0;
      }
-@@ -8491,7 +8595,7 @@ init_process_emacs (int sockfd)
+@@ -8500,7 +8604,7 @@ init_process_emacs (int sockfd)
  
    Vprocess_alist = Qnil;
    deleted_pid_list = Qnil;
@@ -790,7 +790,7 @@ index 7a133cda00..1b818e5bde 100644
        chan_process[i] = Qnil;
        proc_buffered_char[i] = -1;
 diff --git a/src/sysdep.c b/src/sysdep.c
-index efd9638b07..53babd808f 100644
+index 736723bdf3d..c33724fe5cb 100644
 --- a/src/sysdep.c
 +++ b/src/sysdep.c
 @@ -777,7 +777,7 @@ restore_signal_handlers (struct save_signal *saved_handlers)
@@ -813,7 +813,7 @@ index efd9638b07..53babd808f 100644
  /* Initialize the terminal mode on all tty devices that are currently
 diff --git a/src/syspoll.h b/src/syspoll.h
 new file mode 100644
-index 0000000000..d133794fb1
+index 00000000000..d133794fb13
 --- /dev/null
 +++ b/src/syspoll.h
 @@ -0,0 +1,32 @@
@@ -850,10 +850,10 @@ index 0000000000..d133794fb1
 +#endif
 +#endif
 diff --git a/src/sysselect.h b/src/sysselect.h
-index 45cc22bc4c..029a913f32 100644
+index 45cc22bc4cb..029a913f324 100644
 --- a/src/sysselect.h
 +++ b/src/sysselect.h
-@@ -29,6 +29,7 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.  */
+@@ -29,6 +29,7 @@ #define SYSSELECT_H 1
     where w32 needs it, but not where sysselect.h is included.  The w32
     definitions in w32.h are incompatible with the below.  */
  #ifndef WINDOWSNT
@@ -861,7 +861,7 @@ index 45cc22bc4c..029a913f32 100644
  #ifdef FD_SET
  #ifndef FD_SETSIZE
  #define FD_SETSIZE 64
-@@ -43,6 +44,37 @@ typedef int fd_set;
+@@ -43,6 +44,37 @@ #define FD_CLR(n, p) (*(p) &= ~(1 << (n)))
  #define FD_ISSET(n, p) (*(p) & (1 << (n)))
  #define FD_ZERO(p) (*(p) = 0)
  #endif /* no FD_SET */
@@ -899,7 +899,7 @@ index 45cc22bc4c..029a913f32 100644
  #endif /* not WINDOWSNT */
  
  #if !defined (HAVE_SELECT)
-@@ -66,21 +98,21 @@ INLINE_HEADER_BEGIN
+@@ -66,21 +98,21 @@ #define pselect sys_select
  INLINE void
  fd_CLR (int fd, fd_set *set)
  {
