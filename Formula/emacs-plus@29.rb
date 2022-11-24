@@ -86,7 +86,7 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
-  local_patch "poll", sha: "92faf072ff19d5813ad25e616ee2c3028d581706f86087bd549244b5baf60f3f" if build.with? "poll"
+  local_patch "poll", sha: "052eacac5b7bd86b466f9a3d18bff9357f2b97517f463a09e4c51255bdb14648" if build.with? "poll"
   local_patch "round-undecorated-frame", sha: "0e5ac1ccabb66a374fc9e8f2fb2d6e591d4c211b4aa912be280e68a846063184"
 
   #
