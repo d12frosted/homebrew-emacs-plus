@@ -41,6 +41,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
 ** Table of Contents :TOC_3:
   - [[#about][About]]
   - [[#install][Install]]
+    - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
   - [[#emacs-29][Emacs 29]]
     - [[#included][Included]]
@@ -86,6 +87,23 @@ Emacs Plus contains separate formulas for different Emacs versions:
 #+end_src
 
 By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =imagemagick= (not included by default with =emacs-plus@29= and emacs-plus@29), =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
+
+*** Installing from feature branch
+
+Sometimes you might want to install from a feature branch. In that case you can switch the branch in the tap and install Emacs+ again.
+
+Prerequisites are:
+
+- Emacs+ is tapped (e.g. =brew tap d12frosted/emacs-plus=).
+- =jq= is available (e.g. =brew install jq=).
+
+Open terminal and type the following commands (don't forget to use correct Emacs+ version, branch and options):
+
+#+begin_src bash
+  $ brew uninstall emacs-plus@29
+  $ cd $(brew tap-info --json d12frosted/emacs-plus@29 | jq -r '.[0].path') && git switch BRANCH
+  $ brew install emacs-plus@29 [OPTIONS]
+#+end_src
 
 ** Reinstall
 
