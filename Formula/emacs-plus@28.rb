@@ -196,6 +196,9 @@ class EmacsPlusAT28 < EmacsBase
       # inject PATH to Info.plist
       inject_path
 
+      # inject description for protected resources usage
+      inject_protected_resources_usage_desc
+
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
