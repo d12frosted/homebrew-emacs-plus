@@ -87,6 +87,9 @@ esac
 export HOMEBREW_EMACS_PLUS_MODE
 HOMEBREW_EMACS_PLUS_MODE=local
 
+export HOMEBREW_NO_INSTALL_UPGRADE=true
+export HOMEBREW_NO_AUTO_UPDATE=true
+
 brew uninstall $PACKAGE 2>/dev/null
 # shellcheck disable=SC2068
 brew install --formula ./$TARGET_FILE $@
