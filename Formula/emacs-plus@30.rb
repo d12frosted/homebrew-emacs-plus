@@ -1,8 +1,8 @@
 require_relative "../Library/EmacsBase"
 
-class EmacsPlusAT29 < EmacsBase
-  init 29
-  version "29.0.50"
+class EmacsPlusAT30 < EmacsBase
+  init 30
+  version "30.0.50"
   env :std
 
   #
@@ -71,7 +71,7 @@ class EmacsPlusAT29 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-29"
+  url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
 
   #
   # Icons

@@ -1,0 +1,48 @@
+name: Emacs 30
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "Formula/emacs-plus@30.rb"
+      - "patches/emacs-30/**"
+      - "Library/**"
+      - ".github/workflows/emacs-30.yml"
+  pull_request:
+    paths:
+      - "Formula/emacs-plus@30.rb"
+      - "patches/emacs-30/**"
+      - "Library/**"
+      - ".github/workflows/emacs-30.yml"
+  schedule:
+    - cron: "30 2 * * *"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-11]
+        build_opts:
+          - ""
+          - "--with-xwidgets"
+          - "--with-native-comp"
+          - "--with-x11"
+
+    env:
+      HOMEBREW_EMACS_PLUS_MODE: local
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install xquartz
+        if: contains(matrix.build_opts, '--with-x11')
+        run: brew install --cask xquartz
+
+      - name: Build emacs-plus@30 ${{ matrix.build_opts }}
+        run: brew install ./Formula/emacs-plus@30.rb ${{ matrix.build_opts }}
+
+      - name: Test installation
+        run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
