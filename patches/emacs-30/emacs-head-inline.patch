@@ -1,0 +1,1396 @@
+diff -crN --exclude .git emacs_origin/configure.ac emacs/configure.ac
+*** emacs_origin/configure.ac	2019-12-30 01:06:49.000000000 +0900
+--- emacs/configure.ac	2019-12-30 07:22:13.000000000 +0900
+***************
+*** 2073,2079 ****
+       INSTALL_ARCH_INDEP_EXTRA=
+    fi
+
+!   NS_OBJC_OBJ="nsterm.o nsfns.o nsmenu.o nsselect.o nsimage.o $ns_fontfile"
+  fi
+  CFLAGS="$tmp_CFLAGS"
+  CPPFLAGS="$tmp_CPPFLAGS"
+--- 2073,2079 ----
+       INSTALL_ARCH_INDEP_EXTRA=
+    fi
+
+!   NS_OBJC_OBJ="nsterm.o nsfns.o nsmenu.o nsselect.o nsimage.o macim.o $ns_fontfile"
+  fi
+  CFLAGS="$tmp_CFLAGS"
+  CPPFLAGS="$tmp_CPPFLAGS"
+***************
+*** 5459,5465 ****
+
+    darwin)
+     if test "$HAVE_NS" = "yes"; then
+!      libs_nsgui="-framework AppKit"
+       if test "$NS_IMPL_COCOA" = "yes"; then
+          libs_nsgui="$libs_nsgui -framework IOKit -framework Carbon"
+       fi
+--- 5459,5465 ----
+
+    darwin)
+     if test "$HAVE_NS" = "yes"; then
+!      libs_nsgui="-framework AppKit -framework Carbon"
+       if test "$NS_IMPL_COCOA" = "yes"; then
+          libs_nsgui="$libs_nsgui -framework IOKit -framework Carbon"
+       fi
+diff -crN --exclude .git emacs_origin/lisp/term/common-win.el emacs/lisp/term/common-win.el
+*** emacs_origin/lisp/term/common-win.el	2019-12-30 01:06:56.000000000 +0900
+--- emacs/lisp/term/common-win.el	2019-12-30 07:22:13.000000000 +0900
+***************
+*** 71,77 ****
+  	       (cons 11 (make-non-key-event 'ns-spi-service-call))
+  	       (cons 12 (make-non-key-event 'ns-new-frame))
+  	       (cons 13 (make-non-key-event 'ns-toggle-toolbar))
+! 	       (cons 14 (make-non-key-event 'ns-show-prefs))))))
+      (set-terminal-parameter frame 'x-setup-function-keys t)))
+
+  (defvar x-invocation-args)
+--- 71,78 ----
+  	       (cons 11 (make-non-key-event 'ns-spi-service-call))
+  	       (cons 12 (make-non-key-event 'ns-new-frame))
+  	       (cons 13 (make-non-key-event 'ns-toggle-toolbar))
+! 	       (cons 14 (make-non-key-event 'ns-show-prefs))
+! 	       (cons 15 (make-non-key-event 'mac-change-input-method))))))
+      (set-terminal-parameter frame 'x-setup-function-keys t)))
+
+  (defvar x-invocation-args)
+diff -crN --exclude .git emacs_origin/src/Makefile.in emacs/src/Makefile.in
+*** emacs_origin/src/Makefile.in	2019-12-30 01:10:55.000000000 +0900
+--- emacs/src/Makefile.in	2019-12-30 07:22:13.000000000 +0900
+***************
+*** 433,440 ****
+  SOME_MACHINE_OBJECTS = dosfns.o msdos.o \
+    xterm.o xfns.o xmenu.o xselect.o xrdb.o xsmfns.o fringe.o image.o \
+    fontset.o dbusbind.o cygw32.o \
+!   nsterm.o nsfns.o nsmenu.o nsselect.o nsimage.o nsfont.o macfont.o \
+    nsxwidget.o \
+    w32.o w32console.o w32cygwinx.o w32fns.o w32heap.o w32inevt.o w32notify.o \
+    w32menu.o w32proc.o w32reg.o w32select.o w32term.o w32xfns.o \
+    w16select.o widget.o xfont.o ftfont.o xftfont.o ftxfont.o gtkutil.o \
+--- 433,440 ----
+  SOME_MACHINE_OBJECTS = dosfns.o msdos.o \
+    xterm.o xfns.o xmenu.o xselect.o xrdb.o xsmfns.o fringe.o image.o \
+    fontset.o dbusbind.o cygw32.o \
+!   nsterm.o nsfns.o nsmenu.o nsselect.o nsimage.o nsfont.o macfont.o macim.o \
+    nsxwidget.o \
+    w32.o w32console.o w32cygwinx.o w32fns.o w32heap.o w32inevt.o w32notify.o \
+    w32menu.o w32proc.o w32reg.o w32select.o w32term.o w32xfns.o \
+    w16select.o widget.o xfont.o ftfont.o xftfont.o ftxfont.o gtkutil.o \
+diff -crN --exclude .git emacs_origin/src/nsfns.m emacs/src/nsfns.m
+*** emacs_origin/src/nsfns.m	2019-12-30 01:10:54.000000000 +0900
+--- emacs/src/nsfns.m	2019-12-30 07:22:13.000000000 +0900
+***************
+*** 47,52 ****
+--- 47,53 ----
+  #ifdef NS_IMPL_COCOA
+  #include <IOKit/graphics/IOGraphicsLib.h>
+  #include "macfont.h"
++ #include "macim.h"
+
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
+  #include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+***************
+*** 3166,3171 ****
+--- 3168,3189 ----
+  Default is t.  */);
+    ns_use_proxy_icon = true;
+
++   DEFVAR_LISP ("ns-shift-key-mask", Vns_shift_key_mask,
++   doc: /* Shift key mask defined in system. */);
++   Vns_shift_key_mask = make_fixnum (NSEventModifierFlagShift);
++
++   DEFVAR_LISP ("ns-control-key-mask", Vns_control_key_mask,
++   doc: /* Control key mask defined in system. */);
++   Vns_control_key_mask = make_fixnum (NSEventModifierFlagControl);
++
++   DEFVAR_LISP ("ns-alternate-key-mask", Vns_alternate_key_mask,
++   doc: /* Alternate key mask defined in system. */);
++   Vns_alternate_key_mask = make_fixnum (NSEventModifierFlagOption);
++
++   DEFVAR_LISP ("ns-command-key-mask", Vns_command_key_mask,
++   doc: /* Command key mask defined in system. */);
++   Vns_command_key_mask = make_fixnum (NSEventModifierFlagCommand);
++
+    defsubr (&Sns_read_file_name);
+    defsubr (&Sns_get_resource);
+    defsubr (&Sns_set_resource);
+***************
+*** 3212,3217 ****
+--- 3228,3237 ----
+    defsubr (&Sns_popup_font_panel);
+    defsubr (&Sns_popup_color_panel);
+
++   #ifdef NS_IMPL_COCOA
++     mac_init_input_method ();
++   #endif
++
+    defsubr (&Sx_show_tip);
+    defsubr (&Sx_hide_tip);
+
+diff -crN --exclude .git emacs_origin/src/nsterm.h emacs/src/nsterm.h
+*** emacs_origin/src/nsterm.h	2019-12-30 01:10:54.000000000 +0900
+--- emacs/src/nsterm.h	2019-12-30 07:22:13.000000000 +0900
+***************
+*** 754,759 ****
+--- 754,761 ----
+  #define KEY_NS_NEW_FRAME               ((1<<28)|(0<<16)|12)
+  #define KEY_NS_TOGGLE_TOOLBAR          ((1<<28)|(0<<16)|13)
+  #define KEY_NS_SHOW_PREFS              ((1<<28)|(0<<16)|14)
++ #define KEY_MAC_CHANGE_INPUT_METHOD    ((1<<28)|(0<<16)|15)
++ #define KEY_NS_PUT_MARKED_TEXT         ((1<<28)|(0<<16)|16)
+
+  /* Could use list to store these, but rest of emacs has a big infrastructure
+     for managing a table of bitmap "records".  */
+diff -crN --exclude .git emacs_origin/src/nsterm.m emacs/src/nsterm.m
+*** emacs_origin/src/nsterm.m	2019-12-30 06:49:02.000000000 +0900
+--- emacs/src/nsterm.m	2019-12-30 07:22:13.000000000 +0900
+***************
+*** 69,74 ****
+--- 69,75 ----
+  
+  #ifdef NS_IMPL_COCOA
+  #include "macfont.h"
++ #include "macim.h"
+  #include <Carbon/Carbon.h>
+  #include <IOSurface/IOSurface.h>
+  #endif
+***************
+*** 5541,5546 ****
+--- 5542,5551 ----
+                                           selector: @selector (logNotification:)
+                                               name: nil object: nil]; */
+  
++   [[NSDistributedNotificationCenter defaultCenter] addObserver: NSApp
++      selector: @selector (changeInputMethod:)
++          name: @"AppleSelectedInputSourcesChangedNotification" object: nil];
++ 
+    dpyinfo = xzalloc (sizeof *dpyinfo);
+  
+    ns_initialize_display_info (dpyinfo);
+***************
+*** 5864,5869 ****
+--- 5869,5889 ----
+      NSLog (@"notification: '%@'", [notification name]);
+  }
+  
++ - (void)changeInputMethod: (NSNotification *)notification
++ {
++ 
++   struct frame *emacsframe = SELECTED_FRAME ();
++ 
++   if (mac_store_change_input_method_event())
++     {
++       if (!emacs_event)
++ 	return;
++       emacs_event->kind = NS_NONKEY_EVENT;
++       emacs_event->code = KEY_MAC_CHANGE_INPUT_METHOD;
++       emacs_event->modifiers = 0;
++       EV_TRAILER ((id)nil);
++     }
++ }
+  
+  - (void)sendEvent: (NSEvent *)theEvent
+  /* --------------------------------------------------------------------------
+***************
+*** 6842,6848 ****
+  
+        /* If it was a function key or had control-like modifiers, pass
+           it directly to Emacs.  */
+!       if (fnKeysym || (emacs_event->modifiers
+                         && (emacs_event->modifiers != shift_modifier)
+                         && [[theEvent charactersIgnoringModifiers] length] > 0))
+          {
+--- 6862,6869 ----
+  
+        /* If it was a function key or had control-like modifiers, pass
+           it directly to Emacs.  */
+!       if (mac_pass_key_directly_to_emacs ()
+!           || fnKeysym || (emacs_event->modifiers
+                         && (emacs_event->modifiers != shift_modifier)
+                         && [[theEvent charactersIgnoringModifiers] length] > 0))
+          {
+***************
+*** 6870,6878 ****
+              }
+  
+            emacs_event->code = code;
+!           EV_TRAILER (theEvent);
+!           processingCompose = NO;
+!           return;
+          }
+      }
+  
+--- 6891,6909 ----
+              }
+  
+            emacs_event->code = code;
+!           /* The function mac_pass_key_to_system decides
+!              whether it is passed directly to emacs or not. */
+!           if (emacs_event->kind == NON_ASCII_KEYSTROKE_EVENT
+!               || !mac_pass_key_to_system (code, flags
+!                                           & (NSEventModifierFlagShift
+!                                              | NSEventModifierFlagControl
+!                                              | NSEventModifierFlagOption
+!                                              | NSEventModifierFlagCommand)))
+!             {
+!               EV_TRAILER (theEvent);
+!               processingCompose = NO;
+!               return;
+!             }
+          }
+      }
+  
+***************
+*** 6999,7005 ****
+    ns_working_text = [workingText lispString];
+  
+    emacs_event->kind = NS_TEXT_EVENT;
+!   emacs_event->code = KEY_NS_PUT_WORKING_TEXT;
+    EV_TRAILER ((id)nil);
+  }
+  
+--- 7030,7038 ----
+    ns_working_text = [workingText lispString];
+  
+    emacs_event->kind = NS_TEXT_EVENT;
+!   emacs_event->code = KEY_NS_PUT_MARKED_TEXT;
+!   emacs_event->arg = Fcons (make_int (selRange.location),
+!                             Fcons (make_int (selRange.length), Qnil));
+    EV_TRAILER ((id)nil);
+  }
+  
+***************
+*** 7092,7097 ****
+--- 7125,7131 ----
+  {
+    NSRect rect;
+    NSPoint pt;
++   NSPoint offset;
+    struct window *win;
+  
+    NSTRACE ("[EmacsView firstRectForCharacterRange:]");
+***************
+*** 7099,7114 ****
+    if (NS_KEYLOG)
+      NSLog (@"firstRectForCharRange request");
+  
+!   if (WINDOWP (echo_area_window) && ns_in_echo_area ())
+      win = XWINDOW (echo_area_window);
+    else
+      win = XWINDOW (FRAME_SELECTED_WINDOW (emacsframe));
+  
+    rect.size.width = theRange.length * FRAME_COLUMN_WIDTH (emacsframe);
+    rect.size.height = FRAME_LINE_HEIGHT (emacsframe);
+!   pt.x = WINDOW_TEXT_TO_FRAME_PIXEL_X (win, win->phys_cursor.x);
+    pt.y = WINDOW_TO_FRAME_PIXEL_Y (win, win->phys_cursor.y
+!                                        +FRAME_LINE_HEIGHT (emacsframe));
+  
+    pt = [self convertPoint: pt toView: nil];
+  
+--- 7133,7156 ----
+    if (NS_KEYLOG)
+      NSLog (@"firstRectForCharRange request");
+  
+!   if (NILP (Vmac_in_echo_area))
+!     win = XWINDOW (FRAME_SELECTED_WINDOW (emacsframe));
+!   else if (WINDOWP (echo_area_window) && ns_in_echo_area ())
+      win = XWINDOW (echo_area_window);
+    else
+      win = XWINDOW (FRAME_SELECTED_WINDOW (emacsframe));
+  
++   if ( INTEGERP (Vmac_ime_panel_offset_x) )
++     offset.x = XFIXNUM (Vmac_ime_panel_offset_x);
++   if ( INTEGERP (Vmac_ime_panel_offset_y) )
++     offset.y = XFIXNUM (Vmac_ime_panel_offset_y);
++ 
+    rect.size.width = theRange.length * FRAME_COLUMN_WIDTH (emacsframe);
+    rect.size.height = FRAME_LINE_HEIGHT (emacsframe);
+!   pt.x = WINDOW_TEXT_TO_FRAME_PIXEL_X (win, win->phys_cursor.x + offset.x);
+    pt.y = WINDOW_TO_FRAME_PIXEL_Y (win, win->phys_cursor.y
+!                                        +FRAME_LINE_HEIGHT (emacsframe)
+!                                        +offset.y);
+  
+    pt = [self convertPoint: pt toView: nil];
+  
+***************
+*** 11031,11036 ****
+--- 11073,11090 ----
+  respectively.  */);
+    Vns_drag_motion_function = Qns_handle_drag_motion;
+  
++   DEFVAR_LISP ("mac-in-echo-area", Vmac_in_echo_area,
++                doc: /* state of cursor in echo area. */);
++   Vmac_in_echo_area = Qnil;
++ 
++   DEFVAR_LISP ("mac-ime-panel-offset-x", Vmac_ime_panel_offset_x,
++                doc: /* Horizontal offset to show candidates panel. */);
++   Vmac_ime_panel_offset_x = make_int (0);
++ 
++   DEFVAR_LISP ("mac-ime-panel-offset-y", Vmac_ime_panel_offset_y,
++                doc: /* Vertical offset to show candidates panel. */);
++   Vmac_ime_panel_offset_y = make_int (2);
++ 
+    /* Tell Emacs about this window system.  */
+    Fprovide (Qns, Qnil);
+  
+*** emacs_origin/src/macim.h	1970-01-01 09:00:00.000000000 +0900
+--- emacs/src/macim.h	2020-01-07 14:42:30.000000000 +0900
+***************
+*** 0 ****
+--- 1,11 ----
++ /* Implementation of Input Method Extension for macOS.
++    Copyright (C) 2020
++    Takaaki Ishikawa <takaxp@ieee.org>
++ */
++ #ifdef NS_IMPL_COCOA
++ void mac_init_input_method ();
++ int mac_pass_key_to_system (int code, int modifiers);
++ int mac_pass_key_directly_to_emacs ();
++ int mac_store_change_input_method_event ();
++ NSString* mac_get_locale ();
++ #endif
+*** emacs_origin/src/macim.m	1970-01-01 09:00:00.000000000 +0900
+--- emacs/src/macim.m	2020-01-07 14:42:53.000000000 +0900
+***************
+*** 0 ****
+--- 1,229 ----
++ /* Implementation of Input Method Extension for macOS.
++    Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
++    Taiichi Hashimoto <taiichi2@mac.com>.
++
++    2019
++    enhanced by Takaaki Ishikawa <takaxp@ieee.org>
++ */
++
++ #include "config.h"
++
++ #ifdef NS_IMPL_COCOA
++
++ #include <math.h>
++ #include <sys/types.h>
++ #include <time.h>
++ #include <signal.h>
++ #include <unistd.h>
++
++ #include <Carbon/Carbon.h>
++
++ #include "lisp.h"
++ #include "blockinput.h"
++
++ #include "termhooks.h"
++ #include "keyboard.h"
++ #include "buffer.h"
++
++ #include "macim.h"
++
++ //extern Lisp_Object Qcurrent_input_method;
++ //extern int cursor_in_echo_area;
++ static Lisp_Object Qmac_keys_passed_to_system;
++
++ DEFUN ("mac-input-source-is-ascii-capable", Fmac_input_source_is_ascii_capable, Smac_input_source_is_ascii_capable,
++        0, 0, 0,
++        doc: /* Is current input source ascii capable? */)
++      (void)
++ {
++   TISInputSourceRef is = TISCopyCurrentKeyboardInputSource();
++   CFBooleanRef ret = TISGetInputSourceProperty(is, kTISPropertyInputSourceIsASCIICapable);
++
++   return CFBooleanGetValue(ret)? Qt : Qnil;
++ }
++
++ DEFUN ("mac-get-locale-input-source", Fmac_get_locale_input_source, Smac_get_locale_input_source,
++        0, 0, 0,
++        doc: /* get input source based on locale */)
++      (void)
++ {
++   NSString *locale = mac_get_locale();
++   // locale = @"ja-JP";
++   // NSLog(@"%@", locale);
++
++   TISInputSourceRef is = TISCopyInputSourceForLanguage((CFStringRef)locale);
++   NSString *id = (NSString *)TISGetInputSourceProperty(is, kTISPropertyInputSourceID);
++
++   return make_string([id UTF8String],
++                      [id lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
++ }
++
++ DEFUN ("mac-get-input-source-list", Fmac_get_input_source_list, Smac_get_input_source_list,
++        0, 0, 0,
++        doc: /* get input source list on macOS */)
++      (void)
++ {
++   NSArray *is_list = (NSArray *)TISCreateInputSourceList(NULL, false);
++   int list_size = [is_list count];
++   Lisp_Object list[list_size];
++   int i;
++
++   for (i = 0; i < list_size; i++) {
++     TISInputSourceRef is = (TISInputSourceRef)[is_list objectAtIndex:i];
++     NSString *id = (NSString *)TISGetInputSourceProperty(is, kTISPropertyInputSourceID);
++     list[i] = make_string([id UTF8String],
++                           [id lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
++   }
++
++   return Flist(list_size, list);
++ }
++
++ DEFUN ("mac-get-current-input-source", Fmac_get_current_input_source, Smac_get_current_input_source,
++        0, 0, 0,
++        doc: /* get current input source on macOS */)
++      (void)
++ {
++   TISInputSourceRef is = TISCopyCurrentKeyboardInputSource();
++   NSString *id = (NSString *)TISGetInputSourceProperty(is, kTISPropertyInputSourceID);
++
++   return make_string([id UTF8String],
++                      [id lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
++ }
++
++ DEFUN ("mac-toggle-input-source", Fmac_toggle_input_source, Smac_toggle_input_source,
++        1, 1, 0,
++        doc: /* toggle input source on macOS */)
++      (arg)
++      Lisp_Object arg;
++ {
++   TISInputSourceRef is = NULL;
++   Lisp_Object Vinput_source = Qnil;
++   if (NILP (arg)) {
++     Vinput_source = Vmac_default_input_ascii;
++   } else {
++     Vinput_source = Vmac_default_input_source;
++   }
++
++   if ( NILP (Vinput_source) || !STRINGP (Vinput_source) ){
++     if (NILP (arg)) {
++       is = TISCopyCurrentASCIICapableKeyboardInputSource();
++     } else {
++       NSString *locale = mac_get_locale();
++       if ( [locale hasPrefix:@"ja"] ) {
++         is = TISCopyInputSourceForLanguage((CFStringRef)locale);
++       }
++     }
++
++     if (is) TISSelectInputSource(is);
++     return arg;
++   }
++
++   NSString *targetID = [NSString stringWithUTF8String: SSDATA (Vinput_source)];
++   if ( targetID == nil) {
++     return arg;
++   }
++   NSArray *is_list = (NSArray *)TISCreateInputSourceList(NULL, false);
++   int list_size = [is_list count];
++   for(int i=0; i< list_size; i++) {
++     NSString *id = (NSString *)TISGetInputSourceProperty((TISInputSourceRef)[is_list objectAtIndex:i], kTISPropertyInputSourceID);
++     if ( [id compare:targetID] == NSOrderedSame ) {
++       is = (TISInputSourceRef)[is_list objectAtIndex:i];
++       break;
++     }
++   }
++
++   if (is) TISSelectInputSource(is);
++   return arg;
++ }
++
++ NSString*
++ mac_get_locale ()
++ {
++   NSString *locale = NULL;
++   NSArray *languages = [NSLocale preferredLanguages];
++   if (languages != nil) {
++     locale = [languages objectAtIndex:0];
++   } else {
++     locale = [[NSLocale currentLocale]
++               objectForKey:NSLocaleLanguageCode];
++   }
++   return locale;
++ }
++
++ int
++ mac_store_change_input_method_event ()
++ {
++   Lisp_Object dim;
++   int ret = FALSE;
++
++   dim = Fsymbol_value (intern ("default-input-method"));
++   if (STRINGP (dim) && (strcmp(SDATA (dim), "MacOSX") == 0
++                         || strcmp(SDATA (dim), "macOS") == 0))
++     {
++       ret = TRUE;
++     }
++
++   return ret;
++ }
++
++ int
++ mac_pass_key_to_system (int code, int modifiers)
++ {
++   Lisp_Object keys = Fsymbol_value (Qmac_keys_passed_to_system);
++   Lisp_Object m, k;
++
++   while (!NILP (keys))
++     {
++       m = XCAR (XCAR (keys));
++       k = XCDR (XCAR (keys));
++       keys = XCDR (keys);
++
++       if (NUMBERP (m) && modifiers == XFIXNUM (m))
++         if (NILP (k)
++             || (NUMBERP (k) && code == XFIXNUM (k)))
++           return TRUE;
++     }
++
++   return FALSE;
++ }
++
++ int
++ mac_pass_key_directly_to_emacs (void)
++ {
++
++   if (NILP (Fmac_input_source_is_ascii_capable()))
++     {
++       if (NILP (Vmac_use_input_method_on_system)
++           || this_command_key_count
++           || cursor_in_echo_area
++           || !NILP (BVAR (current_buffer, read_only)))
++         return TRUE;
++     }
++
++   return FALSE;
++ }
++
++ void mac_init_input_method (void)
++ {
++   Qmac_keys_passed_to_system = intern ("mac-keys-passed-to-system");
++   staticpro (&Qmac_keys_passed_to_system);
++
++   DEFVAR_LISP ("mac-use-input-method-on-system", Vmac_use_input_method_on_system,
++                doc: /* If it is non-nil, use input method on system. */);
++   Vmac_use_input_method_on_system = Qt;
++
++   DEFVAR_LISP ("mac-default-input-source", Vmac_default_input_source,
++                doc: /* The default input source. */);
++   Vmac_default_input_source = Qnil;
++
++   DEFVAR_LISP ("mac-default-input-ascii", Vmac_default_input_ascii,
++                doc: /* The default input source for ASCII. */);
++   Vmac_default_input_ascii = Qnil;
++
++   defsubr (&Smac_input_source_is_ascii_capable);
++   defsubr (&Smac_get_input_source_list);
++   defsubr (&Smac_get_current_input_source);
++   defsubr (&Smac_get_locale_input_source);
++   defsubr (&Smac_toggle_input_source);
++ }
++ #endif
+*** emacs_origin/src/keyboard.c	2020-01-06 14:04:20.000000000 +0900
+--- emacs/src/keyboard.c	2020-01-08 11:03:02.000000000 +0900
+***************
+*** 5523,5531 ****
+
+  #ifdef HAVE_NS
+      case NS_TEXT_EVENT:
+!       return list1 (intern (event->code == KEY_NS_PUT_WORKING_TEXT
+!                             ? "ns-put-working-text"
+!                             : "ns-unput-working-text"));
+
+        /* NS_NONKEY_EVENTs are just like NON_ASCII_KEYSTROKE_EVENTs,
+  	 except that they are non-key events (last-nonmenu-event is nil).  */
+--- 5523,5534 ----
+
+  #ifdef HAVE_NS
+      case NS_TEXT_EVENT:
+!       if (event->code == KEY_NS_PUT_WORKING_TEXT)
+!         return list1 (intern ("ns-put-working-text"));
+!       else if (event->code == KEY_NS_PUT_MARKED_TEXT)
+!         return Fcons (intern ("ns-put-marked-text"), event->arg);
+!       else
+!         return list1 (intern ("ns-unput-working-text"));
+
+        /* NS_NONKEY_EVENTs are just like NON_ASCII_KEYSTROKE_EVENTs,
+  	 except that they are non-key events (last-nonmenu-event is nil).  */
+***************
+*** 12767,12772 ****
+--- 12767,12774 ----
+  #endif
+    initial_define_lispy_key (Vspecial_event_map, "ns-put-working-text",
+  			    "ns-put-working-text");
++   initial_define_lispy_key (Vspecial_event_map, "ns-put-marked-text",
++ 			    "ns-put-marked-text");
+    initial_define_lispy_key (Vspecial_event_map, "ns-unput-working-text",
+  			    "ns-unput-working-text");
+    /* Here we used to use `ignore-event' which would simple set prefix-arg to
+diff -crN --exclude .git emacs_origin/lisp/term/ns-win.el emacs/lisp/term/ns-win.el
+*** emacs_origin/lisp/term/ns-win.el	2019-12-30 01:06:56.000000000 +0900
+--- emacs/lisp/term/ns-win.el	2019-12-30 07:24:16.000000000 +0900
+***************
+*** 179,185 ****
+  (define-key global-map [ns-new-frame] 'make-frame)
+  (define-key global-map [ns-toggle-toolbar] 'ns-toggle-toolbar)
+  (define-key global-map [ns-show-prefs] 'customize)
+! 
+  
+  ;; Set up a number of aliases and other layers to pretend we're using
+  ;; the Choi/Mitsuharu Carbon port.
+--- 179,185 ----
+  (define-key global-map [ns-new-frame] 'make-frame)
+  (define-key global-map [ns-toggle-toolbar] 'ns-toggle-toolbar)
+  (define-key global-map [ns-show-prefs] 'customize)
+! (define-key global-map [mac-change-input-method] 'mac-change-input-method)
+  
+  ;; Set up a number of aliases and other layers to pretend we're using
+  ;; the Choi/Mitsuharu Carbon port.
+***************
+*** 273,282 ****
+  ;; editing window.)
+  
+  (defface ns-working-text-face
+!   '((t :underline t))
+    "Face used to highlight working text during compose sequence insert."
+    :group 'ns)
+  
+  (defvar ns-working-overlay nil
+    "Overlay used to highlight working text during compose sequence insert.
+  When text is in th echo area, this just stores the length of the working text.")
+--- 273,295 ----
+  ;; editing window.)
+  
+  (defface ns-working-text-face
+!   '((((background dark)) :underline "gray80")
+!     (t :underline "gray20"))
+    "Face used to highlight working text during compose sequence insert."
+    :group 'ns)
+  
++ (defface ns-marked-text-face
++   '((((background dark)) :underline "gray80")
++     (t :underline "gray20"))
++   "Face used to highlight marked text during compose sequence insert."
++   :group 'ns)
++ 
++ (defface ns-unmarked-text-face
++   '((((background dark)) :underline "gray20")
++     (t :underline "gray80"))
++   "Face used to highlight marked text during compose sequence insert."
++   :group 'ns)
++ 
+  (defvar ns-working-overlay nil
+    "Overlay used to highlight working text during compose sequence insert.
+  When text is in th echo area, this just stores the length of the working text.")
+***************
+*** 288,304 ****
+  (defun ns-in-echo-area ()
+    "Whether, for purposes of inserting working composition text, the minibuffer
+  is currently being used."
+!   (or isearch-mode
+!       (and cursor-in-echo-area (current-message))
+!       ;; Overlay strings are not shown in some cases.
+!       (get-char-property (point) 'invisible)
+!       (and (not (bobp))
+! 	   (or (and (get-char-property (point) 'display)
+! 		    (eq (get-char-property (1- (point)) 'display)
+! 			(get-char-property (point) 'display)))
+! 	       (and (get-char-property (point) 'composition)
+! 		    (eq (get-char-property (1- (point)) 'composition)
+! 			(get-char-property (point) 'composition)))))))
+  
+  ;; The 'interactive' here stays for subinvocations, so the ns-in-echo-area
+  ;; always returns nil for some reason.  If this WASN'T the case, we could
+--- 301,323 ----
+  (defun ns-in-echo-area ()
+    "Whether, for purposes of inserting working composition text, the minibuffer
+  is currently being used."
+!   (setq mac-in-echo-area
+!         (or isearch-mode
+!             (and cursor-in-echo-area (current-message))
+!             ;; Overlay strings are not shown in some cases.
+!             (get-char-property (point) 'invisible)
+!             (and (not (bobp))
+!                  (or (and (get-char-property (point) 'display)
+!                           (eq (get-char-property (1- (point)) 'display)
+!                               (get-char-property (point) 'display)))
+!                      (and (get-char-property (point) 'composition)
+!                           (eq (get-char-property (1- (point)) 'composition)
+!                               (get-char-property (point) 'composition)))))))
+!   mac-in-echo-area)
+! 
+! (defvar ns-put-text-p nil)
+! (defvar mac-ime-before-put-text-hook nil)
+! (defvar mac-ime-after-put-text-hook nil)
+  
+  ;; The 'interactive' here stays for subinvocations, so the ns-in-echo-area
+  ;; always returns nil for some reason.  If this WASN'T the case, we could
+***************
+*** 306,315 ****
+  ;; These functions test whether in echo area and delegate accordingly.
+  (defun ns-put-working-text ()
+    (interactive)
+    (if (ns-in-echo-area) (ns-echo-working-text) (ns-insert-working-text)))
+  (defun ns-unput-working-text ()
+    (interactive)
+!   (ns-delete-working-text))
+  
+  (defun ns-insert-working-text ()
+    "Insert contents of `ns-working-text' as UTF-8 string and mark with
+--- 325,342 ----
+  ;; These functions test whether in echo area and delegate accordingly.
+  (defun ns-put-working-text ()
+    (interactive)
++   (setq ns-put-text-p t)
++   (run-hooks 'mac-ime-before-put-text-hook)
+    (if (ns-in-echo-area) (ns-echo-working-text) (ns-insert-working-text)))
++ 
+  (defun ns-unput-working-text ()
+    (interactive)
+!   (setq ns-put-text-p nil)
+!   (run-hooks 'mac-ime-after-put-text-hook)
+!   (ns-delete-working-text)
+!   (when (and mac-ime-hide-cursor mac-ime--cursor-type)
+!     (setq cursor-type mac-ime--cursor-type
+!           mac-ime--cursor-type nil)))
+  
+  (defun ns-insert-working-text ()
+    "Insert contents of `ns-working-text' as UTF-8 string and mark with
+***************
+*** 335,340 ****
+--- 362,425 ----
+  		       'face 'ns-working-text-face msg)
+      (message "%s" msg)))
+  
++ (defvar mac-ime--cursor-type nil)
++ (defun ns-put-marked-text (event)
++   (interactive "e")
++   (setq ns-put-text-p t)
++   (run-hooks 'mac-ime-before-put-text-hook)
++   (let ((pos (nth 1 event))
++         (len (nth 2 event)))
++     (when (and (> len 0)
++                cursor-type
++                mac-ime-hide-cursor)
++       (setq mac-ime--cursor-type cursor-type
++             cursor-type nil))
++     (if (ns-in-echo-area)
++         (ns-echo-marked-text pos len)
++       (ns-insert-marked-text pos len))))
++ 
++ (defun ns-insert-marked-text (mark-from mark-length)
++   "Insert the content of `ns-working-text' as a propertized `before-string'
++ of an overlay."
++   (ns-delete-working-text)
++   (let ((mark-to (+ mark-from mark-length)))
++     (when (<= mark-to (length ns-working-text))
++       (setq ns-working-overlay (make-overlay (point) (point)))
++       (if (= mark-length 0)
++           (overlay-put ns-working-overlay
++                        'before-string
++                        (propertize ns-working-text 'face 'ns-working-text-face))
++         (overlay-put ns-working-overlay
++                      'before-string
++                      (concat
++                       (propertize (substring ns-working-text 0 mark-from)
++                                   'face 'ns-unmarked-text-face)
++                       (propertize (substring ns-working-text mark-from mark-to)
++                                   'face 'ns-marked-text-face)
++                       (propertize (substring ns-working-text mark-to nil)
++                                   'face 'ns-unmarked-text-face)))))))
++ 
++ (defun ns-echo-marked-text (pos len)
++   "Echo contents of `ns-working-text' in message display area.
++   See `ns-insert-working-text'."
++   (ns-delete-working-text)
++   (let* ((msg (current-message))
++          (msglen (length msg))
++          message-log-max)
++     (when (integerp ns-working-overlay)
++       (setq msg (substring msg 0 (- (length msg) ns-working-overlay)))
++       (setq msglen (length msg)))
++     (setq ns-working-overlay (length ns-working-text))
++     (setq msg (concat msg ns-working-text))
++     (if (= len 0)
++         (put-text-property msglen (+ msglen ns-working-overlay)
++                            'face 'ns-working-text-face msg)
++       (put-text-property msglen (+ msglen ns-working-overlay)
++                          'face 'ns-marked-text-face msg)
++       (put-text-property (+ msglen pos) (+ msglen pos len)
++                          'face 'ns-unmarked-text-face msg))
++     (message "%s" msg)))
++ 
+  (defun ns-delete-working-text()
+    "Delete working text and clear `ns-working-overlay'."
+    (interactive)
+***************
+*** 352,358 ****
+        (message "%s" msg))))
+    (setq ns-working-overlay nil))
+  
+- 
+  ;; macOS file system Unicode UTF-8 NFD (decomposed form) support.
+  (when (eq system-type 'darwin)
+    ;; Used prior to Emacs 25.
+--- 437,442 ----
+***************
+*** 471,476 ****
+--- 555,576 ----
+    :version "23.1"
+    :group 'ns)
+  
++ (defcustom mac-ime-startup-state nil
++   "If non-nil, start Emacs with the specified IME state.
++ `activate' or `deactivate' shall be used.
++ If nil, inherit the IME state from macOS."
++   :type '(choice (const :tag "IME activated" activate)
++                  (const :tag "IME deactivated" deactivate)
++                  (const :tag "IME inherited from macOS" nil))
++   :version "27.0"
++   :group 'ns)
++ 
++ (defcustom mac-ime-hide-cursor t
++   "If non-nil, the cursor is not rendered when composing text."
++   :type 'boolean
++   :version "27.0"
++   :group 'ns)
++ 
+  (declare-function ns-hide-emacs "nsfns.m" (on))
+  
+  (defun ns-find-file ()
+***************
+*** 925,930 ****
+--- 1025,1561 ----
+   `dnd-indicate-insertion-point' is enabled."
+    (dnd-handle-movement (posn-at-x-y x y frame)))
+  
++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
++ ;;
++ ;; Implementation of Input Method Extension for MacOS X
++ ;; written by Taiichi Hashimoto <taiichi2@mac.com>
++ ;; enhanced by Takaaki Ishikawa <takaxp@ieee.org>
++ (defvar mac-input-method-parameters
++   '(
++     ("com.apple.inputmethod.Kotoeri.Roman"
++      (title . "A")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Kotoeri.Japanese"
++      (title . "あ")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Kotoeri.Japanese.Katakana"
++      (title . "ア")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Kotoeri.Japanese.FullWidthRoman"
++      (title . "Ａ")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Kotoeri.Japanese.HalfWidthKana"
++      (title . "ｱ")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.kotoeri.Ainu"
++      (title . "アイヌ")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Korean.2SetKorean"
++      (title . "가2")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Korean.3SetKorean"
++      (title . "가3")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Korean.390Sebulshik"
++      (title . "가5")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Korean.GongjinCheongRomaja"
++      (title . "가G")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Korean.HNCRomaja"
++      (title . "가H")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Tamil.AnjalIM"
++      (title . "Anjal")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.Tamil.Tamil99"
++      (title . "Tamil")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.VietnameseIM.VietnameseSimpleTelex"
++      (title . "ST")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.VietnameseIM.VietnameseTelex"
++      (title . "TX")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.VietnameseIM.VietnameseVNI"
++      (title . "VN")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.VietnameseIM.VietnameseVIQR"
++      (title . "VQ")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.SCIM.ITABC"
++      (title . "拼")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.SCIM.WBX"
++      (title . "型")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.SCIM.WBH"
++      (title . "画")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.TCIM.Zhuyin"
++      (title . "注")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.TCIM.Pinyin"
++      (title . "拼")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.TCIM.Cangjie"
++      (title . "倉")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.TCIM.Jianyi"
++      (title . "速")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.TCIM.Dayi"
++      (title . "易")
++      (cursor-color)
++      (cursor-type))
++     ("com.apple.inputmethod.TCIM.Hanin"
++      (title . "漢")
++      (cursor-color)
++      (cursor-type))
++     ("com.google.inputmethod.Japanese.Roman"
++      (title . "G")
++      (cursor-color)
++      (cursor-type))
++     ("com.google.inputmethod.Japanese.base"
++      (title . "ぐ")
++      (cursor-color)
++      (cursor-type))
++     ("com.google.inputmethod.Japanese.Katakana"
++      (title . "グ")
++      (cursor-color)
++      (cursor-type))
++     ("com.google.inputmethod.Japanese.FullWidthRoman"
++      (title . "Ｇ")
++      (cursor-color)
++      (cursor-type))
++     ("com.google.inputmethod.Japanese.HalfWidthKana"
++      (title . "ｸﾞ")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Roman"
++      (title . "K")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Japanese"
++      (title . "か")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Japanese.Katakana"
++      (title . "カ")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Japanese.FullWidthRoman"
++      (title . "Ｋ")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Japanese.HalfWidthKana"
++      (title . "ｶ")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Japanese.HalfWidthRoman"
++      (title . "_K")
++      (cursor-color)
++      (cursor-type))
++     ("jp.monokakido.inputmethod.Kawasemi.Japanese.Code"
++      (title . "C")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok21.Roman"
++      (title . "A")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok21.Japanese"
++      (title . "あ")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok21.Japanese.Katakana"
++      (title . "ア")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok21.Japanese.FullWidthRoman"
++      (title . "英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok21.Japanese.HalfWidthEiji"
++      (title . "半英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok22.Roman"
++      (title . "A")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok22.Japanese"
++      (title . "あ")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok22.Japanese.Katakana"
++      (title . "ア")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok22.Japanese.FullWidthRoman"
++      (title . "英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok22.Japanese.HalfWidthEiji"
++      (title . "半英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok23.Roman"
++      (title . "A")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok23.Japanese"
++      (title . "あ")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok23.Japanese.Katakana"
++      (title . "ア")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok23.Japanese.FullWidthRoman"
++      (title . "英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok23.Japanese.HalfWidthEiji"
++      (title . "半英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok24.Roman"
++      (title . "A")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok24.Japanese"
++      (title . "あ")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok24.Japanese.Katakana"
++      (title . "ア")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok24.Japanese.FullWidthRoman"
++      (title . "英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok24.Japanese.HalfWidthEiji"
++      (title . "半英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok25.Roman"
++      (title . "A")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok25.Japanese"
++      (title . "あ")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok25.Japanese.Katakana"
++      (title . "ア")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok25.Japanese.FullWidthRoman"
++      (title . "英")
++      (cursor-color)
++      (cursor-type))
++     ("com.justsystems.inputmethod.atok25.Japanese.HalfWidthEiji"
++      (title . "半英")
++      (cursor-color)
++      (cursor-type))
++     )
++   "Alist of Mac script code vs parameters for input method on macOS.")
++ 
++ (defun mac-get-input-method-parameter (is key)
++   "Function to get a parameter of a input method."
++   (assq key (cdr (assoc is mac-input-method-parameters))))
++ 
++ (defun mac-get-input-method-title (&optional input-source)
++   "Return input method title of input source.
++     If input-source is nil, return one of current frame."
++   (if input-source
++       (cdr (mac-get-input-method-parameter input-source 'title))
++     current-input-method-title))
++ 
++ (defun mac-get-cursor-type (&optional input-source)
++   "Return cursor type of input source.
++     If input-source is nil, return one of current frame."
++   (if input-source
++       (or (cdr (mac-get-input-method-parameter input-source 'cursor-type))
++           (cdr (assq 'cursor-type default-frame-alist))
++           cursor-type)
++     (cdr (assq 'cursor-type (frame-parameters (selected-frame))))))
++ 
++ (defun mac-get-cursor-color (&optional input-source)
++   "Return cursor color of input source.
++     If input-source is nil, return one of current frame."
++   (if input-source
++       (or (cdr (mac-get-input-method-parameter input-source 'cursor-color))
++           (cdr (assq 'cursor-color default-frame-alist)))
++     (cdr (assq 'cursor-color (frame-parameters (selected-frame))))))
++ 
++ (defun mac-set-input-method-parameter (is key value)
++   "Function to set a parameter of a input method."
++   (let* ((is-param (assoc is mac-input-method-parameters))
++          (param (assq key is-param)))
++     (if is-param
++         (if param
++             (setcdr param value)
++           (setcdr is-param (cons (cons key value) (cdr is-param))))
++       (setq mac-input-method-parameters
++             (cons (list is (cons key value))
++                   mac-input-method-parameters)))))
++ 
++ (defun mac-input-method-update (is)
++   "Function to update parameters of a input method."
++   (let ((title (mac-get-input-method-title is))
++         (type (mac-get-cursor-type is))
++         (color (mac-get-cursor-color is)))
++     (if (and title (not (equal title (mac-get-input-method-title))))
++         (setq current-input-method-title title))
++     (if (and type (not (equal type (mac-get-cursor-type))))
++         (setq cursor-type type))
++     (if (and color (not (equal color (mac-get-cursor-color))))
++         (set-cursor-color color))
++     (force-mode-line-update)
++     (if isearch-mode (isearch-update))))
++ 
++ (defun mac-ime-update-title ()
++   "Update title on mode line."
++   (unless isearch-mode
++     (mac-handle-input-method-change)))
++ 
++ (defun mac-ime-active-p ()
++   "Non-nil if current input source is not Roman or `mac-default-input-ascii'."
++   (let ((input-source (mac-get-current-input-source)))
++     (not (or (string-match "\\.\\(Roman\\|US\\|ABC\\)$" input-source)
++              (equal mac-default-input-ascii input-source)))))
++ 
++ (defun mac-ime-activate ()
++   "Activate input method."
++   (interactive)
++   (mac-toggle-input-method t)
++   (run-hooks 'input-method-activate-hook))
++ 
++ (defun mac-ime-deactivate ()
++   "Deactivate input method."
++   (interactive)
++   (mac-toggle-input-method nil)
++   (run-hooks 'input-method-deactivate-hook))
++ 
++ (defun mac-ime-toggle ()
++   "Toggle IME."
++   (interactive)
++   (if (mac-ime-active-p) (mac-ime-deactivate) (mac-ime-activate)))
++ 
++ (defvar mac-ime--before-action (mac-ime-active-p))
++ (defun mac-ime-activate-sticky ()
++   "Activate IME for minibuffer."
++   (when mac-ime--before-action
++     (mac-ime-activate)))
++ 
++ (defun mac-ime-deactivate-sticky ()
++   "Deactivate IME for minibuffer."
++   (when (setq mac-ime--before-action (mac-ime-active-p))
++     (mac-ime-deactivate)))
++ 
++ (defun mac-input-source-registerd-p (&optional input-source)
++   "Return nil, if the INPUT-SOURCE is not listed in system.
++ If INPUT-SOURCE is nil, `mac-default-input-source' is checked."
++   (let ((is (or input-source mac-default-input-source)))
++     (when (member is (mac-get-input-source-list))
++       t)))
++ 
++ (defun mac-toggle-input-method (&optional arg)
++   "Function to toggle input method on macOS."
++   (if arg
++       (progn
++         (make-local-variable 'input-method-function)
++         (setq deactivate-current-input-method-function 'mac-toggle-input-method)
++         (setq input-method-function nil)
++         (setq describe-current-input-method-function nil)
++         (mac-toggle-input-source t))
++     (kill-local-variable 'input-method-function)
++     (setq describe-current-input-method-function nil)
++     (mac-toggle-input-source nil)))
++ 
++ (defun mac-change-language-to-us ()
++   "Function to change language to us."
++   (interactive)
++   (mac-toggle-input-method nil))
++ 
++ (defun mac-ime-input-source-list ()
++   "Show available input sources."
++   (interactive)
++   (message "----------------")
++   (dolist (is (mac-get-input-source-list))
++     (message "%s" is))
++   (message "----------------")
++   (message "see *Messages* buffer"))
++ 
++ (defun mac-handle-input-method-change ()
++   "Function run when a input method change."
++   (interactive)
++   (when (member default-input-method '("MacOSX" "macOS"))
++     (let ((input-source (mac-get-current-input-source))
++           (ascii-capable (mac-input-source-is-ascii-capable)))
++       (cond ((and (not current-input-method) (not ascii-capable))
++              (set-input-method "macOS"))
++             ((and (equal current-input-method "macOS") ascii-capable)
++              (toggle-input-method nil)))
++       (mac-input-method-update input-source))))
++ 
++ ;;;###autoload
++ (defun mac-build-info ()
++   "Display build information in a buffer."
++   (interactive)
++   (switch-to-buffer (get-buffer-create "*Build info*"))
++   (setq tab-width 4)
++   (let ((buffer-read-only nil))
++     (erase-buffer)
++     (insert (format "GNU Emacs %s\nCommit:\t\t%s\nBranch:\t\t%s\n"
++                     emacs-version
++                     emacs-repository-version
++                     emacs-repository-branch))
++     (insert (format "System:\t\t%s\nDate:\t\t%s\n"
++                     system-configuration
++                     (format-time-string "%Y-%m-%d %T (%Z)" emacs-build-time)))
++     (insert (format "Patch:\t\t%s ns-inline.patch\n"
++                     (if (boundp 'mac-ime--cursor-type) "with" "without")))
++     (insert (format "Features:\t%s\n" system-configuration-features)))
++   (view-mode))
++ 
++ ;;
++ ;; Emacs input method for input method on macOS.
++ ;;
++ (register-input-method "macOS" "macOS" 'mac-toggle-input-method
++                        "Mac" "Input Method on macOS System")
++ 
++ ;;
++ ;; Minor mode of using input methods on macOS
++ ;;
++ (define-minor-mode mac-input-method-mode
++   "Use input methods on macOS."
++   :init-value nil
++   :group 'ns
++   :global t
++   (if mac-input-method-mode
++       (progn
++         (setq default-input-method "macOS")
++         ;; (add-hook 'minibuffer-setup-hook 'mac-change-language-to-us)
++         (mac-translate-from-yen-to-backslash)
++         (cond ((eq mac-ime-startup-state 'activate) (mac-ime-activate))
++               ((eq mac-ime-startup-state 'deactivate) (mac-ime-deactivate)))
++         (mac-handle-input-method-change)
++         (add-hook 'minibuffer-setup-hook #'mac-ime-deactivate-sticky)
++         (add-hook 'minibuffer-exit-hook #'mac-ime-activate-sticky)
++         (add-hook 'buffer-list-update-hook #'mac-ime-update-title)
++         (add-function :after after-focus-change-function #'mac-ime-update-title)
++         (when (and (not mac-default-input-source)
++                    (string-match "\\.ABC$" (mac-get-locale-input-source)))
++           (warn "Variable `mac-default-input-source' should be configured, otherwise IME cannot switch input source")))
++     (setq default-input-method nil)
++     (remove-hook 'minibuffer-setup-hook #'mac-ime-deactivate-sticky)
++     (remove-hook 'minibuffer-exit-hook #'mac-ime-activate-sticky)
++     (remove-hook 'buffer-list-update-hook #'mac-ime-update-title)
++     (remove-function after-focus-change-function #'mac-ime-update-title)))
++ 
++ ;;
++ ;; Valiable and functions to pass key(shortcut) to system.
++ ;;
++ (defvar mac-keys-passed-to-system nil
++   "A list of keys passed to system on macOS.")
++ 
++ (defun mac-add-key-passed-to-system (key)
++   (let ((shift   '(shift shft))
++         (control '(control ctrl ctl))
++         (option  '(option opt alternate alt))
++         (command '(command cmd)))
++ 
++     (add-to-list 'mac-keys-passed-to-system
++                  (cond ((symbolp key)
++                         (cond ((memq key shift)
++                                (cons ns-shift-key-mask nil))
++                               ((memq key control)
++                                (cons ns-control-key-mask nil))
++                               ((memq key option)
++                                (cons ns-alternate-key-mask nil))
++                               ((memq key command)
++                                (cons ns-command-key-mask nil))
++                               (t (cons nil nil))))
++                        ((numberp key) (cons 0 key))
++                        ((listp key)
++                         (let ((l key) (k nil) (m 0))
++                           (while l
++                             (cond ((memq (car l) shift)
++                                    (setq m (logior m ns-shift-key-mask)))
++                                   ((memq (car l) control)
++                                    (setq m (logior m ns-control-key-mask)))
++                                   ((memq (car l) option)
++                                    (setq m (logior m ns-alternate-key-mask)))
++                                   ((memq (car l) command)
++                                    (setq m (logior m ns-command-key-mask)))
++                                   ((numberp (car l))
++                                    (if (not k) (setq k (car l)))))
++                             (setq l (cdr l)))
++                           (cons m k)))
++                        (t (cons nil nil))))))
++ 
++ ;;
++ ;; Entry Emacs event for inline input method on macOS.
++ ;;
++ (define-key special-event-map
++   [mac-change-input-method] 'mac-handle-input-method-change)
++ 
++ ;;
++ ;; Convert yen to backslash for JIS keyboard.
++ ;;
++ (defun mac-translate-from-yen-to-backslash ()
++   ;; Convert yen to backslash for JIS keyboard.
++   (interactive)
++ 
++   (define-key global-map [165] nil)
++   (define-key global-map [2213] nil)
++   (define-key global-map [3420] nil)
++   (define-key global-map [67109029] nil)
++   (define-key global-map [67111077] nil)
++   (define-key global-map [8388773] nil)
++   (define-key global-map [134219941] nil)
++   (define-key global-map [75497596] nil)
++   (define-key global-map [201328805] nil)
++   (define-key function-key-map [165] [?\\])
++   (define-key function-key-map [2213] [?\\]) ;; for Intel
++   (define-key function-key-map [3420] [?\\]) ;; for PowerPC
++   (define-key function-key-map [67109029] [?\C-\\])
++   (define-key function-key-map [67111077] [?\C-\\])
++   (define-key function-key-map [8388773] [?\M-\\])
++   (define-key function-key-map [134219941] [?\M-\\])
++   (define-key function-key-map [75497596] [?\C-\M-\\])
++   (define-key function-key-map [201328805] [?\C-\M-\\])
++   )
++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
++ 
+  (provide 'ns-win)
+  (provide 'term/ns-win)
+  
