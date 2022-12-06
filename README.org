@@ -155,7 +155,7 @@ By default =emacs-plus@30= uses the following features.
 | =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
 
 *** No title bar
-Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-and-emacs-30][this method]].
 
 ** Emacs 29
 
@@ -184,7 +184,7 @@ By default =emacs-plus@29= uses the following features.
 | =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
 
 *** No title bar
-Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-and-emacs-30][this method]].
 
 ** Emacs 28
 
