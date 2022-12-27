@@ -127,6 +127,10 @@ class EmacsPlusAT28 < EmacsBase
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
+    # Necessary for libgccjit library discovery
+    ENV.append "CPATH", "#{HOMEBREW_PREFIX}/include" if build.with? "native-comp"
+    ENV.append "LIBRARY_PATH", "#{HOMEBREW_PREFIX}/lib/gcc/current" if build.with? "native-comp"
+
     args <<
       if build.with? "dbus"
         "--with-dbus"
