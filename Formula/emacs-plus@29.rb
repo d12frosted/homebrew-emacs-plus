@@ -39,6 +39,7 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "librsvg"
   depends_on "little-cms2"
   depends_on "jansson"
+  depends_on "tree-sitter"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
