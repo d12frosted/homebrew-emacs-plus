@@ -99,7 +99,7 @@ class EmacsPlusAT28 < EmacsBase
   # Initialize
   #
 
-  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
+  def initialize(name, path, spec, alias_path: nil, force_bottle: false, tap: nil)
     super
     expand_path
   end
