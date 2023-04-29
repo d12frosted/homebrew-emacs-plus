@@ -94,9 +94,13 @@ class EmacsPlusAT29 < EmacsBase
   # Initialize
   #
 
-  def initialize(name, path, spec, alias_path: nil, force_bottle: false, tap: nil)
-    super
+  # Save the existing method.
+  alias :initialize_old :initialize
+
+  def initialize(*args, &block)
+    a = initialize_old(*args, &block)
     expand_path
+    a
   end
 
   #
