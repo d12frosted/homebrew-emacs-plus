@@ -2,7 +2,7 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT29 < EmacsBase
   init 29
-  version "29.0.60"
+  version "29.0.90"
   env :std
 
   #
