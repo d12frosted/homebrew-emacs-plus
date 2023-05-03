@@ -48,3 +48,19 @@ jobs:
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
+
+      - name: Pack up build logs
+        run: |
+          BUILD_OPTS=$(echo "${{ matrix.build_opts }}" | sed 's/ //')
+          echo "build_opts=$BUILD_OPTS" >> "$GITHUB_ENV"
+          RUNNER_OS=$(echo "${{ matrix.os }}" | sed 's/ //')
+          echo "runner_os=$RUNNER_OS" >> "$GITHUB_ENV"
+          tar -C ~/Library/Logs/Homebrew/emacs-plus@27/ -czvf ~/Library/Logs/Homebrew/emacs-plus@27-$RUNNER_OS$BUILD_OPTS.tar.gz .
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: emacs-plus@27${{ env.build_opts }}.tar.gz
+          path: |
+            ~/Library/Logs/Homebrew/emacs-plus@27-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
+
