@@ -78,6 +78,7 @@ class EmacsBase < Formula
       }
       system "which", "tar"
       system "which", "ls"
+      system "which", "grep"
     end
   end
 
