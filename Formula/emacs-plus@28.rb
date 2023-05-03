@@ -36,6 +36,7 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
   depends_on "gnu-tar" => :build
+  depends_on "grep" => :build
   depends_on "awk" => :build
   depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
