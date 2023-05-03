@@ -30,6 +30,7 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
   depends_on "gnu-tar" => :build
+  depends_on "grep" => :build
   depends_on "awk" => :build
   depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
@@ -160,6 +161,8 @@ class EmacsPlusAT30 < EmacsBase
     args << "--with-xwidgets" if build.with? "xwidgets"
 
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
