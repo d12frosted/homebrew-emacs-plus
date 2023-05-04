@@ -130,7 +130,7 @@ class EmacsPlusAT29 < EmacsBase
 
     # Necessary for libgccjit library discovery
     ENV.append "CPATH", "#{HOMEBREW_PREFIX}/include" if build.with? "native-comp"
-    ENV.append "LIBRARY_PATH", "#{HOMEBREW_PREFIX}/lib/gcc/current" if build.with? "native-comp"
+    ENV.append "LDFLAGS", "-L" + Formula["libgccjit"].opt_lib + "/gcc/current" if build.with? "native-comp"
 
     args <<
       if build.with? "dbus"
