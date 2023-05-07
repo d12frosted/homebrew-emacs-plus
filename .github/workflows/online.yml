@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Build emacs-plus
-        run: brew install d12frosted/homebrew-emacs-plus/emacs-plus
+        run: brew install d12frosted/homebrew-emacs-plus/emacs-plus --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
