@@ -59,7 +59,7 @@ jobs:
       - name: Upload logs
         uses: actions/upload-artifact@v3
         with:
-          name: emacs-plus@28${{ env.build_opts }}.tar.gz
+          name: emacs-plus@28-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
           path: |
             ~/Library/Logs/Homebrew/emacs-plus@28-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
 
