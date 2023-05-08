@@ -186,8 +186,8 @@ index 82fe58e90e..f132a9591d 100644
  
  - (void)createToolbar: (struct frame *)f
  {
--  if (FRAME_UNDECORATED (f) || !FRAME_EXTERNAL_TOOL_BAR (f))
-+  if (FRAME_UNDECORATED (f) || FRAME_UNDECORATED_ROUND (f) || !FRAME_EXTERNAL_TOOL_BAR (f))
+-  if (FRAME_UNDECORATED (f) || !FRAME_EXTERNAL_TOOL_BAR (f) || [self toolbar] != nil)
++  if (FRAME_UNDECORATED (f) || FRAME_UNDECORATED_ROUND (f) || !FRAME_EXTERNAL_TOOL_BAR (f) || [self toolbar] != nil)
      return;
  
    EmacsView *view = (EmacsView *)FRAME_NS_VIEW (f);
