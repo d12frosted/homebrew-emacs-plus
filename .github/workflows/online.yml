@@ -46,12 +46,14 @@ jobs:
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
 
       - name: Pack up build logs
+        if: ${{ always() }}
         run: |
           RUNNER_OS=$(echo "${{ matrix.os }}" | sed 's/ //')
           echo "runner_os=$RUNNER_OS" >> "$GITHUB_ENV"
           tar -C ~/Library/Logs/Homebrew/emacs-plus@28/ -czvf ~/Library/Logs/Homebrew/emacs-plus-$RUNNER_OS.tar.gz .
 
       - name: Upload logs
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: emacs-plus-${{ env.runner_os }}.tar.gz
