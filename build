@@ -19,6 +19,9 @@ SOURCE_NAME_28=EmacsPlusAT28
 SOURCE_FILE_29=Formula/emacs-plus@29.rb
 SOURCE_NAME_29=EmacsPlusAT29
 
+SOURCE_FILE_30=Formula/emacs-plus@30.rb
+SOURCE_NAME_30=EmacsPlusAT30
+
 TARGET_FILE=Formula/emacs-plus-local.rb
 TARGET_NAME=EmacsPlusLocal
 
@@ -36,9 +39,10 @@ function usage {
 
 Versions:
   26                    Emacs 26 - emacs-plus@26 - previous release
-  27                    Emacs 27 - emacs-plus@27 - current release
-  28                    Emacs 28 - emacs-plus@28 - next release
-  29                    Emacs 29 - emacs-plus@29 - development (master)
+  27                    Emacs 27 - emacs-plus@27 - previous release
+  28                    Emacs 28 - emacs-plus@28 - current release
+  29                    Emacs 29 - emacs-plus@29 - next release
+  30                    Emacs 30 - emacs-plus@30 - development (master)
 
 Consult each formula for the list of available options.
 "
@@ -64,6 +68,10 @@ case $VERSION in
     SOURCE_FILE=$SOURCE_FILE_29
     SOURCE_NAME=$SOURCE_NAME_29
     ;;
+  30)
+    SOURCE_FILE=$SOURCE_FILE_30
+    SOURCE_NAME=$SOURCE_NAME_30
+    ;;
   *)
     usage
     exit 1
@@ -86,6 +94,9 @@ esac
 
 export HOMEBREW_EMACS_PLUS_MODE
 HOMEBREW_EMACS_PLUS_MODE=local
+
+export HOMEBREW_NO_INSTALL_UPGRADE=true
+export HOMEBREW_NO_AUTO_UPDATE=true
 
 brew uninstall $PACKAGE 2>/dev/null
 # shellcheck disable=SC2068

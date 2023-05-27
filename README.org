@@ -4,6 +4,9 @@
 </p>
 <h1 align="center">Emacs Plus</h1>
 <p align="center">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+30%22">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2030/badge.svg" alt="Emacs 30 CI Status Badge">
+  </a>
   <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+29%22">
     <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2029/badge.svg" alt="Emacs 29 CI Status Badge">
   </a>
@@ -30,7 +33,8 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
   $ brew install emacs-plus    [options] # install the latest release (Emacs 28)
-  $ brew install emacs-plus@29 [options] # install Emacs 29 (master)
+  $ brew install emacs-plus@30 [options] # install Emacs 30 (master)
+  $ brew install emacs-plus@29 [options] # install Emacs 29 (emacs-29)
   $ brew install emacs-plus@28 [options] # install Emacs 28
   $ brew install emacs-plus@27 [options] # install Emacs 27
   $ brew install emacs-plus@26 [options] # install Emacs 26
@@ -41,7 +45,12 @@ Feel free to open an issue or contact me via email if you face any issues, quest
 ** Table of Contents :TOC_3:
   - [[#about][About]]
   - [[#install][Install]]
+    - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
+  - [[#emacs-29][Emacs 30]]
+    - [[#included][Included]]
+    - [[#options][Options]]
+    - [[#no-title-bar][No title bar]]
   - [[#emacs-29][Emacs 29]]
     - [[#included][Included]]
     - [[#options][Options]]
@@ -72,7 +81,8 @@ Feel free to open an issue or contact me via email if you face any issues, quest
 Emacs Plus contains separate formulas for different Emacs versions:
 
 - =emacs-plus= install current release version (Emacs 28);
-- =emacs-plus@29= install Emacs 29, development version.
+- =emacs-plus@30= install Emacs 30, development version.
+- =emacs-plus@29= install Emacs 29, pre-release version.
 - =emacs-plus@28= install Emacs 28, current release version.
 - =emacs-plus@27= install Emacs 27, previous release version;
 - =emacs-plus@26= install Emacs 26, previous release version;
@@ -80,13 +90,31 @@ Emacs Plus contains separate formulas for different Emacs versions:
   #+begin_src bash
   $ brew tap d12frosted/emacs-plus
   $ brew install emacs-plus    [options] # install the latest release (Emacs 28)
+  $ brew install emacs-plus@30 [options] # install Emacs 30
   $ brew install emacs-plus@29 [options] # install Emacs 29
   $ brew install emacs-plus@28 [options] # install Emacs 28
   $ brew install emacs-plus@27 [options] # install Emacs 27
   $ brew install emacs-plus@26 [options] # install Emacs 26
 #+end_src
 
-By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =imagemagick= (not included by default with =emacs-plus@29= and emacs-plus@29), =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
+By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =imagemagick= (not included by default with =emacs-plus@29= and =emacs-plus@30=), =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
+
+*** Installing from feature branch
+
+Sometimes you might want to install from a feature branch. In that case you can switch the branch in the tap and install Emacs+ again.
+
+Prerequisites are:
+
+- Emacs+ is tapped (e.g. =brew tap d12frosted/emacs-plus=).
+- =jq= is available (e.g. =brew install jq=).
+
+Open terminal and type the following commands (don't forget to use correct Emacs+ version, branch and options):
+
+#+begin_src bash
+  $ brew uninstall emacs-plus@29
+  $ cd $(brew tap-info --json d12frosted/emacs-plus@29 | jq -r '.[0].path') && git switch BRANCH
+  $ brew install emacs-plus@29 [OPTIONS]
+#+end_src
 
 ** Reinstall
 
@@ -101,6 +129,35 @@ In short, =brew= doesn't really support options. They break time to time ([[http
   $ brew install emacs-plus [options]
 #+END_SRC
 
+** Emacs 30
+
+*** Included
+
+By default =emacs-plus@30= uses the following features.
+
+- Injected =PATH= value from user shell (see separate section explaining this feature).
+- Cocoa version, e.g. builds =Emacs.app=.
+- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic modules.
+
+*** Options
+
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
+| =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
+| =--with-dbus=             | build with dbus support                                                      |
+| =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
+| =--with-mailutils=        | build with mailutils support                                                 |
+| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
+| =--with-x11=              | build with x11 support                                                       |
+| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
+| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
+| =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
+
+*** No title bar
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-and-emacs-30][this method]].
+
 ** Emacs 29
 
 *** Included
@@ -113,8 +170,8 @@ By default =emacs-plus@29= uses the following features.
 
 *** Options
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -123,12 +180,12 @@ By default =emacs-plus@29= uses the following features.
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=      | build with =imagemagick= support                                             |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 | =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
 
 *** No title bar
-Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-and-emacs-30][this method]].
 
 ** Emacs 28
 
@@ -142,8 +199,8 @@ By default =emacs-plus@28= uses the following features.
 
 *** Options
 
-| Option                                 | Description                                                                  |
-|----------------------------------------+------------------------------------------------------------------------------|
+| Option                               | Description                                                                  |
+|--------------------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=                         | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=                          | build with dbus support                                                      |
 | =--with-debug=                         | build with debug symbols and debugger friendly optimizations                 |
@@ -154,10 +211,10 @@ By default =emacs-plus@28= uses the following features.
 | =--with-x11=                           | build with x11 support                                                       |
 | =--with-xwidgets=                      | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=                      | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=                   | build with =imagemagick= support                                             |
-| =--HEAD=                               | build from =emacs-28= branch                                                 |
+| =--with-imagemagick=                   | build with =imagemagick= support                                               |
+| =--HEAD=                               | build from =emacs-28= branch                                                   |
 | =--with-native-comp=                   | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
-|                                        |                                                                              |
+|                                      |                                                                              |
 
 ** Emacs 27
 
@@ -170,8 +227,8 @@ By default =emacs-plus@27= uses the following features.
 
 *** Options
 
-| Option                    | Description                                                                  |
-|---------------------------+------------------------------------------------------------------------------|
+| Option                  | Description                                                                  |
+|-------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -181,8 +238,8 @@ By default =emacs-plus@27= uses the following features.
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--without-imagemagick=   | build without =imagemagick= support                                          |
-| =--HEAD=                  | build from =emacs-27= branch                                                 |
+| =--without-imagemagick=   | build without =imagemagick= support                                            |
+| =--HEAD=                  | build from =emacs-27= branch                                                   |
 
 ** Emacs 26
 
@@ -210,7 +267,7 @@ And if for some reason PATH injection doesn't work for you, report it either in 
 
 *** No Titlebar
 
-| =--with-no-titlebar=                              | =--with-no-titlebar-and-round-corners=           |
+| square corners                                    | round corners                                    |
 |---------------------------------------------------+--------------------------------------------------|
 | [[/images/screenshot-no-titlebar-square-corners.png]] | [[/images/screenshot-no-titlebar-round-corners.png]] |
 
@@ -226,15 +283,19 @@ If you see gaps between your emacs frames and other windows, try this:
   (setq frame-resize-pixelwise t)
 #+END_SRC
 
-**** Emacs 29
+**** Emacs 29 and Emacs 30
 
-In =emacs-plus@29= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
+In =emacs-plus@29= and =emacs-plus@30= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
 
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(undecorated . t))
 #+end_src
 
-Round corners are currently not available. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/320][→ #320]] for progress.
+Add the following line instead for round corners:
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(undecorated-round . t))
+#+end_src
 
 *** Xwidgets (webkit)
 
@@ -282,8 +343,8 @@ Knows issues:
 
 ** Icons
 
-| Option                                        | Author                     | Image                                                  | URL     |
-|-----------------------------------------------+----------------------------+--------------------------------------------------------+---------|
+| Option                                      | Author                     | Image                                                  | URL     |
+|---------------------------------------------+----------------------------+--------------------------------------------------------+---------|
 | =--with-EmacsIcon1-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon1_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-EmacsIcon2-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon2_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-EmacsIcon3-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon3_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
@@ -337,21 +398,26 @@ Knows issues:
 | =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/preview/retro-sink-bw_128.png]]                   | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/preview/retro-sink_128.png]]                      | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
+| =--with-savchenkovaleriy-big-sur-icon=        | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur_128.png]]        | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
 ** Spotlight Alias
-Symlinking (via ~ln -s~) ~Emacs.app~ won't be visible in Spotlight. However, you can create an Alias through Finder. Note: I don't know if this will persist through updates.
+Symlinking (via ~ln -s~) ~Emacs.app~ won't be visible in Spotlight. However, you can create an Alias through Finder. 
+*** Apple Script
+Change <version> to your installed emacs version.
+#+begin_src terminal
+osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@<version>/Emacs.app" at POSIX file "/Applications"'
+#+end_src
+
+*** Manual
+Note: I don't know if this will persist through updates.
 Source: https://apple.stackexchange.com/a/32495/449886
 1. Goto ~emacs-plus~ install location in Finder (run ~brew info emacs-plus~ to find install directory)
 2. Right-click ~Emacs.app~ -> ~Create Alias~
 3. Move the ~Emacs alias~ into ~/Applications~ and rename it as you wish.
 
-It might take a few seconds for macOS to index the file. You should now be able to launch Emacs from Spotlight (no reboot was needed for me).
+It might take a few seconds for macOS to index the file. You should now be able to launch Emacs from Spotlight (no reboot needed).
 Note: If it doesn't work for you, there is a comments thread in the SO post that talks about potential workarounds.
 
-Alternatively, you can run this script. Change <version> to your installed emacs version.
-#+begin_src terminal
-osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@<version>/Emacs.app" at POSIX file "/Applications"'
 
-#+end_src
 
 ** Emacs configuration
 

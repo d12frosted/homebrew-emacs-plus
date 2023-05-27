@@ -36,6 +36,7 @@ class EmacsPlusAT28 < EmacsBase
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
   depends_on "gnu-tar" => :build
+  depends_on "grep" => :build
   depends_on "awk" => :build
   depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
@@ -99,9 +100,13 @@ class EmacsPlusAT28 < EmacsBase
   # Initialize
   #
 
-  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
-    super
+  # Save the existing method.
+  alias :initialize_old :initialize
+
+  def initialize(*args, &block)
+    a = initialize_old(*args, &block)
     expand_path
+    a
   end
 
   #
@@ -126,6 +131,11 @@ class EmacsPlusAT28 < EmacsBase
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+
+    # Necessary for libgccjit library discovery
+    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
+    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
 
     args <<
       if build.with? "dbus"
@@ -156,6 +166,8 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-xwidgets" if build.with? "xwidgets"
 
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
@@ -195,6 +207,9 @@ class EmacsPlusAT28 < EmacsBase
 
       # inject PATH to Info.plist
       inject_path
+
+      # inject description for protected resources usage
+      inject_protected_resources_usage_desc
 
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
@@ -256,30 +271,11 @@ class EmacsPlusAT28 < EmacsBase
     EOS
   end
 
-  plist_options :manual => "emacs"
-
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-        <key>Label</key>
-        <string>#{plist_name}</string>
-        <key>ProgramArguments</key>
-        <array>
-          <string>#{opt_bin}/emacs</string>
-          <string>--fg-daemon</string>
-        </array>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>StandardOutPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
-        <key>StandardErrorPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
-      </dict>
-      </plist>
-    EOS
+  service do
+    run [opt_bin/"emacs", "--fg-daemon"]
+    keep_alive true
+    log_path "/tmp/homebrew.mxcl.emacs-plus.stdout.log"
+    error_log_path "/tmp/homebrew.mxcl.emacs-plus.stderr.log"
   end
 
   test do

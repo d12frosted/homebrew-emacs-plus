@@ -2,7 +2,7 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT29 < EmacsBase
   init 29
-  version "29.0.50"
+  version "29.0.90"
   env :std
 
   #
@@ -30,6 +30,7 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
   depends_on "gnu-tar" => :build
+  depends_on "grep" => :build
   depends_on "awk" => :build
   depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
@@ -39,6 +40,7 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "librsvg"
   depends_on "little-cms2"
   depends_on "jansson"
+  depends_on "tree-sitter"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
@@ -71,7 +73,7 @@ class EmacsPlusAT29 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+  url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-29"
 
   #
   # Icons
@@ -86,15 +88,20 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
-  local_patch "poll", sha: "92faf072ff19d5813ad25e616ee2c3028d581706f86087bd549244b5baf60f3f" if build.with? "poll"
+  local_patch "poll", sha: "052eacac5b7bd86b466f9a3d18bff9357f2b97517f463a09e4c51255bdb14648" if build.with? "poll"
+  local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
 
   #
   # Initialize
   #
 
-  def initialize(name, path, spec, alias_path: nil, force_bottle: false)
-    super
+  # Save the existing method.
+  alias :initialize_old :initialize
+
+  def initialize(*args, &block)
+    a = initialize_old(*args, &block)
     expand_path
+    a
   end
 
   #
@@ -120,6 +127,11 @@ class EmacsPlusAT29 < EmacsBase
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+
+    # Necessary for libgccjit library discovery
+    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
+    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
 
     args <<
       if build.with? "dbus"
@@ -150,6 +162,8 @@ class EmacsPlusAT29 < EmacsBase
     args << "--with-xwidgets" if build.with? "xwidgets"
 
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
@@ -190,6 +204,9 @@ class EmacsPlusAT29 < EmacsBase
 
       # inject PATH to Info.plist
       inject_path
+
+      # inject description for protected resources usage
+      inject_protected_resources_usage_desc
 
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
@@ -242,6 +259,13 @@ class EmacsPlusAT29 < EmacsBase
     args << "--with-poll" if build.with? "poll"
   end
 
+  def post_install
+    emacs_info_dir = info/"emacs"
+    Dir.glob(emacs_info_dir/"*.info") do |info_filename|
+      system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
+    end
+  end
+
   def caveats
     <<~EOS
       Emacs.app was installed to:
@@ -256,30 +280,11 @@ class EmacsPlusAT29 < EmacsBase
     EOS
   end
 
-  plist_options :manual => "emacs"
-
-  def plist
-    <<~EOS
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-        <key>Label</key>
-        <string>#{plist_name}</string>
-        <key>ProgramArguments</key>
-        <array>
-          <string>#{opt_bin}/emacs</string>
-          <string>--fg-daemon</string>
-        </array>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>StandardOutPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stdout.log</string>
-        <key>StandardErrorPath</key>
-        <string>/tmp/homebrew.mxcl.emacs-plus.stderr.log</string>
-      </dict>
-      </plist>
-    EOS
+  service do
+    run [opt_bin/"emacs", "--fg-daemon"]
+    keep_alive true
+    log_path "/tmp/homebrew.mxcl.emacs-plus.stdout.log"
+    error_log_path "/tmp/homebrew.mxcl.emacs-plus.stderr.log"
   end
 
   test do

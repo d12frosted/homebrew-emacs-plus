@@ -78,6 +78,17 @@ class EmacsBase < Formula
       }
       system "which", "tar"
       system "which", "ls"
+      system "which", "grep"
     end
+  end
+
+  def inject_protected_resources_usage_desc
+    ohai "Injecting description for protected resources usage"
+    app = "#{prefix}/Emacs.app"
+    plist = "#{app}/Contents/Info.plist"
+
+    system "/usr/libexec/PlistBuddy -c 'Add NSCameraUsageDescription string' '#{plist}'"
+    system "/usr/libexec/PlistBuddy -c 'Set NSCameraUsageDescription Emacs requires permission to access the Camera.' '#{plist}'"
+    system "touch '#{app}'"
   end
 end

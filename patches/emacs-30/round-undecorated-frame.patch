@@ -1,0 +1,196 @@
+From 8ec8ac02f54d80ab16cec99e7b9e59bc06376154 Mon Sep 17 00:00:00 2001
+From: Boris Buliga <boris@d12frosted.io>
+Date: Sat, 8 Oct 2022 13:21:21 +0300
+Subject: [PATCH] provide a way to make undecorated frame with round corners
+
+---
+ src/frame.c  |  3 +++
+ src/frame.h  |  5 +++++
+ src/nsfns.m  |  6 ++++++
+ src/nsterm.h |  2 ++
+ src/nsterm.m | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 69 insertions(+), 1 deletion(-)
+
+diff --git a/src/frame.c b/src/frame.c
+index 91b9bec82c..6a3db12054 100644
+--- a/src/frame.c
++++ b/src/frame.c
+@@ -970,6 +970,7 @@ make_frame (bool mini_p)
+   f->horizontal_scroll_bars = false;
+   f->want_fullscreen = FULLSCREEN_NONE;
+   f->undecorated = false;
++  f->undecorated_round = false;
+   f->no_special_glyphs = false;
+ #ifndef HAVE_NTGUI
+   f->override_redirect = false;
+@@ -3909,6 +3910,7 @@ static const struct frame_parm_table frame_parms[] =
+   {"tool-bar-position",		SYMBOL_INDEX (Qtool_bar_position)},
+   {"inhibit-double-buffering",  SYMBOL_INDEX (Qinhibit_double_buffering)},
+   {"undecorated",		SYMBOL_INDEX (Qundecorated)},
++  {"undecorated-round",		SYMBOL_INDEX (Qundecorated_round)},
+   {"parent-frame",		SYMBOL_INDEX (Qparent_frame)},
+   {"skip-taskbar",		SYMBOL_INDEX (Qskip_taskbar)},
+   {"no-focus-on-map",		SYMBOL_INDEX (Qno_focus_on_map)},
+@@ -6052,6 +6054,7 @@ syms_of_frame (void)
+   DEFSYM (Qicon, "icon");
+   DEFSYM (Qminibuffer, "minibuffer");
+   DEFSYM (Qundecorated, "undecorated");
++  DEFSYM (Qundecorated_round, "undecorated-round");
+   DEFSYM (Qno_special_glyphs, "no-special-glyphs");
+   DEFSYM (Qparent_frame, "parent-frame");
+   DEFSYM (Qskip_taskbar, "skip-taskbar");
+diff --git a/src/frame.h b/src/frame.h
+index 458b6257e4..2cab723c00 100644
+--- a/src/frame.h
++++ b/src/frame.h
+@@ -396,6 +396,9 @@ struct frame
+   /* True if this is an undecorated frame.  */
+   bool_bf undecorated : 1;
+ 
++  /* True if this is an undecorated frame with round corners.  */
++  bool_bf undecorated_round : 1;
++
+ #ifndef HAVE_NTGUI
+   /* True if this is an override_redirect frame.  */
+   bool_bf override_redirect : 1;
+@@ -1079,6 +1082,7 @@ default_pixels_per_inch_y (void)
+ 
+ #if defined (HAVE_WINDOW_SYSTEM)
+ #define FRAME_UNDECORATED(f) ((f)->undecorated)
++#define FRAME_UNDECORATED_ROUND(f) ((f)->undecorated_round)
+ #ifdef HAVE_NTGUI
+ #define FRAME_OVERRIDE_REDIRECT(f) ((void) (f), 0)
+ #else
+@@ -1105,6 +1109,7 @@ default_pixels_per_inch_y (void)
+ #endif
+ #else /* not HAVE_WINDOW_SYSTEM */
+ #define FRAME_UNDECORATED(f) ((void) (f), 0)
++#define FRAME_UNDECORATED_ROUND(f) ((void) (f), 0)
+ #define FRAME_OVERRIDE_REDIRECT(f) ((void) (f), 0)
+ #define FRAME_PARENT_FRAME(f) ((void) (f), NULL)
+ #define FRAME_SKIP_TASKBAR(f) ((void) (f), 0)
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 2699cf37a5..dd3c9564f8 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -1049,6 +1049,7 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+   0, /* x_set_tool_bar_position */
+   0, /* x_set_inhibit_double_buffering */
+   ns_set_undecorated,
++  ns_set_undecorated_round,
+   ns_set_parent_frame,
+   0, /* x_set_skip_taskbar */
+   ns_set_no_focus_on_map,
+@@ -1376,6 +1377,11 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+   FRAME_UNDECORATED (f) = !NILP (tem) && !EQ (tem, Qunbound);
+   store_frame_param (f, Qundecorated, FRAME_UNDECORATED (f) ? Qt : Qnil);
+ 
++  tem = gui_display_get_arg (dpyinfo, parms, Qundecorated_round, NULL, NULL,
++                             RES_TYPE_BOOLEAN);
++  FRAME_UNDECORATED_ROUND (f) = !NILP (tem) && !EQ (tem, Qunbound);
++  store_frame_param (f, Qundecorated_round, FRAME_UNDECORATED_ROUND (f) ? Qt : Qnil);
++
+ #ifdef NS_IMPL_COCOA
+   tem = gui_display_get_arg (dpyinfo, parms, Qns_appearance, NULL, NULL,
+                              RES_TYPE_SYMBOL);
+diff --git a/src/nsterm.h b/src/nsterm.h
+index 2a4c7571a3..5604d02407 100644
+--- a/src/nsterm.h
++++ b/src/nsterm.h
+@@ -1227,6 +1227,8 @@ extern void ns_make_frame_invisible (struct frame *f);
+ extern void ns_iconify_frame (struct frame *f);
+ extern void ns_set_undecorated (struct frame *f, Lisp_Object new_value,
+                                 Lisp_Object old_value);
++extern void ns_set_undecorated_round (struct frame *f, Lisp_Object new_value,
++                                      Lisp_Object old_value);
+ extern void ns_set_parent_frame (struct frame *f, Lisp_Object new_value,
+                                  Lisp_Object old_value);
+ extern void ns_set_no_focus_on_map (struct frame *f, Lisp_Object new_value,
+diff --git a/src/nsterm.m b/src/nsterm.m
+index 82fe58e90e..f132a9591d 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -1798,6 +1798,44 @@ Hide the window (X11 semantics)
+     }
+ }
+ 
++void
++ns_set_undecorated_round (struct frame *f, Lisp_Object new_value, Lisp_Object old_value)
++/* --------------------------------------------------------------------------
++     Set frame F's `undecorated_round' parameter.  If non-nil, F's window-system
++     window is drawn without decorations, title, minimize/maximize boxes
++     and external borders.  This usually means that the window cannot be
++     dragged, resized, iconified, maximized or deleted with the mouse.  If
++     nil, draw the frame with all the elements listed above unless these
++     have been suspended via window manager settings.
++   -------------------------------------------------------------------------- */
++{
++  NSTRACE ("ns_set_undecorated_round");
++
++  if (!EQ (new_value, old_value))
++    {
++      EmacsView *view = (EmacsView *)FRAME_NS_VIEW (f);
++      NSWindow *oldWindow = [view window];
++      NSWindow *newWindow;
++
++      block_input ();
++
++      FRAME_UNDECORATED_ROUND (f) = !NILP (new_value);
++
++      newWindow = [[EmacsWindow alloc] initWithEmacsFrame:f];
++
++      if ([oldWindow isKeyWindow])
++        [newWindow makeKeyAndOrderFront:NSApp];
++
++      [newWindow setIsVisible:[oldWindow isVisible]];
++      if ([oldWindow isMiniaturized])
++        [newWindow miniaturize:NSApp];
++
++      [oldWindow close];
++
++      unblock_input ();
++    }
++}
++
+ void
+ ns_set_parent_frame (struct frame *f, Lisp_Object new_value, Lisp_Object old_value)
+ /* --------------------------------------------------------------------------
+@@ -9039,6 +9077,11 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+ 		 | NSWindowStyleMaskMiniaturizable
+ 		 | NSWindowStyleMaskClosable);
+ 
++  if (FRAME_UNDECORATED_ROUND (f))
++    {
++      styleMask |= NSFullSizeContentViewWindowMask;
++    }
++
+   last_drag_event = nil;
+ 
+   width = FRAME_TEXT_COLS_TO_PIXEL_WIDTH (f, f->text_cols);
+@@ -9122,13 +9165,22 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+ #endif
+     }
+ 
++  if (FRAME_UNDECORATED_ROUND (f))
++    {
++      [self setTitlebarAppearsTransparent:YES];
++      [self setTitleVisibility:NSWindowTitleHidden];
++      [[self standardWindowButton:NSWindowCloseButton] setHidden:YES];
++      [[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
++      [[self standardWindowButton:NSWindowZoomButton] setHidden:YES];
++    }
++
+   return self;
+ }
+ 
+ 
+ - (void)createToolbar: (struct frame *)f
+ {
+-  if (FRAME_UNDECORATED (f) || !FRAME_EXTERNAL_TOOL_BAR (f) || [self toolbar] != nil)
++  if (FRAME_UNDECORATED (f) || FRAME_UNDECORATED_ROUND (f) || !FRAME_EXTERNAL_TOOL_BAR (f) || [self toolbar] != nil)
+     return;
+ 
+   EmacsView *view = (EmacsView *)FRAME_NS_VIEW (f);
+-- 
+2.36.1
+

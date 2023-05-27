@@ -1,14 +1,9 @@
 require_relative "../Library/EmacsBase"
 
-class EmacsPlusAT27 < EmacsBase
-  init 27
-  url "https://ftp.gnu.org/gnu/emacs/emacs-27.2.tar.xz"
-  mirror "https://ftpmirror.gnu.org/emacs/emacs-27.2.tar.xz"
-  sha256 "b4a7cc4e78e63f378624e0919215b910af5bb2a0afc819fad298272e9f40c1b9"
-
-  head do
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
-  end
+class EmacsPlusAT30 < EmacsBase
+  init 30
+  version "30.0.50"
+  env :std
 
   #
   # Options
@@ -20,24 +15,33 @@ class EmacsPlusAT27 < EmacsBase
   # Opt-in
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
   option "with-x11", "Experimental: build with x11 support"
-  option "with-no-titlebar", "Experimental: build without titlebar"
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
+  option "with-native-comp", "Build with native compilation"
+  option "with-compress-install", "Build with compressed install optimization"
+  option "with-poll", "Experimental: use poll() instead of select() to support > 1024 file descriptors`"
 
   #
   # Dependencies
   #
 
+  depends_on "make" => :build
   depends_on "autoconf" => :build
   depends_on "gnu-sed" => :build
+  depends_on "gnu-tar" => :build
+  depends_on "grep" => :build
+  depends_on "awk" => :build
+  depends_on "coreutils" => :build
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
+  depends_on "xz" => :build
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
   depends_on "jansson"
-  depends_on "imagemagick" => :recommended
+  depends_on "tree-sitter"
+  depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
 
@@ -45,6 +49,14 @@ class EmacsPlusAT27 < EmacsBase
     depends_on "libxaw"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
+  end
+
+  if build.with? "native-comp"
+    depends_on "libgccjit" => :recommended
+    depends_on "gcc" => :build
+    depends_on "gmp" => :build
+    depends_on "libjpeg" => :build
+    depends_on "zlib" => :build
   end
 
   #
@@ -58,6 +70,12 @@ class EmacsPlusAT27 < EmacsBase
   end
 
   #
+  # URL
+  #
+
+  url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+
+  #
   # Icons
   #
 
@@ -67,19 +85,32 @@ class EmacsPlusAT27 < EmacsBase
   # Patches
   #
 
-  local_patch "no-titlebar", sha: "fdf8dde63c2e1c4cb0b02354ce7f2102c5f8fd9e623f088860aee8d41d7ad38f" if build.with? "no-titlebar"
-  local_patch "xwidgets_webkit_in_cocoa", sha: "683b09c5f91d1ed3a550d10f409647e4ed236d4352464d15baef871546622e40" if build.with? "xwidgets"
   local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  local_patch "system-appearance", sha: "d774e9da082352999fe3e9d2daa1065ea9bdaa670267caeebf86e01a77dc1d40"
-  local_patch "ligatures-freeze-fix", sha: "782a222505ceea31f9032ed55e24dcbd0357b1178b916b536d3eb222c9dc1225"
-  local_patch "arm", sha: "344fee330fec4071e29c900093fdf1e2d8a7328df1c75b17e6e9d9a954835741" if build.stable?
+  local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
+  local_patch "poll", sha: "052eacac5b7bd86b466f9a3d18bff9357f2b97517f463a09e4c51255bdb14648" if build.with? "poll"
+  local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
+
+  #
+  # Initialize
+  #
+
+  # Save the existing method.
+  alias :initialize_old :initialize
+
+  def initialize(*args, &block)
+    a = initialize_old(*args, &block)
+    expand_path
+    a
+  end
 
   #
   # Install
   #
 
   def install
+    expand_path
+
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -91,8 +122,16 @@ class EmacsPlusAT27 < EmacsBase
     args << "--with-xml2"
     args << "--with-gnutls"
 
+    args << "--with-native-compilation" if build.with? "native-comp"
+    args << "--without-compress-install" if build.without? "compress-install"
+
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+
+    # Necessary for libgccjit library discovery
+    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
+    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
 
     args <<
       if build.with? "dbus"
@@ -123,6 +162,8 @@ class EmacsPlusAT27 < EmacsBase
     args << "--with-xwidgets" if build.with? "xwidgets"
 
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
+    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
@@ -143,8 +184,9 @@ class EmacsPlusAT27 < EmacsBase
         end
       end
 
-      system "make"
-      system "make", "install"
+      system "gmake"
+
+      system "gmake", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
@@ -156,7 +198,15 @@ class EmacsPlusAT27 < EmacsBase
         end
       end
 
+      # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
+      (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
+
+      # inject PATH to Info.plist
+      inject_path
+
+      # inject description for protected resources usage
+      inject_protected_resources_usage_desc
 
       # Replace the symlink with one that avoids starting Cocoa.
       (bin/"emacs").unlink # Kill the existing symlink
@@ -192,15 +242,27 @@ class EmacsPlusAT27 < EmacsBase
         end
       end
 
-      system "make"
-      system "make", "install"
+      system "gmake"
+      system "gmake", "install"
     end
 
     # Follow MacPorts and don't install ctags from Emacs. This allows Vim
     # and Emacs and ctags to play together without violence.
     if build.without? "ctags"
       (bin/"ctags").unlink
-      (man1/"ctags.1.gz").unlink
+      if build.with? "compress-install"
+        (man1/"ctags.1.gz").unlink
+      else
+        (man1/"ctags.1").unlink
+      end
+    end
+    args << "--with-poll" if build.with? "poll"
+  end
+
+  def post_install
+    emacs_info_dir = info/"emacs"
+    Dir.glob(emacs_info_dir/"*.info") do |info_filename|
+      system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
     end
   end
 
@@ -212,8 +274,9 @@ class EmacsPlusAT27 < EmacsBase
       To link the application to default Homebrew App location:
         ln -s #{prefix}/Emacs.app /Applications
 
-      If you wish to install Emacs 26 or Emacs 28, use emacs-plus@26 or
-      emacs-plus@28 formula respectively.
+      Your PATH value was injected into Emacs.app/Contents/Info.plist
+
+      Report any issues to http://github.com/d12frosted/homebrew-emacs-plus
     EOS
   end
 
