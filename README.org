@@ -47,20 +47,20 @@ Feel free to open an issue or contact me via email if you face any issues, quest
   - [[#install][Install]]
     - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
-  - [[#emacs-29][Emacs 30]]
+  - [[#emacs-30][Emacs 30]]
     - [[#included][Included]]
     - [[#options][Options]]
     - [[#no-title-bar][No title bar]]
   - [[#emacs-29][Emacs 29]]
-    - [[#included][Included]]
-    - [[#options][Options]]
-    - [[#no-title-bar][No title bar]]
-  - [[#emacs-28][Emacs 28]]
     - [[#included-1][Included]]
     - [[#options-1][Options]]
-  - [[#emacs-27][Emacs 27]]
+    - [[#no-title-bar-1][No title bar]]
+  - [[#emacs-28][Emacs 28]]
     - [[#included-2][Included]]
     - [[#options-2][Options]]
+  - [[#emacs-27][Emacs 27]]
+    - [[#included-3][Included]]
+    - [[#options-3][Options]]
   - [[#emacs-26][Emacs 26]]
   - [[#features-explained][Features explained]]
     - [[#injected-path][Injected PATH]]
@@ -70,6 +70,8 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#gccemacs][gccemacs]]
   - [[#icons][Icons]]
   - [[#spotlight-alias][Spotlight Alias]]
+    - [[#apple-script][Apple Script]]
+    - [[#manual][Manual]]
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
     - [[#emacs-dependency-in-other-formulas][=emacs= dependency in other formulas]]
@@ -400,7 +402,7 @@ Knows issues:
 | =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
 | =--with-savchenkovaleriy-big-sur-icon=        | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur_128.png]]        | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
 ** Spotlight Alias
-Symlinking (via ~ln -s~) ~Emacs.app~ won't be visible in Spotlight. However, you can create an Alias through Finder. 
+Symlinking (via ~ln -s~) ~Emacs.app~ won't be visible in Spotlight. However, you can create an Alias through Finder.
 *** Apple Script
 Change <version> to your installed emacs version.
 #+begin_src terminal
@@ -416,9 +418,6 @@ Source: https://apple.stackexchange.com/a/32495/449886
 
 It might take a few seconds for macOS to index the file. You should now be able to launch Emacs from Spotlight (no reboot needed).
 Note: If it doesn't work for you, there is a comments thread in the SO post that talks about potential workarounds.
-
-
-
 ** Emacs configuration
 
 Emacs is a journey. And for some of you these projects might be inspiring.
