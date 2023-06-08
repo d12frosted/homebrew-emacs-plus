@@ -21,6 +21,7 @@ class EmacsPlusAT29 < EmacsBase
   option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
   option "with-poll", "Experimental: use poll() instead of select() to support > 1024 file descriptors`"
+  option "with-tree-sitter", "Enable Tree-sitter support"
 
   #
   # Dependencies
@@ -160,6 +161,8 @@ class EmacsPlusAT29 < EmacsBase
     args << "--with-rsvg"
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
+
+    args << "--with-tree-sitter" if build.with? "tree-sitter"
 
     ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
     ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
