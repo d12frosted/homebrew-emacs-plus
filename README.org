@@ -32,9 +32,9 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus    [options] # install the latest release (Emacs 28)
+  $ brew install emacs-plus    [options] # install the latest release (Emacs 29)
   $ brew install emacs-plus@30 [options] # install Emacs 30 (master)
-  $ brew install emacs-plus@29 [options] # install Emacs 29 (emacs-29)
+  $ brew install emacs-plus@29 [options] # install Emacs 29
   $ brew install emacs-plus@28 [options] # install Emacs 28
   $ brew install emacs-plus@27 [options] # install Emacs 27
   $ brew install emacs-plus@26 [options] # install Emacs 26
@@ -79,16 +79,16 @@ Feel free to open an issue or contact me via email if you face any issues, quest
 
 Emacs Plus contains separate formulas for different Emacs versions:
 
-- =emacs-plus= install current release version (Emacs 28);
+- =emacs-plus= install current release version (Emacs 29);
 - =emacs-plus@30= install Emacs 30, development version.
-- =emacs-plus@29= install Emacs 29, pre-release version.
-- =emacs-plus@28= install Emacs 28, current release version.
+- =emacs-plus@29= install Emacs 29, current version.
+- =emacs-plus@28= install Emacs 28, previous release version.
 - =emacs-plus@27= install Emacs 27, previous release version;
 - =emacs-plus@26= install Emacs 26, previous release version;
 
   #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus    [options] # install the latest release (Emacs 28)
+  $ brew install emacs-plus    [options] # install the latest release (Emacs 29)
   $ brew install emacs-plus@30 [options] # install Emacs 30
   $ brew install emacs-plus@29 [options] # install Emacs 29
   $ brew install emacs-plus@28 [options] # install Emacs 28

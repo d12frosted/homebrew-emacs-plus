@@ -40,8 +40,8 @@ function usage {
 Versions:
   26                    Emacs 26 - emacs-plus@26 - previous release
   27                    Emacs 27 - emacs-plus@27 - previous release
-  28                    Emacs 28 - emacs-plus@28 - current release
-  29                    Emacs 29 - emacs-plus@29 - next release
+  28                    Emacs 28 - emacs-plus@28 - previous release
+  29                    Emacs 29 - emacs-plus@29 - current release
   30                    Emacs 30 - emacs-plus@30 - development (master)
 
 Consult each formula for the list of available options.

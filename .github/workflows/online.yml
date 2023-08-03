@@ -50,7 +50,7 @@ jobs:
         run: |
           RUNNER_OS=$(echo "${{ matrix.os }}" | sed 's/ //')
           echo "runner_os=$RUNNER_OS" >> "$GITHUB_ENV"
-          tar -C ~/Library/Logs/Homebrew/emacs-plus@28/ -czvf ~/Library/Logs/Homebrew/emacs-plus-$RUNNER_OS.tar.gz .
+          tar -C ~/Library/Logs/Homebrew/emacs-plus@29/ -czvf ~/Library/Logs/Homebrew/emacs-plus-$RUNNER_OS.tar.gz .
 
       - name: Upload logs
         if: ${{ always() }}
