@@ -152,6 +152,7 @@ By default =emacs-plus@30= uses the following features.
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
+| =--with-native-comp-aot=  | build with ahead-of-time native compilation                                  |
 | =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
 
 *** No title bar
@@ -181,6 +182,7 @@ By default =emacs-plus@29= uses the following features.
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
+| =--with-native-comp-aot=  | build with ahead-of-time native compilation                                  |
 | =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
 
 *** No title bar
