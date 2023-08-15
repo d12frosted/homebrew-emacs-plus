@@ -153,6 +153,7 @@ By default =emacs-plus@30= uses the following features.
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 | =--with-poll=             | build with poll() instead of select() to enable more file descriptors        |
+| =--with-webp=             | build with webp support                                                      |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-and-emacs-30][this method]].
