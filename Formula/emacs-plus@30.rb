@@ -41,6 +41,7 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "little-cms2"
   depends_on "jansson"
   depends_on "tree-sitter"
+  depends_on "webp" => :optional
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
@@ -158,6 +159,7 @@ class EmacsPlusAT30 < EmacsBase
 
     args << "--with-modules"
     args << "--with-rsvg"
+    args << "--with-webp" if build.with? "webp"
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
