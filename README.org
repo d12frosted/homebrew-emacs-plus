@@ -136,7 +136,7 @@ By default =emacs-plus@30= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
 - Cocoa version, e.g. builds =Emacs.app=.
-- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic modules.
+- Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2= and dynamic modules.
 
 *** Options
 
