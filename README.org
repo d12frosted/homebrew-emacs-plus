@@ -47,7 +47,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
   - [[#install][Install]]
     - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
-  - [[#emacs-29][Emacs 30]]
+  - [[#emacs-30][Emacs 30]]
     - [[#included][Included]]
     - [[#options][Options]]
     - [[#no-title-bar][No title bar]]
