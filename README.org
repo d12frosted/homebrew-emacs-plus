@@ -52,15 +52,15 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#options][Options]]
     - [[#no-title-bar][No title bar]]
   - [[#emacs-29][Emacs 29]]
-    - [[#included][Included]]
-    - [[#options][Options]]
-    - [[#no-title-bar][No title bar]]
-  - [[#emacs-28][Emacs 28]]
     - [[#included-1][Included]]
     - [[#options-1][Options]]
-  - [[#emacs-27][Emacs 27]]
+    - [[#no-title-bar-1][No title bar]]
+  - [[#emacs-28][Emacs 28]]
     - [[#included-2][Included]]
     - [[#options-2][Options]]
+  - [[#emacs-27][Emacs 27]]
+    - [[#included-3][Included]]
+    - [[#options-3][Options]]
   - [[#emacs-26][Emacs 26]]
   - [[#features-explained][Features explained]]
     - [[#injected-path][Injected PATH]]
@@ -342,8 +342,8 @@ Knows issues:
 
 ** Icons
 
-| Option                                      | Author                     | Image                                                  | URL     |
-|---------------------------------------------+----------------------------+--------------------------------------------------------+---------|
+| Option                                        | Author                     | Image                                                  | URL     |
+|-----------------------------------------------+----------------------------+--------------------------------------------------------+---------|
 | =--with-EmacsIcon1-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon1_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-EmacsIcon2-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon2_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
 | =--with-EmacsIcon3-icon=                      | [[https://github.com/jasonm23][→ Jason Milkins]]            | [[/icons/preview/EmacsIcon3_128.png]]                      | [[https://github.com/emacsfodder/emacs-icons-project][→ Link]]  |
@@ -396,8 +396,9 @@ Knows issues:
 | =--with-retro-gnu-meditate-levitate-icon=     | Nevrax Design Team         | [[/icons/preview/retro-gnu-meditate-levitate_128.png]]     | [[https://www.gnu.org/graphics/meditate.en.html][→ Link]]  |
 | =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/preview/retro-sink-bw_128.png]]                   | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/preview/retro-sink_128.png]]                      | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
-| =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
 | =--with-savchenkovaleriy-big-sur-icon=        | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur_128.png]]        | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
+| =--with-skamacs-icon=                         | [[https://github.com/compufox][→ compufox]]                 | [[/icons/preview/skamacs_128.png]]                         | [[https://github.com/compufox/skamacs-icon][→ Link]]  |
+| =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
 
 ** Emacs configuration
 
