@@ -1,34 +1,25 @@
-:PROPERTIES:
-:ID:                     eaf232f9-0670-4ba0-84f8-61bf966ce3ad
-:END:
 #+TITLE: Development guidelines
 
 Over the time =emacs-plus= grow with different utilities for adding new features and maintaining the formula. The goal of this document is to describe important bits of this process.
 
 * Table of Contents :TOC:
-:PROPERTIES:
-:ID:                     6acf165f-6779-44b6-94de-e9af8c375f8f
-:END:
 - [[#pull-requests][Pull requests]]
 - [[#ci][CI]]
 - [[#options][Options]]
 - [[#patches][Patches]]
+- [[#icons][Icons]]
+  - [[#almost-automated-flow][Almost automated flow]]
+  - [[#manual-flow][Manual flow]]
 - [[#building-locally][Building locally]]
 - [[#questions][Questions?]]
 
 * Pull requests
-:PROPERTIES:
-:ID:                     75cbac42-175d-443b-937b-b3061c9d8693
-:END:
 
 Any change to the formula should go through pull requests. Exception for this guideline is resource hash fix (e.g. when patch is changed and for some reason hash is invalid).
 
 Pull requests give visibility to the users watching this repository. And thanks to [[#ci][→ CI]] pull requests changes are built in different configurations. So it's harder to break the formula.
 
 * CI
-:PROPERTIES:
-:ID:                     d9580cb6-6484-45fa-9337-355182812ac0
-:END:
 
 We've been using GitHub workflows to run builds. Main targets are:
 
@@ -41,16 +32,10 @@ We've been using GitHub workflows to run builds. Main targets are:
 Where it's applicable, we also run builds with different [[#options][→ options]]. The lesser options are available, the easier it is to cover all scenarios. Right now coverage is not the goal.
 
 * Options
-:PROPERTIES:
-:ID:                     c2302f04-d2ff-4f53-a846-036a51bc9426
-:END:
 
 Rule of thumb here is simple. If the new feature (e.g. patch) is not experimental nor controversial, it's better to add it unconditionally. In ideal world, all features should be controllable via Emacs Lisp, not via compilation flag and the only options should be version and icon choice.
 
 * Patches
-:PROPERTIES:
-:ID:                     a2b77ea1-85a9-4088-8100-d8b60d580548
-:END:
 
 Every patch must be added to this repository. No exceptions. Rationale is simple - external location is not controlled by =emacs-plus= maintainers, but if something happens to the patch outside this repository, =emacs-plus= suffers.
 
@@ -71,10 +56,32 @@ One should use =local_patch= utility function provided by =EmacsBase=:
 
 So even if you are preparing PR, add the patch to this repository.
 
+* Icons
+
+Emacs+ comes with multiple optional icons to use instead of the default one. Due to Homebrew limitations, each icon has a separate option in the form =--with-NAME-icon=, where =NAME= must match the =^[a-zA-Z\-0-9]+$= regexp.
+
+** Almost automated flow
+
+Follow these simple steps to add a new icon.
+
+1. Come with appropriate name for the icon. The name must contain only alphanumeric symbols and dashes. A good idea to combine author name and icon name.
+2. Add a 1024x1024 =NAME.png= file to =icons/original= folder.
+3. Run =iconset= script in the root of the repository. It will generate all previews, icon sets, and workflows.
+4. Modify Icons section of the =README.org= file. Don't forget to add links to source and author.
+
+** Manual flow
+
+Follow these simple steps to add a new icon.
+
+1. Come with appropriate name for the icon. The name must contain only alphanumeric symbols and dashes. A good idea to combine author name and icon name.
+2. Add a 1024x1024 =NAME.png= file to =icons/original= folder.
+3. Add a 128x128 =NAME_128.png= file to =icons/preview= folder.
+4. Add a =NAME.icns= file to =icons= folder.
+5. Add the new icon to =Library/Icons.rb= (name and hash).
+6. Create a workflow in the =.github/workflows= directory for the new icon. It might sound stupid but we had enough issues with broken icons. Just copy-paste an existing workflow and modify it for the new icon.
+7. Modify Icons section of the =README.org= file. Don't forget to add links to source and author.
+
 * Building locally
-:PROPERTIES:
-:ID:                     7e242947-fce6-4f35-9fe5-84cfa7124663
-:END:
 
 Sometimes there is a need to test the build locally without uninstalling =emacs-plus= (otherwise it's impossible to make any further fixes or improvements if the build breaks). For this reason, =emacs-plus= repository has a =build= script, which installs =emacs-plus-local= with passed options.
 
@@ -90,8 +97,5 @@ Sometimes there is a need to test the build locally without uninstalling =emacs-
 This script is super simple. It makes a copy of =emacs-plus= named =emacs-plus-local= and installs it. That way you can play with formula without uninstalling =emacs-plus=.
 
 * Questions?
-:PROPERTIES:
-:ID:                     403053e1-8b05-451b-8839-0a4f670c8aa4
-:END:
 
 Having questions is good. Asking them is even better. Feel free to open an issue or contact me via email (you can find it in my profile on GitHub or check the committer email).
