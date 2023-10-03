@@ -51,6 +51,7 @@ ICONS_CONFIG = {
   "retro-gnu-meditate-levitate" => "dea2439b75822c8e96c2aea408110d166d04fcde7a3043ed8f2405c370858ff9",
   "retro-sink-bw" => "1070658acb238558901f5d13e1178e5bd09e2aceda205c033ca9a18a430facb1",
   "retro-sink" => "e8b842ea6f7b677f8cc0dff179686b6513e9214e479e91b40e357b3e3901c48d",
+  "savchenkovaleriy-big-sur" => "c251976bc0b20a4e71daa67fbc6f1a896ae8794ee3eaaab724901ba5b64fdac0",
   "skamacs" => "cca424a6e8328b1bc70047fbba284724aa0dc274ceefabacd08d75732867a71d",
   "spacemacs" => "ff2bdfe9d7bec826fb8f3bb9c2b2237ba838a8cb5afc6a15be1db4ace89d8d4b",
 }.freeze
