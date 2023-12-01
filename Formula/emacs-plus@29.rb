@@ -94,7 +94,7 @@ class EmacsPlusAT29 < EmacsBase
   #
   # Initialize
   #
-  def initialize(*args, &block)
+  def initialize(*args, **kwargs, &block)
     a = super
     expand_path
     a
