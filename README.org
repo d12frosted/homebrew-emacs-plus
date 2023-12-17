@@ -4,20 +4,20 @@
 </p>
 <h1 align="center">Emacs Plus</h1>
 <p align="center">
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+30%22">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2030/badge.svg" alt="Emacs 30 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-30.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-30.yml/badge.svg" alt="Emacs 30 CI Status Badge">
   </a>
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+29%22">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2029/badge.svg" alt="Emacs 29 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-29.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-29.yml/badge.svg" alt="Emacs 29 CI Status Badge">
   </a>
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+28%22">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2028/badge.svg" alt="Emacs 28 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-28.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-28.yml/badge.svg" alt="Emacs 28 CI Status Badge">
   </a>
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+27%22">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2027/badge.svg" alt="Emacs 27 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-27.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-27.yml/badge.svg" alt="Emacs 27 CI Status Badge">
   </a>
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions?query=workflow%3A%22Emacs+26%22">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/workflows/Emacs%2026/badge.svg" alt="Emacs 26 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-26.yml/badge.svg">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-26.yml/badge.svg" alt="Emacs 26 CI Status Badge">
   </a>
 </p>
 #+end_html
