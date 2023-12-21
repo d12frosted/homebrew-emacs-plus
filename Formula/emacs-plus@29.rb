@@ -268,7 +268,7 @@ class EmacsPlusAT29 < EmacsBase
         #{prefix}
 
       To link the application to default Homebrew App location:
-        ln -s #{prefix}/Emacs.app /Applications
+        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at POSIX file "/Applications"'
 
       Your PATH value was injected into Emacs.app/Contents/Info.plist
 
