@@ -399,6 +399,7 @@ Knows issues:
 | =--with-savchenkovaleriy-big-sur-icon=        | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur_128.png]]        | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
 | =--with-skamacs-icon=                         | [[https://github.com/compufox][→ compufox]]                 | [[/icons/preview/skamacs_128.png]]                         | [[https://github.com/compufox/skamacs-icon][→ Link]]  |
 | =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
+| =--with-savchenkovaleriy-big-sur-3d-icon=     | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur-3d_128.png]]     | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
 
 ** Emacs configuration
 
