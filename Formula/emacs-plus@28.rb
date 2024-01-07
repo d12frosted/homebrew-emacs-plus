@@ -7,6 +7,9 @@ class EmacsPlusAT28 < EmacsBase
   sha256 "ee21182233ef3232dc97b486af2d86e14042dbb65bbc535df562c3a858232488"
   env :std
 
+  desc "GNU Emacs text editor"
+  homepage "https://www.gnu.org/software/emacs/"
+
   head do
     url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-28"
   end

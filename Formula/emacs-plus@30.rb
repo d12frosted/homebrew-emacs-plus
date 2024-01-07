@@ -5,6 +5,9 @@ class EmacsPlusAT30 < EmacsBase
   version "30.0.50"
   env :std
 
+  desc "GNU Emacs text editor"
+  homepage "https://www.gnu.org/software/emacs/"
+
   #
   # Options
   #
@@ -74,7 +77,7 @@ class EmacsPlusAT30 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+  url "https://github.com/emacs-mirror/emacs.git", :revision => "6abea4d98d1d964c68a78cb9b5321071da851654"
 
   #
   # Icons

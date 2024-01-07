@@ -8,9 +8,6 @@ class CopyDownloadStrategy < AbstractFileDownloadStrategy
 end
 
 class EmacsBase < Formula
-  desc "GNU Emacs text editor"
-  homepage "https://www.gnu.org/software/emacs/"
-
   def self.init version
     @@urlResolver = UrlResolver.new(version, ENV["HOMEBREW_EMACS_PLUS_MODE"] || "remote")
   end
