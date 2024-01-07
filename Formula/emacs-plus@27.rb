@@ -6,6 +6,9 @@ class EmacsPlusAT27 < EmacsBase
   mirror "https://ftpmirror.gnu.org/emacs/emacs-27.2.tar.xz"
   sha256 "b4a7cc4e78e63f378624e0919215b910af5bb2a0afc819fad298272e9f40c1b9"
 
+  desc "GNU Emacs text editor"
+  homepage "https://www.gnu.org/software/emacs/"
+
   head do
     url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-27"
   end
