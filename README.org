@@ -444,7 +444,7 @@ Ordinarily, =brew= will update to the latest commit in the specified branch duri
 #+end_src
 
 #+begin_quote
-:warning: It's important to note that any local changes to commits or branches within the cached repository won't impact the build process, as =brew= overrides the state of the cloned repository during installation.
+⚠️ It's important to note that any local changes to commits or branches within the cached repository won't impact the build process, as =brew= overrides the state of the cloned repository during installation.
 #+end_quote
 
 ** Screenshots
