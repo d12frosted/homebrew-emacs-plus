@@ -443,7 +443,9 @@ Ordinarily, =brew= will update to the latest commit in the specified branch duri
     url "https://github.com/emacs-mirror/emacs.git", :revision => "6abea4d98d1d964c68a78cb9b5321071da851654"
 #+end_src
 
-> :warning: It's important to note that any local changes to commits or branches within the cached repository won't impact the build process, as =brew= overrides the state of the cloned repository during installation.
+#+begin_quote
+:warning: It's important to note that any local changes to commits or branches within the cached repository won't impact the build process, as =brew= overrides the state of the cloned repository during installation.
+#+end_quote
 
 ** Screenshots
 
