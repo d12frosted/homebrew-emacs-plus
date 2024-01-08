@@ -72,6 +72,8 @@ Feel free to open an issue or contact me via email if you face any issues, quest
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
     - [[#emacs-dependency-in-other-formulas][=emacs= dependency in other formulas]]
+  - [[#faq][FAQ]]
+    - [[#how-to-changepin-commit-emacs-plus30-is-built-from][How to change/pin commit =emacs-plus@30= is built from]]
   - [[#screenshots][Screenshots]]
   - [[#acknowledgements][Acknowledgements]]
 
@@ -421,6 +423,27 @@ In some cases (like when installing =cask=) regular =emacs= package will be requ
 #+BEGIN_SRC bash
 $ brew install cask --ignore-dependencies
 #+END_SRC
+
+** FAQ
+
+*** How to change/pin commit =emacs-plus@30= is built from
+
+The most current development version is consistently compiled from a specific branch. At the time of this writing, for instance, =emacs-plus@30= is being built from the =master= branch.
+
+Here's the relevant code snippet for the =emacs-plus@30= formula:
+
+#+begin_src ruby
+    # Formula/emacs-plus@30.rb
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+#+end_src
+
+Ordinarily, =brew= will update to the latest commit in the specified branch during installation, meaning the exact commit you're building from varies depending on the installation timing. As development versions are less stable than official releases, some users may prefer to pin a specific commit. To do this, one must manually modify the formula by executing =brew edit emacs-plus@30= and altering the =url= directive to reference a specific commit, as shown below:
+
+#+begin_src ruby
+    url "https://github.com/emacs-mirror/emacs.git", :revision => "6abea4d98d1d964c68a78cb9b5321071da851654"
+#+end_src
+
+> :warning: It's important to note that any local changes to commits or branches within the cached repository won't impact the build process, as =brew= overrides the state of the cloned repository during installation.
 
 ** Screenshots
 
