@@ -77,7 +77,7 @@ class EmacsPlusAT30 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git", :revision => "6abea4d98d1d964c68a78cb9b5321071da851654"
+  url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
 
   #
   # Icons
