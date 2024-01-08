@@ -77,7 +77,11 @@ class EmacsPlusAT30 < EmacsBase
   # URL
   #
 
-  url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+  if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+  else
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+  end
 
   #
   # Icons
