@@ -20,15 +20,15 @@ body:
       default: 0
     validations:
       required: true
-- type: checkboxes
-  id: selfservice
-  attributes:
-    label: "Make sure to follow these steps before submitting the issue"
-    description: "All steps are required"
-    options:
-      - label: "run `brew update` and try to reproduce the issue again"
-      - label: "run `brew doctor`, fix all issues and try to reproduce your issue again"
-      - label: "try to reproduce your issue without any custom options to the formula"
+  - type: checkboxes
+    id: selfservice
+    attributes:
+      label: "Make sure to follow these steps before submitting the issue"
+      description: "All steps are required"
+      options:
+        - label: "run `brew update` and try to reproduce the issue again"
+        - label: "run `brew doctor`, fix all issues and try to reproduce your issue again"
+        - label: "try to reproduce your issue without any custom options to the formula"
     validations:
       required: true
   - type: textarea
