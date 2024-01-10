@@ -1,0 +1,78 @@
+name: Build Failure
+description: Create a report to help us improve
+title: "[Build Failure]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a build failure.
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of Emacs are you building?
+      options:
+        - emacs-plus@30
+        - emacs-plus@29
+        - emacs-plus@28
+        - emacs-plus@27
+        - emacs-plus@26
+      default: 0
+    validations:
+      required: true
+- type: checkboxes
+  id: selfservice
+  attributes:
+    label: Make sure to follow these steps before submitting the issue
+    description: All steps are required
+    options:
+      - label: run `brew update` and try to reproduce the issue again
+      - label: run `brew doctor`, fix all issues and try to reproduce your issue again
+      - label: try to reproduce your issue without any custom options to the formula
+    validations:
+      required: true
+  - type: textarea
+    id: build-output
+    attributes:
+      label: What happened?
+      description: Include whole output of the brew install
+      placeholder: "brew install output together with command"
+      value: |
+        <pre>
+        $ brew install emacs-plus [OPTIONS]
+        </pre>
+        
+        <details>
+          <summary>Command output</summary>
+          <pre>
+        
+          <!-- replace this with the command output -->
+        
+          </pre>
+        </details>
+    validations:
+      required: true
+  - type: textarea
+    id: doctor-output
+    attributes:
+      label: brew doctor output
+      description: Include whole output of the brew doctor
+      placeholder: "brew doctor output"
+      value: "brew doctor output"
+    validations:
+      required: true
+  - type: textarea
+    id: config-output
+    attributes:
+      label: brew config output
+      description: Include whole output of the brew config
+      placeholder: "brew config output"
+      value: "brew config output"
+    validations:
+      required: true
+  - type: textarea
+    id: extra-info
+    attributes:
+      label: Any extra information
+      description: Include any extra information you think is relevant
+      placeholder: "extra information"
