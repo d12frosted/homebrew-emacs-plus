@@ -1,5 +1,6 @@
 name: "Build Failure"
-description: "Create a report to help us improve"
+description: |
+  Report only build failures. For other things either use different template or discussions.
 title: "[Build Failure]: "
 body:
   - type: markdown
