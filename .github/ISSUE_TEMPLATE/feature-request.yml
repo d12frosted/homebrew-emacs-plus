@@ -1,0 +1,18 @@
+name: "Request a feature"
+description: |
+  Request a feature for Emacs+ formula.
+title: "[Feature request]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to request a new feature.
+
+        Please remember that Emacs+ is just a formula for homebrew. Ff you have a feature request to GNU Emacs, you should request it via mailing list.
+  - type: textarea
+    id: build-output
+    attributes:
+      label: "Feature request description"
+      description: "A clear and concise description of what the desired feature is. If the feature request is about adding existing patch, please share the link to it."
+    validations:
+      required: true
