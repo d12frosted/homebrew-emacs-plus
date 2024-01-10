@@ -58,7 +58,6 @@ body:
       label: "brew doctor output"
       description: "Include whole output of the brew doctor"
       placeholder: "brew doctor output"
-      value: "brew doctor output"
     validations:
       required: true
   - type: textarea
@@ -67,7 +66,6 @@ body:
       label: "brew config output"
       description: "Include whole output of the brew config"
       placeholder: "brew config output"
-      value: "brew config output"
     validations:
       required: true
   - type: textarea
