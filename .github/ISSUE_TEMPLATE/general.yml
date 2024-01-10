@@ -1,0 +1,18 @@
+name: "General issue"
+description: |
+  Report a general issue with Emacs+ (not Emacs itself)
+title: "[General]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue.
+
+        Please remember that Emacs+ is just a formula for homebrew. If you have an issue with GNU Emacs, you should ask for help via mailing list.
+  - type: textarea
+    id: build-output
+    attributes:
+      label: "Issue description"
+      description: "A clear and concise description of the issue."
+    validations:
+      required: true
