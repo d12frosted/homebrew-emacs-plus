@@ -8,7 +8,7 @@ body:
       value: |
         Thanks for taking the time to request a new feature.
 
-        Please remember that Emacs+ is just a formula for homebrew. Ff you have a feature request to GNU Emacs, you should request it via mailing list.
+        Please remember that Emacs+ is just a formula for homebrew. If you have a feature request to GNU Emacs, you should request it via mailing list.
   - type: textarea
     id: build-output
     attributes:
