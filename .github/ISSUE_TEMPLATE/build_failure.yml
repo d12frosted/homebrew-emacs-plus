@@ -1,5 +1,5 @@
-name: Build Failure
-description: Create a report to help us improve
+name: "Build Failure"
+description: "Create a report to help us improve"
 title: "[Build Failure]: "
 body:
   - type: markdown
@@ -10,7 +10,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of Emacs are you building?
+      description: "What version of Emacs are you building?"
       options:
         - emacs-plus@30
         - emacs-plus@29
@@ -23,19 +23,19 @@ body:
 - type: checkboxes
   id: selfservice
   attributes:
-    label: Make sure to follow these steps before submitting the issue
-    description: All steps are required
+    label: "Make sure to follow these steps before submitting the issue"
+    description: "All steps are required"
     options:
-      - label: run `brew update` and try to reproduce the issue again
-      - label: run `brew doctor`, fix all issues and try to reproduce your issue again
-      - label: try to reproduce your issue without any custom options to the formula
+      - label: "run `brew update` and try to reproduce the issue again"
+      - label: "run `brew doctor`, fix all issues and try to reproduce your issue again"
+      - label: "try to reproduce your issue without any custom options to the formula"
     validations:
       required: true
   - type: textarea
     id: build-output
     attributes:
-      label: What happened?
-      description: Include whole output of the brew install
+      label: "What happened?"
+      description: "Include whole output of the brew install"
       placeholder: "brew install output together with command"
       value: |
         <pre>
@@ -55,8 +55,8 @@ body:
   - type: textarea
     id: doctor-output
     attributes:
-      label: brew doctor output
-      description: Include whole output of the brew doctor
+      label: "brew doctor output"
+      description: "Include whole output of the brew doctor"
       placeholder: "brew doctor output"
       value: "brew doctor output"
     validations:
@@ -64,8 +64,8 @@ body:
   - type: textarea
     id: config-output
     attributes:
-      label: brew config output
-      description: Include whole output of the brew config
+      label: "brew config output"
+      description: "Include whole output of the brew config"
       placeholder: "brew config output"
       value: "brew config output"
     validations:
@@ -73,6 +73,6 @@ body:
   - type: textarea
     id: extra-info
     attributes:
-      label: Any extra information
-      description: Include any extra information you think is relevant
+      label: "Any extra information"
+      description: "Include any extra information you think is relevant"
       placeholder: "extra information"
