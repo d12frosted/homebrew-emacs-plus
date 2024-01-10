@@ -8,7 +8,9 @@ body:
       value: |
         Thanks for taking the time to report an issue.
 
-        Please remember that Emacs+ is just a formula for homebrew. If you have an issue with GNU Emacs, you should ask for help via mailing list.
+        - Please remember that Emacs+ is just a formula for homebrew. 
+        - If you have an issue with GNU Emacs, you should ask for help via mailing list.
+        - If you have a question, feel free to use [discussions](https://github.com/d12frosted/homebrew-emacs-plus/discussions).
   - type: textarea
     id: build-output
     attributes:
