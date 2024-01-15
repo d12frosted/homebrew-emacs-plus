@@ -399,9 +399,10 @@ Knows issues:
 | =--with-retro-sink-bw-icon=                   | Unknown                    | [[/icons/preview/retro-sink-bw_128.png]]                   | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-retro-sink-icon=                      | [[https://www.teuton.org/~ejm/][→ Erik Mugele]]              | [[/icons/preview/retro-sink_128.png]]                      | [[https://www.teuton.org/~ejm/emacsicon/][→ Link]]  |
 | =--with-savchenkovaleriy-big-sur-icon=        | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur_128.png]]        | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
-| =--with-skamacs-icon=                         | [[https://github.com/compufox][→ compufox]]                 | [[/icons/preview/skamacs_128.png]]                         | [[https://github.com/compufox/skamacs-icon][→ Link]]  |
+| =--with-skamacs-icon=                         | [[https://github.com/compufox][→ compufox]]                 | [[/icons/preview/skamacs_128.png]]                         | [[https://github.com/compufox/emacs-icons][→ Link]]  |
 | =--with-spacemacs-icon=                       | [[https://github.com/nashamri][→ Nasser Alshammari]]        | [[/icons/preview/spacemacs_128.png]]                       | [[https://github.com/nashamri/spacemacs-logo][→ Link]]  |
 | =--with-savchenkovaleriy-big-sur-3d-icon=     | [[https://github.com/SavchenkoValeriy][→ Valeriy Savchenko]]        | [[/icons/preview/savchenkovaleriy-big-sur-3d_128.png]]     | [[https://github.com/SavchenkoValeriy/emacs-icons][→ Link]]  |
+| =--with-weedmacs-icon=                         | [[https://github.com/compufox][→ compufox]]                 | [[/icons/preview/weedmacs_128.png]]                         | [[https://github.com/compufox/emacs-icons][→ Link]]  |
 
 ** Emacs configuration
 
