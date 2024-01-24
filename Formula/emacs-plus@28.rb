@@ -266,7 +266,7 @@ class EmacsPlusAT28 < EmacsBase
 
       Your PATH value was injected into Emacs.app/Contents/Info.plist
 
-      Report any issues to http://github.com/d12frosted/homebrew-emacs-plus
+      Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS
   end
 
