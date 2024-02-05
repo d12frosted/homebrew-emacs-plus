@@ -1,0 +1,65 @@
+diff --git a/src/nsterm.m b/src/nsterm.m
+index 74ebeafd3c1..653b6b05b85 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -9257,6 +9257,8 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+       styleMask |= NSFullSizeContentViewWindowMask;
+     }
+ 
++  styleMask |= NSWindowStyleMaskFullSizeContentView;
++
+   last_drag_event = nil;
+ 
+   width = FRAME_TEXT_COLS_TO_PIXEL_WIDTH (f, f->text_cols);
+@@ -9275,7 +9277,50 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+       EmacsView *view = FRAME_NS_VIEW (f);
+ 
+       [self setDelegate:view];
+-      [[self contentView] addSubview:view];
++
++      /* View Hierarchy:
++         NSWindow
++         - NSVisualEffectView, extended under title bar
++           - titleBackgroundView, view under title bar to match emacs background
++           - boundingView, emacs looks at EmavsView's superview for frame size
++             - EmacsView, actual emacs content
++       */
++
++      NSVisualEffectView *blurView = [NSVisualEffectView alloc];
++      [blurView initWithFrame:
++          NSMakeRect (0, 0, FRAME_TEXT_COLS_TO_PIXEL_WIDTH (f, f->text_cols),
++                      FRAME_TEXT_LINES_TO_PIXEL_HEIGHT (f, f->text_lines))];
++      [blurView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
++      blurView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
++      blurView.state = NSVisualEffectStateFollowsWindowActiveState;
++
++      [[self contentView] addSubview:blurView];
++
++      // NSBox *titleBackgroundView = [[NSBox alloc] initWithFrame:NSMakeRect (0, 0, 0, 0)];
++      // [titleBackgroundView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
++      // [blurView addSubview:titleBackgroundView];
++      // titleBackgroundView.boxType = NSBoxCustom;
++      // titleBackgroundView.transparent = NO;
++
++      NSView *boundingView = [[NSView alloc] initWithFrame:NSMakeRect (0, 0, 0, 0)];
++      [boundingView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
++      [blurView addSubview:boundingView];
++
++      NSLayoutGuide *layout = self.contentLayoutGuide;
++
++      // titleBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
++      // [titleBackgroundView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
++      // [titleBackgroundView.bottomAnchor constraintEqualToAnchor:layout.topAnchor].active = YES;
++      // [titleBackgroundView.leftAnchor constraintEqualToAnchor:layout.leftAnchor].active = YES;
++      // [titleBackgroundView.rightAnchor constraintEqualToAnchor:layout.rightAnchor].active = YES;
++
++      boundingView.translatesAutoresizingMaskIntoConstraints = NO;
++      [boundingView.topAnchor constraintEqualToAnchor:layout.topAnchor].active = YES;
++      [boundingView.bottomAnchor constraintEqualToAnchor:layout.bottomAnchor].active = YES;
++      [boundingView.leftAnchor constraintEqualToAnchor:layout.leftAnchor].active = YES;
++      [boundingView.rightAnchor constraintEqualToAnchor:layout.rightAnchor].active = YES;
++
++      [boundingView addSubview:view];
+       [self makeFirstResponder:view];
+ 
+ #if !defined (NS_IMPL_COCOA) || MAC_OS_X_VERSION_MIN_REQUIRED <= 1090
