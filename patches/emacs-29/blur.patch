@@ -1,5 +1,37 @@
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 60db0187de8..bae13bd334b 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -326,6 +326,12 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+       else
+           [[view window] setOpaque: YES];
+ 
++      NSVisualEffectView *effectView = view.window.contentView.subviews.firstObject;
++      if (effectView.subviews.count == 2) {
++        NSBox *titleView = effectView.subviews.lastObject;
++        titleView.fillColor = [col colorWithAlphaComponent: alpha];
++      }
++
+       face = FRAME_DEFAULT_FACE (f);
+       if (face)
+         {
+@@ -369,6 +375,14 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+   f->alpha_background = alpha;
+   [[view window] setBackgroundColor: [f->output_data.ns->background_color
+ 					 colorWithAlphaComponent: alpha]];
++
++  NSVisualEffectView *effectView = view.window.contentView.subviews.firstObject;
++  if (effectView.subviews.count == 2) {
++    NSBox *titleView = effectView.subviews.lastObject;
++    titleView.fillColor = [f->output_data.ns->background_color
++                              colorWithAlphaComponent: alpha];
++  }
++
+   recompute_basic_faces (f);
+   SET_FRAME_GARBAGED (f);
+ }
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 74ebeafd3c1..19f3e3030f7 100644
+index 74ebeafd3c1..528c1f60475 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -9252,10 +9252,7 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
@@ -14,7 +46,7 @@ index 74ebeafd3c1..19f3e3030f7 100644
  
    last_drag_event = nil;
  
-@@ -9275,7 +9272,56 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9275,7 +9272,62 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
        EmacsView *view = FRAME_NS_VIEW (f);
  
        [self setDelegate:view];
@@ -40,23 +72,13 @@ index 74ebeafd3c1..19f3e3030f7 100644
 +
 +      [[self contentView] addSubview:blurView];
 +
-+      // NSBox *titleBackgroundView = [[NSBox alloc] initWithFrame:NSMakeRect (0, 0, 0, 0)];
-+      // [titleBackgroundView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-+      // [blurView addSubview:titleBackgroundView];
-+      // titleBackgroundView.boxType = NSBoxCustom;
-+      // titleBackgroundView.transparent = NO;
 +
 +      NSView *boundingView = [[NSView alloc] initWithFrame:NSMakeRect (0, 0, 0, 0)];
 +      [boundingView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 +      [blurView addSubview:boundingView];
++      NSBox *titleBackgroundView;
 +
 +      NSLayoutGuide *layout = self.contentLayoutGuide;
-+
-+      // titleBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-+      // [titleBackgroundView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
-+      // [titleBackgroundView.bottomAnchor constraintEqualToAnchor:layout.topAnchor].active = YES;
-+      // [titleBackgroundView.leftAnchor constraintEqualToAnchor:layout.leftAnchor].active = YES;
-+      // [titleBackgroundView.rightAnchor constraintEqualToAnchor:layout.rightAnchor].active = YES;
 +
 +      boundingView.translatesAutoresizingMaskIntoConstraints = NO;
 +      [boundingView.bottomAnchor constraintEqualToAnchor:layout.bottomAnchor].active = YES;
@@ -66,13 +88,48 @@ index 74ebeafd3c1..19f3e3030f7 100644
 +      if (FRAME_UNDECORATED_ROUND (f))
 +        [boundingView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
 +      else
-+        [boundingView.topAnchor constraintEqualToAnchor:layout.topAnchor].active = YES;
++        {
++          /* constraint emacs content under titlebar */
++          [boundingView.topAnchor constraintEqualToAnchor:layout.topAnchor].active = YES;
++
++          /* add separate view for titlebar background */
++          titleBackgroundView = [[NSBox alloc] initWithFrame:NSMakeRect (0, 0, 0, 0)];
++          [titleBackgroundView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
++          [blurView addSubview:titleBackgroundView];
++          titleBackgroundView.boxType = NSBoxCustom;
++          titleBackgroundView.borderWidth = 0;
++          titleBackgroundView.transparent = NO;
++          titleBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
++          [titleBackgroundView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
++          [titleBackgroundView.bottomAnchor constraintEqualToAnchor:layout.topAnchor].active = YES;
++          [titleBackgroundView.leftAnchor constraintEqualToAnchor:layout.leftAnchor].active = YES;
++          [titleBackgroundView.rightAnchor constraintEqualToAnchor:layout.rightAnchor].active = YES;
++        }
 +
 +      [boundingView addSubview:view];
        [self makeFirstResponder:view];
  
  #if !defined (NS_IMPL_COCOA) || MAC_OS_X_VERSION_MIN_REQUIRED <= 1090
-@@ -9345,9 +9391,9 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9324,11 +9376,18 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+ 
+       col = [NSColor colorWithUnsignedLong:NS_FACE_BACKGROUND
+ 		      (FACE_FROM_ID (f, DEFAULT_FACE_ID))];
++
+       [self setBackgroundColor:
+ 	      [col colorWithAlphaComponent:f->alpha_background]];
+       if (f->alpha_background != (EmacsCGFloat) 1.0)
+         [self setOpaque:NO];
+ 
++      if (!FRAME_UNDECORATED_ROUND (f))
++        {
++          titleBackgroundView.fillColor =
++              [col colorWithAlphaComponent:f->alpha_background];
++        }
++
+       /* toolbar support */
+       [self createToolbar:f];
+ 
+@@ -9345,9 +9404,9 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
      {
        [self setTitlebarAppearsTransparent:YES];
        [self setTitleVisibility:NSWindowTitleHidden];
