@@ -30,6 +30,7 @@ class EmacsPlusAT28 < EmacsBase
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
   option "with-native-comp", "Build with native compilation"
+  option "with-native-comp-aot", "Build with native, ahead-of-time compilation"
 
   #
   # Dependencies
@@ -60,6 +61,14 @@ class EmacsPlusAT28 < EmacsBase
   end
 
   if build.with? "native-comp"
+    depends_on "libgccjit" => :recommended
+    depends_on "gcc" => :build
+    depends_on "gmp" => :build
+    depends_on "libjpeg" => :build
+    depends_on "zlib" => :build
+  end
+
+  if build.with? "native-comp-aot"
     depends_on "libgccjit" => :recommended
     depends_on "gcc" => :build
     depends_on "gmp" => :build
@@ -127,6 +136,7 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-gnutls"
 
     args << "--with-native-compilation" if build.with? "native-comp"
+    args << "--with-native-compilation=aot" if build.with? "native-comp-aot"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
@@ -135,6 +145,10 @@ class EmacsPlusAT28 < EmacsBase
     ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
     ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
     ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+
+    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp-aot"
+    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp-aot"
+    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp-aot"
 
     args <<
       if build.with? "dbus"
@@ -203,6 +217,7 @@ class EmacsPlusAT28 < EmacsBase
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
       (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
+      (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp-aot"
 
       # inject PATH to Info.plist
       inject_path
