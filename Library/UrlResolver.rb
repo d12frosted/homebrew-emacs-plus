@@ -4,7 +4,7 @@ TAP_REPO = "emacs-plus"
 class UrlResolver
   def initialize(version, mode)
     name = "#{TAP_REPO}@#{version}"
-    tap = Tap.new TAP_OWNER, TAP_REPO
+    tap = Tap.fetch(TAP_OWNER, TAP_REPO)
     @version = version
     @formula_root =
       mode == "local" || !tap.installed? ?
