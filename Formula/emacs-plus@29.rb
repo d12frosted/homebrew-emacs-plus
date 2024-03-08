@@ -61,7 +61,7 @@ class EmacsPlusAT29 < EmacsBase
     depends_on "fontconfig" => :recommended
   end
 
-  if build.with? "native-comp" || "native-comp-aot"
+  if (build.with? "native-comp") || (build.with? "native-comp-aot")
     depends_on "libgccjit" => :recommended
     depends_on "gcc" => :build
     depends_on "gmp" => :build
@@ -130,9 +130,9 @@ class EmacsPlusAT29 < EmacsBase
     ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     # Necessary for libgccjit library discovery
-    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp" || "native-comp-aot"
-    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp" || "native-comp-aot"
-    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp" || "native-comp-aot"
+    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if (build.with? "native-comp") || (build.with? "native-comp-aot")
+    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if (build.with? "native-comp") || (build.with? "native-comp-aot")
+    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if (build.with? "native-comp") || (build.with? "native-comp-aot")
 
     args <<
       if build.with? "dbus"
@@ -201,7 +201,7 @@ class EmacsPlusAT29 < EmacsBase
 
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
-      (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp" || "native-comp-aot"
+      (prefix/"Emacs.app/Contents").install "native-lisp" if (build.with? "native-comp") || (build.with? "native-comp-aot")
 
       # inject PATH to Info.plist
       inject_path
