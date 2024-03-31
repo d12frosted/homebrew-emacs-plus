@@ -5,7 +5,10 @@ class EmacsPlusAT29 < EmacsBase
   url "https://ftp.gnu.org/gnu/emacs/emacs-29.3.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-29.3.tar.xz"
   sha256 "c34c05d3ace666ed9c7f7a0faf070fea3217ff1910d004499bd5453233d742a0"
-  env :std
+
+  on_macos do
+    env :std
+  end
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
