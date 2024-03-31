@@ -3,7 +3,10 @@ require_relative "../Library/EmacsBase"
 class EmacsPlusAT30 < EmacsBase
   init 30
   version "30.0.50"
-  env :std
+
+  on_macos do
+    env :std
+  end
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
