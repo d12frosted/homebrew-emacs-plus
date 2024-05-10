@@ -5,7 +5,10 @@ class EmacsPlusAT28 < EmacsBase
   url "https://ftp.gnu.org/gnu/emacs/emacs-28.2.tar.xz"
   mirror "https://ftpmirror.gnu.org/emacs/emacs-28.2.tar.xz"
   sha256 "ee21182233ef3232dc97b486af2d86e14042dbb65bbc535df562c3a858232488"
-  env :std
+
+  on_macos do
+    env :std
+  end
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
@@ -262,7 +265,7 @@ class EmacsPlusAT28 < EmacsBase
         #{prefix}
 
       To link the application to default Homebrew App location:
-        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at POSIX file "/Applications"'
+        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
 
       Your PATH value was injected into Emacs.app/Contents/Info.plist
 
