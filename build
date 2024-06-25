@@ -22,6 +22,9 @@ SOURCE_NAME_29=EmacsPlusAT29
 SOURCE_FILE_30=Formula/emacs-plus@30.rb
 SOURCE_NAME_30=EmacsPlusAT30
 
+SOURCE_FILE_31=Formula/emacs-plus@31.rb
+SOURCE_NAME_31=EmacsPlusAT31
+
 TARGET_FILE=Formula/emacs-plus-local.rb
 TARGET_NAME=EmacsPlusLocal
 
@@ -42,7 +45,8 @@ Versions:
   27                    Emacs 27 - emacs-plus@27 - previous release
   28                    Emacs 28 - emacs-plus@28 - previous release
   29                    Emacs 29 - emacs-plus@29 - current release
-  30                    Emacs 30 - emacs-plus@30 - development (master)
+  30                    Emacs 30 - emacs-plus@30 - development (emacs-30)
+  31                    Emacs 31 - emacs-plus@31 - development (master)
 
 Consult each formula for the list of available options.
 "
@@ -71,6 +75,10 @@ case $VERSION in
   30)
     SOURCE_FILE=$SOURCE_FILE_30
     SOURCE_NAME=$SOURCE_NAME_30
+    ;;
+  31)
+    SOURCE_FILE=$SOURCE_FILE_31
+    SOURCE_NAME=$SOURCE_NAME_31
     ;;
   *)
     usage
