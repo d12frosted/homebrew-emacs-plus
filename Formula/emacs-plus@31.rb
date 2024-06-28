@@ -1,8 +1,8 @@
 require_relative "../Library/EmacsBase"
 
-class EmacsPlusAT30 < EmacsBase
-  init 30
-  version "30.0.50"
+class EmacsPlusAT31 < EmacsBase
+  init 31
+  version "31.0.50"
 
   on_macos do
     env :std
@@ -80,10 +80,10 @@ class EmacsPlusAT30 < EmacsBase
   # URL
   #
 
-  if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
-    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+  if ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
+    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
   else
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
   end
 
   #
@@ -96,7 +96,7 @@ class EmacsPlusAT30 < EmacsBase
   # Patches
   #
 
-  opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@30." if build.with? "no-frame-refocus"
+  opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@31." if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
   local_patch "poll", sha: "31b76d6a2830fa3b6d453e3bbf5ec7259b5babf1d977b2bf88a6624fa78cb3e6" if build.with? "poll"
