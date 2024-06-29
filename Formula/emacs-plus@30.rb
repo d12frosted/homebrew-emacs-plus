@@ -2,7 +2,7 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT30 < EmacsBase
   init 30
-  version "30.0.50"
+  version "30.0.60"
 
   on_macos do
     env :std
