@@ -95,7 +95,7 @@ class EmacsPlusAT27 < EmacsBase
     args << "--with-gnutls"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
-    ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+    ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     args <<
       if build.with? "dbus"

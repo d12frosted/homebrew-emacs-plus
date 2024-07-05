@@ -132,7 +132,7 @@ class EmacsPlusAT28 < EmacsBase
     args << "--with-native-compilation" if build.with? "native-comp"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
-    ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+    ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     # Necessary for libgccjit library discovery
     ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
