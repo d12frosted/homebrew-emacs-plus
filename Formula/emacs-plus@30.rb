@@ -281,9 +281,6 @@ class EmacsPlusAT30 < EmacsBase
     Dir.glob(emacs_info_dir/"*.info") do |info_filename|
       system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
     end
-    if build.with? "native-comp"
-      ln_sf "#{Dir[opt_prefix/"lib/emacs/*"].first}/native-lisp", "#{opt_prefix}/Emacs.app/Contents/native-lisp"
-    end
   end
 
   def caveats
