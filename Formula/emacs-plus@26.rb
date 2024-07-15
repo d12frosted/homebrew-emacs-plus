@@ -60,7 +60,7 @@ class EmacsPlusAT26 < EmacsBase
     imagemagick_lib_path = Formula["imagemagick@6"].opt_lib/"pkgconfig"
     ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
     ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
-    ENV.append "CFLAGS", "-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+    ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     args << "--with-modules"
     args << "--with-rsvg"
