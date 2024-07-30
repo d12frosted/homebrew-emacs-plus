@@ -1,10 +1,8 @@
 require_relative "../Library/EmacsBase"
 
-class EmacsPlusAT29 < EmacsBase
-  init 29
-  url "https://ftp.gnu.org/gnu/emacs/emacs-29.4.tar.xz"
-  mirror "https://ftpmirror.gnu.org/emacs/emacs-29.4.tar.xz"
-  sha256 "ba897946f94c36600a7e7bb3501d27aa4112d791bfe1445c61ed28550daca235"
+class EmacsPlusAT31 < EmacsBase
+  init 31
+  version "31.0.50"
 
   on_macos do
     env :std
@@ -12,10 +10,6 @@ class EmacsPlusAT29 < EmacsBase
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-
-  head do
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-29"
-  end
 
   #
   # Options
@@ -53,6 +47,7 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "little-cms2"
   depends_on "jansson"
   depends_on "tree-sitter"
+  depends_on "webp"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
@@ -82,6 +77,16 @@ class EmacsPlusAT29 < EmacsBase
   end
 
   #
+  # URL
+  #
+
+  if ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
+    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
+  else
+    url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+  end
+
+  #
   # Icons
   #
 
@@ -91,13 +96,11 @@ class EmacsPlusAT29 < EmacsBase
   # Patches
   #
 
-  local_patch "no-frame-refocus-cocoa", sha: "fb5777dc890aa07349f143ae65c2bcf43edad6febfd564b01a2235c5a15fcabd" if build.with? "no-frame-refocus"
+  opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@31." if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
-  local_patch "poll", sha: "052eacac5b7bd86b466f9a3d18bff9357f2b97517f463a09e4c51255bdb14648" if build.with? "poll"
+  local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
+  local_patch "poll", sha: "31b76d6a2830fa3b6d453e3bbf5ec7259b5babf1d977b2bf88a6624fa78cb3e6" if build.with? "poll"
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
-  local_patch "alpha-background", sha: "922d9c5cd7deebd16773d354150faa8a5e69d998651cb2e956d9ed600232b4bc"
-  local_patch "blur", sha: "f9c94861fc84620d97077c68f42bb2b2b1d25af75cf3a71b87c6ccf32a462f21"
 
   #
   # Initialize
@@ -133,9 +136,18 @@ class EmacsPlusAT29 < EmacsBase
     ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     # Necessary for libgccjit library discovery
-    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
-    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
-    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+    if build.with? "native-comp"
+      gcc_ver = Formula["gcc"].any_installed_version
+      gcc_ver_major = gcc_ver.major
+      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+
+      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+
+      ENV.append "LDFLAGS", "-L#{gcc_lib}"
+      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+    end
 
     args <<
       if build.with? "dbus"
@@ -162,6 +174,7 @@ class EmacsPlusAT29 < EmacsBase
 
     args << "--with-modules"
     args << "--with-rsvg"
+    args << "--with-webp"
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 

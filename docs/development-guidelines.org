@@ -28,6 +28,7 @@ We've been using GitHub workflows to run builds. Main targets are:
 - Emacs 28
 - Emacs 29
 - Emacs 30
+- Emacs 31
 
 Where it's applicable, we also run builds with different [[#options][→ options]]. The lesser options are available, the easier it is to cover all scenarios. Right now coverage is not the goal.
 

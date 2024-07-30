@@ -1,22 +1,22 @@
-name: Emacs 28
+name: Emacs 31
 
 on:
   push:
     branches:
       - master
     paths:
-      - "Formula/emacs-plus@28.rb"
-      - "patches/emacs-28/**"
+      - "Formula/emacs-plus@31.rb"
+      - "patches/emacs-31/**"
       - "Library/**"
-      - ".github/workflows/emacs-28.yml"
+      - ".github/workflows/emacs-31.yml"
   pull_request:
     paths:
-      - "Formula/emacs-plus@28.rb"
-      - "patches/emacs-28/**"
+      - "Formula/emacs-plus@31.rb"
+      - "patches/emacs-31/**"
       - "Library/**"
-      - ".github/workflows/emacs-28.yml"
+      - ".github/workflows/emacs-31.yml"
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "30 2 * * *"
 
 jobs:
   build:
@@ -28,7 +28,6 @@ jobs:
         build_opts:
           - ""
           - "--with-xwidgets"
-          - "--with-no-titlebar"
           - "--with-native-comp"
           - "--with-x11"
 
@@ -42,8 +41,8 @@ jobs:
         if: contains(matrix.build_opts, '--with-x11')
         run: brew install --cask xquartz
 
-      - name: Build emacs-plus@28 ${{ matrix.build_opts }}
-        run: brew install ./Formula/emacs-plus@28.rb ${{ matrix.build_opts }} --verbose
+      - name: Build emacs-plus@31 ${{ matrix.build_opts }}
+        run: brew install ./Formula/emacs-plus@31.rb ${{ matrix.build_opts }} --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
@@ -55,13 +54,12 @@ jobs:
           echo "build_opts=$BUILD_OPTS" >> "$GITHUB_ENV"
           RUNNER_OS=$(echo "${{ matrix.os }}" | sed 's/ //')
           echo "runner_os=$RUNNER_OS" >> "$GITHUB_ENV"
-          tar -C ~/Library/Logs/Homebrew/emacs-plus@28/ -czvf ~/Library/Logs/Homebrew/emacs-plus@28-$RUNNER_OS$BUILD_OPTS.tar.gz .
+          tar -C ~/Library/Logs/Homebrew/emacs-plus@31/ -czvf ~/Library/Logs/Homebrew/emacs-plus@31-$RUNNER_OS$BUILD_OPTS.tar.gz .
 
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: emacs-plus@28-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
+          name: emacs-plus@31-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
           path: |
-            ~/Library/Logs/Homebrew/emacs-plus@28-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
-
+            ~/Library/Logs/Homebrew/emacs-plus@31-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
