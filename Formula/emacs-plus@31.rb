@@ -27,6 +27,7 @@ class EmacsPlusAT31 < EmacsBase
   option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
   option "with-poll", "Experimental: use poll() instead of select() to support > 1024 file descriptors`"
+  option "with-mps", "Build With MPS garbage collector."
 
   #
   # Dependencies
@@ -66,6 +67,12 @@ class EmacsPlusAT31 < EmacsBase
     depends_on "zlib" => :build
   end
 
+  if build.with? "mps"
+    depends_on "libmps" => :recommended
+    # Set the HOMEBREW_EMACS_PLUS_31_BRANCH environment variable
+    ENV["HOMEBREW_EMACS_PLUS_31_BRANCH"] = ENV.fetch("HOMEBREW_EMACS_PLUS_31_BRANCH", "scratch/igc")
+  end
+
   #
   # Incompatible options
   #
@@ -80,10 +87,10 @@ class EmacsPlusAT31 < EmacsBase
   # URL
   #
 
-  if ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
-    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
+  if ENV["HOMEBREW_EMACS_PLUS_31_REVISION"]
+    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV["HOMEBREW_EMACS_PLUS_31_REVISION"]
   else
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
+    url "https://github.com/emacs-mirror/emacs.git", :branch => ENV.fetch("HOMEBREW_EMACS_PLUS_31_BRANCH", nil) or "master"
   end
 
   #
@@ -147,6 +154,14 @@ class EmacsPlusAT31 < EmacsBase
       ENV.append "LDFLAGS", "-L#{gcc_lib}"
       ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+    end
+
+    if build.with? "mps"
+      # build with mps
+      args << "--with-mps"
+
+      ENV.append "CFLAGS", "-I#{Formula["libmps"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libmps"].lib}"
     end
 
     args <<
