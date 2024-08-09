@@ -31,6 +31,7 @@ jobs:
           - "--with-xwidgets"
           - "--with-native-comp"
           - "--with-x11"
+          - "--with-mps"
 
     env:
       HOMEBREW_EMACS_PLUS_MODE: local
