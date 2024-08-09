@@ -26,24 +26,35 @@ jobs:
       matrix:
         os: [macos-12]
         build_opts:
+          - "--with-mps"
           - ""
           - "--with-xwidgets"
           - "--with-native-comp"
           - "--with-x11"
-          - "--with-mps"
 
     env:
       HOMEBREW_EMACS_PLUS_MODE: local
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: true
+          test-bot: false
 
+      - name: Enable debug mode
+        run: |
+          echo 'HOMEBREW_DEBUG=1' >> "${GITHUB_ENV}"
+          echo 'HOMEBREW_VERBOSE=1' >> "${GITHUB_ENV}"
+        if: runner.debug
       - name: Install xquartz
         if: contains(matrix.build_opts, '--with-x11')
         run: brew install --cask xquartz
 
       - name: Build emacs-plus@31 ${{ matrix.build_opts }}
-        run: brew install ./Formula/emacs-plus@31.rb ${{ matrix.build_opts }} --verbose
+        run: brew install emacs-plus@31 ${{ matrix.build_opts }} --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
