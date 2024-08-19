@@ -27,7 +27,7 @@ class EmacsPlusAT31 < EmacsBase
   option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
   option "with-poll", "Experimental: use poll() instead of select() to support > 1024 file descriptors`"
-  option "with-mps", "Build With MPS garbage collector."
+  option "with-mps", "Experimental: build With MPS garbage collector."
 
   #
   # Dependencies
