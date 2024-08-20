@@ -27,6 +27,7 @@ class EmacsPlusAT31 < EmacsBase
   option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
   option "with-poll", "Experimental: use poll() instead of select() to support > 1024 file descriptors`"
+  option "with-mps", "Experimental: build With MPS garbage collector"
 
   #
   # Dependencies
@@ -134,6 +135,10 @@ class EmacsPlusAT31 < EmacsBase
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+
+    if build.with? "mps"
+      ohai ">>>>> This MPS"
+    end
 
     # Necessary for libgccjit library discovery
     if build.with? "native-comp"
