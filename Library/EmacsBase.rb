@@ -40,11 +40,13 @@ class EmacsBase < Formula
       puts "Full PATH, including entries required for build: #{path_full}"
     end
 
-
+    # drop shared shims
     shared_idx = path_full.find_index { |x|
       x.end_with? "/Library/Homebrew/shims/shared"
     }
-    path = PATH.new(path_full.drop(shared_idx + 1))
+    if shared_idx
+      path = PATH.new(path_full.drop(shared_idx + 1))
+    end
 
     puts "Patching plist at #{plist} with following PATH value:"
     path.each_entry { |x|
