@@ -40,11 +40,21 @@ class EmacsBase < Formula
       puts "Full PATH, including entries required for build: #{path_full}"
     end
 
-
+    # drop shared shims
     shared_idx = path_full.find_index { |x|
       x.end_with? "/Library/Homebrew/shims/shared"
     }
-    path = PATH.new(path_full.drop(shared_idx + 1))
+    if shared_idx
+      path = PATH.new(path_full.drop(shared_idx + 1))
+    end
+
+    # drop super shims
+    super_idx = path_full.find_index { |x|
+      x.end_with? "/Library/Homebrew/shims/mac/super"
+    }
+    if super_idx
+      path = PATH.new(path_full.drop(super_idx + 1))
+    end
 
     puts "Patching plist at #{plist} with following PATH value:"
     path.each_entry { |x|
@@ -62,7 +72,10 @@ class EmacsBase < Formula
     # Expand PATH to include all dependencies and Superenv.bin as
     # dependencies can override standard tools.
     path = PATH.new()
-    path.append(deps.map { |dep| dep.to_formula.libexec/"gnubin" })
+    on_macos do
+      path.append("#{ENV['HOMEBREW_PREFIX']}/Library/Homebrew/shims/mac/super")
+    end
+    # path.append(deps.map { |dep| dep.to_formula.libexec/"gnubin" })
     path.append(deps.map { |dep| dep.to_formula.opt_bin })
     path.append(ENV['PATH'])
     ENV['PATH'] = path.existing

@@ -39,11 +39,36 @@ class EmacsPlusAT31 < EmacsBase
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "xz" => :build
+  depends_on "gettext" => :build
+  depends_on "libidn2" => :build
+  depends_on "libtasn1" => :build
+  depends_on "nettle" => :build
+  depends_on "p11-kit" => :build
+  depends_on "openssl@3" => :build
+  depends_on "libevent" => :build
   depends_on "gnutls"
+  depends_on "libpng" => :build
+  depends_on "freetype" => :build
+  depends_on "fontconfig" => :build
+  depends_on "pcre2" => :build
+  depends_on "sqlite" => :build
+  depends_on "glib" => :build
+  depends_on "cairo" => :build
+  depends_on "jpeg-turbo" => :build
+  depends_on "lz4" => :build
+  depends_on "zstd" => :build
+  depends_on "libtiff" => :build
+  depends_on "gdk-pixbuf" => :build
+  depends_on "fribidi" => :build
+  depends_on "graphite2" => :build
+  depends_on "icu4c" => :build
+  depends_on "harfbuzz" => :build
+  depends_on "pango" => :build
   depends_on "librsvg"
   depends_on "little-cms2"
   depends_on "jansson"
   depends_on "tree-sitter"
+  depends_on "giflib" => :build
   depends_on "webp"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
@@ -51,8 +76,6 @@ class EmacsPlusAT31 < EmacsBase
 
   if build.with? "x11"
     depends_on "libxaw"
-    depends_on "freetype" => :recommended
-    depends_on "fontconfig" => :recommended
   end
 
   if build.with? "native-comp"
