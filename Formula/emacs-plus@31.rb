@@ -114,7 +114,7 @@ class EmacsPlusAT31 < EmacsBase
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    args << "--with-native-compilation" if build.with? "native-comp"
+    args << "--with-native-compilation=aot" if build.with? "native-comp"
     args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
