@@ -112,9 +112,9 @@ class EmacsPlusAT31 < EmacsBase
   #
   def initialize(*args, **kwargs, &block)
     a = super
-    print_path if verbose?
-    expand_path if build.with? "path-injection"
-    print_path if verbose?
+    print_env if verbose?
+    expand_env if build.with? "path-injection"
+    print_env if verbose?
     a
   end
 
@@ -123,8 +123,8 @@ class EmacsPlusAT31 < EmacsBase
   #
 
   def install
-    expand_path if build.with? "path-injection"
-    print_path if verbose?
+    expand_env if build.with? "path-injection"
+    print_env if verbose?
 
     args = %W[
       --disable-dependency-tracking
@@ -156,6 +156,8 @@ class EmacsPlusAT31 < EmacsBase
       ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
     end
+
+    print_env if verbose?
 
     args <<
       if build.with? "dbus"

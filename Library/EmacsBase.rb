@@ -68,7 +68,7 @@ class EmacsBase < Formula
     system "touch '#{app}'"
   end
 
-  def expand_path
+  def expand_env
     # Expand PATH to include all dependencies and Superenv.bin as
     # dependencies can override standard tools.
     path = PATH.new()
@@ -81,14 +81,14 @@ class EmacsBase < Formula
     ENV['PATH'] = path.existing
 
     if verbose?
-      print_path
+      print_env
       system "which", "tar"
       system "which", "ls"
       system "which", "grep"
     end
   end
 
-  def print_path
+  def print_env
     path = PATH.new()
     path.append(ENV['PATH'])
     puts "PATH value is"

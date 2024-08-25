@@ -102,7 +102,7 @@ class EmacsPlusAT29 < EmacsBase
   #
   def initialize(*args, **kwargs, &block)
     a = super
-    expand_path
+    expand_env
     a
   end
 
@@ -111,7 +111,7 @@ class EmacsPlusAT29 < EmacsBase
   #
 
   def install
-    expand_path
+    expand_env
 
     args = %W[
       --disable-dependency-tracking
