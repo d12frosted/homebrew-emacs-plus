@@ -58,7 +58,7 @@ class EmacsBase < Formula
     system "touch '#{app}'"
   end
 
-  def expand_path
+  def expand_env
     # Expand PATH to include all dependencies and Superenv.bin as
     # dependencies can override standard tools.
     path = PATH.new()
@@ -67,21 +67,40 @@ class EmacsBase < Formula
     path.append(ENV['PATH'])
     ENV['PATH'] = path.existing
 
+    # and also cleanup some ENV variables used for native compilation
+    # (basically, imitate super env)
+    ENV['LIBRARY_PATH'] = ""
+    ENV['CPATH'] = ""
+    ENV['LDFLAGS'] = ""
+    ENV['CFLAGS'] = ""
+
     if verbose?
-      print_path
+      print_env
       system "which", "tar"
       system "which", "ls"
       system "which", "grep"
     end
   end
 
-  def print_path
+  def print_env
     path = PATH.new()
     path.append(ENV['PATH'])
     puts "PATH value is"
     path.each_entry { |x|
       puts "  - #{x}"
     }
+
+    puts "LIBRARY_PATH values is"
+    puts ENV['LIBRARY_PATH']
+
+    puts "CPATH values is"
+    puts ENV['CPATH']
+
+    puts "LDFLAGS values is"
+    puts ENV['LDFLAGS']
+
+    puts "CFLAGS values is"
+    puts ENV['CFLAGS']
   end
 
   def inject_protected_resources_usage_desc

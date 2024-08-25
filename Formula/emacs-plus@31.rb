@@ -112,9 +112,9 @@ class EmacsPlusAT31 < EmacsBase
   #
   def initialize(*args, **kwargs, &block)
     a = super
-    print_path if verbose?
-    expand_path if build.with? "path-injection"
-    print_path if verbose?
+    print_env if verbose?
+    expand_env if build.with? "path-injection"
+    print_env if verbose?
     a
   end
 
@@ -123,8 +123,8 @@ class EmacsPlusAT31 < EmacsBase
   #
 
   def install
-    expand_path if build.with? "path-injection"
-    print_path if verbose?
+    expand_env if build.with? "path-injection"
+    print_env if verbose?
 
     args = %W[
       --disable-dependency-tracking
@@ -157,6 +157,8 @@ class EmacsPlusAT31 < EmacsBase
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
     end
 
+    print_env if verbose?
+
     args <<
       if build.with? "dbus"
         "--with-dbus"
@@ -186,9 +188,6 @@ class EmacsPlusAT31 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
