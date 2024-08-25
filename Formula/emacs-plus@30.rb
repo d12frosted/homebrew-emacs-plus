@@ -4,10 +4,6 @@ class EmacsPlusAT30 < EmacsBase
   init 30
   version "30.0.60"
 
-  on_macos do
-    env :std
-  end
-
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
 
@@ -17,6 +13,7 @@ class EmacsPlusAT30 < EmacsBase
 
   # Opt-out
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
+  option "without-path-injection", "Build without path injection in isolated environment"
 
   # Opt-in
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
@@ -77,6 +74,14 @@ class EmacsPlusAT30 < EmacsBase
   end
 
   #
+  # Environment
+  #
+
+  on_macos do
+    env :std if build.with? "path-injection"
+  end
+
+  #
   # URL
   #
 
@@ -107,7 +112,9 @@ class EmacsPlusAT30 < EmacsBase
   #
   def initialize(*args, **kwargs, &block)
     a = super
-    expand_path
+    print_path if verbose?
+    expand_path if build.with? "path-injection"
+    print_path if verbose?
     a
   end
 
@@ -116,7 +123,8 @@ class EmacsPlusAT30 < EmacsBase
   #
 
   def install
-    expand_path
+    expand_path if build.with? "path-injection"
+    print_path if verbose?
 
     args = %W[
       --disable-dependency-tracking
@@ -220,7 +228,7 @@ class EmacsPlusAT30 < EmacsBase
       (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
 
       # inject PATH to Info.plist
-      inject_path
+      inject_path if build.with? "path-injection"
 
       # inject description for protected resources usage
       inject_protected_resources_usage_desc
