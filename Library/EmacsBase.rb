@@ -67,16 +67,21 @@ class EmacsBase < Formula
     path.append(ENV['PATH'])
     ENV['PATH'] = path.existing
 
-    # TODO: remove this debug info
     if verbose?
-      puts "PATH value was changed to:"
-      path.each_entry { |x|
-        puts x
-      }
+      print_path
       system "which", "tar"
       system "which", "ls"
       system "which", "grep"
     end
+  end
+
+  def print_path
+    path = PATH.new()
+    path.append(ENV['PATH'])
+    puts "PATH value is"
+    path.each_entry { |x|
+      puts "  - #{x}"
+    }
   end
 
   def inject_protected_resources_usage_desc
