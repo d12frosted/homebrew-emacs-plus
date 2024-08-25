@@ -6,10 +6,6 @@ class EmacsPlusAT29 < EmacsBase
   mirror "https://ftpmirror.gnu.org/emacs/emacs-29.4.tar.xz"
   sha256 "ba897946f94c36600a7e7bb3501d27aa4112d791bfe1445c61ed28550daca235"
 
-  on_macos do
-    env :std
-  end
-
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
 
@@ -98,21 +94,10 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
 
   #
-  # Initialize
-  #
-  def initialize(*args, **kwargs, &block)
-    a = super
-    expand_env
-    a
-  end
-
-  #
   # Install
   #
 
   def install
-    expand_env
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -163,9 +148,6 @@ class EmacsPlusAT29 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
