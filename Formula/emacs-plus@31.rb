@@ -13,7 +13,6 @@ class EmacsPlusAT31 < EmacsBase
 
   # Opt-out
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
-  option "without-path-injection", "Build without path injection in isolated environment"
 
   # Opt-in
   option "with-ctags", "Don't remove the ctags executable that Emacs provides"
@@ -74,14 +73,6 @@ class EmacsPlusAT31 < EmacsBase
   end
 
   #
-  # Environment
-  #
-
-  on_macos do
-    env :std if build.with? "path-injection"
-  end
-
-  #
   # URL
   #
 
@@ -108,24 +99,10 @@ class EmacsPlusAT31 < EmacsBase
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
 
   #
-  # Initialize
-  #
-  def initialize(*args, **kwargs, &block)
-    a = super
-    print_env if verbose?
-    expand_env if build.with? "path-injection"
-    print_env if verbose?
-    a
-  end
-
-  #
   # Install
   #
 
   def install
-    expand_env if build.with? "path-injection"
-    print_env if verbose?
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -157,8 +134,6 @@ class EmacsPlusAT31 < EmacsBase
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
     end
 
-    print_env if verbose?
-
     args <<
       if build.with? "dbus"
         "--with-dbus"
@@ -188,9 +163,6 @@ class EmacsPlusAT31 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
@@ -230,7 +202,7 @@ class EmacsPlusAT31 < EmacsBase
       (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
 
       # inject PATH to Info.plist
-      inject_path if build.with? "path-injection"
+      inject_path
 
       # inject description for protected resources usage
       inject_protected_resources_usage_desc

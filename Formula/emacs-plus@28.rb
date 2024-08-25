@@ -6,10 +6,6 @@ class EmacsPlusAT28 < EmacsBase
   mirror "https://ftpmirror.gnu.org/emacs/emacs-28.2.tar.xz"
   sha256 "ee21182233ef3232dc97b486af2d86e14042dbb65bbc535df562c3a858232488"
 
-  on_macos do
-    env :std
-  end
-
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
 
@@ -103,21 +99,10 @@ class EmacsPlusAT28 < EmacsBase
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
 
   #
-  # Initialize
-  #
-  def initialize(*args, **kwargs, &block)
-    a = super
-    expand_env
-    a
-  end
-
-  #
   # Install
   #
 
   def install
-    expand_env
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -167,9 +152,6 @@ class EmacsPlusAT28 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")

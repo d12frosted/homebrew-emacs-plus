@@ -34,27 +34,7 @@ class EmacsBase < Formula
     ohai "Injecting PATH value to Emacs.app/Contents/Info.plist"
     app = "#{prefix}/Emacs.app"
     plist = "#{app}/Contents/Info.plist"
-    path_full = PATH.new(ENV['PATH'])
-
-    if verbose?
-      puts "Full PATH, including entries required for build: #{path_full}"
-    end
-
-    # drop shared shims
-    shared_idx = path_full.find_index { |x|
-      x.end_with? "/Library/Homebrew/shims/shared"
-    }
-    if shared_idx
-      path = PATH.new(path_full.drop(shared_idx + 1))
-    end
-
-    # drop super shims
-    super_idx = path_full.find_index { |x|
-      x.end_with? "/Library/Homebrew/shims/mac/super"
-    }
-    if super_idx
-      path = PATH.new(path_full.drop(super_idx + 1))
-    end
+    path = PATH.new(ORIGINAL_PATHS)
 
     puts "Patching plist at #{plist} with following PATH value:"
     path.each_entry { |x|
@@ -68,32 +48,28 @@ class EmacsBase < Formula
     system "touch '#{app}'"
   end
 
-  def expand_env
-    # Expand PATH to include all dependencies and Superenv.bin as
-    # dependencies can override standard tools.
-    path = PATH.new()
-    on_macos do
-      path.append("#{ENV['HOMEBREW_PREFIX']}/Library/Homebrew/shims/mac/super")
-    end
-    # path.append(deps.map { |dep| dep.to_formula.libexec/"gnubin" })
-    path.append(deps.map { |dep| dep.to_formula.opt_bin })
-    path.append(ENV['PATH'])
-    ENV['PATH'] = path.existing
-
-    if verbose?
-      print_env
-      system "which", "tar"
-      system "which", "ls"
-      system "which", "grep"
-    end
-  end
-
   def print_env
-    path = PATH.new()
-    path.append(ENV['PATH'])
-    puts "PATH value is"
-    path.each_entry { |x|
-      puts "  - #{x}"
+    ohai "Environment"
+    ["CC",
+     "CXX",
+     "OBJC",
+     "OBJCXX",
+     "CFLAGS",
+     "CXXFLAGS",
+     "CPPFLAGS",
+     "LDFLAGS",
+     "SDKROOT",
+     "MAKEFLAGS",
+     "CMAKE_PREFIX_PATH",
+     "CMAKE_FRAMEWORK_PATH",
+     "PKG_CONFIG_PATH",
+     "PKG_CONFIG_LIBDIR",
+     "HOMEBREW_GIT",
+     "ACLOCAL_PATH",
+     "PATH",
+     "CPATH",
+    ].each { |key|
+      puts "#{key}: #{ENV[key]}"
     }
   end
 
