@@ -8,6 +8,7 @@ ICONS_CONFIG = {
   "EmacsIcon7" => "9820f314d088b3eb0032c6559140e814da4d3162a2249813e59d3cc70ab036a0",
   "EmacsIcon8" => "e2269a19a8e17a1290f98ff03ab42d009154fcdbadfc140acd6ae0c5f10b4940",
   "EmacsIcon9" => "f6096dbeab34d7c6e4937e64b4f3c8d08ed1f9c8c6ab1668b6f58b6737427999",
+  "c9rgreen-sonoma" => "0e80aec0c6ead0b49177d9e230cf0569ee16465e36dbacabe9e8e0a4152d9b62",
   "cacodemon" => "69f9dcdcad453655b6ae35f128d9f6ef1ac03c6c64b08216045b4f163624ccef",
   "dragon" => "01ce40deb70f9394eef1cc5e8eda936fa73f80c4c0ab99642547df007d3016e9",
   "elrumo1" => "d7b5a2e017f5725fd665ae700d705c39d40279a14d6e532166c37e50ec777ce3",
