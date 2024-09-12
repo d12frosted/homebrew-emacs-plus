@@ -2,7 +2,7 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT30 < EmacsBase
   init 30
-  version "30.0.60"
+  version "30.0.91"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
