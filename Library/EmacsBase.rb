@@ -34,17 +34,7 @@ class EmacsBase < Formula
     ohai "Injecting PATH value to Emacs.app/Contents/Info.plist"
     app = "#{prefix}/Emacs.app"
     plist = "#{app}/Contents/Info.plist"
-    path_full = PATH.new(ENV['PATH'])
-
-    if verbose?
-      puts "Full PATH, including entries required for build: #{path_full}"
-    end
-
-
-    shared_idx = path_full.find_index { |x|
-      x.end_with? "/Library/Homebrew/shims/shared"
-    }
-    path = PATH.new(path_full.drop(shared_idx + 1))
+    path = PATH.new(ORIGINAL_PATHS)
 
     puts "Patching plist at #{plist} with following PATH value:"
     path.each_entry { |x|
@@ -58,25 +48,29 @@ class EmacsBase < Formula
     system "touch '#{app}'"
   end
 
-  def expand_path
-    # Expand PATH to include all dependencies and Superenv.bin as
-    # dependencies can override standard tools.
-    path = PATH.new()
-    path.append(deps.map { |dep| dep.to_formula.libexec/"gnubin" })
-    path.append(deps.map { |dep| dep.to_formula.opt_bin })
-    path.append(ENV['PATH'])
-    ENV['PATH'] = path.existing
-
-    # TODO: remove this debug info
-    if verbose?
-      puts "PATH value was changed to:"
-      path.each_entry { |x|
-        puts x
-      }
-      system "which", "tar"
-      system "which", "ls"
-      system "which", "grep"
-    end
+  def print_env
+    ohai "Environment"
+    ["CC",
+     "CXX",
+     "OBJC",
+     "OBJCXX",
+     "CFLAGS",
+     "CXXFLAGS",
+     "CPPFLAGS",
+     "LDFLAGS",
+     "SDKROOT",
+     "MAKEFLAGS",
+     "CMAKE_PREFIX_PATH",
+     "CMAKE_FRAMEWORK_PATH",
+     "PKG_CONFIG_PATH",
+     "PKG_CONFIG_LIBDIR",
+     "HOMEBREW_GIT",
+     "ACLOCAL_PATH",
+     "PATH",
+     "CPATH",
+    ].each { |key|
+      puts "#{key}: #{ENV[key]}"
+    }
   end
 
   def inject_protected_resources_usage_desc
@@ -88,6 +82,8 @@ class EmacsBase < Formula
     system "/usr/libexec/PlistBuddy -c 'Set NSCameraUsageDescription Emacs requires permission to access the Camera.' '#{plist}'"
     system "/usr/libexec/PlistBuddy -c 'Add NSMicrophoneUsageDescription string' '#{plist}'"
     system "/usr/libexec/PlistBuddy -c 'Set NSMicrophoneUsageDescription Emacs requires permission to access the Microphone.' '#{plist}'"
+    system "/usr/libexec/PlistBuddy -c 'Add NSSpeechRecognitionUsageDescription string' '#{plist}' || true"
+    system "/usr/libexec/PlistBuddy -c 'Set NSSpeechRecognitionUsageDescription Emacs requires permission to handle any speech recognition.' '#{plist}' || true"
     system "touch '#{app}'"
   end
 end

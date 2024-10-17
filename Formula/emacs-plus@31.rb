@@ -4,10 +4,6 @@ class EmacsPlusAT31 < EmacsBase
   init 31
   version "31.0.50"
 
-  on_macos do
-    env :std
-  end
-
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
 
@@ -42,6 +38,7 @@ class EmacsPlusAT31 < EmacsBase
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "xz" => :build
+  depends_on "m4" => :build 
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
@@ -99,25 +96,14 @@ class EmacsPlusAT31 < EmacsBase
   opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@31." if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
-  local_patch "poll", sha: "31b76d6a2830fa3b6d453e3bbf5ec7259b5babf1d977b2bf88a6624fa78cb3e6" if build.with? "poll"
+  local_patch "poll", sha: "59e876f82e6fd8e4583bc2456339eda4f989c86b1e16a02b0726702e95f60825" if build.with? "poll"
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
-
-  #
-  # Initialize
-  #
-  def initialize(*args, **kwargs, &block)
-    a = super
-    expand_path
-    a
-  end
 
   #
   # Install
   #
 
   def install
-    expand_path
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -129,7 +115,7 @@ class EmacsPlusAT31 < EmacsBase
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    args << "--with-native-compilation" if build.with? "native-comp"
+    args << "--with-native-compilation=aot" if build.with? "native-comp"
     args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
@@ -178,9 +164,6 @@ class EmacsPlusAT31 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")

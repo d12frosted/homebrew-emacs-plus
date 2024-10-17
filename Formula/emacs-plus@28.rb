@@ -6,10 +6,6 @@ class EmacsPlusAT28 < EmacsBase
   mirror "https://ftpmirror.gnu.org/emacs/emacs-28.2.tar.xz"
   sha256 "ee21182233ef3232dc97b486af2d86e14042dbb65bbc535df562c3a858232488"
 
-  on_macos do
-    env :std
-  end
-
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
 
@@ -103,21 +99,10 @@ class EmacsPlusAT28 < EmacsBase
   local_patch "system-appearance", sha: "d6ee159839b38b6af539d7b9bdff231263e451c1fd42eec0d125318c9db8cd92"
 
   #
-  # Initialize
-  #
-  def initialize(*args, **kwargs, &block)
-    a = super
-    expand_path
-    a
-  end
-
-  #
   # Install
   #
 
   def install
-    expand_path
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -135,9 +120,18 @@ class EmacsPlusAT28 < EmacsBase
     ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     # Necessary for libgccjit library discovery
-    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
-    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
-    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+    if build.with? "native-comp"
+      gcc_ver = Formula["gcc"].any_installed_version
+      gcc_ver_major = gcc_ver.major
+      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+
+      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+
+      ENV.append "LDFLAGS", "-L#{gcc_lib}"
+      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+    end
 
     args <<
       if build.with? "dbus"
@@ -167,9 +161,6 @@ class EmacsPlusAT28 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
@@ -271,6 +262,12 @@ class EmacsPlusAT28 < EmacsBase
 
       Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS
+  end
+
+  def post_install
+    if build.with? "native-comp"
+      ln_sf "#{Dir[opt_prefix/"lib/emacs/*"].first}/native-lisp", "#{opt_prefix}/Emacs.app/Contents/native-lisp"
+    end
   end
 
   service do

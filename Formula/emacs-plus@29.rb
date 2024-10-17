@@ -6,10 +6,6 @@ class EmacsPlusAT29 < EmacsBase
   mirror "https://ftpmirror.gnu.org/emacs/emacs-29.4.tar.xz"
   sha256 "ba897946f94c36600a7e7bb3501d27aa4112d791bfe1445c61ed28550daca235"
 
-  on_macos do
-    env :std
-  end
-
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
 
@@ -48,6 +44,7 @@ class EmacsPlusAT29 < EmacsBase
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "xz" => :build
+  depends_on "m4" => :build
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
@@ -100,21 +97,10 @@ class EmacsPlusAT29 < EmacsBase
   local_patch "blur", sha: "f9c94861fc84620d97077c68f42bb2b2b1d25af75cf3a71b87c6ccf32a462f21"
 
   #
-  # Initialize
-  #
-  def initialize(*args, **kwargs, &block)
-    a = super
-    expand_path
-    a
-  end
-
-  #
   # Install
   #
 
   def install
-    expand_path
-
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -133,9 +119,18 @@ class EmacsPlusAT29 < EmacsBase
     ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
     # Necessary for libgccjit library discovery
-    ENV.append "CPATH", "-I#{Formula["libgccjit"].opt_include}" if build.with? "native-comp"
-    ENV.append "LIBRARY_PATH", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
-    ENV.append "LDFLAGS", "-L#{Formula["libgccjit"].opt_lib}" if build.with? "native-comp"
+    if build.with? "native-comp"
+      gcc_ver = Formula["gcc"].any_installed_version
+      gcc_ver_major = gcc_ver.major
+      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+
+      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+
+      ENV.append "LDFLAGS", "-L#{gcc_lib}"
+      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+    end
 
     args <<
       if build.with? "dbus"
@@ -165,9 +160,6 @@ class EmacsPlusAT29 < EmacsBase
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
 
-    ENV.prepend_path "PATH", Formula["gnu-sed"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["gnu-tar"].opt_libexec/"gnubin"
-    ENV.prepend_path "PATH", Formula["grep"].opt_libexec/"gnubin"
     system "./autogen.sh"
 
     if (build.with? "cocoa") && (build.without? "x11")
@@ -267,6 +259,9 @@ class EmacsPlusAT29 < EmacsBase
     emacs_info_dir = info/"emacs"
     Dir.glob(emacs_info_dir/"*.info") do |info_filename|
       system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
+    end
+    if build.with? "native-comp"
+      ln_sf "#{Dir[opt_prefix/"lib/emacs/*"].first}/native-lisp", "#{opt_prefix}/Emacs.app/Contents/native-lisp"
     end
   end
 
