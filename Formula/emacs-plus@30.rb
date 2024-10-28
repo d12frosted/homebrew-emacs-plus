@@ -10,7 +10,11 @@ class EmacsPlusAT30 < EmacsBase
   homepage "https://www.gnu.org/software/emacs/"
 
   head do
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
+    if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+      url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+    else
+      url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
+    end
   end
 
   #
