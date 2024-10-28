@@ -2,10 +2,20 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT30 < EmacsBase
   init 30
-  version "30.0.91"
+  url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-30.0.92.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-30.0.92.tar.xz"
+  sha256 "d89287bd5a8381bb60e14aab95202377261d43a60d15dc0a61d0d662bc5626be"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
+
+  head do
+    if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+      url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+    else
+      url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
+    end
+  end
 
   #
   # Options
@@ -38,7 +48,7 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "xz" => :build
-  depends_on "m4" => :build 
+  depends_on "m4" => :build
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
@@ -79,8 +89,6 @@ class EmacsPlusAT30 < EmacsBase
 
   if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
     url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
-  else
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
   end
 
   #
