@@ -32,7 +32,6 @@ class EmacsPlusAT30 < EmacsBase
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
   option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
-  option "with-poll", "Experimental: use poll() instead of select() to support > 1024 file descriptors`"
 
   #
   # Dependencies
@@ -104,7 +103,6 @@ class EmacsPlusAT30 < EmacsBase
   opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@30." if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
-  local_patch "poll", sha: "59e876f82e6fd8e4583bc2456339eda4f989c86b1e16a02b0726702e95f60825" if build.with? "poll"
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
 
   #
@@ -171,7 +169,6 @@ class EmacsPlusAT30 < EmacsBase
     args << "--with-webp"
     args << "--without-pop" if build.with? "mailutils"
     args << "--with-xwidgets" if build.with? "xwidgets"
-    args << "--with-poll" if build.with? "poll"
 
     system "./autogen.sh"
 
