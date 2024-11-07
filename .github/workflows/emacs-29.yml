@@ -42,7 +42,7 @@ jobs:
       - run: echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
 
       - name: Install xquartz
-        if: contains(matrix.build_opts, '--with-x11')
+        if: matrix.os == 'macos-12' && contains(matrix.build_opts, '--with-x11')
         run: brew install --cask xquartz
 
       - name: Build emacs-plus@29 ${{ matrix.build_opts }}
