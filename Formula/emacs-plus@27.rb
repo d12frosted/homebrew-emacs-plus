@@ -134,7 +134,7 @@ class EmacsPlusAT27 < EmacsBase
       system "./configure", *args
 
       # Disable aligned_alloc on Mojave. See issue: https://github.com/daviderestivo/homebrew-emacs-head/issues/15
-      if MacOS.version <= :mojave
+      if OS.mac? && MacOS.version <= :mojave
         ohai "Force disabling of aligned_alloc on macOS <= Mojave"
         configure_h_filtered = File.read("src/config.h")
                                    .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
@@ -183,7 +183,7 @@ class EmacsPlusAT27 < EmacsBase
       system "./configure", *args
 
       # Disable aligned_alloc on Mojave. See issue: https://github.com/daviderestivo/homebrew-emacs-head/issues/15
-      if MacOS.version <= :mojave
+      if OS.mac? && MacOS.version <= :mojave
         ohai "Force disabling of aligned_alloc on macOS <= Mojave"
         configure_h_filtered = File.read("src/config.h")
                                    .gsub("#define HAVE_ALIGNED_ALLOC 1", "#undef HAVE_ALIGNED_ALLOC")
