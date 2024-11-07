@@ -36,6 +36,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        if: matrix.os == 'ubuntu-latest'
+      - run: echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> $GITHUB_PATH
 
       - name: Install xquartz
         if: contains(matrix.build_opts, '--with-x11')
