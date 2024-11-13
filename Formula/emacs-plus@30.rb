@@ -66,8 +66,8 @@ class EmacsPlusAT30 < EmacsBase
   end
 
   if build.with? "native-comp"
-    depends_on "libgccjit" => :recommended
-    depends_on "gcc" => :build
+    depends_on "libgccjit"
+    depends_on "gcc"
     depends_on "gmp" => :build
     depends_on "libjpeg" => :build
     depends_on "zlib" => :build
