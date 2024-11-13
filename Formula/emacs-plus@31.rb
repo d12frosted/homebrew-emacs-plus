@@ -37,7 +37,8 @@ class EmacsPlusAT31 < EmacsBase
   depends_on "pkg-config" => :build
   depends_on "texinfo" => :build
   depends_on "xz" => :build
-  depends_on "m4" => :build 
+  depends_on "m4" => :build
+  depends_on "sqlite" => :build
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
@@ -118,6 +119,9 @@ class EmacsPlusAT31 < EmacsBase
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
     ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+
+    ENV.append "CFLAGS", "-I#{Formula["sqlite"].include}"
+    ENV.append "LDFLAGS", "-L#{Formula["sqlite"].opt_lib}"
 
     # Necessary for libgccjit library discovery
     if build.with? "native-comp"
