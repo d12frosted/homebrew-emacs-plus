@@ -56,8 +56,10 @@ class EmacsPlusAT31 < EmacsBase
   end
 
   if build.with? "native-comp"
+    # `libgccjit` and `gcc` are required when Emacs compiles `*.elc` files asynchronously (JIT)
     depends_on "libgccjit"
     depends_on "gcc"
+
     depends_on "gmp" => :build
     depends_on "libjpeg" => :build
     depends_on "zlib" => :build
