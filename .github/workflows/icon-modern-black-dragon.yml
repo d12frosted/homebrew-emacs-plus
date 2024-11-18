@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-13
     env:
       HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
       HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}

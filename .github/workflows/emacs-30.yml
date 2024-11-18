@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-12]
+        os: [macos-13]
         build_opts:
           - ""
           - "--with-xwidgets"
@@ -63,4 +63,3 @@ jobs:
           name: emacs-plus@30-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
           path: |
             ~/Library/Logs/Homebrew/emacs-plus@30-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
-

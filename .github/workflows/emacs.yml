@@ -22,14 +22,14 @@ jobs:
     strategy:
       matrix:
         os:
-          - macos-12
+          - macos-13
           - ubuntu-latest
         build_opts:
           - ""
           - "--build-from-source"
           - "--with-spacemacs-icon"
         include:
-          - os: macos-12
+          - os: macos-13
             logs: "~/Library/Logs/Homebrew"
           - os: ubuntu-latest
             logs: "~/.cache/Homebrew/Logs"
