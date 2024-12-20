@@ -99,6 +99,8 @@ class EmacsPlusAT31 < EmacsBase
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
   local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
   local_patch "round-undecorated-frame", sha: "9154621f59f00d58117d199a427c5c081289fd2b691b22d9bdf27efe065f43f0"
+  # 自动切换输入法
+  local_patch "ns-mac-input-source.patch", sha: "99fefba9eb0725743a901cd95e0deb575193e1d258094cb56ccbac37ada0ffa2"
 
   #
   # Install

@@ -1,0 +1,525 @@
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 3c012ca8f05..0167e07f73c 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -47,6 +47,7 @@ Updated by Christian Limpach (chris@nice.ch)
+ #ifdef NS_IMPL_COCOA
+ #include <IOKit/graphics/IOGraphicsLib.h>
+ #include "macfont.h"
++#include <Carbon/Carbon.h>
+ 
+ #if MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
+ #include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+@@ -1143,7 +1144,479 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+   return Qnil;
+ }
+ 
++/* From CFData to a lisp string.  Always returns a unibyte string.  */
++static Lisp_Object
++cfdata_to_lisp (CFDataRef data)
++{
++  CFIndex len = CFDataGetLength (data);
++  Lisp_Object result = make_uninit_string (len);
++
++  CFDataGetBytes (data, CFRangeMake (0, len), SDATA (result));
++
++  return result;
++}
++
++/* From CFString to a lisp string.  Returns a unibyte string
++   containing a UTF-8 byte sequence.  */
++static Lisp_Object
++cfstring_to_lisp_nodecode (CFStringRef string)
++{
++  Lisp_Object result = Qnil;
++  CFDataRef data;
++  const char *s = CFStringGetCStringPtr (string, kCFStringEncodingUTF8);
++
++  if (s)
++    {
++      CFIndex i, length = CFStringGetLength (string);
++
++      for (i = 0; i < length; i++)
++	if (CFStringGetCharacterAtIndex (string, i) == 0)
++	  break;
++
++      if (i == length)
++	return make_unibyte_string (s, strlen (s));
++    }
++
++  data = CFStringCreateExternalRepresentation (NULL, string,
++					       kCFStringEncodingUTF8, '?');
++  if (data)
++    {
++      result = cfdata_to_lisp (data);
++      CFRelease (data);
++    }
++
++  return result;
++}
++
++/* From CFString to a lisp string.  Never returns a unibyte string
++   (even if it only contains ASCII characters).
++   This may cause GC during code conversion. */
++static Lisp_Object
++cfstring_to_lisp (CFStringRef string)
++{
++  Lisp_Object result = cfstring_to_lisp_nodecode (string);
++
++  if (!NILP (result))
++    {
++      result = code_convert_string_norecord (result, Qutf_8, 0);
++      /* This may be superfluous.  Just to make sure that the result
++	 is a multibyte string.  */
++      result = string_to_multibyte (result);
++    }
++
++  return result;
++}
++
++/* C string to CFString.  */
++static CFStringRef
++cfstring_create_with_utf8_cstring (const char *c_str)
++{
++  CFStringRef str;
++
++  str = CFStringCreateWithCString (NULL, c_str, kCFStringEncodingUTF8);
++  if (str == NULL)
++    /* Failed to interpret as UTF 8.  Fall back on Mac Roman.  */
++    str = CFStringCreateWithCString (NULL, c_str, kCFStringEncodingMacRoman);
++
++  return str;
++}
++
++/* Lisp string containing a UTF-8 byte sequence to CFString.  Unlike
++   cfstring_create_with_utf8_cstring, this function preserves NUL
++   characters.  */
++static CFStringRef
++cfstring_create_with_string_noencode (Lisp_Object s)
++{
++  CFStringRef string = CFStringCreateWithBytes (NULL, SDATA (s), SBYTES (s),
++						kCFStringEncodingUTF8, false);
++
++  if (string == NULL)
++    /* Failed to interpret as UTF 8.  Fall back on Mac Roman.  */
++    string = CFStringCreateWithBytes (NULL, SDATA (s), SBYTES (s),
++				      kCFStringEncodingMacRoman, false);
++
++  return string;
++}
++
++/* Lisp string to CFString.  */
++static CFStringRef
++cfstring_create_with_string (Lisp_Object s)
++{
++  // eassert (!mac_gui_thread_p ());
++  if (STRING_MULTIBYTE (s))
++    {
++      char *p, *end = SSDATA (s) + SBYTES (s);
++
++      for (p = SSDATA (s); p < end; p++)
++	if (!isascii (*p))
++	  {
++	    s = ENCODE_UTF_8 (s);
++	    break;
++	  }
++      return cfstring_create_with_string_noencode (s);
++    }
++  else
++    return CFStringCreateWithBytes (NULL, SDATA (s), SBYTES (s),
++				    kCFStringEncodingMacRoman, false);
++}
++
++/* Create and return a TISInputSource object from a Lisp
++   representation of the input source SOURCE.  Return NULL if a
++   TISInputSource object cannot be created.  */
++TISInputSourceRef
++mac_create_input_source_from_lisp (Lisp_Object source)
++{
++  TISInputSourceRef __block result = NULL;
++
++  if (SYMBOLP (source))
++    {
++      if (NILP (source) || EQ (source, Qkeyboard))
++        result = TISCopyCurrentKeyboardInputSource ();
++      else if (EQ (source, Qkeyboard_layout))
++        result = TISCopyCurrentKeyboardLayoutInputSource ();
++      else if (EQ (source, Qascii_capable_keyboard))
++        result = TISCopyCurrentASCIICapableKeyboardInputSource ();
++      else if (EQ (source, Qascii_capable_keyboard_layout))
++        result = TISCopyCurrentASCIICapableKeyboardLayoutInputSource ();
++      else if (EQ (source, Qkeyboard_layout_override))
++        result = TISCopyInputMethodKeyboardLayoutOverride ();
++      else
++      if (EQ (source, Qt))
++        {
++          CFLocaleRef locale = CFLocaleCopyCurrent ();
++
++          if (locale)
++            {
++              CFStringRef language =
++                CFLocaleGetValue (locale, kCFLocaleLanguageCode);
++
++              if (language)
++                result = TISCopyInputSourceForLanguage (language);
++              CFRelease (locale);
++            }
++        }
++    }
++  else if (STRINGP (source))
++    {
++      CFStringRef string = cfstring_create_with_string (source);
++
++      if (string)
++        {
++          CFArrayRef sources = NULL;
++          CFDictionaryRef properties =
++            CFDictionaryCreate (NULL,
++                                (const void **) &kTISPropertyInputSourceID,
++                                (const void **) &string, 1,
++                                &kCFTypeDictionaryKeyCallBacks,
++                                &kCFTypeDictionaryValueCallBacks);
++
++          if (properties)
++            {
++              sources = TISCreateInputSourceList (properties, false);
++              if (sources == NULL)
++                sources = TISCreateInputSourceList (properties, true);
++              CFRelease (properties);
++            }
++          if (sources)
++            {
++              if (CFArrayGetCount (sources) > 0)
++                result = ((TISInputSourceRef)
++                          CFRetain (CFArrayGetValueAtIndex (sources, 0)));
++              CFRelease (sources);
++            }
++          else
++            {
++              CFStringRef language =
++                CFLocaleCreateCanonicalLanguageIdentifierFromString (NULL,
++                                                                     string);
++
++              if (language)
++                {
++                  result = TISCopyInputSourceForLanguage (language);
++                  CFRelease (language);
++                }
++            }
++          CFRelease (string);
++        }
++    }
++
++  return result;
++}
++
++/* Return a Lisp representation of the input souce SOURCE, optionally
++   with its properties if FORMAT is non-nil.  */
++Lisp_Object
++mac_input_source_properties (TISInputSourceRef source, Lisp_Object format)
++{
++  struct {
++    CFStringRef cf;
++    Lisp_Object sym;
++  } keys[] = {
++    {kTISPropertyInputSourceCategory,		QCcategory},
++    {kTISPropertyInputSourceType,		QCtype},
++    {kTISPropertyInputSourceIsASCIICapable,	QCascii_capable_p},
++    {kTISPropertyInputSourceIsEnableCapable,	QCenable_capable_p},
++    {kTISPropertyInputSourceIsSelectCapable,	QCselect_capable_p},
++    {kTISPropertyInputSourceIsEnabled,		QCenabled_p},
++    {kTISPropertyInputSourceIsSelected,		QCselected_p},
++    {kTISPropertyBundleID,			QCbundle_id},
++    {kTISPropertyInputModeID,			QCinput_mode_id},
++    {kTISPropertyLocalizedName,			QClocalized_name},
++    {kTISPropertyInputSourceLanguages,		QClanguages},
++  };
++  Lisp_Object result = Qnil;
++  CFStringRef __block source_id;
++
++  // mac_within_gui (^{
++      source_id = TISGetInputSourceProperty (source, kTISPropertyInputSourceID);
++    // });
++  if (source_id)
++    {
++      result = cfstring_to_lisp (source_id);
++      int i;
++
++      if (!NILP (format))
++	{
++	  Lisp_Object plist = Qnil;
++
++	  if (EQ (format, Qt)
++	      || (SYMBOLP (format) ? EQ (format, QCicon_image_file)
++		  : !NILP (Fmemq (QCicon_image_file, format))))
++	    {
++	      CFURLRef __block url;
++
++              url = TISGetInputSourceProperty (source,
++                                               kTISPropertyIconImageURL);
++	      if (url)
++		{
++		  CFStringRef str = NULL;
++
++                  url = CFURLCopyAbsoluteURL (url);
++		  if (url)
++		    {
++		      str = CFURLCopyFileSystemPath (url, kCFURLPOSIXPathStyle);
++		      CFRelease (url);
++		    }
++		  if (str)
++		    {
++		      plist = Fcons (QCicon_image_file,
++				     Fcons (cfstring_to_lisp (str), plist));
++		      CFRelease (str);
++		    }
++		}
++	    }
++
++	  for (i = ARRAYELTS (keys); i > 0; i--)
++	    if (EQ (format, Qt)
++		|| (SYMBOLP (format) ? EQ (format, keys[i-1].sym)
++		    : !NILP (Fmemq (keys[i-1].sym, format))))
++	      {
++		CFStringRef key = keys[i-1].cf;
++		CFTypeRef __block value;
++
++                value = TISGetInputSourceProperty (source, key);
++	      }
++
++	  if (!EQ (format, Qt) && SYMBOLP (format) && CONSP (plist))
++	    plist = XCAR (XCDR (plist));
++	  result = Fcons (result, plist);
++	}
++    }
++
++  return result;
++}
++
++DEFUN ("mac-input-source", Fmac_input_source, Smac_input_source, 0, 2, 0,
++       doc: /* Return ID optionally with properties of input source SOURCE.
++Optional 1st arg SOURCE specifies an input source.  It can be a symbol
++or a string.  If it is a symbol, it has the following meaning:
++
++nil or `keyboard'
++    The currently-selected keyboard input source.
++`keyboard-layout'
++    The keyboard layout currently being used.
++`ascii-capable-keyboard'
++    The most-recently-used ASCII-capable keyboard input source.
++`ascii-capable-keyboard-layout'
++    The most-recently-used ASCII-capable keyboard layout.
++`keyboard-layout-override'
++    Currently-selected input method's keyboard layout override.
++    This may return nil.
++t
++    The input source that should be used to input the language of the
++    current user setting.  This may return nil.
++
++If SOURCE is a string, it is interpreted as either an input source ID,
++which should be an element of the result of `(mac-input-source-list
++t)', or a language code in the BCP 47 format.  Return nil if the
++specified input source ID does not exist or no enabled input source is
++available for the specified language.
++
++Optional 2nd arg FORMAT must be a symbol or a list of symbols, and
++controls the format of the result.
++
++If FORMAT is nil or unspecified, then the result is a string of input
++source ID, which is the unique reverse DNS name associated with the
++input source.
++
++If FORMAT is t, then the result is a cons (ID . PLIST) of an input
++source ID string and a property list containing the following names
++and values:
++
++`:category'
++    The category of input source.  The possible values are
++    "TISCategoryKeyboardInputSource", "TISCategoryPaletteInputSource",
++    and "TISCategoryInkInputSource".
++`:type'
++    The specific type of input source.  The possible values are
++    "TISTypeKeyboardLayout", "TISTypeKeyboardInputMethodWithoutModes",
++    "TISTypeKeyboardInputMethodModeEnabled",
++    "TISTypeKeyboardInputMode", "TISTypeCharacterPalette",
++    "TISTypeKeyboardViewer", and "TISTypeInk".
++`:ascii-capable-p'
++    Whether the input source identifies itself as ASCII-capable.
++`:enable-capable-p'
++    Whether the input source can ever be programmatically enabled.
++`:select-capable-p'
++    Whether the input source can ever be programmatically selected.
++`:enabled-p'
++    Whether the input source is currently enabled.
++`:selected-p'
++    Whether the input source is currently selected.
++`:bundle-id'
++    The reverse DNS BundleID associated with the input source.
++`:input-mode-id'
++    A particular usage class for input modes.
++`:localized-name'
++    The localized name for UI purposes.
++`:languages'
++    Codes for languages that can be input using the input source.
++    Languages codes are in the BCP 47 format.  The first element is
++    the language for which the input source is intended.
++`:icon-image-file' (optional)
++    The file containing the image to be used as the input source icon.
++
++The value corresponding to a name ending with "-p" is nil or t.  The
++value for `:languages' is a vector of strings.  The other values are
++strings.
++
++If FORMAT is a list of symbols, then it is interpreted as a list of
++properties above.  The result is a cons (ID . PLIST) as in the case of
++t, but PLIST only contains the properties given in FORMAT.
++
++If FORMAT is a symbol, then it is interpreted as a property above and
++the result is a cons (ID . VALUE) of an input source ID string and a
++value corresponding to the property.  */)
++  (Lisp_Object source, Lisp_Object format)
++{
++  Lisp_Object result = Qnil;
++  TISInputSourceRef input_source;
++
++  check_window_system (NULL);
++  if (!(SYMBOLP (format)))
++    error ("FORMAT must be a symbol or a list of symbols");
++
++  block_input ();
++  input_source = mac_create_input_source_from_lisp (source);
++  if (input_source)
++    {
++      result = mac_input_source_properties (input_source, format);
++      CFRelease (input_source);
++    }
++  unblock_input ();
++
++  return result;
++}
++
++DEFUN ("mac-input-source-list", Fmac_input_source_list, Smac_input_source_list, 0, 2, 0,
++       doc: /* Return a list of input sources.
++If optional 1st arg TYPE is nil or unspecified, then all enabled input
++sources are listed.  If TYPE is `ascii-capable-keyboard', then all
++ASCII compatible enabled input sources are listed.  If TYPE is t, then
++all installed input sources, whether enabled or not, are listed, but
++this can have significant memory impact.
++
++Optional 2nd arg FORMAT must be a symbol or a list of symbols, and
++controls the format of the result.  See `mac-input-source' for their
++meanings.  */)
++  (Lisp_Object type, Lisp_Object format)
++{
++  Lisp_Object result = Qnil;
++  CFArrayRef __block list = NULL;
++
++  check_window_system (NULL);
++  if (!(SYMBOLP (format)))
++    error ("FORMAT must be a symbol or a list of symbols");
++
++  block_input ();
++  if (EQ (type, Qascii_capable_keyboard))
++    list = TISCreateASCIICapableInputSourceList ();
++  else
++    list = TISCreateInputSourceList (NULL, !NILP (type));
++  if (list)
++    {
++      CFIndex index, count = CFArrayGetCount (list);
++
++      for (index = 0; index < count; index++)
++	{
++	  Lisp_Object properties =
++	    mac_input_source_properties (((TISInputSourceRef)
++					  CFArrayGetValueAtIndex (list, index)),
++					 format);
+ 
++	  result = Fcons (properties, result);
++	}
++      CFRelease (list);
++    }
++  unblock_input ();
++
++  return result;
++}
++
++DEFUN ("mac-select-input-source", Fmac_select_input_source, Smac_select_input_source, 1, 2, 0,
++       doc: /* Select the input source SOURCE.
++SOURCE is either a symbol or a string (see `mac-input-source').
++Specifying nil results in re-selecting the current keyboard input
++source and thus that is not meaningful.  So, unlike
++`mac-input-source', SOURCE is not optional.
++
++If optional 2nd arg SET-KEYBOARD-LAYOUT-OVERRIDE-P is non-nil, then
++SOURCE is set as the keyboard layout override rather than the new
++current keyboard input source.
++
++Return t if SOURCE could be successfully selected.  Otherwise, return
++nil.  */)
++  (Lisp_Object source, Lisp_Object set_keyboard_layout_override_p)
++{
++  Lisp_Object __block result = Qnil;
++  TISInputSourceRef input_source;
++
++  if (NILP (source))
++      return Qnil;
++
++  check_window_system (NULL);
++
++  block_input ();
++  input_source = mac_create_input_source_from_lisp (source);
++  if (input_source)
++    {
++      if (NILP (set_keyboard_layout_override_p))
++        {
++          if (TISSelectInputSource (input_source) == noErr)
++            result = Qt;
++        }
++      else
++        {
++          if (TISSetInputMethodKeyboardLayoutOverride (input_source) == noErr)
++            result = Qt;
++        }
++      CFRelease (input_source);
++    }
++
++  unblock_input ();
++
++  return result;
++}
+ static void
+ do_unwind_create_frame (Lisp_Object frame)
+ {
+@@ -3940,6 +4413,22 @@ - (Lisp_Object)lispString
+   DEFSYM (Qdark, "dark");
+   DEFSYM (Qlight, "light");
+ 
++  DEFSYM (Qkeyboard, "keyboard");
++  DEFSYM (Qkeyboard_layout, "keyboard-layout");
++  DEFSYM (Qascii_capable_keyboard, "ascii-capable-keyboard");
++  DEFSYM (Qascii_capable_keyboard_layout, "ascii-capable-keyboard-layout");
++  DEFSYM (Qkeyboard_layout_override, "keyboard-layout-override");
++  DEFSYM (QCascii_capable_p, ":ascii-capable-p");
++  DEFSYM (QCenable_capable_p, ":enable-capable-p");
++  DEFSYM (QCselect_capable_p, ":select-capable-p");
++  DEFSYM (QCenabled_p, ":enabled-p");
++  DEFSYM (QCselected_p, ":selected-p");
++  DEFSYM (QCbundle_id, ":bundle-id");
++  DEFSYM (QCinput_mode_id, ":input-mode-id");
++  DEFSYM (QClocalized_name, ":localized-name");
++  DEFSYM (QClanguages, ":languages");
++  DEFSYM (QCicon_image_file, ":icon-image-file");
++
+   DEFVAR_LISP ("ns-icon-type-alist", Vns_icon_type_alist,
+                doc: /* Alist of elements (REGEXP . IMAGE) for images of icons associated to frames.
+ If the title of a frame matches REGEXP, then IMAGE.tiff is
+@@ -4027,6 +4516,9 @@ - (Lisp_Object)lispString
+ 
+   defsubr (&Sx_show_tip);
+   defsubr (&Sx_hide_tip);
++  defsubr (&Smac_input_source);
++  defsubr (&Smac_input_source_list);
++  defsubr (&Smac_select_input_source);
+ 
+   tip_timer = Qnil;
+   staticpro (&tip_timer);
