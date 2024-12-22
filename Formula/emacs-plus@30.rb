@@ -2,9 +2,9 @@ require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT30 < EmacsBase
   init 30
-  url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-30.0.92.tar.xz"
-  mirror "https://ftpmirror.gnu.org/emacs/emacs-30.0.92.tar.xz"
-  sha256 "d89287bd5a8381bb60e14aab95202377261d43a60d15dc0a61d0d662bc5626be"
+  url "https://alpha.gnu.org/gnu/emacs/pretest/emacs-30.0.93.tar.xz"
+  mirror "https://ftpmirror.gnu.org/emacs/emacs-30.0.93.tar.xz"
+  sha256 "4e50387505e1e05e83a39672e756ae1b76a24a8c981e7f981aec6e966cd6ff7f"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
