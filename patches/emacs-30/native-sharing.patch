@@ -1,0 +1,173 @@
+diff --git a/lisp/term/ns-win.el b/lisp/term/ns-win.el
+index 2a29457..84cadff 100644
+--- a/lisp/term/ns-win.el
++++ b/lisp/term/ns-win.el
+@@ -567,6 +567,88 @@ string dropped into the current buffer."
+   (interactive)
+   (ns-show-character-palette))
+ 
++(declare-function ns--share-items "nsfns.m" (items))
++
++(defun ns-share (&optional items)
++  "Share ITEMS (list of files or string) via macOS service.
++
++When ITEMS are missing, derive as follows.
++
++From `dired', ITEMS are based on either of these being active:
++
++  - Marked files (list).
++  - Files in region (list).
++  - File at point (list).
++
++Anywhere else, these being active:
++
++  - Region (string).
++  - Current buffer file (list)."
++  (interactive)
++  (unless items
++    (setq items (ns--shareable-items)))
++  (unless items
++    (user-error "Nothing to share"))
++  (ns--share-items items))
++
++(defun ns--shareable-items ()
++  "Figure out what user wants to share based on context.
++
++From `dired', shared items are based on either of these being active:
++
++  - Marked files
++  - Files in region.
++  - File at point.
++
++Anywhere else, these being active:
++
++  - Region (sent as text).
++  - Current buffer file (if one is available)."
++  (cond ((derived-mode-p 'dired-mode)
++         (or
++          (ns--dired-filenames-in-region)
++          (dired-get-marked-files)))
++        ((use-region-p)
++         (list (buffer-substring-no-properties
++                (region-beginning)
++                (region-end))))
++        ((buffer-file-name)
++         (list (buffer-file-name)))))
++
++(defun ns--dired-filenames-in-region ()
++  "If `dired' buffer, return region files.  nil otherwise."
++  (when (and (equal major-mode 'dired-mode)
++             (use-region-p))
++    (let ((start (region-beginning))
++          (end (region-end))
++          (marked-files (let ((files (dired-get-marked-files)))
++                          (cond ((null (cdr files))
++                                 nil)
++                                ((and (= (length files) 2)
++                                      (eq (car files) t))
++                                 t)
++                                (t
++                                 (not (seq-empty-p files))))))
++          (filenames))
++      (when marked-files
++        (user-error "Mark dired files or select region.  Not both."))
++      (save-excursion
++        (save-restriction
++          (goto-char start)
++          (while (< (point) end)
++            ;; Skip non-file lines.
++            (while (and (< (point) end) (dired-between-files))
++              (forward-line 1))
++            (when (and (dired-get-filename nil t)
++                       ;; Ensure filename is fully selected.
++                       (< (save-excursion
++                            (forward-line 0)
++                            (dired-move-to-filename))
++                          end))
++              (setq filenames (append filenames (list (dired-get-filename nil t)))))
++            (forward-line 1))))
++      filenames)))
++
+ (defun ns-next-frame ()
+   "Switch to next visible frame."
+   (interactive)
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 3c012ca..a0d952b 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -3772,6 +3772,67 @@ The position is returned as a cons cell (X . Y) of the
+   return Qnil;
+ }
+ 
++static NSPoint
++ns_get_point_relative_coordinates (NSView* view)
++{
++  Lisp_Object coordinate = Fnth (make_fixnum (2), Fposn_at_point (Fpoint (), Qnil));
++
++  int x = ^{
++    Lisp_Object value = Fcar (coordinate);
++    if (NILP (value))
++      {
++        signal_error ("No x coordinate found", coordinate);
++      }
++    return XFIXNUM (value);
++  }();
++
++  int y = ^{
++    Lisp_Object value = Fcdr (coordinate);
++    if (NILP (value))
++    {
++      signal_error ("No y coordinate found", coordinate);
++    }
++    return XFIXNUM (value);
++  }();
++
++  return [view convertPoint:NSMakePoint (x, y) toView:nil];
++}
++
++DEFUN ("ns--share-items",
++       Fns__share_items,
++       Sns__share_items, 1, 1, 0,
++       doc: /* Share a list of items via macOS sharing service. */)
++       (Lisp_Object items)
++{
++  CHECK_LIST (items);
++
++  NSMutableArray *shared = [NSMutableArray array];
++  for (Lisp_Object tail = items; CONSP (tail); tail = XCDR (tail))
++  {
++    Lisp_Object elt = XCAR (tail);
++    if (!(STRINGP (elt)))
++    {
++      signal_error ("Element not a string", elt);
++    }
++    BOOL isDir;
++    if ([[NSFileManager defaultManager] fileExistsAtPath:@(SSDATA(elt)) isDirectory:&isDir]) {
++      [shared addObject:[NSURL fileURLWithPath:@(SSDATA(elt))]];
++      continue;
++    }
++    [shared addObject:@(SSDATA(elt))];
++  }
++
++  struct frame *frame = SELECTED_FRAME ();
++  EmacsView *view = FRAME_NS_VIEW (frame);
++  NSPoint point = ns_get_point_relative_coordinates (view);
++  NSRect displayArea = NSMakeRect (point.x + 15, view.bounds.size.height - point.y + 25, 1, 1);
++  NSSharingServicePicker *picker = [[NSSharingServicePicker alloc] initWithItems:shared];
++
++  [picker showRelativeToRect:displayArea ofView:view preferredEdge:NSRectEdgeMaxY];
++
++  return Qnil;
++}
++
+ /* ==========================================================================
+ 
+     Class implementations
+@@ -4004,6 +4065,7 @@ - (Lisp_Object)lispString
+   defsubr (&Sns_set_mouse_absolute_pixel_position);
+   defsubr (&Sns_mouse_absolute_pixel_position);
+   defsubr (&Sns_show_character_palette);
++  defsubr (&Sns__share_items);
+   defsubr (&Sx_display_mm_width);
+   defsubr (&Sx_display_mm_height);
+   defsubr (&Sx_display_screens);
