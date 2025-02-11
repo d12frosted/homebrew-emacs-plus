@@ -232,7 +232,7 @@ And if for some reason PATH injection doesn't work for you, report it either in 
 
 **** Emacs 28 and Emacs 27
 
-This patch is enabled with the =--with-no-titlebar= option for =emacs-plus@27= and =emacs-plus@28=. It is meant for use with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]], [[https://github.com/koekeishiya/chunkwm][→ chunkwm]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that the titlebar won't take up screen real estate.
+This patch is enabled with the =--with-no-titlebar= option for =emacs-plus@27= and =emacs-plus@28=. It is meant for use with window tiling applications like [[https://github.com/koekeishiya/yabai][→ yabai]] or [[https://github.com/ianyh/Amethyst][→ amethyst]] so that the titlebar won't take up screen real estate.
 
 Use =--with-no-titlebar-and-round-corners= option (instead of =--with-no-titlebar=), if you want to keep round corners (for example, to be consistent with other macOS applications).
 
