@@ -138,7 +138,6 @@ By default =emacs-plus@31= uses the following features.
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
 | =--with-mailutils=        | build with mailutils support                                                 |
-| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
@@ -165,7 +164,6 @@ By default =emacs-plus@30= uses the following features.
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
 | =--with-mailutils=        | build with mailutils support                                                 |
-| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
