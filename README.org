@@ -143,7 +143,6 @@ By default =emacs-plus@31= uses the following features.
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
-| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -171,7 +170,6 @@ By default =emacs-plus@30= uses the following features.
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
-| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
