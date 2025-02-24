@@ -202,9 +202,38 @@ class EmacsPlusAT30 < EmacsBase
         end
       end
 
+      # Emacs Client.app
+      client_contents_dir = buildpath/"nextstep/Emacs Client.app/Contents"
+      system "mkdir", "-p", client_contents_dir
+      system "mkdir", "-p", client_contents_dir/"MacOS"
+      system "mkdir", "-p", client_contents_dir/"Resources"
+      (client_contents_dir/"MacOS"/"Emacs Client").write <<~EOS
+        #!/bin/sh
+        #{prefix}/bin/emacsclient -c "$@"
+      EOS
+      system "chmod", "+x", client_contents_dir/"MacOS"/"Emacs Client"
+      system "cp", icons_dir/"Emacs.icns", client_contents_dir/"Resources"/"Emacs Client.icns"
+      (client_contents_dir/"Info.plist").write <<~EOS
+        <?xml version="1.0" encoding="UTF-8" standalone="no"?><plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key>
+            <string>Emacs Client</string>
+            <key>CFBundleGetInfoString</key>
+            <string>Emacs Client 30.1</string>
+            <key>CFBundleVersion</key>
+            <string>30.1</string>
+            <key>CFBundleShortVersionString</key>
+            <string>30.1</string>
+            <key>CFBundleIconFile</key>
+            <string>Emacs Client</string>
+        </dict>
+        </plist>
+      EOS
+
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
       (prefix/"Emacs.app/Contents").install "native-lisp"
+      prefix.install "nextstep/Emacs Client.app"
 
       # inject PATH to Info.plist
       inject_path
@@ -271,11 +300,12 @@ class EmacsPlusAT30 < EmacsBase
 
   def caveats
     <<~EOS
-      Emacs.app was installed to:
+      Emacs.app and Emacs Client.app were installed to:
         #{prefix}
 
       To link the application to default Homebrew App location:
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
+        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
 
       Your PATH value was injected into Emacs.app via a wrapper script.
       This solves the issue with macOS Sequoia ignoring LSEnvironment in Info.plist.
