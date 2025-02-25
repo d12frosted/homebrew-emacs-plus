@@ -30,7 +30,6 @@ class EmacsPlusAT30 < EmacsBase
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
-  option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
 
   #
@@ -58,21 +57,18 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
+  # `libgccjit` and `gcc` are required when Emacs compiles `*.elc` files asynchronously (JIT)
+  depends_on "libgccjit"
+  depends_on "gcc"
+
+  depends_on "gmp" => :build
+  depends_on "libjpeg" => :build
+  depends_on "zlib" => :build
 
   if build.with? "x11"
     depends_on "libxaw"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
-  end
-
-  if build.with? "native-comp"
-    # `libgccjit` and `gcc` are required when Emacs compiles `*.elc` files asynchronously (JIT)
-    depends_on "libgccjit"
-    depends_on "gcc"
-
-    depends_on "gmp" => :build
-    depends_on "libjpeg" => :build
-    depends_on "zlib" => :build
   end
 
   #
@@ -119,12 +115,12 @@ class EmacsPlusAT30 < EmacsBase
       --enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp
       --infodir=#{info}/emacs
       --prefix=#{prefix}
+      --with-native-compilation=aot
     ]
 
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    args << "--with-native-compilation=aot" if build.with? "native-comp"
     args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
@@ -134,18 +130,16 @@ class EmacsPlusAT30 < EmacsBase
     ENV.append "LDFLAGS", "-L#{Formula["sqlite"].opt_lib}"
 
     # Necessary for libgccjit library discovery
-    if build.with? "native-comp"
-      gcc_ver = Formula["gcc"].any_installed_version
-      gcc_ver_major = gcc_ver.major
-      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+    gcc_ver = Formula["gcc"].any_installed_version
+    gcc_ver_major = gcc_ver.major
+    gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
 
-      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
-      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+    ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+    ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
 
-      ENV.append "LDFLAGS", "-L#{gcc_lib}"
-      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
-      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
-    end
+    ENV.append "LDFLAGS", "-L#{gcc_lib}"
+    ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+    ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
 
     args <<
       if build.with? "dbus"
@@ -212,7 +206,7 @@ class EmacsPlusAT30 < EmacsBase
 
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
-      (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
+      (prefix/"Emacs.app/Contents").install "native-lisp"
 
       # inject PATH to Info.plist
       inject_path

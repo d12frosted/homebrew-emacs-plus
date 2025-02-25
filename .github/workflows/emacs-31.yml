@@ -28,7 +28,6 @@ jobs:
         build_opts:
           - ""
           - "--with-xwidgets"
-          - "--with-native-comp"
           - "--with-x11"
 
     env:
