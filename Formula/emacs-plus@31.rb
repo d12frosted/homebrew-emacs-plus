@@ -41,7 +41,6 @@ class EmacsPlusAT31 < EmacsBase
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on "jansson"
   depends_on "tree-sitter"
   depends_on "webp"
   depends_on "imagemagick" => :optional
