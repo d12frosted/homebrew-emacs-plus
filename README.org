@@ -76,7 +76,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
 Emacs Plus contains separate formulas for different Emacs versions:
 
 - =emacs-plus= install current release version (Emacs 30);
-- =emacs-plus@31= install Emacs 31, release branch version.
+- =emacs-plus@31= install Emacs 31, development version.
 - =emacs-plus@30= install Emacs 30, current version.
 - =emacs-plus@29= install Emacs 29, previous version.
 
@@ -157,7 +157,6 @@ By default =emacs-plus@30= uses the following features.
 - Cocoa version, e.g. builds =Emacs.app=.
 - Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2= and dynamic modules.
 - Build with native compilation.
-- Native JSON parser (no more libjansson required!)
 
 *** Options
 
