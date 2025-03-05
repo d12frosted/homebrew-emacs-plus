@@ -212,8 +212,8 @@ class EmacsPlusAT27 < EmacsBase
       Emacs.app was installed to:
         #{prefix}
 
-      To link the application to default Homebrew App location:
-        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
+      To get Emacs to show up in Spotlight, move the app to the /Applications folder:
+        mv "#{prefix}/Emacs" /Applications/Emacs.app
 
       If you wish to install Emacs 26 or Emacs 28, use emacs-plus@26 or
       emacs-plus@28 formula respectively.
