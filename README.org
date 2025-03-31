@@ -135,7 +135,6 @@ By default =emacs-plus@31= uses the following features.
 
 | Option                  | Description                                                                  |
 |-------------------------+------------------------------------------------------------------------------|
-| =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
 | =--with-mailutils=        | build with mailutils support                                                 |

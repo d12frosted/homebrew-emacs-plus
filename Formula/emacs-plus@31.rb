@@ -15,7 +15,6 @@ class EmacsPlusAT31 < EmacsBase
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
 
   # Opt-in
-  option "with-ctags", "Don't remove the ctags executable that Emacs provides"
   option "with-x11", "Experimental: build with x11 support"
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
@@ -241,17 +240,6 @@ class EmacsPlusAT31 < EmacsBase
 
       system "gmake"
       system "gmake", "install"
-    end
-
-    # Follow MacPorts and don't install ctags from Emacs. This allows Vim
-    # and Emacs and ctags to play together without violence.
-    if build.without? "ctags"
-      (bin/"ctags").unlink
-      if build.with? "compress-install"
-        (man1/"ctags.1.gz").unlink
-      else
-        (man1/"ctags.1").unlink
-      end
     end
   end
 
