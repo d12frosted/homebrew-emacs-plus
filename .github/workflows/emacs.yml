@@ -60,7 +60,7 @@ jobs:
           echo "build_opts=$BUILD_OPTS" >> "$GITHUB_ENV"
           RUNNER_OS=$(echo "${{ matrix.os }}" | sed 's/ //')
           echo "runner_os=$RUNNER_OS" >> "$GITHUB_ENV"
-          tar -C ${{ matrix.logs}}/emacs-plus@29/ -czvf emacs-plus@29-$RUNNER_OS$BUILD_OPTS.tar.gz .
+          tar -C ${{ matrix.logs}}/emacs-plus@30/ -czvf emacs-plus@30-$RUNNER_OS$BUILD_OPTS.tar.gz .
 
       - name: Upload logs
         if: ${{ always() }}

@@ -15,12 +15,10 @@ class EmacsPlusAT31 < EmacsBase
   option "without-cocoa", "Build a non-Cocoa version of Emacs"
 
   # Opt-in
-  option "with-ctags", "Don't remove the ctags executable that Emacs provides"
   option "with-x11", "Experimental: build with x11 support"
   option "with-debug", "Build with debug symbols and debugger friendly optimizations"
   option "with-xwidgets", "Experimental: build with xwidgets support"
   option "with-no-frame-refocus", "Disables frame re-focus (ie. closing one frame does not refocus another one)"
-  option "with-native-comp", "Build with native compilation"
   option "with-compress-install", "Build with compressed install optimization"
 
   #
@@ -42,27 +40,23 @@ class EmacsPlusAT31 < EmacsBase
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on "jansson"
   depends_on "tree-sitter"
   depends_on "webp"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
+  # `libgccjit` and `gcc` are required when Emacs compiles `*.elc` files asynchronously (JIT)
+  depends_on "libgccjit"
+  depends_on "gcc"
+
+  depends_on "gmp" => :build
+  depends_on "libjpeg" => :build
+  depends_on "zlib" => :build
 
   if build.with? "x11"
     depends_on "libxaw"
     depends_on "freetype" => :recommended
     depends_on "fontconfig" => :recommended
-  end
-
-  if build.with? "native-comp"
-    # `libgccjit` and `gcc` are required when Emacs compiles `*.elc` files asynchronously (JIT)
-    depends_on "libgccjit"
-    depends_on "gcc"
-
-    depends_on "gmp" => :build
-    depends_on "libjpeg" => :build
-    depends_on "zlib" => :build
   end
 
   #
@@ -97,8 +91,8 @@ class EmacsPlusAT31 < EmacsBase
 
   opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@31." if build.with? "no-frame-refocus"
   local_patch "fix-window-role", sha: "1f8423ea7e6e66c9ac6dd8e37b119972daa1264de00172a24a79a710efcb8130"
-  local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
-  local_patch "round-undecorated-frame", sha: "14e17d64358eaf2f1d31e49c4743119cdd0698ea0cc19c7a5c0c67d137efd94f"
+  local_patch "system-appearance", sha: "53283503db5ed2887e9d733baaaf80f2c810e668e782e988bda5855a0b1ebeb4"
+  local_patch "round-undecorated-frame", sha: "26947b6724fc29fadd44889808c5cf0b4ce6278cf04f46086a21df50c8c4151d"
 
   # 自动切换输入法
   local_patch "ns-mac-input-source", sha: "99fefba9eb0725743a901cd95e0deb575193e1d258094cb56ccbac37ada0ffa2"
@@ -114,12 +108,12 @@ class EmacsPlusAT31 < EmacsBase
       --enable-locallisppath=#{HOMEBREW_PREFIX}/share/emacs/site-lisp
       --infodir=#{info}/emacs
       --prefix=#{prefix}
+      --with-native-compilation=aot
     ]
 
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    args << "--with-native-compilation=aot" if build.with? "native-comp"
     args << "--without-compress-install" if build.without? "compress-install"
 
     ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
@@ -129,18 +123,16 @@ class EmacsPlusAT31 < EmacsBase
     ENV.append "LDFLAGS", "-L#{Formula["sqlite"].opt_lib}"
 
     # Necessary for libgccjit library discovery
-    if build.with? "native-comp"
-      gcc_ver = Formula["gcc"].any_installed_version
-      gcc_ver_major = gcc_ver.major
-      gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
+    gcc_ver = Formula["gcc"].any_installed_version
+    gcc_ver_major = gcc_ver.major
+    gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
 
-      ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
-      ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+    ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
+    ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
 
-      ENV.append "LDFLAGS", "-L#{gcc_lib}"
-      ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
-      ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
-    end
+    ENV.append "LDFLAGS", "-L#{gcc_lib}"
+    ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
+    ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
 
     args <<
       if build.with? "dbus"
@@ -207,7 +199,7 @@ class EmacsPlusAT31 < EmacsBase
 
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
-      (prefix/"Emacs.app/Contents").install "native-lisp" if build.with? "native-comp"
+      (prefix/"Emacs.app/Contents").install "native-lisp"
 
       # inject PATH to Info.plist
       inject_path
@@ -251,17 +243,6 @@ class EmacsPlusAT31 < EmacsBase
 
       system "gmake"
       system "gmake", "install"
-    end
-
-    # Follow MacPorts and don't install ctags from Emacs. This allows Vim
-    # and Emacs and ctags to play together without violence.
-    if build.without? "ctags"
-      (bin/"ctags").unlink
-      if build.with? "compress-install"
-        (man1/"ctags.1.gz").unlink
-      else
-        (man1/"ctags.1").unlink
-      end
     end
   end
 

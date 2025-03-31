@@ -12,10 +12,10 @@ Subject: [PATCH] provide a way to make undecorated frame with round corners (fix
  5 files changed, 68 insertions(+), 1 deletion(-)
 
 diff --git a/src/frame.c b/src/frame.c
-index 36b314c075e..32e00e36546 100644
+index 550fd336ff9..fd670cfa288 100644
 --- a/src/frame.c
 +++ b/src/frame.c
-@@ -1008,6 +1008,7 @@ make_frame (bool mini_p)
+@@ -1072,6 +1072,7 @@ make_frame (bool mini_p)
    f->horizontal_scroll_bars = false;
    f->want_fullscreen = FULLSCREEN_NONE;
    f->undecorated = false;
@@ -23,7 +23,7 @@ index 36b314c075e..32e00e36546 100644
  #ifndef HAVE_NTGUI
    f->override_redirect = false;
  #endif
-@@ -4304,6 +4305,7 @@ DEFUN ("frame-scale-factor", Fframe_scale_factor, Sframe_scale_factor,
+@@ -4497,6 +4498,7 @@ static const struct frame_parm_table frame_parms[] =
    {"tool-bar-position",		SYMBOL_INDEX (Qtool_bar_position)},
    {"inhibit-double-buffering",  SYMBOL_INDEX (Qinhibit_double_buffering)},
    {"undecorated",		SYMBOL_INDEX (Qundecorated)},
@@ -31,7 +31,7 @@ index 36b314c075e..32e00e36546 100644
    {"parent-frame",		SYMBOL_INDEX (Qparent_frame)},
    {"skip-taskbar",		SYMBOL_INDEX (Qskip_taskbar)},
    {"no-focus-on-map",		SYMBOL_INDEX (Qno_focus_on_map)},
-@@ -6579,6 +6581,7 @@ syms_of_frame (void)
+@@ -6801,6 +6803,7 @@ syms_of_frame (void)
    DEFSYM (Qicon, "icon");
    DEFSYM (Qminibuffer, "minibuffer");
    DEFSYM (Qundecorated, "undecorated");
@@ -40,10 +40,10 @@ index 36b314c075e..32e00e36546 100644
    DEFSYM (Qparent_frame, "parent-frame");
    DEFSYM (Qskip_taskbar, "skip-taskbar");
 diff --git a/src/frame.h b/src/frame.h
-index 9ed2f66be22..7d776f01d28 100644
+index 62b2edcb315..3203528ebfc 100644
 --- a/src/frame.h
 +++ b/src/frame.h
-@@ -445,6 +445,9 @@ #define EMACS_FRAME_H
+@@ -445,6 +445,9 @@ struct frame
    /* True if this is an undecorated frame.  */
    bool_bf undecorated : 1;
  
@@ -53,7 +53,7 @@ index 9ed2f66be22..7d776f01d28 100644
    /* Nonzero if this frame's window does not want to receive input focus
       via mouse clicks or by moving the mouse into it.  */
    bool_bf no_accept_focus : 1;
-@@ -1237,6 +1240,7 @@ FRAME_PARENT_FRAME (struct frame *f)
+@@ -1223,6 +1226,7 @@ FRAME_PARENT_FRAME (struct frame *f)
  }
  
  #define FRAME_UNDECORATED(f) ((f)->undecorated)
@@ -62,10 +62,10 @@ index 9ed2f66be22..7d776f01d28 100644
  #if defined (HAVE_WINDOW_SYSTEM)
  #ifdef HAVE_NTGUI
 diff --git a/src/nsfns.m b/src/nsfns.m
-index 1055a4b37df..03b23e8a2fe 100644
+index b1ed0eff58a..11a4a215c8d 100644
 --- a/src/nsfns.m
 +++ b/src/nsfns.m
-@@ -1102,6 +1102,7 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+@@ -1098,6 +1098,7 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
    ns_set_tool_bar_position,
    ns_set_inhibit_double_buffering,
    ns_set_undecorated,
@@ -73,7 +73,7 @@ index 1055a4b37df..03b23e8a2fe 100644
    ns_set_parent_frame,
    0, /* x_set_skip_taskbar */
    ns_set_no_focus_on_map,
-@@ -1405,6 +1406,11 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
+@@ -1401,6 +1402,11 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
    FRAME_UNDECORATED (f) = !NILP (tem) && !EQ (tem, Qunbound);
    store_frame_param (f, Qundecorated, FRAME_UNDECORATED (f) ? Qt : Qnil);
  
@@ -86,10 +86,10 @@ index 1055a4b37df..03b23e8a2fe 100644
    tem = gui_display_get_arg (dpyinfo, parms, Qns_appearance, NULL, NULL,
                               RES_TYPE_SYMBOL);
 diff --git a/src/nsterm.h b/src/nsterm.h
-index 6c67653705e..f308b3443d9 100644
+index 2abf402f8bc..77a900d959f 100644
 --- a/src/nsterm.h
 +++ b/src/nsterm.h
-@@ -1226,6 +1226,8 @@ #define NSAPP_DATA2_RUNFILEDIALOG 11
+@@ -1227,6 +1227,8 @@ extern void ns_make_frame_invisible (struct frame *f);
  extern void ns_iconify_frame (struct frame *f);
  extern void ns_set_undecorated (struct frame *f, Lisp_Object new_value,
                                  Lisp_Object old_value);
@@ -99,7 +99,7 @@ index 6c67653705e..f308b3443d9 100644
                                   Lisp_Object old_value);
  extern void ns_set_no_focus_on_map (struct frame *f, Lisp_Object new_value,
 diff --git a/src/nsterm.m b/src/nsterm.m
-index c705a3c78f4..707f16d8de5 100644
+index 89664ad3f4d..0aa17a7fa10 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -1810,6 +1810,44 @@ Hide the window (X11 semantics)
@@ -147,7 +147,7 @@ index c705a3c78f4..707f16d8de5 100644
  void
  ns_set_parent_frame (struct frame *f, Lisp_Object new_value, Lisp_Object old_value)
  /* --------------------------------------------------------------------------
-@@ -9277,6 +9315,11 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9360,6 +9398,11 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
  		 | NSWindowStyleMaskMiniaturizable
  		 | NSWindowStyleMaskClosable);
  
@@ -159,7 +159,7 @@ index c705a3c78f4..707f16d8de5 100644
    last_drag_event = nil;
  
    width = FRAME_TEXT_COLS_TO_PIXEL_WIDTH (f, f->text_cols);
-@@ -9360,13 +9403,22 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9443,13 +9486,22 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
  #endif
      }
  
