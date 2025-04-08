@@ -1,0 +1,144 @@
+From ebfa4855d7a323ebc3424936d6a3df812f74967a Mon Sep 17 00:00:00 2001
+From: Mingkai Dong <mk@dong.mk>
+Date: Sat, 5 Apr 2025 00:27:15 +0800
+Subject: [PATCH] Add smooth cursor animation
+
+This adds and extends the patch from ksqsf.
+https://github.com/ksqsf/emacsmoe/pull/7
+---
+ lisp/term/ns-win.el |  7 ++++++
+ src/nsterm.h        |  1 +
+ src/nsterm.m        | 59 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 67 insertions(+)
+
+diff --git a/lisp/term/ns-win.el b/lisp/term/ns-win.el
+index 46639f2422b..8c606c441af 100644
+--- a/lisp/term/ns-win.el
++++ b/lisp/term/ns-win.el
+@@ -65,6 +65,13 @@ x-command-line-resources
+ ;; nsterm.m.
+ (defvar ns-input-file)
+ 
++(defcustom ns-cursor-animation-duration 0.1
++  "Duration in seconds for cursor animation on macOS.
++This controls how long the cursor animation takes when changing position or style.
++A value of 0 disables animation."
++  :type 'number
++  :group 'ns)
++
+ (defun ns-handle-nxopen (_switch &optional temp)
+   (setq unread-command-events (append unread-command-events
+                                       (if temp '(ns-open-temp-file)
+diff --git a/src/nsterm.h b/src/nsterm.h
+index 2abf402f8bc..33338370537 100644
+--- a/src/nsterm.h
++++ b/src/nsterm.h
+@@ -485,6 +485,7 @@ #define NSTRACE_UNSILENCE()
+   struct frame *emacsframe;
+   int scrollbarsNeedingUpdate;
+   NSRect ns_userRect;
++  CALayer *cursor_layer;
+ }
+ 
+ /* AppKit-side interface.  */
+diff --git a/src/nsterm.m b/src/nsterm.m
+index 5514a693c86..95238209356 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -44,6 +44,7 @@ Updated by Christian Limpach (chris@nice.ch)
+ 
+ #include "lisp.h"
+ #include "blockinput.h"
++#include "dispextern.h"
+ #include "sysselect.h"
+ #include "nsterm.h"
+ #include "systime.h"
+@@ -71,6 +72,7 @@ Updated by Christian Limpach (chris@nice.ch)
+ #include "macfont.h"
+ #include <Carbon/Carbon.h>
+ #include <IOSurface/IOSurface.h>
++#include <QuartzCore/QuartzCore.h>
+ #endif
+ 
+ static EmacsMenu *dockMenu;
+@@ -3016,6 +3018,12 @@ Hide the window (X11 semantics)
+   ns_unfocus (f);
+ }
+ 
++static double
++ns_get_cursor_animation_duration (void)
++{
++  Lisp_Object duration = Fsymbol_value (intern_c_string ("ns-cursor-animation-duration"));
++  return NUMBERP (duration) ? XFLOATINT (duration) : 0.1;
++}
+ 
+ static void
+ ns_draw_window_cursor (struct window *w, struct glyph_row *glyph_row,
+@@ -3101,6 +3109,45 @@ Note that CURSOR_WIDTH is meaningful only for (h)bar cursors.
+   /* Prevent the cursor from being drawn outside the text area.  */
+   r = NSIntersectionRect (r, ns_row_rect (w, glyph_row, TEXT_AREA));
+ 
++  /* We use the CA layer as a temporary animation layer. */
++  EmacsView *view = FRAME_NS_VIEW (f);
++  CALayer *cursor_layer = view->cursor_layer;
++
++  if (active_p && cursor_layer) {
++    NSRect r2 = r;
++    r2.origin.y = [view bounds].size.height - r2.size.height - r2.origin.y;
++    cursor_glyph = get_phys_cursor_glyph (w);
++    if ((cursor_glyph->resolved_level & 1) != 0)
++      r2.origin.x += cursor_glyph->pixel_width - r2.size.width;
++
++    switch (cursor_type)
++      {
++      case DEFAULT_CURSOR:
++      case NO_CURSOR:
++        /* Make the layer invisible. */
++        cursor_layer.opacity = 0.0;
++        cursor_layer.backgroundColor = nil;
++        cursor_layer.frame = r2;
++        break;
++      case FILLED_BOX_CURSOR:
++      case HOLLOW_BOX_CURSOR:
++      case HBAR_CURSOR:
++      case BAR_CURSOR:
++        [CATransaction begin];
++        [CATransaction setAnimationDuration:ns_get_cursor_animation_duration ()];
++        [CATransaction setCompletionBlock:^{
++              cursor_layer.backgroundColor = nil; /* hide after animation */
++              cursor_layer.opacity = 0.0;
++        }];
++        cursor_layer.backgroundColor = FRAME_CURSOR_COLOR (f).CGColor;
++        cursor_layer.opacity = 1.0;
++        cursor_layer.frame = r2;
++        [CATransaction commit];
++        break;
++    }
++  }
++  /* Below is the original Emacs drawing code for the cursor. */
++
+   ns_focus (f, NULL, 0);
+ 
+   NSGraphicsContext *ctx = [NSGraphicsContext currentContext];
+@@ -9381,6 +9428,18 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+       [[self contentView] addSubview:view];
+       [self makeFirstResponder:view];
+ 
++      /* Overlay a canvas view on top of EmacsView.  */
++      NSView *canvasView = [[NSView alloc] initWithFrame:view.bounds];
++      canvasView.wantsLayer = YES;
++      canvasView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
++      [view addSubview:canvasView positioned:NSWindowAbove relativeTo:nil];
++
++      /* Create a cursor layer on the canvas.  */
++      view->cursor_layer = [CALayer layer];
++      [canvasView.layer addSublayer: view->cursor_layer];
++      view->cursor_layer.frame = CGRectMake(0, 0, 0, 0);
++
++
+ #if !defined (NS_IMPL_COCOA) || MAC_OS_X_VERSION_MIN_REQUIRED <= 1090
+ #if MAC_OS_X_VERSION_MAX_ALLOWED > 1090
+       if ([self respondsToSelector: @selector(useOptimizedDrawing:)])
+-- 
+2.49.0
+
