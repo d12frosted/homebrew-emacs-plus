@@ -144,6 +144,7 @@ By default =emacs-plus@31= uses the following features.
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--with-smooth-cursor=    | build with smooth cursor support                                             |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -301,6 +302,10 @@ Knows issues:
 
 - =ld: library not found for -lSystem=. This only happens on older versions of =gcc= installed by Homebrew. Please execute =$ brew reinstall gcc libgccjit= to resolve this issue.
 - Errors during compilation of your =init.el=. Try running Emacs with =-Q= option and give it some time to compile everything (maybe run =M-x= to force compilation) - you shall see buffer =*Async-native-compile-log*= in the list of buffers.
+
+*** Smooth Cursor
+
+The smooth cursor feature adds native cursor movement animation for macOS. The feature extends [[https://github.com/ksqsf/emacsmoe/pull/7][ksqsf's implementation]] to support more (if not all) kinds of cursors and cursor blinks.
 
 ** Icons
 
