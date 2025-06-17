@@ -5,6 +5,9 @@ Subject: [PATCH] Add smooth cursor animation
 
 This adds and extends the patch from ksqsf.
 https://github.com/ksqsf/emacsmoe/pull/7
+
+Co-Authored-By: Mingkai Dong <mk@dong.mk>
+Co-Authored-By: ksqsf <justksqsf@gmail.com>
 ---
  lisp/term/ns-win.el |  7 ++++++
  src/nsterm.h        |  1 +
