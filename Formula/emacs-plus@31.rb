@@ -93,7 +93,7 @@ class EmacsPlusAT31 < EmacsBase
   opoo "The option --with-no-frame-refocus is not required anymore in emacs-plus@31." if build.with? "no-frame-refocus"
   local_patch "system-appearance", sha: "53283503db5ed2887e9d733baaaf80f2c810e668e782e988bda5855a0b1ebeb4"
   local_patch "round-undecorated-frame", sha: "26947b6724fc29fadd44889808c5cf0b4ce6278cf04f46086a21df50c8c4151d"
-  local_patch "ksqsf-smooth-cursor", sha: "c77f045e3defe30f7a8822b4d7962c37c84afcde9198d6131bf13894af2e72ea" if build.with? "smooth-cursor"
+  local_patch "ksqsf-smooth-cursor", sha: "3bc5283437cc918718f6a92380313c1e468302b1028b98c17ef652c1cfbf18e2" if build.with? "smooth-cursor"
 
   #
   # Install
