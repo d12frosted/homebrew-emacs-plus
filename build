@@ -108,4 +108,4 @@ export HOMEBREW_NO_AUTO_UPDATE=true
 
 brew uninstall $PACKAGE 2>/dev/null
 # shellcheck disable=SC2068
-brew install --formula ./$TARGET_FILE $@
+HOMEBREW_DEVELOPER=1 brew install --formula ./$TARGET_FILE $@
