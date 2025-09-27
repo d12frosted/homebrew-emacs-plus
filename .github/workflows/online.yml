@@ -27,7 +27,9 @@ jobs:
         run: brew tap d12frosted/emacs-plus
 
       - name: Build emacs-plus
-        run: brew install emacs-plus
+        run: |
+          export HOMEBREW_DEVELOPER=1
+          brew install emacs-plus
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'

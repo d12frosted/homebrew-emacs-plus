@@ -28,7 +28,9 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Build emacs-plus with modern-sexy-v1 icon
-        run: brew install Aliases/$(readlink Aliases/emacs-plus) --with-modern-sexy-v1-icon
+        run: |
+          export HOMEBREW_DEVELOPER=1
+          brew install Aliases/$(readlink Aliases/emacs-plus) --with-modern-sexy-v1-icon
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'

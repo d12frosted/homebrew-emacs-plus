@@ -41,7 +41,9 @@ jobs:
         run: brew install --cask xquartz
 
       - name: Build emacs-plus@31 ${{ matrix.build_opts }}
-        run: brew install ./Formula/emacs-plus@31.rb ${{ matrix.build_opts }} --verbose
+        run: |
+          export HOMEBREW_DEVELOPER=1
+          brew install ./Formula/emacs-plus@31.rb ${{ matrix.build_opts }} --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'

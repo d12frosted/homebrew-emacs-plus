@@ -48,7 +48,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Build emacs-plus ${{ matrix.build_opts }}
-        run: brew install Aliases/$(readlink Aliases/emacs-plus) ${{ matrix.build_opts }} ${{ matrix.extra_opts }} --verbose
+        run: |
+          export HOMEBREW_DEVELOPER=1
+          brew install Aliases/$(readlink Aliases/emacs-plus) ${{ matrix.build_opts }} ${{ matrix.extra_opts }} --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'

@@ -105,6 +105,7 @@ HOMEBREW_EMACS_PLUS_MODE=local
 
 export HOMEBREW_NO_INSTALL_UPGRADE=true
 export HOMEBREW_NO_AUTO_UPDATE=true
+export HOMEBREW_DEVELOPER=1
 
 brew uninstall $PACKAGE 2>/dev/null
 # shellcheck disable=SC2068
