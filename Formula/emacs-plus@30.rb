@@ -137,8 +137,7 @@ class EmacsPlusAT30 < EmacsBase
     ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
 
     ENV.append "LDFLAGS", "-L#{gcc_lib}"
-    ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
-    ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+    ENV.append "LDFLAGS", "-Wl,-rpath,#{gcc_lib}"
 
     args <<
       if build.with? "dbus"
