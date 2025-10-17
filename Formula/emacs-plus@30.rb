@@ -277,7 +277,8 @@ class EmacsPlusAT30 < EmacsBase
       To link the application to default Homebrew App location:
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
 
-      Your PATH value was injected into Emacs.app/Contents/Info.plist
+      Your PATH value was injected into Emacs.app via a wrapper script.
+      This solves the issue with macOS Sequoia ignoring LSEnvironment in Info.plist.
 
       Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS
