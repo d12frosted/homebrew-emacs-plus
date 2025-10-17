@@ -49,7 +49,9 @@ class EmacsBase < Formula
     File.open(emacs_binary, "w") do |f|
       f.write <<~EOS
         #!/bin/bash
-        export PATH="#{path}"
+        if [ -z "$EMACS_PLUS_NO_PATH_INJECTION" ]; then
+          export PATH="#{path}"
+        fi
         exec "#{emacs_real}" "$@"
       EOS
     end
