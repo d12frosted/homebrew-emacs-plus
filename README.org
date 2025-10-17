@@ -88,7 +88,7 @@ Emacs Plus contains separate formulas for different Emacs versions:
   $ brew install emacs-plus@29 [options] # install Emacs 29
 #+end_src
 
-By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =imagemagick= (not included by default with =emacs-plus@29=, =emacs-plus@30=, and =emacs-plus@31=), =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
+By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Note that =imagemagick= is not included by default (opt-in for all versions), =webp= is included by default in =emacs-plus@30= and =emacs-plus@31= only, and =tree-sitter= is included by default in =emacs-plus@29=, =emacs-plus@30=, and =emacs-plus@31=. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
 
 *** Installing from feature branch
 
@@ -128,20 +128,22 @@ By default =emacs-plus@31= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
 - Cocoa version, e.g. builds =Emacs.app=.
-- Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2= and dynamic modules.
+- Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 - Build with native compilation.
 
 *** Options
 
 | Option                  | Description                                                                  |
 |-------------------------+------------------------------------------------------------------------------|
+| =--with-compress-install= | build with compressed install optimization                                   |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-mailutils=        | build with mailutils support                                                 |
+| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=      | build with =imagemagick= support                                               |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -154,21 +156,23 @@ By default =emacs-plus@30= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
 - Cocoa version, e.g. builds =Emacs.app=.
-- Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2= and dynamic modules.
+- Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 - Build with native compilation.
 
 *** Options
 
 | Option                  | Description                                                                  |
 |-------------------------+------------------------------------------------------------------------------|
+| =--with-compress-install= | build with compressed install optimization                                   |
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-mailutils=        | build with mailutils support                                                 |
+| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=      | build with =imagemagick= support                                               |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -181,22 +185,23 @@ By default =emacs-plus@29= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
 - Cocoa version, e.g. builds =Emacs.app=.
-- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2= and dynamic modules.
+- Unconditional support for =gnutls=, =librsvg=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 
 *** Options
 
 | Option                  | Description                                                                  |
 |-------------------------+------------------------------------------------------------------------------|
+| =--with-compress-install= | build with compressed install optimization                                   |
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
+| =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-mailutils=        | build with mailutils support                                                 |
+| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-x11=              | build with x11 support                                                       |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
-| =--with-imagemagick=      | build with =imagemagick= support                                               |
-| =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
