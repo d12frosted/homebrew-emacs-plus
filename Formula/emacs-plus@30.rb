@@ -280,6 +280,9 @@ class EmacsPlusAT30 < EmacsBase
       Your PATH value was injected into Emacs.app via a wrapper script.
       This solves the issue with macOS Sequoia ignoring LSEnvironment in Info.plist.
 
+      To disable PATH injection, set EMACS_PLUS_NO_PATH_INJECTION before running Emacs:
+        export EMACS_PLUS_NO_PATH_INJECTION=1
+
       Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS
   end
