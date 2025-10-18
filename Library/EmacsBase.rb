@@ -45,14 +45,14 @@ class EmacsBase < Formula
     # Rename original binary
     File.rename(emacs_binary, emacs_real) unless File.exist?(emacs_real)
 
-    # Create wrapper script
+    # Create wrapper script with relative path for relocatability
     File.open(emacs_binary, "w") do |f|
       f.write <<~EOS
-        #!/bin/bash
+        #!/bin/sh
         if [ -z "$EMACS_PLUS_NO_PATH_INJECTION" ]; then
-          export PATH="#{path}"
+          export PATH='#{path}'
         fi
-        exec "#{emacs_real}" "$@"
+        exec "$(dirname "$0")/Emacs-real" "$@"
       EOS
     end
 
