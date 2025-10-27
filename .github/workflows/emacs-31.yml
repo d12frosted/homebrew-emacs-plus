@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: emacs-plus@31-${{ env.runner_os }}${{ env.build_opts }}.tar.gz
           path: |
