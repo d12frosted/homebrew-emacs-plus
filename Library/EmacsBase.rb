@@ -42,6 +42,10 @@ class EmacsBase < Formula
       puts x
     }
 
+    # Escape single quotes for use within single-quoted shell string
+    # Replace ' with '\'' (end quote, escaped quote, start quote)
+    escaped_path = path.to_s.gsub("'", "'\\''")
+
     # Rename original binary
     File.rename(emacs_binary, emacs_real) unless File.exist?(emacs_real)
 
@@ -50,7 +54,7 @@ class EmacsBase < Formula
       f.write <<~EOS
         #!/bin/sh
         if [ -z "$EMACS_PLUS_NO_PATH_INJECTION" ]; then
-          export PATH='#{path}'
+          export PATH='#{escaped_path}'
         fi
         exec "$(dirname "$0")/Emacs-real" "$@"
       EOS
