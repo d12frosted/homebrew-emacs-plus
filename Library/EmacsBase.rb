@@ -31,20 +31,37 @@ class EmacsBase < Formula
   end
 
   def inject_path
-    ohai "Injecting PATH value to Emacs.app/Contents/Info.plist"
+    ohai "Injecting PATH via wrapper script in Emacs.app/Contents/MacOS/Emacs"
     app = "#{prefix}/Emacs.app"
-    plist = "#{app}/Contents/Info.plist"
+    emacs_binary = "#{app}/Contents/MacOS/Emacs"
+    emacs_real = "#{app}/Contents/MacOS/Emacs-real"
     path = PATH.new(ORIGINAL_PATHS)
 
-    puts "Patching plist at #{plist} with following PATH value:"
+    puts "Creating wrapper script with following PATH value:"
     path.each_entry { |x|
       puts x
     }
 
-    system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment dict' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Add :LSEnvironment:PATH string' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Set :LSEnvironment:PATH #{path}' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Print :LSEnvironment' '#{plist}'"
+    # Escape single quotes for use within single-quoted shell string
+    # Replace ' with '\'' (end quote, escaped quote, start quote)
+    escaped_path = path.to_s.gsub("'", "'\\''")
+
+    # Rename original binary
+    File.rename(emacs_binary, emacs_real) unless File.exist?(emacs_real)
+
+    # Create wrapper script with relative path for relocatability
+    File.open(emacs_binary, "w") do |f|
+      f.write <<~EOS
+        #!/bin/sh
+        if [ -z "$EMACS_PLUS_NO_PATH_INJECTION" ]; then
+          export PATH='#{escaped_path}'
+        fi
+        exec "$(dirname "$0")/Emacs-real" "$@"
+      EOS
+    end
+
+    # Make executable
+    File.chmod(0755, emacs_binary)
     system "touch '#{app}'"
   end
 
