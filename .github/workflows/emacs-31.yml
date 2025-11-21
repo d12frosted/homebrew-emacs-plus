@@ -34,7 +34,7 @@ jobs:
       HOMEBREW_EMACS_PLUS_MODE: local
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install xquartz
         if: contains(matrix.build_opts, '--with-x11')
