@@ -202,33 +202,8 @@ class EmacsPlusAT30 < EmacsBase
         end
       end
 
-      # Emacs Client.app
-      client_contents_dir = buildpath/"nextstep/Emacs Client.app/Contents"
-      system "mkdir", "-p", client_contents_dir
-      system "mkdir", "-p", client_contents_dir/"MacOS"
-      system "mkdir", "-p", client_contents_dir/"Resources"
-      (client_contents_dir/"MacOS"/"Emacs Client").write <<~EOS
-        #!/bin/sh
-        #{prefix}/bin/emacsclient -c "$@"
-      EOS
-      system "chmod", "+x", client_contents_dir/"MacOS"/"Emacs Client"
-      system "cp", icons_dir/"Emacs.icns", client_contents_dir/"Resources"/"Emacs Client.icns"
-      (client_contents_dir/"Info.plist").write <<~EOS
-        <?xml version="1.0" encoding="UTF-8" standalone="no"?><plist version="1.0">
-          <dict>
-            <key>CFBundleExecutable</key>
-            <string>Emacs Client</string>
-            <key>CFBundleGetInfoString</key>
-            <string>Emacs Client 30.1</string>
-            <key>CFBundleVersion</key>
-            <string>30.1</string>
-            <key>CFBundleShortVersionString</key>
-            <string>30.1</string>
-            <key>CFBundleIconFile</key>
-            <string>Emacs Client</string>
-        </dict>
-        </plist>
-      EOS
+      # Create Emacs Client.app (AppleScript-based to handle file opening from Finder)
+      create_emacs_client_app(icons_dir)
 
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
