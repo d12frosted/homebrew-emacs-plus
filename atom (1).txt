@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://www.paypal-status.com</id>
+    <title>PayPal Status - Event History</title>
+    <updated>2025-11-05T01:16:19Z</updated>
+    <generator>PayPal Status Feed Generator</generator>
+    <author>
+        <name>PayPal, Inc.</name>
+    </author>
+    <link rel="alternate" href="https://www.paypal-status.com"/>
+    <subtitle>PayPal Incidents, bullens and scheduled maintenance</subtitle>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to PayPal Credit Services (PP-LIVE-90891)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90891</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90891">
+        </link>
+        <updated>2025-11-04T07:44:20Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>The issue has been resolved as of Tue, 4 Nov 2025 07:26 GMT</p> <br /> <br /> Affected Regions: North America<br /><small>Nov 4, 07:44 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>We are experiencing an issue which may be affecting PayPal Credit in our Production environment. </p><p><span>Our technical teams are actively working with our vendor to resolve this issue.</span></p><br /><small>Nov 4, 07:17 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to PayPal Merchants and Partner Reports (PP-LIVE-90889)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90889</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90889">
+        </link>
+        <updated>2025-11-02T22:21:08Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p><span>The issue has been resolved as of Sun, 2nd Nov 2025 21:00 GMT.</span></p> <br /> <br /> Affected Regions: North America<br /><small>Nov 2, 22:21 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>We are currently experiencing an issue that is affecting Merchant Reporting and Partner Reporting for accounts subscribed to TZ5 (Pacific Timezone)</p><p><br /></p><p>Our technical teams are actively working towards making the Pacific Time zone reports available. We will provide an update as soon as the reports are available.</p><br /><small>Nov 2, 17:27 UTC</small><br /><br /><strong>Resolved: </strong> <p>PayPal: Back to normal.</p><br /><small>Invalid date</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: Venmo Live Site Maintenance (PP-LIVE-90887)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90887</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90887">
+        </link>
+        <updated>2025-10-31T20:07:29Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p>Maintenance Window: Friday November 14 at 7:30 am GMT to 11:30 am GMT </p><p>Impact Window: Friday November 14 at 9:00 am GMT to 9:30 am GMT </p><p><br /></p><p>During the impact window customers may experience the following service interruption for up to 60 seconds: </p><p><br /></p><ul><li>Possible errors in the Venmo mobile application </li><li>Merchant and partner APIs may encounter HTTP 5xx responses </li></ul><br /><small>Oct 31, 20:07 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: Notification: Changes to American Express Settlements (PP-LIVE-88643)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/88643</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/88643">
+        </link>
+        <updated>2025-10-31T19:00:03Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p>Starting today, you may notice updates in how American Express settlements appear in reporting. Note, these changes are only for direct Amercian Express processing.</p><p><br /></p><p>Here are the key changes:</p><p><br /></p><ol><li>As we transition American Express to a new platform, you might see Batch IDs in both the new numbering scheme (20000+) and the current format.</li><li>Settlement will continue to begin at 7:00 PM PT as usual; however, the transaction state (trans_state) will remain at 6 until approximately 3:00 AM the following day, when it will update to 8. Please note that transactions will settle as expected.</li><li>In the future, the transaction state will change to 7 (Settlement Pending) starting at 7:00 PM PT and update to trans_state 8 after 3:00 AM PT the next day.</li></ol><p><br /></p><p>For any questions, please contact Payflow support at 1-888-883-9770 or email <a href="mailto:payflow-support@paypal.com">payflow-support@paypal.com</a>.</p><p>Thank you for your understanding as we work to enhance Payflow services for a better experience.</p><br /><small>Oct 2, 18:03 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: Payflow: Elavon processor maintenance (PP-LIVE-90885)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90885</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90885">
+        </link>
+        <updated>2025-10-31T18:30:02Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p><span>Payflow will be performing a certificate change in the production environment for the Elavon processor on October 31, 2025.</span></p><p><br /></p><p><strong>Schedule</strong><span> (All times in Pacific Standard Time):</span></p><ul><li><strong>Test Start:</strong> 10:00 AM</li><li><strong>Certificate Installation:</strong> Approximately 10:40 AM</li><li><strong>Test End:</strong> 11:30 AM</li></ul><p><br /></p><p><strong>Expected Impact:</strong></p><p><span>There are no issues anticipated to those processing via Payflow using the Elavon processor for credit card processing. Even though the certificate change has been successfully tested it is possible you might experience </span><strong>intermittent service interruptions</strong><span> during the 40-minute maintenance window if any unexpected issues occur.</span></p><br /><small>Oct 30, 23:31 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: PayPal Live Site Maintenance (PP-LIVE-90886)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90886</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90886">
+        </link>
+        <updated>2025-10-31T13:08:54Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p>On Thursday November 6 PayPal will be performing routine maintenance activity. There is a possibility some users could experience errors for approximately 180 seconds during the maintenance period. </p><br /><small>Oct 31, 13:08 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Postponed: PayPal Live Site Maintenance (PP-LIVE-89897)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89897</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89897">
+        </link>
+        <updated>2025-10-31T07:00:03Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Postponed: </strong> <br /> <p>This maintenance has been postponed and will be rescheduled. </p><br /><small>Oct 29, 13:39 UTC</small><br /><br /><strong>Initial Notification: </strong> <p><span>On Thursday October 30th PayPal will be performing routine maintenance activity. There is a possibility some users could experience errors for approximately 180 seconds during the maintenance period.</span></p><br /><small>Oct 16, 23:03 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: PayPal Live Site Maintenance (PP-LIVE-90873)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90873</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90873">
+        </link>
+        <updated>2025-10-29T06:30:02Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p>On Tuesday October 28 PayPal will be performing routine maintenance activity. There is a possibility some users could experience errors for approximately 180 seconds during the maintenance period.</p><br /><small>Oct 24, 14:04 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Hyperwallet Service Disruption (PP-LIVE-90878)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90878</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90878">
+        </link>
+        <updated>2025-10-27T18:19:14Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>Hyperwallet had a service disruption that our technical teams were able to readily resolve. </p> <br /> <br /> Affected Regions: North America<br /><small>Oct 27, 18:19 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: PayPal notificaions service degradation (PP-LIVE-90874)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/90874</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/90874">
+        </link>
+        <updated>2025-10-26T16:07:20Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>PayPal experienced service degradation in our notifications platform. Our technical teams have worked to restore these services. </p> <br /> <br /> Affected Regions: Global<br /><small>Oct 26, 16:07 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Postponed: PayPal Live Site Maintenance (PP-LIVE-89896)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89896</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89896">
+        </link>
+        <updated>2025-10-24T07:00:03Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Postponed: </strong> <br /> <p>This maintenance has been postponed and will be rescheduled. </p><br /><small>Oct 23, 20:13 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>On Thursday October 23rd PayPal will be performing routine maintenance activity. There is a possibility some users could experience errors for approximately 180 seconds during the maintenance period.</p><br /><small>Oct 16, 23:03 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Venmo Services and BT (PP-LIVE-89903)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89903</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89903">
+        </link>
+        <updated>2025-10-20T20:10:35Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>Our technical teams have confirmed that the service issues which impacted Venmo and BT - Pay with Venmo have been resolved.</p> <br /> <br /> Affected Regions: North America<br /><small>Oct 20, 20:10 UTC</small><br /><br /><strong>Update 2: </strong> <p>We continue to work with our cloud partners, but most impacted service issues for Venmo and BT - Pay with Venmo have been mitigated. Further updates will be made as we conclude all mitigation steps.</p><br /><small>Oct 20, 19:20 UTC</small><br /><br /><strong>Update: </strong> <p>Our technical teams continue to work with our cloud partners to restore services. Initial service disruptions occurred intermittently at 6:30 am PDT and nearly complete outages with services occurred at 7:02 am PDT. These service outages are ongoing while we work with our cloud partners to restore usage of their services.</p><br /><small>Oct 20, 16:53 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>Most Venmo, Braintree - Pay with Venmo and 2FA services are currently impacted due to an outage with one of our cloud partners. Our technical teams are currently working with our partners to restore services.</p><br /><small>Oct 20, 15:13 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to Venmo Pay with Venmo Payments (PP-LIVE-89901)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89901</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89901">
+        </link>
+        <updated>2025-10-20T10:40:45Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>The issue has been resolved as of Mon, 20 Oct 2025 10:17 GMT</p> <br /> <br /> Affected Regions: North America<br /><small>Oct 20, 10:40 UTC</small><br /><br /><strong>Initial Notification: </strong> <p><span>We are experiencing a system issue that may be affecting Pay with Venmo requests.We will send an update as soon as we get more information.</span></p><p><br /></p><p>Our technical teams are actively working towards resolving the issue.</p><br /><small>Oct 20, 07:33 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to PayPal JavaScript SDK availability (PP-LIVE-89894)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89894</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89894">
+        </link>
+        <updated>2025-10-16T20:56:42Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>The issue has been resolved as of Thu, 16 Oct 2025 19:46 GMT</p> <br /> <br /> Affected Regions: Global<br /><small>Oct 16, 20:56 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>We are experiencing a system issue that may be affecting the availability of the PayPal JavaScript SDK in our Production environment. Merchants may be encountering an elevated number of timeout errors.</p><p><br /></p><p>Our technical teams are actively working towards resolving the issue.</p><br /><small>Oct 16, 18:36 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to  Homepage, Account, Braintree, Venmo (PP-LIVE-89892)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89892</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89892">
+        </link>
+        <updated>2025-10-16T17:28:41Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>The issue has been resolved as of Thu, 16 Oct 2025 16:25 GMT</p> <br /> <br /> Affected Regions: Global<br /><small>Oct 16, 16:52 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>We are experiencing a system issue that may be impacting Homepage, Account, Braintree, Venmo in our Production Environment.</p><p><br /></p><p>Our technical teams are actively working towards resolving the issue.</p><br /><small>Oct 16, 16:38 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: PayPal Live Site Maintenance (PP-LIVE-88644)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/88644</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/88644">
+        </link>
+        <updated>2025-10-10T07:00:02Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p><span>On Thursday October 9th PayPal will be performing routine maintenance activity. There is a possibility some users could experience errors for approximately 180 seconds during the maintenance period. Maintenance activity will be completed by 12:00am PT.</span></p><br /><small>Oct 2, 20:37 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to  Braintree, Braintree, Pay with Venmo (PP-LIVE-89873)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/89873</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/89873">
+        </link>
+        <updated>2025-10-10T02:15:01Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>The issue has been resolved as of Fri, 10 Oct 2025 01:40 GMT</p> <br /> <br /> Affected Regions: Global<br /><small>Oct 10, 02:14 UTC</small><br /><br /><strong>Initial Notification: </strong> <p>We are experiencing a system issue that may be impacting Braintree, Braintree, Pay with Venmo in our Production Environment.</p><p><br /></p><p>Our technical teams are actively working towards resolving the issue.</p><br /><small>Oct 9, 23:21 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Resolved: Impact to Braintree (PP-LIVE-88650)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/88650</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/88650">
+        </link>
+        <updated>2025-10-07T08:07:25Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Resolved: </strong> <p>We experienced a technical issue which affected the Braintree platform.</p><p>The issue has been resolved as of Tue, 7 Oct 2025 07:36 GMT.</p> <br /> <br /> Affected Regions: Global<br /><small>Oct 7, 08:07 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: Late posting of FISERV North settlement file on Payflow (PP-LIVE-88646)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/88646</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/88646">
+        </link>
+        <updated>2025-10-04T01:00:03Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p>The settlement file for FISERV North for Payflow had a reject causing it to be delayed. The file from last night has been processed but funding will be delayed until tonight.</p><p><br /></p><p>We apologize for the inconvenience in this matter.</p><br /><small>Oct 3, 17:01 UTC</small><br />]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Initial Notification: CDN Integration (PP-LIVE-88461)]]></title>
+        <id>https://www.paypal-status.com/history/eventdetails/88461</id>
+        <link href="https://www.paypal-status.com/history/eventdetails/88461">
+        </link>
+        <updated>2025-10-03T14:00:06Z</updated>
+        <content type="html"><![CDATA[<br /><strong>Initial Notification: </strong> <br /> <p>Dear Valued Merchant,</p><p><br /></p><p>We are pleased to announce the integration of a leading CDN provider into our payout platform to deliver enhanced security, improved performance, and better reliability for your payment operations.</p><p><br /></p><p>This upgrade will be implemented with no service interruption and URLs for all our services will remain the same. Your payout operations will continue unaffected during the entire rollout period.</p><p><br /></p><p><strong>Rollout Schedule:</strong></p><p>? Sandbox Environment: August 25, 2025 - September 5, 2025</p><p>? Production Environment: September 15, 2025 - Oct 3, 2025</p><p><br /></p><p><strong>Action Required - Firewall Configuration:</strong></p><p>If your organization uses IP-based firewall rules for outbound traffic, you need to allow the new IP ranges.</p><p><br /></p><p><strong>Existing IP ranges</strong></p><p>69.172.255.0/24</p><p>38.70.198.0/24</p><p><br /></p><p><strong>New IP ranges</strong></p><p>69.172.255.0/24</p><p>38.70.198.0/24</p><p>151.101.2.132</p><p>151.101.66.132</p><p>151.101.130.132</p><p>151.101.194.132</p><p>66.211.168.26</p><p>66.211.168.25</p><p>75.2.69.49</p><p>76.223.39.116</p><p>52.223.39.9</p><p>99.83.194.84</p><p>75.2.12.14</p><p>35.71.176.89</p><p>15.197.146.108</p><p>99.83.151.198</p><p>13.248.143.98</p><p>76.223.127.232</p><p>52.223.33.120</p><p>35.71.131.251</p><p><br /></p><p>Thank you for your continued partnership!</p><br /><small>Aug 11, 15:28 UTC</small><br />]]></content>
+    </entry>
+</feed>
