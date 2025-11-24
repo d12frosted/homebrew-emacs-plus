@@ -131,6 +131,9 @@ The formula creates the app using these steps:
 4. **Replace default droplet icon**:
    - Copy `Emacs.icns` to `applet.icns` in Resources folder
    - Remove `droplet.icns` and `droplet.rsrc` (created by `osacompile`)
+   - Remove `Assets.car` (created by `osacompile` on recent macOS versions)
+     - On macOS 26+, the system prioritizes icons in Assets.car over .icns files
+     - Removing Assets.car forces macOS to use the custom `applet.icns` file
    - Update `CFBundleIconFile` to reference `applet` instead of `droplet`
 
 ### Info.plist Metadata
@@ -209,18 +212,25 @@ If you see the generic AppleScript droplet icon instead of the Emacs icon:
    ```
    Should show: `applet`
 
-2. Verify the icon file exists:
+2. Verify the icon file exists and Assets.car is removed:
    ```bash
    ls -la "Emacs Client.app/Contents/Resources/"
    ```
-   Should show `applet.icns`, not `droplet.icns`
+   Should show `applet.icns`, but NOT `droplet.icns` or `Assets.car`
 
-3. Reset Launch Services cache:
+3. **macOS 26+ specific**: If `Assets.car` exists, it must be removed. On macOS 26 (Tahoe) and later, the system prioritizes icon images embedded in Assets.car over standalone .icns files. The build process removes this file automatically, but if you're manually modifying an existing app:
    ```bash
-   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+   rm -f "Emacs Client.app/Contents/Resources/Assets.car"
+   touch "Emacs Client.app"  # Update modification timestamp
    ```
 
-4. If the issue persists after reinstall, the build may have failed to properly replace the default icon. Check the build logs for icon-related errors.
+4. Reset Launch Services cache:
+   ```bash
+   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+   killall Finder  # Refresh Finder
+   ```
+
+5. If the issue persists after reinstall, the build may have failed to properly replace the default icon. Check the build logs for icon-related errors.
 
 ### Files don't open when double-clicked
 

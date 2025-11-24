@@ -203,6 +203,10 @@ class EmacsBase < Formula
     system "rm", "-f", client_resources_dir/"droplet.icns"
     system "rm", "-f", client_resources_dir/"droplet.rsrc"
 
+    # Remove Assets.car file - on macOS 26+, the system prioritizes icon images
+    # from Assets.car over .icns files, so we must remove it to use our custom icon
+    system "rm", "-f", client_resources_dir/"Assets.car"
+
     # Set icon file reference (use simple name without spaces)
     # Try Delete first in case osacompile set it, then Add
     system "/usr/libexec/PlistBuddy -c 'Delete :CFBundleIconFile' '#{client_plist}' 2>/dev/null || true"
