@@ -53,7 +53,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#no-title-bar-2][No title bar]]
   - [[#features-explained][Features explained]]
     - [[#injected-path][Injected PATH]]
-    - [[#emacs-client-app][Emacs Client.app]]
+    - [[#emacs-clientapp][Emacs Client.app]]
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
