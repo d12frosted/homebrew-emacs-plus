@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+
+set -e
+
+#
+# This script generates .icon files and compiles them to Assets.car for macOS 26 Tahoe
+# No Icon Composer GUI required!
+#
+
+icons_dir="icons"
+original_dir="icons/original"
+tahoe_dir="icons/tahoe"
+icon_files_dir="icons/icon-files"
+count_total=0
+count_step=0
+
+echo "==> Emacs Plus Icon Converter for macOS 26 Tahoe"
+echo "    Generates .icon files and compiles them to Assets.car"
+echo ""
+
+# Check dependencies
+if [ ! -f "/Applications/Xcode.app/Contents/Developer/usr/bin/actool" ]; then
+  echo "ERROR: actool not found. Please install Xcode"
+  exit 1
+fi
+
+ACTOOL="/Applications/Xcode.app/Contents/Developer/usr/bin/actool"
+
+# Check actool is working
+if ! $ACTOOL --version >/dev/null 2>&1; then
+  echo "ERROR: actool is not working. Try running:"
+  echo "       xcodebuild -runFirstLaunch"
+  exit 1
+fi
+
+# Create output directories
+mkdir -p "$tahoe_dir"
+mkdir -p "$icon_files_dir"
+
+# Generate icon.json template
+function generate_icon_json() {
+  local name="$1"
+  cat <<EOF
+{
+  "fill" : "automatic",
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "hidden" : false,
+          "image-name" : "${name}.png",
+          "name" : "${name}",
+          "position" : {
+            "scale" : 1.0,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.3
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.0
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
+EOF
+}
+
+function process_icon() {
+  local png_file="$1"
+  local name="${png_file%.png}"
+  local size="${#count_total}"
+
+  count_step=$((count_step+1))
+  printf "[%${size}d/%d] Processing %s\n" $count_step $count_total "$name"
+
+  # Create .icon file structure
+  local icon_file="$icon_files_dir/${name}.icon"
+  mkdir -p "$icon_file/Assets"
+
+  # Copy PNG to Assets folder
+  cp "$original_dir/$png_file" "$icon_file/Assets/${name}.png"
+
+  # Generate icon.json
+  echo "  -> Generating .icon file..."
+  generate_icon_json "$name" > "$icon_file/icon.json"
+
+  # Compile with actool
+  local output_dir="$tahoe_dir/${name}_output"
+  mkdir -p "$output_dir"
+
+  echo "  -> Compiling with actool..."
+  $ACTOOL "$(pwd)/$icon_file" \
+    --compile "$(pwd)/$output_dir" \
+    --platform macosx \
+    --minimum-deployment-target 11.0 \
+    --app-icon "$name" \
+    --output-partial-info-plist "$output_dir/partial-info.plist" \
+    --enable-icon-stack-fallback-generation=disabled \
+    2>&1 | grep -v "^$" || true
+
+  # Copy Assets.car to final location
+  if [ -f "$output_dir/Assets.car" ]; then
+    cp "$output_dir/Assets.car" "$tahoe_dir/${name}.car"
+    echo "  -> ✓ Created $tahoe_dir/${name}.car"
+
+    # Also copy the .icns if generated
+    if [ -f "$output_dir/${name}.icns" ]; then
+      echo "  -> ✓ Also generated backwards-compatible ${name}.icns"
+    fi
+
+    # Cleanup temp directory
+    rm -rf "$output_dir"
+  else
+    echo "  -> ✗ ERROR: Failed to generate Assets.car for $name"
+    return 1
+  fi
+
+  echo ""
+}
+
+# Count total icons
+for f in "$original_dir"/*.png; do
+  count_total=$((count_total+1))
+done
+
+echo "Found $count_total icons to process"
+echo ""
+
+# Process each icon
+for f in "$original_dir"/*.png; do
+  process_icon "${f#"$original_dir"/}" || {
+    echo "Failed to process $f"
+    exit 1
+  }
+done
+
+echo "==> Done!"
+echo ""
+echo "Generated $count_step Assets.car files in: $tahoe_dir/"
+echo "Generated $count_step .icon files in: $icon_files_dir/"
+echo ""
+echo "These files should be copied to the Emacs.app bundle during installation."
+echo ""

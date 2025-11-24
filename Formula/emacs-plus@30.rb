@@ -193,14 +193,19 @@ class EmacsPlusAT30 < EmacsBase
       system "gmake", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
+      selected_icon = nil
       ICONS_CONFIG.each_key do |icon|
         next if build.without? "#{icon}-icon"
 
+        selected_icon = icon
         rm "#{icons_dir}/Emacs.icns"
         resource("#{icon}-icon").stage do
           icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
         end
       end
+
+      # Install Assets.car for macOS 26+ Tahoe support
+      install_tahoe_assets_car(icons_dir, selected_icon)
 
       # Create Emacs Client.app (AppleScript-based to handle file opening from Finder)
       create_emacs_client_app(icons_dir)

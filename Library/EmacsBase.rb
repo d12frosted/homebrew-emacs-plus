@@ -112,6 +112,39 @@ class EmacsBase < Formula
     system "touch '#{app}'"
   end
 
+  def install_tahoe_assets_car(icons_dir, selected_icon)
+    return if selected_icon.nil?
+
+    ohai "Installing Assets.car for macOS 26+ Tahoe support"
+
+    # Path to the pre-generated Assets.car file for this icon
+    car_file = "#{HOMEBREW_REPOSITORY}/Library/Taps/d12frosted/homebrew-emacs-plus/icons/tahoe/#{selected_icon}.car"
+
+    if File.exist?(car_file)
+      system "cp", car_file, "#{icons_dir}/Assets.car"
+      ohai "  ✓ Installed Assets.car for '#{selected_icon}' icon"
+
+      # Update Info.plist for macOS 26+ support
+      app = "#{prefix}/Emacs.app"
+      plist = "#{app}/Contents/Info.plist"
+
+      # Remove CFBundleIconFile - when using Assets.car, only CFBundleIconName should be set
+      system "/usr/libexec/PlistBuddy -c 'Delete :CFBundleIconFile' '#{plist}' 2>/dev/null || true"
+
+      # Set CFBundleIconName to match the icon name in Assets.car
+      # IMPORTANT: Must match the --app-icon name used when compiling with actool
+      system "/usr/libexec/PlistBuddy -c 'Delete :CFBundleIconName' '#{plist}' 2>/dev/null || true"
+      system "/usr/libexec/PlistBuddy -c 'Add :CFBundleIconName string #{selected_icon}' '#{plist}'"
+
+      system "touch '#{app}'"
+      ohai "  ✓ Updated Info.plist (CFBundleIconName=#{selected_icon}, removed CFBundleIconFile)"
+    else
+      opoo "Assets.car not found for '#{selected_icon}' icon at: #{car_file}"
+      opoo "Icon will use fallback .icns format (may appear in 'icon jail' on macOS 26+)"
+      opoo "Run './iconset-tahoe' to generate Assets.car files"
+    end
+  end
+
   # Helper method to add or set a plist key (handles both cases)
   def plist_set(plist, key, type, value)
     # Try to add first; if it exists, set it instead
