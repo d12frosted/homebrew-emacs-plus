@@ -53,6 +53,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#no-title-bar-2][No title bar]]
   - [[#features-explained][Features explained]]
     - [[#injected-path][Injected PATH]]
+    - [[#emacs-client-app][Emacs Client.app]]
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
@@ -155,7 +156,7 @@ Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since t
 By default =emacs-plus@30= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
-- Cocoa version, e.g. builds =Emacs.app=.
+- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-client-app][→ Emacs Client.app]] for details).
 - Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 - Build with native compilation.
 
@@ -225,6 +226,48 @@ All that being said, during installation Emacs+ injects value of =PATH= into =Em
 In case you have a non-trivial setup relying on specific value of =PATH= inherited from current terminal session, it is advised to start Emacs using =/opt/homebrew/bin/emacs= instead of =open -n -a /path/to/Emacs.app=, because =open= messes around with =PATH= value even without Emacs+ injection. You can find more information in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]].
 
 And if for some reason PATH injection doesn't work for you, report it either in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]] or open a new issue.
+
+*** Emacs Client.app
+
+Starting with =emacs-plus@30=, the formula includes a companion application called =Emacs Client.app=. This application provides a user-friendly way to open files in Emacs from Finder, Spotlight, and other macOS applications.
+
+**** When to use Emacs.app vs Emacs Client.app
+
+| Application          | Use Case                                                                                           |
+|----------------------+----------------------------------------------------------------------------------------------------|
+| *Emacs.app*          | Launch Emacs directly, start a new Emacs session, or when you want full control over the instance |
+| *Emacs Client.app*   | Open files from Finder, set as default application for file types, quick file editing             |
+
+**** How it works
+
+=Emacs Client.app= connects to an existing Emacs daemon (or starts one automatically) using =emacsclient=. This means:
+
+- *Fast startup* - No need to launch a full Emacs instance for each file
+- *Shared session* - All files opened via Emacs Client appear in the same Emacs session
+- *Seamless integration* - Works with "Open With" in Finder, drag-and-drop, and can be set as the default application for text files
+
+**** Usage
+
+After installation, create aliases in =/Applications= (the formula will suggest these commands in the caveats):
+
+#+begin_src bash
+  # Get the installation prefix
+  PREFIX=$(brew --prefix emacs-plus@30)
+
+  # Create aliases in /Applications
+  osascript -e 'tell application "Finder" to make alias file to posix file "'$PREFIX'/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
+  osascript -e 'tell application "Finder" to make alias file to posix file "'$PREFIX'/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
+#+end_src
+
+You can then:
+- Right-click files in Finder → "Open With" → "Emacs Client"
+- Drag files onto the Emacs Client.app icon
+- Set Emacs Client as the default application for specific file types
+- Launch from Spotlight to create a new Emacs frame
+
+The implementation uses AppleScript to properly handle macOS AppleEvents, ensuring files opened from Finder are correctly passed to =emacsclient=. PATH injection works the same as in =Emacs.app= (see [[#injected-path][→ Injected PATH]]).
+
+For more details, see [[file:docs/emacs-client-app.md][→ docs/emacs-client-app.md]].
 
 *** No Titlebar
 
