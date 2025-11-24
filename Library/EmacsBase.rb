@@ -193,9 +193,23 @@ class EmacsBase < Formula
     system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleDocumentTypes:0:LSItemContentTypes:4 string public.shell-script", client_plist
     system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleDocumentTypes:0:LSItemContentTypes:5 string public.data", client_plist
 
-    # Install custom icon
+    # Install custom icon (replace osacompile's default droplet icon)
     client_resources_dir = buildpath/"nextstep/Emacs Client.app/Contents/Resources"
-    system "cp", icons_dir/"Emacs.icns", client_resources_dir/"Emacs Client.icns"
-    plist_set client_plist, "CFBundleIconFile", "string", "Emacs Client"
+
+    # Use a simple filename without spaces to avoid quoting issues
+    system "cp", icons_dir/"Emacs.icns", client_resources_dir/"applet.icns"
+
+    # Remove default droplet resources created by osacompile
+    system "rm", "-f", client_resources_dir/"droplet.icns"
+    system "rm", "-f", client_resources_dir/"droplet.rsrc"
+
+    # Set icon file reference (use simple name without spaces)
+    # Try Delete first in case osacompile set it, then Add
+    system "/usr/libexec/PlistBuddy -c 'Delete :CFBundleIconFile' '#{client_plist}' 2>/dev/null || true"
+    system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleIconFile string applet", client_plist
+
+    # Verify the icon was set correctly
+    icon_check = `/usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' '#{client_plist}' 2>&1`.strip
+    ohai "Emacs Client.app icon set to: #{icon_check}"
   end
 end

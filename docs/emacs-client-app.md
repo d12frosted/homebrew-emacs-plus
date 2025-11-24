@@ -128,7 +128,10 @@ The formula creates the app using these steps:
    - `CFBundleDocumentTypes`: File type associations for text/code files
    - `LSApplicationCategoryType`: Productivity category
    - Version information and copyright
-4. **Install custom icon** by copying `Emacs.icns` to the bundle's Resources folder
+4. **Replace default droplet icon**:
+   - Copy `Emacs.icns` to `applet.icns` in Resources folder
+   - Remove `droplet.icns` and `droplet.rsrc` (created by `osacompile`)
+   - Update `CFBundleIconFile` to reference `applet` instead of `droplet`
 
 ### Info.plist Metadata
 
@@ -195,6 +198,29 @@ end open location
 This could be added in a future enhancement if there's user demand.
 
 ## Troubleshooting
+
+### Wrong icon displayed (showing default AppleScript droplet icon)
+
+If you see the generic AppleScript droplet icon instead of the Emacs icon:
+
+1. Check which icon file is referenced:
+   ```bash
+   /usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' "Emacs Client.app/Contents/Info.plist"
+   ```
+   Should show: `applet`
+
+2. Verify the icon file exists:
+   ```bash
+   ls -la "Emacs Client.app/Contents/Resources/"
+   ```
+   Should show `applet.icns`, not `droplet.icns`
+
+3. Reset Launch Services cache:
+   ```bash
+   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+   ```
+
+4. If the issue persists after reinstall, the build may have failed to properly replace the default icon. Check the build logs for icon-related errors.
 
 ### Files don't open when double-clicked
 
