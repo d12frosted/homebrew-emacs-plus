@@ -128,7 +128,7 @@ In short, =brew= doesn't really support options. They break time to time ([[http
 By default =emacs-plus@31= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
-- Cocoa version, e.g. builds =Emacs.app=.
+- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-client-app][→ Emacs Client.app]] for details).
 - Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 - Build with native compilation.
 
@@ -229,7 +229,7 @@ And if for some reason PATH injection doesn't work for you, report it either in 
 
 *** Emacs Client.app
 
-Starting with =emacs-plus@30=, the formula includes a companion application called =Emacs Client.app=. This application provides a user-friendly way to open files in Emacs from Finder, Spotlight, and other macOS applications.
+Starting with =emacs-plus@30= and =emacs-plus@31=, the formula includes a companion application called =Emacs Client.app=. This application provides a user-friendly way to open files in Emacs from Finder, Spotlight, and other macOS applications.
 
 **** When to use Emacs.app vs Emacs Client.app
 
@@ -251,7 +251,7 @@ Starting with =emacs-plus@30=, the formula includes a companion application call
 After installation, create aliases in =/Applications= (the formula will suggest these commands in the caveats):
 
 #+begin_src bash
-  # Get the installation prefix
+  # Get the installation prefix (use emacs-plus@30 or emacs-plus@31)
   PREFIX=$(brew --prefix emacs-plus@30)
 
   # Create aliases in /Applications
