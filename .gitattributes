@@ -1,0 +1,8 @@
+# Git LFS configuration for homebrew-emacs-plus
+
+# Icon files for macOS
+icons/**/*.icns filter=lfs diff=lfs merge=lfs -text
+icons/**/*.car filter=lfs diff=lfs merge=lfs -text
+
+# PNG files inside .icon folders (for macOS 26 Tahoe)
+icons/icon-files/**/*.png filter=lfs diff=lfs merge=lfs -text
