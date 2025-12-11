@@ -51,7 +51,7 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on "tree-sitter@0.25"
+  depends_on "homebrew/core/tree-sitter@0.25"
   depends_on "webp"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
