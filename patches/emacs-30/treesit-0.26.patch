@@ -1,0 +1,118 @@
+From d587ce8c65a0e22ab0a63ef2873a3dfcfbeba166 Mon Sep 17 00:00:00 2001
+From: Eli Zaretskii <eliz@gnu.org>
+Date: Fri, 17 Oct 2025 14:15:41 +0300
+Subject: [PATCH] Support Tree-sitter version 0.26 and later
+
+* src/treesit.c (init_treesit_functions)
+[TREE_SITTER_LANGUAGE_VERSION >= 15]: Define prototype for, and
+load 'ts_language_abi_version' instead of the deprecated (and
+removed in tree-sitter 0.26) 'ts_language_version'.
+(ts_language_abi_version) [TREE_SITTER_LANGUAGE_VERSION >= 15]:
+Define on WINDOWSNT, instead of 'ts_language_version'.
+(treesit_language_abi_version): New compatibility function.
+(treesit_load_language, Ftreesit_language_abi_version): Use
+'treesit_language_abi_version' instead of 'ts_language_version'.
+(Bug#79627)
+
+Adapted for Emacs 30.2 release.
+---
+ src/treesit.c | 36 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 34 insertions(+), 2 deletions(-)
+
+diff --git a/src/treesit.c b/src/treesit.c
+--- a/src/treesit.c
++++ b/src/treesit.c
+@@ -34,7 +34,11 @@
+ # include "w32common.h"
+
+ /* In alphabetical order.  */
++#if TREE_SITTER_LANGUAGE_VERSION >= 15
++#undef ts_language_abi_version
++#else
+ #undef ts_language_version
++#endif
+ #undef ts_node_child
+ #undef ts_node_child_by_field_name
+ #undef ts_node_child_count
+@@ -89,7 +93,11 @@
+ #undef ts_tree_get_changed_ranges
+ #undef ts_tree_root_node
+
++#if TREE_SITTER_LANGUAGE_VERSION >= 15
++DEF_DLL_FN (uint32_t, ts_language_abi_version, (const TSLanguage *));
++#else
+ DEF_DLL_FN (uint32_t, ts_language_version, (const TSLanguage *));
++#endif
+ DEF_DLL_FN (TSNode, ts_node_child, (TSNode, uint32_t));
+ DEF_DLL_FN (TSNode, ts_node_child_by_field_name,
+ 	    (TSNode, const char *, uint32_t));
+@@ -166,7 +174,11 @@ init_treesit_functions (void)
+   if (!library)
+     return false;
+
++#if TREE_SITTER_LANGUAGE_VERSION >= 15
++  LOAD_DLL_FN (library, ts_language_abi_version);
++#else
+   LOAD_DLL_FN (library, ts_language_version);
++#endif
+   LOAD_DLL_FN (library, ts_node_child);
+   LOAD_DLL_FN (library, ts_node_child_by_field_name);
+   LOAD_DLL_FN (library, ts_node_child_count);
+@@ -224,7 +236,11 @@ init_treesit_functions (void)
+   return true;
+ }
+
++#if TREE_SITTER_LANGUAGE_VERSION >= 15
++#define ts_language_abi_version fn_ts_language_abi_version
++#else
+ #define ts_language_version fn_ts_language_version
++#endif
+ #define ts_node_child fn_ts_node_child
+ #define ts_node_child_by_field_name fn_ts_node_child_by_field_name
+ #define ts_node_child_count fn_ts_node_child_count
+@@ -631,6 +647,22 @@ treesit_load_language_push_for_each_suffix (Lisp_Object lib_base_name,
+     }
+ }
+
++/* This function is a compatibility shim.  Tree-sitter 0.25 introduced
++   ts_language_abi_version as a replacement for ts_language_version, and
++   tree-sitter 0.26 removed ts_language_version.  Here we use the fact
++   that 0.25 bumped TREE_SITTER_LANGUAGE_VERSION to 15, to use the new
++   function instead of the old one, when Emacs is compiled against
++   tree-sitter version 0.25 or newer.  */
++static uint32_t
++treesit_language_abi_version (const TSLanguage *ts_lang)
++{
++#if TREE_SITTER_LANGUAGE_VERSION >= 15
++  return ts_language_abi_version (ts_lang);
++#else
++  return ts_language_version (ts_lang);
++#endif
++}
++
+ /* Load the dynamic library of LANGUAGE_SYMBOL and return the pointer
+    to the language definition.
+
+@@ -745,8 +777,8 @@ treesit_load_language (Lisp_Object language_symbol,
+   if (!success)
+     {
+       *signal_symbol = Qtreesit_load_language_error;
+-      *signal_data = list2 (Qversion_mismatch,
+-			    make_fixnum (ts_language_version (lang)));
++      *signal_data = list2 (Qversion_mismatch,
++			    make_fixnum (treesit_language_abi_version (lang)));
+       return NULL;
+     }
+   return lang;
+@@ -817,7 +849,7 @@ Return nil if a grammar library for LANGUAGE is not available.  */)
+ 						       &signal_data);
+       if (ts_language == NULL)
+ 	return Qnil;
+-      uint32_t version =  ts_language_version (ts_language);
++      uint32_t version =  treesit_language_abi_version (ts_language);
+       return make_fixnum((ptrdiff_t) version);
+     }
+ }
+--
+2.45.2
+
