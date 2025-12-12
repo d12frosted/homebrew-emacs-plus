@@ -41,7 +41,7 @@ jobs:
       HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master

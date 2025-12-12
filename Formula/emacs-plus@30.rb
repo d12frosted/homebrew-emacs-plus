@@ -51,7 +51,7 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on "tree-sitter"
+  depends_on "homebrew/core/tree-sitter@0.25"
   depends_on "webp"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
@@ -202,9 +202,13 @@ class EmacsPlusAT30 < EmacsBase
         end
       end
 
+      # Create Emacs Client.app (AppleScript-based to handle file opening from Finder)
+      create_emacs_client_app(icons_dir)
+
       # (prefix/"share/emacs/#{version}").install "lisp"
       prefix.install "nextstep/Emacs.app"
       (prefix/"Emacs.app/Contents").install "native-lisp"
+      prefix.install "nextstep/Emacs Client.app"
 
       # inject PATH to Info.plist
       inject_path
@@ -271,11 +275,12 @@ class EmacsPlusAT30 < EmacsBase
 
   def caveats
     <<~EOS
-      Emacs.app was installed to:
+      Emacs.app and Emacs Client.app were installed to:
         #{prefix}
 
       To link the application to default Homebrew App location:
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
+        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
 
       Your PATH value was injected into Emacs.app via a wrapper script.
       This solves the issue with macOS Sequoia ignoring LSEnvironment in Info.plist.
