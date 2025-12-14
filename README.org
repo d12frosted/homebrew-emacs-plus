@@ -58,6 +58,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
     - [[#gccemacs][gccemacs]]
+  - [[#community-features][Community Features]]
   - [[#icons][Icons]]
   - [[#emacs-configuration][Emacs configuration]]
   - [[#known-issues][Known Issues]]
@@ -345,7 +346,39 @@ Knows issues:
 - =ld: library not found for -lSystem=. This only happens on older versions of =gcc= installed by Homebrew. Please execute =$ brew reinstall gcc libgccjit= to resolve this issue.
 - Errors during compilation of your =init.el=. Try running Emacs with =-Q= option and give it some time to compile everything (maybe run =M-x= to force compilation) - you shall see buffer =*Async-native-compile-log*= in the list of buffers.
 
+** Community Features
+
+Emacs+ supports custom patches and icons through a configuration file. This allows you to use community-maintained features or your own external resources.
+
+Create =~/.config/emacs-plus/build.yml=:
+
+#+begin_src yaml
+# Use a community icon (see community/registry.json for available options)
+icon: modern-purple-flat
+
+# Use an external icon (requires SHA256 verification)
+# icon:
+#   url: https://example.com/my-icon.icns
+#   sha256: abc123...
+
+# Apply community patches
+# patches:
+#   - patch-name-from-registry
+#+end_src
+
+Then rebuild Emacs:
+
+#+begin_src bash
+$ brew reinstall emacs-plus@30
+#+end_src
+
+For more information, see [[./community/README.md][→ Community Documentation]].
+
 ** Icons
+
+#+begin_quote
+*Deprecation Notice*: The =--with-*-icon= options are deprecated and will be removed on 2025-03-14. Please migrate to using =~/.config/emacs-plus/build.yml= with =icon: icon-name=. See [[#community-features][→ Community Features]] section above.
+#+end_quote
 
 | Option                                        | Author                     | Image                                                    | URL     |
 |-----------------------------------------------+----------------------------+----------------------------------------------------------+---------|
