@@ -1,0 +1,8 @@
+{
+  "name": "cacodemon",
+  "description": "Cacodemon (Doom) Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "69f9dcdcad453655b6ae35f128d9f6ef1ac03c6c64b08216045b4f163624ccef"
+}

@@ -1,5 +1,181 @@
 {
   "schema_version": "1.0",
-  "patches": {},
-  "icons": {}
+  "patches": {
+  },
+  "icons": {
+    "EmacsIcon1": {
+      "directory": "icons/EmacsIcon1"
+    },
+    "EmacsIcon2": {
+      "directory": "icons/EmacsIcon2"
+    },
+    "EmacsIcon3": {
+      "directory": "icons/EmacsIcon3"
+    },
+    "EmacsIcon4": {
+      "directory": "icons/EmacsIcon4"
+    },
+    "EmacsIcon5": {
+      "directory": "icons/EmacsIcon5"
+    },
+    "EmacsIcon6": {
+      "directory": "icons/EmacsIcon6"
+    },
+    "EmacsIcon7": {
+      "directory": "icons/EmacsIcon7"
+    },
+    "EmacsIcon8": {
+      "directory": "icons/EmacsIcon8"
+    },
+    "EmacsIcon9": {
+      "directory": "icons/EmacsIcon9"
+    },
+    "c9rgreen-sonoma": {
+      "directory": "icons/c9rgreen-sonoma"
+    },
+    "cacodemon": {
+      "directory": "icons/cacodemon"
+    },
+    "dragon": {
+      "directory": "icons/dragon"
+    },
+    "elrumo1": {
+      "directory": "icons/elrumo1"
+    },
+    "elrumo2": {
+      "directory": "icons/elrumo2"
+    },
+    "emacs-card-blue-deep": {
+      "directory": "icons/emacs-card-blue-deep"
+    },
+    "emacs-card-british-racing-green": {
+      "directory": "icons/emacs-card-british-racing-green"
+    },
+    "emacs-card-carmine": {
+      "directory": "icons/emacs-card-carmine"
+    },
+    "emacs-card-green": {
+      "directory": "icons/emacs-card-green"
+    },
+    "gnu-head": {
+      "directory": "icons/gnu-head"
+    },
+    "memeplex-slim": {
+      "directory": "icons/memeplex-slim"
+    },
+    "memeplex-wide": {
+      "directory": "icons/memeplex-wide"
+    },
+    "modern-alecive-flatwoken": {
+      "directory": "icons/modern-alecive-flatwoken"
+    },
+    "modern-asingh4242": {
+      "directory": "icons/modern-asingh4242"
+    },
+    "modern-azhilin": {
+      "directory": "icons/modern-azhilin"
+    },
+    "modern-bananxan": {
+      "directory": "icons/modern-bananxan"
+    },
+    "modern-black-dragon": {
+      "directory": "icons/modern-black-dragon"
+    },
+    "modern-black-gnu-head": {
+      "directory": "icons/modern-black-gnu-head"
+    },
+    "modern-black-variant": {
+      "directory": "icons/modern-black-variant"
+    },
+    "modern-bokehlicia-captiva": {
+      "directory": "icons/modern-bokehlicia-captiva"
+    },
+    "modern-cg433n": {
+      "directory": "icons/modern-cg433n"
+    },
+    "modern-doom": {
+      "directory": "icons/modern-doom"
+    },
+    "modern-doom3": {
+      "directory": "icons/modern-doom3"
+    },
+    "modern-mzaplotnik": {
+      "directory": "icons/modern-mzaplotnik"
+    },
+    "modern-nuvola": {
+      "directory": "icons/modern-nuvola"
+    },
+    "modern-orange": {
+      "directory": "icons/modern-orange"
+    },
+    "modern-paper": {
+      "directory": "icons/modern-paper"
+    },
+    "modern-papirus": {
+      "directory": "icons/modern-papirus"
+    },
+    "modern-pen-3d": {
+      "directory": "icons/modern-pen-3d"
+    },
+    "modern-pen-black": {
+      "directory": "icons/modern-pen-black"
+    },
+    "modern-pen-lds56": {
+      "directory": "icons/modern-pen-lds56"
+    },
+    "modern-pen": {
+      "directory": "icons/modern-pen"
+    },
+    "modern-purple-flat": {
+      "directory": "icons/modern-purple-flat"
+    },
+    "modern-sexy-v1": {
+      "directory": "icons/modern-sexy-v1"
+    },
+    "modern-sexy-v2": {
+      "directory": "icons/modern-sexy-v2"
+    },
+    "modern-sjrmanning": {
+      "directory": "icons/modern-sjrmanning"
+    },
+    "modern-vscode": {
+      "directory": "icons/modern-vscode"
+    },
+    "modern-yellow": {
+      "directory": "icons/modern-yellow"
+    },
+    "modern": {
+      "directory": "icons/modern"
+    },
+    "nobu417-big-sur": {
+      "directory": "icons/nobu417-big-sur"
+    },
+    "retro-emacs-logo": {
+      "directory": "icons/retro-emacs-logo"
+    },
+    "retro-gnu-meditate-levitate": {
+      "directory": "icons/retro-gnu-meditate-levitate"
+    },
+    "retro-sink-bw": {
+      "directory": "icons/retro-sink-bw"
+    },
+    "retro-sink": {
+      "directory": "icons/retro-sink"
+    },
+    "savchenkovaleriy-big-sur": {
+      "directory": "icons/savchenkovaleriy-big-sur"
+    },
+    "skamacs": {
+      "directory": "icons/skamacs"
+    },
+    "spacemacs": {
+      "directory": "icons/spacemacs"
+    },
+    "savchenkovaleriy-big-sur-3d": {
+      "directory": "icons/savchenkovaleriy-big-sur-3d"
+    },
+    "savchenkovaleriy-big-sur-curvy-3d": {
+      "directory": "icons/savchenkovaleriy-big-sur-curvy-3d"
+    }
+  }
 }

@@ -1,0 +1,8 @@
+{
+  "name": "EmacsIcon8",
+  "description": "Classic Emacs icon variant 8",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "e2269a19a8e17a1290f98ff03ab42d009154fcdbadfc140acd6ae0c5f10b4940"
+}

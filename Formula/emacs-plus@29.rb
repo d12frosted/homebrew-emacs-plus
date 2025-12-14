@@ -100,6 +100,8 @@ class EmacsPlusAT29 < EmacsBase
   #
 
   def install
+    # Check for deprecated --with-*-icon options and auto-migrate
+    check_deprecated_icon_option
     # Validate build.yml configuration early to fail fast
     validate_custom_config
 

@@ -1,0 +1,8 @@
+{
+  "name": "memeplex-slim",
+  "description": "Memeplex Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "b2dc2433b49f1be1db1e4c33ae91ac3281726020dbe92ba646389d60792201dc"
+}

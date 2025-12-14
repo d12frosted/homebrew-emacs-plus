@@ -1,0 +1,8 @@
+{
+  "name": "retro-gnu-meditate-levitate",
+  "description": "Retro-style Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "dea2439b75822c8e96c2aea408110d166d04fcde7a3043ed8f2405c370858ff9"
+}

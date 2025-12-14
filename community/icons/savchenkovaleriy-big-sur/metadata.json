@@ -1,0 +1,8 @@
+{
+  "name": "savchenkovaleriy-big-sur",
+  "description": "macOS Big Sur-style Emacs icon",
+  "maintainer": {
+    "github": "savchenkovaleriy"
+  },
+  "legacy_sha256": "c251976bc0b20a4e71daa67fbc6f1a896ae8794ee3eaaab724901ba5b64fdac0"
+}
