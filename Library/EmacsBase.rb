@@ -187,7 +187,7 @@ class EmacsBase < Formula
     require 'etc'
 
     real_home = Etc.getpwuid.dir
-    deprecation_date = "2025-03-14" # 3 months from implementation
+    deprecation_date = "2026-03-14"
 
     config_paths = [
       "#{real_home}/.config/emacs-plus/build.yml",

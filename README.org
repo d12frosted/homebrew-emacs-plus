@@ -377,7 +377,7 @@ For more information, see [[./community/README.md][→ Community Documentation]]
 ** Icons
 
 #+begin_quote
-*Deprecation Notice*: The =--with-*-icon= options are deprecated and will be removed on 2025-03-14. Please migrate to using =~/.config/emacs-plus/build.yml= with =icon: icon-name=. See [[#community-features][→ Community Features]] section above.
+*Deprecation Notice*: The =--with-*-icon= options are deprecated and will be removed on 2026-03-14. Please migrate to using =~/.config/emacs-plus/build.yml= with =icon: icon-name=. See [[#community-features][→ Community Features]] section above.
 #+end_quote
 
 | Option                                        | Author                     | Image                                                    | URL     |
