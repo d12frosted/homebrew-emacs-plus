@@ -4,7 +4,8 @@
 # Script for testing Formula locally without the need to uninstall Emacs.
 #
 # Usage example:
-#   $ ./build 25 --without-spacemacs-icon --HEAD
+#   $ ./build 30 --without-spacemacs-icon --HEAD
+#   $ ./build 30 --build-config ~/my-build.yml
 #
 
 SOURCE_FILE_26=Formula/emacs-plus@26.rb
@@ -48,12 +49,44 @@ Versions:
   30                    Emacs 30 - emacs-plus@30 - current release
   31                    Emacs 31 - emacs-plus@31 - development (master)
 
+Options:
+  --build-config FILE   Use custom build configuration file
+                        (default: ~/.config/emacs-plus/build.yml)
+
 Consult each formula for the list of available options.
 "
 }
 
-VERSION=$1
-shift
+# Parse arguments
+VERSION=""
+BUILD_CONFIG=""
+EXTRA_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --build-config)
+      BUILD_CONFIG="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      if [[ -z "$VERSION" ]]; then
+        VERSION="$1"
+      else
+        EXTRA_ARGS+=("$1")
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$VERSION" ]]; then
+  usage
+  exit 1
+fi
 
 case $VERSION in
   26)
@@ -107,6 +140,13 @@ export HOMEBREW_NO_INSTALL_UPGRADE=true
 export HOMEBREW_NO_AUTO_UPDATE=true
 export HOMEBREW_DEVELOPER=1
 
+# Set build config if specified (must use HOMEBREW_ prefix for Homebrew to pass it through)
+if [[ -n "$BUILD_CONFIG" ]]; then
+  export HOMEBREW_EMACS_PLUS_BUILD_CONFIG
+  HOMEBREW_EMACS_PLUS_BUILD_CONFIG="$BUILD_CONFIG"
+  echo "Using build config: $BUILD_CONFIG"
+fi
+
 brew uninstall $PACKAGE 2>/dev/null
 # shellcheck disable=SC2068
-HOMEBREW_DEVELOPER=1 brew install --formula ./$TARGET_FILE $@
+HOMEBREW_DEVELOPER=1 brew install --formula ./$TARGET_FILE ${EXTRA_ARGS[@]}

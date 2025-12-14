@@ -10,6 +10,12 @@ end
 class EmacsBase < Formula
   def self.init version
     @@urlResolver = UrlResolver.new(version, ENV["HOMEBREW_EMACS_PLUS_MODE"] || "remote")
+    # Capture formula_root at class load time (before Homebrew changes working directory)
+    @@formula_root = begin
+      tap = Tap.fetch(TAP_OWNER, TAP_REPO)
+      ENV["HOMEBREW_EMACS_PLUS_MODE"] == "local" || !tap.installed? ?
+        Dir.pwd : tap.path.to_s
+    end
   end
 
   def self.local_patch(name, sha:)
@@ -29,6 +35,280 @@ class EmacsBase < Formula
       end
     end
   end
+
+  # ============================================================
+  # Community Patches & Icons System
+  # ============================================================
+
+  def custom_config
+    @custom_config ||= load_custom_config
+  end
+
+  def load_custom_config
+    require 'yaml'
+    require 'etc'
+    config = {}
+    config_source = nil
+
+    # Get real home directory (Homebrew sandboxes HOME to a temp dir)
+    real_home = Etc.getpwuid.dir
+
+    if ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"]
+      path = File.expand_path(ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"])
+      if File.exist?(path)
+        config = YAML.load_file(path)
+        config_source = path
+      end
+    else
+      # Use real home directory, not sandboxed HOME
+      paths = [
+        "#{real_home}/.config/emacs-plus/build.yml",
+        "#{real_home}/.emacs-plus-build.yml"
+      ]
+      config_file = paths.find { |p| File.exist?(p) }
+      if config_file
+        config = YAML.load_file(config_file)
+        config_source = config_file
+      end
+    end
+
+    if config_source
+      ohai "Loaded build config from: #{config_source}"
+    end
+
+    config
+  end
+
+  def registry
+    @registry ||= begin
+      require 'json'
+      registry_file = "#{formula_root}/community/registry.json"
+      File.exist?(registry_file) ? JSON.parse(File.read(registry_file)) : { "patches" => {}, "icons" => {} }
+    end
+  end
+
+  def self.formula_root
+    @@formula_root
+  end
+
+  def formula_root
+    @@formula_root
+  end
+
+  def resolve_patches
+    return [] unless custom_config["patches"]
+
+    custom_config["patches"].map do |patch_ref|
+      case patch_ref
+      when String
+        resolve_registry_patch(patch_ref)
+      when Hash
+        name = patch_ref.keys.first
+        spec = patch_ref[name]
+        odie "External patch '#{name}' requires 'url' and 'sha256'" unless spec["url"] && spec["sha256"]
+        { name: name, url: spec["url"], sha256: spec["sha256"], type: "external" }
+      else
+        odie "Invalid patch specification: #{patch_ref}"
+      end
+    end
+  end
+
+  def resolve_registry_patch(name)
+    info = registry.dig("patches", name)
+    odie "Unknown community patch: #{name}\nCheck community/registry.json for available patches" unless info
+
+    patch_dir = "#{formula_root}/community/#{info['directory']}"
+    metadata_file = "#{patch_dir}/metadata.json"
+    odie "Missing metadata for patch: #{name}" unless File.exist?(metadata_file)
+
+    metadata = JSON.parse(File.read(metadata_file))
+
+    emacs_ver = version.to_s.split(".").first
+    unless metadata["compatibility"]["emacs_versions"].include?(emacs_ver)
+      odie <<~ERROR
+        Patch '#{name}' does not support Emacs #{emacs_ver}
+        Supported versions: #{metadata["compatibility"]["emacs_versions"].join(", ")}
+        Maintainer: @#{metadata["maintainer"]["github"]}
+      ERROR
+    end
+
+    patch_file = "#{patch_dir}/emacs-#{emacs_ver}.patch"
+    odie "Missing patch file: #{patch_file}" unless File.exist?(patch_file)
+
+    { name: name, path: patch_file, type: "community", metadata: metadata }
+  end
+
+  def resolve_icon
+    return nil unless custom_config["icon"]
+
+    icon_ref = custom_config["icon"]
+    case icon_ref
+    when String
+      resolve_registry_icon(icon_ref)
+    when Hash
+      odie "External icon requires 'url' and 'sha256'" unless icon_ref["url"] && icon_ref["sha256"]
+      { url: icon_ref["url"], sha256: icon_ref["sha256"], type: "external" }
+    else
+      odie "Invalid icon specification"
+    end
+  end
+
+  def resolve_registry_icon(name)
+    # First check community registry
+    info = registry.dig("icons", name)
+    if info
+      icon_dir = "#{formula_root}/community/#{info['directory']}"
+      icon_file = "#{icon_dir}/icon.icns"
+      odie "Missing icon file: #{icon_file}" unless File.exist?(icon_file)
+
+      metadata_file = "#{icon_dir}/metadata.json"
+      metadata = File.exist?(metadata_file) ? JSON.parse(File.read(metadata_file)) : {}
+
+      return { name: name, path: icon_file, type: "community", metadata: metadata }
+    end
+
+    # Fallback to legacy icons (during deprecation period)
+    if ICONS_CONFIG.key?(name)
+      legacy_icon_path = "#{formula_root}/icons/#{name}.icns"
+      if File.exist?(legacy_icon_path)
+        ohai "Using legacy icon: #{name} (will be migrated to community registry)"
+        return { name: name, path: legacy_icon_path, type: "legacy" }
+      end
+    end
+
+    odie "Unknown icon: #{name}\nCheck community/registry.json or icons/ directory for available icons"
+  end
+
+  def validate_custom_config
+    config = custom_config
+    return if config.empty?
+
+    errors = []
+
+    # Validate patches
+    if config["patches"]
+      unless config["patches"].is_a?(Array)
+        errors << "'patches' must be an array"
+      end
+    end
+
+    # Validate icon
+    if config["icon"]
+      case config["icon"]
+      when String
+        # Validate icon exists (community or legacy)
+        name = config["icon"]
+        unless registry.dig("icons", name) || ICONS_CONFIG.key?(name)
+          available = ICONS_CONFIG.keys.first(5).join(", ")
+          errors << "Unknown icon '#{name}'. Available legacy icons: #{available}..."
+        end
+      when Hash
+        unless config["icon"]["url"] && config["icon"]["sha256"]
+          errors << "External icon requires 'url' and 'sha256'"
+        end
+      else
+        errors << "'icon' must be a string or hash with url/sha256"
+      end
+    end
+
+    unless errors.empty?
+      error_msg = "build.yml validation failed:\n" + errors.map { |e| "  - #{e}" }.join("\n")
+      raise error_msg
+    end
+
+    ohai "Build config validated successfully"
+  end
+
+  def apply_custom_patches
+    ohai "Checking for custom patches..."
+    patches = resolve_patches
+    if patches.empty?
+      puts "  No custom patches configured"
+      return
+    end
+
+    require 'digest'
+    require 'tempfile'
+
+    ohai "Applying custom patches"
+    patches.each do |patch|
+      puts "  - #{patch[:name]} (#{patch[:type]})"
+
+      if patch[:type] == "community"
+        if patch[:metadata] && patch[:metadata]["maintainer"]
+          puts "    Maintainer: @#{patch[:metadata]["maintainer"]["github"]}"
+        end
+        system "patch", "-p1", "-i", patch[:path]
+        odie "Failed to apply community patch: #{patch[:name]}" unless $?.success?
+      else
+        # External: download with curl, verify SHA256
+        tmpfile = Tempfile.new(["patch-#{patch[:name]}-", ".patch"])
+        system "curl", "-fsSL", "-o", tmpfile.path, patch[:url]
+        odie "Failed to download external patch: #{patch[:name]}" unless $?.success?
+
+        actual_sha = Digest::SHA256.file(tmpfile.path).hexdigest
+        if actual_sha != patch[:sha256]
+          odie <<~ERROR
+            SHA256 mismatch for external patch: #{patch[:name]}
+            Expected: #{patch[:sha256]}
+            Actual:   #{actual_sha}
+          ERROR
+        end
+
+        system "patch", "-p1", "-i", tmpfile.path
+        odie "Failed to apply external patch: #{patch[:name]}" unless $?.success?
+        tmpfile.unlink
+      end
+    end
+  end
+
+  def apply_custom_icon(icons_dir)
+    icon = resolve_icon
+    return unless icon
+
+    require 'digest'
+    require 'tempfile'
+    require 'fileutils'
+
+    ohai "Applying custom icon: #{icon[:name] || 'external'}"
+
+    target_icon = "#{icons_dir}/Emacs.icns"
+
+    case icon[:type]
+    when "community", "legacy"
+      if icon[:metadata] && icon[:metadata]["maintainer"]
+        puts "  Maintainer: @#{icon[:metadata]["maintainer"]["github"]}"
+      end
+      puts "  Copying #{icon[:path]} -> #{target_icon}"
+      FileUtils.rm_f(target_icon)
+      FileUtils.cp(icon[:path], target_icon)
+    when "external"
+      # External: download with curl, verify SHA256
+      tmpfile = Tempfile.new(["icon-", ".icns"])
+      system "curl", "-fsSL", "-o", tmpfile.path, icon[:url]
+      odie "Failed to download external icon" unless $?.success?
+
+      actual_sha = Digest::SHA256.file(tmpfile.path).hexdigest
+      if actual_sha != icon[:sha256]
+        odie <<~ERROR
+          SHA256 mismatch for external icon
+          Expected: #{icon[:sha256]}
+          Actual:   #{actual_sha}
+        ERROR
+      end
+
+      FileUtils.rm_f(target_icon)
+      FileUtils.cp(tmpfile.path, target_icon)
+      tmpfile.unlink
+    else
+      odie "Unknown icon type: #{icon[:type]}"
+    end
+    puts "  Icon applied successfully"
+  end
+
+  # ============================================================
+  # PATH Injection
+  # ============================================================
 
   def path_injection_snippet
     path = PATH.new(ORIGINAL_PATHS)
