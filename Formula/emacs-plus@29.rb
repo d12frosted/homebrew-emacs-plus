@@ -100,6 +100,9 @@ class EmacsPlusAT29 < EmacsBase
   #
 
   def install
+    # Validate build.yml configuration early to fail fast
+    validate_custom_config
+
     args = %W[
       --disable-dependency-tracking
       --disable-silent-rules
@@ -164,6 +167,9 @@ class EmacsPlusAT29 < EmacsBase
 
     system "./autogen.sh"
 
+    # Apply custom patches from build.yml
+    apply_custom_patches
+
     if (build.with? "cocoa") && (build.without? "x11")
       args << "--with-ns" << "--disable-ns-self-contained"
 
@@ -194,6 +200,11 @@ class EmacsPlusAT29 < EmacsBase
         resource("#{icon}-icon").stage do
           icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
         end
+      end
+
+      # Apply custom icon from build.yml (if no deprecated --with-*-icon option used)
+      unless ICONS_CONFIG.keys.any? { |icon| build.with? "#{icon}-icon" }
+        apply_custom_icon(icons_dir)
       end
 
       # (prefix/"share/emacs/#{version}").install "lisp"
