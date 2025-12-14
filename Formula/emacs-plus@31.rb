@@ -274,6 +274,9 @@ class EmacsPlusAT31 < EmacsBase
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
 
+      Custom icons and patches can be configured via ~/.config/emacs-plus/build.yml
+      See: https://github.com/d12frosted/homebrew-emacs-plus/blob/master/community/README.md
+
       Your PATH value was injected into Emacs.app via a wrapper script.
       This solves the issue with macOS Sequoia ignoring LSEnvironment in Info.plist.
 
