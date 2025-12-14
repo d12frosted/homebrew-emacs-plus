@@ -1,0 +1,8 @@
+{
+  "name": "retro-sink-bw",
+  "description": "Retro-style Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "1070658acb238558901f5d13e1178e5bd09e2aceda205c033ca9a18a430facb1"
+}

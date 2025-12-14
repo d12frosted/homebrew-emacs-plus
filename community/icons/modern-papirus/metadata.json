@@ -1,0 +1,8 @@
+{
+  "name": "modern-papirus",
+  "description": "Papirus-style Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "b00dbd26aab164978d28fce4f5a2a02aab70d15068a8858fea4672d1d713d670"
+}

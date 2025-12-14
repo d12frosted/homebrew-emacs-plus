@@ -1,0 +1,8 @@
+{
+  "name": "emacs-card-blue-deep",
+  "description": "Card-style Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "56694a2d1e697bc7d00e6ba1c822b570a7fa58146061045b5667fe30edaacc21"
+}

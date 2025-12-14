@@ -179,6 +179,44 @@ class EmacsBase < Formula
     odie "Unknown icon: #{name}\nCheck community/registry.json or icons/ directory for available icons"
   end
 
+  def check_deprecated_icon_option
+    # Find if any deprecated --with-*-icon option is being used
+    used_icon = ICONS_CONFIG.keys.find { |icon| build.with? "#{icon}-icon" }
+    return unless used_icon
+
+    require 'etc'
+
+    real_home = Etc.getpwuid.dir
+    deprecation_date = "2025-03-14" # 3 months from implementation
+
+    config_paths = [
+      "#{real_home}/.config/emacs-plus/build.yml",
+      "#{real_home}/.emacs-plus-build.yml"
+    ]
+    existing_config = config_paths.find { |p| File.exist?(p) }
+
+    opoo "Icon options (--with-*-icon) are deprecated and will be removed on #{deprecation_date}"
+    puts
+
+    if existing_config
+      # Config exists - show migration instructions
+      puts "Please add the following to #{existing_config}:"
+      puts
+      puts "  icon: #{used_icon}"
+      puts
+      puts "Then reinstall without the --with-#{used_icon}-icon option."
+    else
+      # No config - show creation instructions
+      # Note: Can't auto-migrate due to Homebrew's sandbox
+      puts "Please create ~/.config/emacs-plus/build.yml with:"
+      puts
+      puts "  icon: #{used_icon}"
+      puts
+      puts "Then reinstall without the --with-#{used_icon}-icon option."
+    end
+    puts
+  end
+
   def validate_custom_config
     config = custom_config
     return if config.empty?

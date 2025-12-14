@@ -1,0 +1,8 @@
+{
+  "name": "c9rgreen-sonoma",
+  "description": "macOS Sonoma-style Emacs icon",
+  "maintainer": {
+    "github": "c9rgreen"
+  },
+  "legacy_sha256": "0e80aec0c6ead0b49177d9e230cf0569ee16465e36dbacabe9e8e0a4152d9b62"
+}

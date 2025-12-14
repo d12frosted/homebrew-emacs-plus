@@ -1,0 +1,8 @@
+{
+  "name": "nobu417-big-sur",
+  "description": "macOS Big Sur-style Emacs icon",
+  "maintainer": {
+    "github": "nobu417"
+  },
+  "legacy_sha256": "5bdfe8d6ea7e2d01ceaa6e5605d389561883f9091227aae7ff4410cb9a9d7d27"
+}

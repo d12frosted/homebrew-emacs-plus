@@ -1,0 +1,8 @@
+{
+  "name": "modern",
+  "description": "Modern Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "0536db43c82dbfb769953fe266a2a8381b4f1d8ed006d2799d7d0a2c2ae13647"
+}

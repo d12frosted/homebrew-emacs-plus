@@ -1,0 +1,8 @@
+{
+  "name": "gnu-head",
+  "description": "GNU head Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "6a4a4d905a265b1c5e09eaecb26459b62a667a3f9aff583e2ebf3a6586a78fe7"
+}

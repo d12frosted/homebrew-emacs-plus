@@ -1,0 +1,8 @@
+{
+  "name": "modern-mzaplotnik",
+  "description": "Modern mzaplotnik Emacs icon",
+  "maintainer": {
+    "github": "mzaplotnik"
+  },
+  "legacy_sha256": "004364d52db2d94b67a7db909c5d73794a9b3bbd92b2a7155ca269f637c520a8"
+}

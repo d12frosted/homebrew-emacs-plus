@@ -1,0 +1,8 @@
+{
+  "name": "modern-doom",
+  "description": "Doom-inspired Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "1efca511eb6c2b04472a2bd6492ab99389f556ec93d10897890e11cfd7ab3e4d"
+}

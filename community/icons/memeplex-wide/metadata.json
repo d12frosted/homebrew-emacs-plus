@@ -1,0 +1,8 @@
+{
+  "name": "memeplex-wide",
+  "description": "Memeplex Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "cfbc6d4eb6f1019bf47bc30c977540e00af0f8bf1f9bd04804830b3e49dbd98f"
+}

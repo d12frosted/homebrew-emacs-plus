@@ -1,0 +1,8 @@
+{
+  "name": "emacs-card-british-racing-green",
+  "description": "Card-style Emacs icon",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "legacy_sha256": "e4ec5332b144f9cffa613c19feafe43bb69046fa2a6eb3d3ec9c6163498a6e05"
+}
