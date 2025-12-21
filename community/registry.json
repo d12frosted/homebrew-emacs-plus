@@ -66,6 +66,9 @@
     "memeplex-wide": {
       "directory": "icons/memeplex-wide"
     },
+    "modern": {
+      "directory": "icons/modern"
+    },
     "modern-alecive-flatwoken": {
       "directory": "icons/modern-alecive-flatwoken"
     },
@@ -114,6 +117,9 @@
     "modern-papirus": {
       "directory": "icons/modern-papirus"
     },
+    "modern-pen": {
+      "directory": "icons/modern-pen"
+    },
     "modern-pen-3d": {
       "directory": "icons/modern-pen-3d"
     },
@@ -122,9 +128,6 @@
     },
     "modern-pen-lds56": {
       "directory": "icons/modern-pen-lds56"
-    },
-    "modern-pen": {
-      "directory": "icons/modern-pen"
     },
     "modern-purple-flat": {
       "directory": "icons/modern-purple-flat"
@@ -144,9 +147,6 @@
     "modern-yellow": {
       "directory": "icons/modern-yellow"
     },
-    "modern": {
-      "directory": "icons/modern"
-    },
     "nobu417-big-sur": {
       "directory": "icons/nobu417-big-sur"
     },
@@ -156,14 +156,20 @@
     "retro-gnu-meditate-levitate": {
       "directory": "icons/retro-gnu-meditate-levitate"
     },
-    "retro-sink-bw": {
-      "directory": "icons/retro-sink-bw"
-    },
     "retro-sink": {
       "directory": "icons/retro-sink"
     },
+    "retro-sink-bw": {
+      "directory": "icons/retro-sink-bw"
+    },
     "savchenkovaleriy-big-sur": {
       "directory": "icons/savchenkovaleriy-big-sur"
+    },
+    "savchenkovaleriy-big-sur-3d": {
+      "directory": "icons/savchenkovaleriy-big-sur-3d"
+    },
+    "savchenkovaleriy-big-sur-curvy-3d": {
+      "directory": "icons/savchenkovaleriy-big-sur-curvy-3d"
     },
     "skamacs": {
       "directory": "icons/skamacs"
@@ -171,11 +177,8 @@
     "spacemacs": {
       "directory": "icons/spacemacs"
     },
-    "savchenkovaleriy-big-sur-3d": {
-      "directory": "icons/savchenkovaleriy-big-sur-3d"
-    },
-    "savchenkovaleriy-big-sur-curvy-3d": {
-      "directory": "icons/savchenkovaleriy-big-sur-curvy-3d"
+    "splash-screen-icon": {
+      "directory": "icons/splash-screen-icon"
     }
   }
 }
