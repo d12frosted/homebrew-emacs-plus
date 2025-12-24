@@ -4,7 +4,8 @@ Adds configurable background blur and alpha transparency support on macOS using 
 
 ## Showcase
 
-
+Transparency + Blurring (alpha 0.5, blur 20)
+![Example](example.png)
 
 ## Compatibility
 
