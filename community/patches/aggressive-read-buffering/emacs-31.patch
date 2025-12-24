@@ -1,0 +1,33 @@
+diff --git a/src/sysdep.c b/src/sysdep.c
+index a8320e1db26..918c23e9db6 100644
+--- a/src/sysdep.c
++++ b/src/sysdep.c
+@@ -2778,6 +2778,28 @@ emacs_intr_read (int fd, void *buf, ptrdiff_t nbyte, bool interruptible)
+     }
+   while (result < 0 && errno == EINTR);
+ 
++  /* On macOS the maximum buffer size for a tty/pty is 1024 bytes. If
++     we've asked for more, continue reading data in a loop until we've
++     read NBYTE bytes or there is no more data.  Add a short delay
++     between reads to give the writer an opportunity to put more
++     data. This significantly improves the performance of
++     read_process_output() when receiving large quanities of data.  */
++  if ((result == 1024) && (nbyte > result) && isatty(fd))
++    {
++      ssize_t n;
++
++      do
++	{
++	  usleep (25);
++	  if (interruptible)
++	    maybe_quit ();
++	  n = read (fd, buf + result, nbyte - result);
++	  if (n > 0)
++	    result += n;
++	}
++      while ((n < 0 && errno == EINTR) || (n > 0));
++    }
++
+   return result;
+ }
+ 
