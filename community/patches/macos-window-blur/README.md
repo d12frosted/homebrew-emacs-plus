@@ -37,6 +37,10 @@ To use the new features, add alpha transparency and blur radius parameters in yo
 (set-frame-parameter nil 'ns-background-blur 20)
 ```
 
+Both features are opt-in via frame parameters (alpha-background and ns-background-blur).
+
+Blur only works on Cocoa frames and is applied dynamically. You may notice that it doesn’t appear until the frame is updated, for example, when opening the command buffer.
+
 ## Patch Files
 
 - `emacs-31.patch` - Patch for Emacs 31
