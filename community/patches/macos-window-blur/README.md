@@ -32,7 +32,7 @@ brew reinstall emacs-plus@31
 
 To use the new features, add alpha transparency and blur radius parameters in your config:
 
-``` bash
+``` emacs-lisp
 (set-frame-parameter nil 'alpha-background 0.5) 
 (set-frame-parameter nil 'ns-background-blur 20)
 ```
