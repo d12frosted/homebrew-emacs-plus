@@ -4,8 +4,6 @@
   "maintainer": "aaratha",
   "compatibility": {
     "emacs_versions": [
-      "29",
-      "30",
       "31"
     ]
   },
