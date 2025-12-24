@@ -1,10 +1,14 @@
 # macos-window-blur
 
-Adds configurable background blur support on macOS using CGS APIs
+Adds configurable background blur and alpha transparency support on macOS using CGS APIs
+
+## Showcase
+
+
 
 ## Compatibility
 
-- Emacs versions: 29, 30, 31
+- Emacs versions: 31
 
 ## Maintainer
 
@@ -22,11 +26,16 @@ patches:
 Then rebuild Emacs:
 
 ```bash
-brew reinstall emacs-plus@30
+brew reinstall emacs-plus@31
+```
+
+To use the new features, add alpha transparency and blur radius parameters in your config:
+
+``` bash
+(set-frame-parameter nil 'alpha-background 0.5) 
+(set-frame-parameter nil 'ns-background-blur 20)
 ```
 
 ## Patch Files
 
-- `emacs-29.patch` - Patch for Emacs 29
-- `emacs-30.patch` - Patch for Emacs 30
 - `emacs-31.patch` - Patch for Emacs 31
