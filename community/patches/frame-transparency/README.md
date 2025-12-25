@@ -1,6 +1,6 @@
-# macos-window-blur
+# frame-transparency
 
-Adds configurable background blur and alpha transparency support on macOS using CGS APIs
+Adds configurable frame transparency and background blur support on macOS using CGS APIs
 
 ## Showcase
 
@@ -21,7 +21,7 @@ Add to your `~/.config/emacs-plus/build.yml`:
 
 ```yaml
 patches:
-  - macos-window-blur
+  - frame-transparency
 ```
 
 Then rebuild Emacs:
