@@ -1,6 +1,9 @@
 {
   "schema_version": "1.0",
   "patches": {
+    "frame-transparency": {
+      "directory": "patches/frame-transparency"
+    },
     "aggressive-read-buffering": {
       "directory": "patches/aggressive-read-buffering"
     }
