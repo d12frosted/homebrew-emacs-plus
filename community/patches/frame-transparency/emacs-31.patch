@@ -1,5 +1,5 @@
 diff --git a/src/frame.c b/src/frame.c
-index 3c5df648e3f..54be83992ee 100644
+index 1594578c06d..605db7a8354 100644
 --- a/src/frame.c
 +++ b/src/frame.c
 @@ -1134,6 +1134,7 @@ make_frame (bool mini_p)
@@ -76,7 +76,7 @@ index 2a0b9aa2554..6d000f1199b 100644
          {
            if (face && (NS_FACE_BACKGROUND (face)
 diff --git a/src/nsfns.m b/src/nsfns.m
-index 2b94b32e59c..f6af71a4549 100644
+index 5a2d5641938..a1c28a0632d 100644
 --- a/src/nsfns.m
 +++ b/src/nsfns.m
 @@ -295,7 +295,7 @@ Turn the input menu (an NSMenu) into a lisp list for tracking on lisp side.
@@ -206,7 +206,7 @@ index d9d16ffabd3..b3273c21796 100644
  extern int ns_select (int nfds, fd_set *readfds, fd_set *writefds,
  		      fd_set *exceptfds, struct timespec *timeout,
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 66b4a3c82e7..3e28a0553b0 100644
+index 9468832b6d5..9c040c3ba9f 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -31,6 +31,7 @@ Updated by Christian Limpach (chris@nice.ch)
@@ -238,7 +238,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  }
  
  
-@@ -1979,6 +1987,76 @@ Hide the window (X11 semantics)
+@@ -2028,6 +2036,76 @@ Hide the window (X11 semantics)
      }
  #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101000 */
  }
@@ -315,7 +315,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  #endif /* NS_IMPL_COCOA */
  
  static void
-@@ -2624,8 +2702,9 @@ Hide the window (X11 semantics)
+@@ -2673,8 +2751,9 @@ Hide the window (X11 semantics)
  
    block_input ();
    ns_focus (f, &r, 1);
@@ -327,7 +327,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
    NSRectFill (r);
    ns_unfocus (f);
  
-@@ -2653,7 +2732,8 @@ Hide the window (X11 semantics)
+@@ -2702,7 +2781,8 @@ Hide the window (X11 semantics)
  
    r = NSIntersectionRect (r, [view frame]);
    ns_focus (f, &r, 1);
@@ -337,7 +337,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  
    NSRectFill (r);
  
-@@ -2757,7 +2837,8 @@ Hide the window (X11 semantics)
+@@ -2806,7 +2886,8 @@ Hide the window (X11 semantics)
          return;
  
        ns_focus (f, NULL, 1);
@@ -347,7 +347,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
        NSRectFill (NSMakeRect (0, margin, width, border));
        NSRectFill (NSMakeRect (0, 0, border, height));
        NSRectFill (NSMakeRect (0, margin, width, border));
-@@ -2809,7 +2890,8 @@ Hide the window (X11 semantics)
+@@ -2858,7 +2939,8 @@ Hide the window (X11 semantics)
            NSRect r = NSMakeRect (0, y, FRAME_PIXEL_WIDTH (f), height);
            ns_focus (f, &r, 1);
  
@@ -357,7 +357,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
            NSRectFill (NSMakeRect (0, y, width, height));
            NSRectFill (NSMakeRect (FRAME_PIXEL_WIDTH (f) - width,
                                    y, width, height));
-@@ -3060,7 +3142,8 @@ Hide the window (X11 semantics)
+@@ -3109,7 +3191,8 @@ Hide the window (X11 semantics)
      {
        NSTRACE_RECT ("clearRect", bmpRect);
  
@@ -367,7 +367,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
        NSRectFill (bmpRect);
      }
  
-@@ -3091,7 +3174,7 @@ Hide the window (X11 semantics)
+@@ -3140,7 +3223,7 @@ Hide the window (X11 semantics)
        else
          bm_color = f->output_data.ns->cursor_color;
  
@@ -376,7 +376,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
        [bmp fill];
  
        [bmp release];
-@@ -3876,7 +3959,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -3925,7 +4008,8 @@ Function modeled after x_draw_glyph_string_box ().
    if (s->face->box == FACE_SIMPLE_BOX && s->face->box_color)
      {
        ns_draw_box (r, abs (hthickness), abs (vthickness),
@@ -386,17 +386,17 @@ index 66b4a3c82e7..3e28a0553b0 100644
                     left_p, right_p);
      }
    else
-@@ -3909,7 +3993,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -3958,7 +4042,8 @@ Function modeled after x_draw_glyph_string_box ().
  #ifdef NS_IMPL_COCOA
  	  /* On cocoa emacs the stipple is stored as a mask CGImage.
- 	     First we want to clear the background with the bg colour */
+ 	     First we want to clear the background with the bg color.  */
 -	  [[NSColor colorWithUnsignedLong:face->background] set];
 +	  [[[NSColor colorWithUnsignedLong:face->background]
-+             colorWithAlphaComponent: s->f->alpha_background] set];
++	     colorWithAlphaComponent: s->f->alpha_background] set];
  	  r = NSMakeRect (s->x, s->y + box_line_width,
  			  s->background_width,
  			  s->height - 2 * box_line_width);
-@@ -3954,7 +4039,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -4003,7 +4088,8 @@ Function modeled after x_draw_glyph_string_box ().
  	{
  	  if (s->hl != DRAW_CURSOR)
  	    [(NS_FACE_BACKGROUND (face) != 0
@@ -406,7 +406,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  	      : FRAME_BACKGROUND_COLOR (s->f)) set];
  	  else if (face && (NS_FACE_BACKGROUND (face)
  			    == [(NSColor *) FRAME_CURSOR_COLOR (s->f)
-@@ -4095,7 +4181,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -4144,7 +4230,8 @@ Function modeled after x_draw_glyph_string_box ().
       otherwise, since we composite the image under NS (instead of mucking
       with its background color), we must clear just the image area.  */
  
@@ -416,7 +416,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  
    if (bg_height > s->slice.height || s->img->hmargin || s->img->vmargin
        || s->img->mask || s->img->pixmap == 0 || s->width != s->background_width)
-@@ -4165,7 +4252,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -4214,7 +4301,8 @@ Function modeled after x_draw_glyph_string_box ().
    if (s->hl == DRAW_CURSOR)
      {
        [FRAME_CURSOR_COLOR (s->f) set];
@@ -426,7 +426,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
      }
    else
      tdCol = [NSColor colorWithUnsignedLong: NS_FACE_FOREGROUND (face)];
-@@ -4258,10 +4346,12 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -4307,10 +4395,12 @@ Function modeled after x_draw_glyph_string_box ().
  		face = FACE_FROM_ID (s->f, MOUSE_FACE_ID);
  	      prepare_face_for_display (s->f, face);
  
@@ -441,7 +441,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  	  NSRectFill (NSMakeRect (x, y, w, h));
  	}
      }
-@@ -4295,7 +4385,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -4344,7 +4434,8 @@ Function modeled after x_draw_glyph_string_box ().
  	      /* On cocoa emacs the stipple is stored as a mask CGImage.
  		 First we want to clear the background with the bg
  		 color.  */
@@ -451,7 +451,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  	      NSRectFill (NSMakeRect (x, s->y, background_width, s->height));
  
  	      /* This part could possibly be improved, the author is
-@@ -4323,7 +4414,8 @@ Function modeled after x_draw_glyph_string_box ().
+@@ -4372,7 +4463,8 @@ Function modeled after x_draw_glyph_string_box ().
  #endif /* NS_IMPL_COCOA */
  	    }
  	  else
@@ -461,7 +461,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
  
  	  NSRectFill (NSMakeRect (x, s->y, background_width, s->height));
  	}
-@@ -8810,8 +8902,9 @@ - (void)toggleFullScreen: (id)sender
+@@ -8860,8 +8952,9 @@ - (void)toggleFullScreen: (id)sender
          }
  
        [w setContentView:[fw contentView]];
@@ -473,7 +473,7 @@ index 66b4a3c82e7..3e28a0553b0 100644
          [w setOpaque: NO];
  
        f->border_width = [w borderWidth];
-@@ -9548,10 +9641,14 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9598,10 +9691,14 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
        f->border_width = [self borderWidth];
  
        col = [NSColor colorWithUnsignedLong:NS_FACE_BACKGROUND
