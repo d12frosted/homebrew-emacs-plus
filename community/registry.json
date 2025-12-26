@@ -3,6 +3,9 @@
   "patches": {
     "frame-transparency": {
       "directory": "patches/frame-transparency"
+    },
+    "aggressive-read-buffering": {
+      "directory": "patches/aggressive-read-buffering"
     }
   },
   "icons": {
