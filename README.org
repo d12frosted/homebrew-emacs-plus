@@ -143,9 +143,11 @@ By default =emacs-plus@31= uses the following features.
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-mailutils=        | build with mailutils support                                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
-| =--with-x11=              | build with x11 support                                                       |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
+
+*Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -172,9 +174,11 @@ By default =emacs-plus@30= uses the following features.
 | =--with-imagemagick=      | build with =imagemagick= support                                               |
 | =--with-mailutils=        | build with mailutils support                                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
-| =--with-x11=              | build with x11 support                                                       |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
+
+*Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -201,9 +205,11 @@ By default =emacs-plus@29= uses the following features.
 | =--with-mailutils=        | build with mailutils support                                                 |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
-| =--with-x11=              | build with x11 support                                                       |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
+
+*Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
 *** No title bar
 Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 29, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
@@ -494,13 +500,15 @@ By default =emacs-plus@28= uses the following features.
 | =--with-no-frame-refocus=              | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-no-titlebar=                   | build [[#no-titlebar][→ without titlebar]]                                                     |
 | =--with-no-titlebar-and-round-corners= | build [[#no-titlebar][→ without titlebar]], but round corners instead of square                |
-| =--with-x11=                           | build with x11 support                                                       |
+| =--with-x11=                           | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=                      | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=                      | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--without-cocoa=                      | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
 | =--with-imagemagick=                   | build with =imagemagick= support                                               |
 | =--HEAD=                               | build from =emacs-28= branch                                                   |
 | =--with-native-comp=                   | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 |                                      |                                                                              |
+
+*Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
 *** Emacs 27
 
@@ -521,11 +529,13 @@ By default =emacs-plus@27= uses the following features.
 | =--with-mailutils=        | build with mailutils support                                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
 | =--with-no-titlebar=      | build [[#no-titlebar][→ without titlebar]]                                                     |
-| =--with-x11=              | build with x11 support                                                       |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only)                           |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
 | =--without-imagemagick=   | build without =imagemagick= support                                            |
 | =--HEAD=                  | build from =emacs-27= branch                                                   |
+
+*Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
 *** Emacs 26
 
