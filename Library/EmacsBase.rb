@@ -296,14 +296,21 @@ class EmacsBase < Formula
       end
     end
 
-    # Check for revision from environment variable
+    # Check for revision from environment variable (deprecated)
     env_var = "HOMEBREW_EMACS_PLUS_#{version}_REVISION"
     revision = ENV[env_var]
     return unless revision
 
     opoo "Building from pinned revision via #{env_var}"
     puts "  Revision: #{revision}"
-    puts "  To use the latest commit, unset this variable:"
+    puts
+    puts "  WARNING: Environment variable configuration is deprecated."
+    puts "  Please migrate to build.yml by adding:"
+    puts
+    puts "    revision:"
+    puts "      \"#{version}\": #{revision}"
+    puts
+    puts "  to ~/.config/emacs-plus/build.yml, then unset the variable:"
     puts "    unset #{env_var}"
     puts
   end
