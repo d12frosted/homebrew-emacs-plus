@@ -129,7 +129,7 @@ In short, =brew= doesn't really support options. They break time to time ([[http
 By default =emacs-plus@31= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
-- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-client-app][→ Emacs Client.app]] for details).
+- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-clientapp][→ Emacs Client.app]] for details).
 - Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 - Build with native compilation.
 
@@ -157,7 +157,7 @@ Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since t
 By default =emacs-plus@30= uses the following features.
 
 - Injected =PATH= value from user shell (see separate section explaining this feature).
-- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-client-app][→ Emacs Client.app]] for details).
+- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-clientapp][→ Emacs Client.app]] for details).
 - Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
 - Build with native compilation.
 
