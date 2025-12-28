@@ -10,7 +10,9 @@ class EmacsPlusAT30 < EmacsBase
   homepage "https://www.gnu.org/software/emacs/"
 
   head do
-    if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+    if (config_revision = revision_from_config(30))
+      url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
+    elsif ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
       url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
     else
       url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
@@ -84,7 +86,9 @@ class EmacsPlusAT30 < EmacsBase
   # URL
   #
 
-  if ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
+  if (config_revision = revision_from_config(30))
+    url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
+  elsif ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
     url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
   end
 
@@ -113,8 +117,8 @@ class EmacsPlusAT30 < EmacsBase
     check_deprecated_icon_option
     # Check icon options are not used with non-Cocoa builds
     check_icon_compatibility
-    # Warn if revision is pinned via environment variable
-    check_revision_env_var(30)
+    # Warn if revision is pinned via config or environment variable
+    check_pinned_revision(30)
     # Validate build.yml configuration early to fail fast
     validate_custom_config
 

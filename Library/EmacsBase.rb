@@ -36,6 +36,47 @@ class EmacsBase < Formula
     end
   end
 
+  # Read revision from build.yml at class definition time
+  # Returns revision string for given version, or nil if not set
+  def self.revision_from_config(version)
+    require 'yaml'
+    require 'etc'
+
+    # Get real home directory
+    real_home = Etc.getpwuid.dir
+
+    # Check for config file
+    config_path = if ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"]
+      File.expand_path(ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"])
+    else
+      paths = [
+        "#{real_home}/.config/emacs-plus/build.yml",
+        "#{real_home}/.emacs-plus-build.yml"
+      ]
+      paths.find { |p| File.exist?(p) }
+    end
+
+    return nil unless config_path && File.exist?(config_path)
+
+    begin
+      config = YAML.load_file(config_path)
+      return nil unless config.is_a?(Hash) && config["revision"]
+
+      revision = config["revision"]
+      # Support both: revision: "abc" (single) or revision: { "30": "abc" } (versioned)
+      if revision.is_a?(Hash)
+        # Try both string and integer keys
+        revision[version.to_s] || revision[version]
+      else
+        # Single revision applies to all versions (not recommended but supported)
+        revision
+      end
+    rescue => e
+      # Silently ignore parse errors at class load time
+      nil
+    end
+  end
+
   # ============================================================
   # Community Patches & Icons System
   # ============================================================
@@ -236,7 +277,26 @@ class EmacsBase < Formula
     end
   end
 
-  def check_revision_env_var(version)
+  def check_pinned_revision(version)
+    # Check for revision from build.yml config
+    config = custom_config
+    if config["revision"]
+      revision = if config["revision"].is_a?(Hash)
+        config["revision"][version.to_s] || config["revision"][version]
+      else
+        config["revision"]
+      end
+
+      if revision
+        ohai "Building from pinned revision (via build.yml)"
+        puts "  Revision: #{revision}"
+        puts "  To use the latest commit, remove 'revision' from your build.yml"
+        puts
+        return
+      end
+    end
+
+    # Check for revision from environment variable
     env_var = "HOMEBREW_EMACS_PLUS_#{version}_REVISION"
     revision = ENV[env_var]
     return unless revision
@@ -277,6 +337,26 @@ class EmacsBase < Formula
         end
       else
         errors << "'icon' must be a string or hash with url/sha256"
+      end
+    end
+
+    # Validate revision
+    if config["revision"]
+      case config["revision"]
+      when String
+        # Single revision for all versions (valid but not recommended)
+        unless config["revision"].match?(/\A[a-f0-9]+\z/i)
+          errors << "'revision' must be a valid git commit hash"
+        end
+      when Hash
+        # Version-specific revisions: { "30": "abc123", "31": "def456" }
+        config["revision"].each do |ver, rev|
+          unless rev.is_a?(String) && rev.match?(/\A[a-f0-9]+\z/i)
+            errors << "'revision.#{ver}' must be a valid git commit hash"
+          end
+        end
+      else
+        errors << "'revision' must be a string or hash with version keys"
       end
     end
 
