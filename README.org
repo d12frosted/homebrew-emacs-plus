@@ -34,6 +34,8 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
 
 Feel free to open an issue or contact me via email if you face any issues, questions or feature requests. I love pull requests, so do send them. You might want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better understanding on how to contribute.
 
+For recent changes, see [[./NEWS.org][→ News]].
+
 ** Table of Contents :TOC_3:
   - [[#about][About]]
   - [[#install][Install]]

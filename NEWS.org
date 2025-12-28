@@ -1,0 +1,117 @@
+#+TITLE: Emacs Plus News
+#+AUTHOR: Boris Buliga
+
+This file documents notable changes to Emacs Plus.
+
+* 2025-12-28
+
+** New Features
+
+*** Revision pinning via build.yml
+
+You can now pin to a specific git revision using =~/.config/emacs-plus/build.yml=:
+
+#+begin_src yaml
+revision:
+  "30": abc123def456
+  "31": 789xyz
+#+end_src
+
+The environment variables =HOMEBREW_EMACS_PLUS_XX_REVISION= are now deprecated in favor of this approach. See [[./README.org#how-to-pin-a-specific-commit][documentation]] for details.
+
+*** macOS font rendering fix for CJK text
+
+Added =mac-font-use-typo-metrics= patch (from railwaycat/emacs-mac) that fixes line height calculation for mixed CJK and English text. This resolves issues with partial screen rendering in vterm and other applications.
+
+** Improvements
+
+*** Better error messages for incompatible options
+
+The formula now errors out early when icon options (=--with-*-icon= or via =build.yml=) are used with =--with-x11= or =--without-cocoa=, since these builds don't produce =Emacs.app=.
+
+*** Clearer documentation for non-Cocoa builds
+
+Updated option descriptions to clarify that =--with-x11= and =--without-cocoa= produce terminal/X11 builds without =Emacs.app=.
+
+*** Library not loaded errors
+
+Added caveat explaining how to fix "Library not loaded" errors after upgrading dependencies like =tree-sitter= or =libgccjit=: simply run =brew reinstall emacs-plus@XX=.
+
+* 2025-12-26
+
+** Community Patches
+
+*** Window blurring and alpha transparency
+
+New community patch adds support for window blurring and configurable alpha transparency effects.
+
+*** Async process read performance
+
+New community patch improves async process read performance.
+
+* 2025-12-14
+
+** New Features
+
+*** Community patches and icons system
+
+Introduced a new system for community-contributed patches and icons via =~/.config/emacs-plus/build.yml=. This allows users to easily apply patches and icons from a community registry or external URLs.
+
+The =--with-*-icon= options are now deprecated (removal date: 2026-03-14). Please migrate to =build.yml=.
+
+See [[./community/README.md][Community Documentation]] for details.
+
+* 2025-11-24
+
+** New Features
+
+*** Emacs Client.app
+
+Starting with =emacs-plus@30= and =emacs-plus@31=, the formula now includes =Emacs Client.app= - a companion application for opening files in Emacs from Finder, Spotlight, and other macOS applications. It connects to an existing Emacs daemon using =emacsclient=.
+
+*** macOS 26 (Tahoe) compatibility
+
+Fixed =Emacs Client.app= icon display on macOS 26+ by removing =Assets.car=.
+
+* 2025-10-17
+
+** New Features
+
+*** PATH injection for macOS Sequoia
+
+Fixed PATH injection on macOS 15 (Sequoia) which was ignoring =LSEnvironment= in =Info.plist=. The fix uses a wrapper script to inject PATH from your shell.
+
+To disable PATH injection:
+#+begin_src bash
+export EMACS_PLUS_NO_PATH_INJECTION=1
+#+end_src
+
+* 2025-08-15
+
+** Releases
+
+*** Emacs 30.2
+
+Updated =emacs-plus@30= to Emacs 30.2.
+
+* 2025-02-23
+
+** Releases
+
+*** Emacs 30.1
+
+Released =emacs-plus@30= with Emacs 30.1 - the first stable release of Emacs 30.
+
+** Changes
+
+*** Emacs 30 is now the default
+
+=emacs-plus= (without version suffix) now installs Emacs 30 instead of Emacs 29.
+
+*** Native compilation enabled by default
+
+Native compilation is now enabled by default for Emacs 30+. The =--with-native-comp= option is no longer needed.
+
+*** libjansson dependency removed
+
+The =libjansson= dependency was removed for Emacs 30.1+ as it's no longer required.
