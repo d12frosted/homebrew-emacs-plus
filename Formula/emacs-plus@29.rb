@@ -225,10 +225,18 @@ class EmacsPlusAT29 < EmacsBase
       inject_protected_resources_usage_desc
 
       # Replace the symlink with one that avoids starting Cocoa.
+      # Check multiple locations so users can copy Emacs.app to /Applications
+      # for better Spotlight integration.
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
         #!/bin/bash
-        exec #{prefix}/Emacs.app/Contents/MacOS/Emacs "$@"
+        for app in "/Applications/Emacs.app" "$HOME/Applications/Emacs.app" "#{prefix}/Emacs.app"; do
+          if [ -x "$app/Contents/MacOS/Emacs" ]; then
+            exec "$app/Contents/MacOS/Emacs" "$@"
+          fi
+        done
+        echo "Error: Emacs.app not found in /Applications, ~/Applications, or #{prefix}" >&2
+        exit 1
       EOS
     else
       if build.with? "x11"
@@ -289,17 +297,16 @@ class EmacsPlusAT29 < EmacsBase
       Emacs.app was installed to:
         #{prefix}
 
-      To link the application to default Homebrew App location:
+      For best Spotlight integration, copy the app to /Applications:
+        cp -r #{prefix}/Emacs.app /Applications/
+
+      The `emacs` command will automatically find the app in /Applications.
+
+      Alternatively, create a Finder alias (less reliable with Spotlight):
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
 
       Custom icons and patches can be configured via ~/.config/emacs-plus/build.yml
       See: https://github.com/d12frosted/homebrew-emacs-plus/blob/master/community/README.md
-
-      Your PATH value was injected into Emacs.app via a wrapper script.
-      This solves the issue with macOS Sequoia ignoring LSEnvironment in Info.plist.
-
-      To disable PATH injection, set EMACS_PLUS_NO_PATH_INJECTION before running Emacs:
-        export EMACS_PLUS_NO_PATH_INJECTION=1
 
       If Emacs fails to start with "Library not loaded" errors after upgrading
       dependencies (e.g., tree-sitter, libgccjit), reinstall emacs-plus:

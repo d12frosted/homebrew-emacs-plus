@@ -37,6 +37,16 @@ Updated option descriptions to clarify that =--with-x11= and =--without-cocoa= p
 
 Added caveat explaining how to fix "Library not loaded" errors after upgrading dependencies like =tree-sitter= or =libgccjit=: simply run =brew reinstall emacs-plus@XX=.
 
+*** Better Spotlight integration
+
+The =emacs= command now automatically finds =Emacs.app= in =/Applications= or =~/Applications=. This allows you to copy the app for better Spotlight indexing:
+
+#+begin_src bash
+cp -r "$(brew --prefix)/opt/emacs-plus@30/Emacs.app" /Applications/
+#+end_src
+
+The =emacs= command will continue to work without any manual adjustments.
+
 * 2025-12-26
 
 ** Community Patches
