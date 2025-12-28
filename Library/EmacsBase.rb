@@ -606,7 +606,7 @@ class EmacsBase < Formula
             do shell script pathEnv & "#{prefix}/bin/emacsclient -c -a '' -n " & dropPath
           end try
         end repeat
-        tell application "Emacs" to activate
+        tell application id "org.gnu.Emacs" to activate
       end open
 
       -- Handle launch without files (from Spotlight, Dock, or Finder)
@@ -620,7 +620,7 @@ class EmacsBase < Formula
         try
           do shell script pathEnv & "#{prefix}/bin/emacsclient -c -a '' -n"
         end try
-        tell application "Emacs" to activate
+        tell application id "org.gnu.Emacs" to activate
       end run
 
       -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
@@ -634,7 +634,7 @@ class EmacsBase < Formula
         try
           do shell script pathEnv & "#{prefix}/bin/emacsclient -n " & quoted form of this_URL
         end try
-        tell application "Emacs" to activate
+        tell application id "org.gnu.Emacs" to activate
       end open location
     EOS
 
