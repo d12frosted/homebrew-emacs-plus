@@ -253,6 +253,7 @@ Starting with =emacs-plus@30= and =emacs-plus@31=, the formula includes a compan
 - *Fast startup* - No need to launch a full Emacs instance for each file
 - *Shared session* - All files opened via Emacs Client appear in the same Emacs session
 - *Seamless integration* - Works with "Open With" in Finder, drag-and-drop, and can be set as the default application for text files
+- *org-protocol support* - Handles =org-protocol://= URLs for org-capture, org-roam, and other integrations
 
 **** Usage
 
@@ -272,6 +273,7 @@ You can then:
 - Drag files onto the Emacs Client.app icon
 - Set Emacs Client as the default application for specific file types
 - Launch from Spotlight to create a new Emacs frame
+- Use =org-protocol://= URLs from browser extensions (requires =(require 'org-protocol)= in your init file)
 
 The implementation uses AppleScript to properly handle macOS AppleEvents, ensuring files opened from Finder are correctly passed to =emacsclient=. PATH injection works the same as in =Emacs.app= (see [[#injected-path][→ Injected PATH]]).
 

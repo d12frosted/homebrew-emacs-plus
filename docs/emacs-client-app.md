@@ -8,6 +8,7 @@
 - Drag and drop files onto the Emacs Client.app icon
 - Launch a new Emacs frame from Spotlight or the Dock
 - Set Emacs Client as the default application for text files
+- Handle `org-protocol://` URLs for org-capture, org-roam, and other integrations
 
 ## Why AppleScript?
 
@@ -54,7 +55,7 @@ The method handles:
 
 ### AppleScript Structure
 
-The AppleScript application implements two handlers:
+The AppleScript application implements three handlers:
 
 #### 1. `on open` Handler (File Opening)
 
@@ -95,6 +96,25 @@ on run
   tell application "Emacs" to activate
 end run
 ```
+
+#### 3. `on open location` Handler (org-protocol URLs)
+
+Triggered when:
+- Browser extension sends an `org-protocol://` URL
+- User clicks an `org-protocol://` link
+
+```applescript
+on open location this_URL
+  -- PATH injection logic here
+  do shell script pathEnv & "#{prefix}/bin/emacsclient -n " & quoted form of this_URL
+  tell application "Emacs" to activate
+end open location
+```
+
+**Key points:**
+- Handles `org-protocol://` URLs registered via `CFBundleURLTypes`
+- Passes the full URL to emacsclient (no `-c` flag needed, org-protocol handles frame creation)
+- Requires `(require 'org-protocol)` in your Emacs init file
 
 ### PATH Injection
 
@@ -148,6 +168,7 @@ The generated app bundle includes comprehensive metadata:
   - `public.script`
   - `public.shell-script`
   - `public.data`
+- **URL Types**: Registers `org-protocol` URL scheme for org-capture, org-roam, etc.
 - **Application Category**: Productivity
 - **Display Name**: "Emacs Client"
 - **Icon**: Uses the same icon as Emacs.app for visual consistency
@@ -166,6 +187,21 @@ Then users can:
 2. **Use "Open With"**: Right-click any file → Open With → Emacs Client
 3. **Drag and drop**: Drag files onto the Emacs Client.app icon
 4. **Launch empty frame**: Open Emacs Client from Spotlight or double-click in Finder
+5. **Use org-protocol**: Click `org-protocol://` links from browser extensions
+
+### org-protocol Setup
+
+To use org-protocol with Emacs Client.app:
+
+1. Add `(require 'org-protocol)` to your Emacs init file
+2. Install a browser extension like [org-capture-extension](https://github.com/nicksellen/org-capture-extension)
+3. Copy Emacs Client.app to `/Applications` for reliable URL handling:
+   ```bash
+   cp -r "$(brew --prefix)/opt/emacs-plus@30/Emacs Client.app" /Applications/
+   ```
+4. Test with a URL like: `org-protocol://capture?template=t&url=https://example.com&title=Test`
+
+For org-roam, see the [org-roam manual](https://www.orgroam.com/manual.html#org_002droam_002dprotocol).
 
 ## Daemon Management
 
@@ -185,20 +221,6 @@ This is more reliable than checking daemon status manually, as it handles edge c
 ### Environment Variable Access
 
 AppleScript's `do shell script` command runs in a minimal environment. The `$TMPDIR` variable (where Emacs stores server sockets by default) may not be accessible. However, using `-a ''` works around this by letting `emacsclient` itself handle daemon startup with the correct environment.
-
-### org-protocol:// URLs
-
-The current implementation doesn't handle `org-protocol://` URLs. To add this functionality, an additional handler would be needed:
-
-```applescript
-on open location this_URL
-  -- Handle org-protocol:// links
-  do shell script pathEnv & "#{prefix}/bin/emacsclient -n " & quoted form of this_URL
-  tell application "Emacs" to activate
-end open location
-```
-
-This could be added in a future enhancement if there's user demand.
 
 ## Troubleshooting
 
@@ -287,9 +309,8 @@ The method automatically uses the correct `prefix`, `version`, and `buildpath` f
 
 Potential improvements for future versions:
 
-1. **org-protocol:// support**: Add `on open location` handler to `create_emacs_client_app`
-2. **Frame reuse logic**: Check if visible frames exist before creating new ones
-3. **Custom daemon socket**: Support `server-name` Emacs variable
-4. **Error notifications**: Display user-friendly error dialogs using AppleScript
-5. **Terminal mode option**: Add preference for `emacsclient -t` vs GUI frames
-6. **URL scheme registration**: Register `emacs://` URL scheme for opening files
+1. **Frame reuse logic**: Check if visible frames exist before creating new ones
+2. **Custom daemon socket**: Support `server-name` Emacs variable
+3. **Error notifications**: Display user-friendly error dialogs using AppleScript
+4. **Terminal mode option**: Add preference for `emacsclient -t` vs GUI frames
+5. **URL scheme registration**: Register `emacs://` URL scheme for opening files

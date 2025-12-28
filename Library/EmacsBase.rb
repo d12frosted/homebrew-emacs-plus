@@ -622,6 +622,20 @@ class EmacsBase < Formula
         end try
         tell application "Emacs" to activate
       end run
+
+      -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
+      on open location this_URL
+        set pathInjection to system attribute "EMACS_PLUS_NO_PATH_INJECTION"
+        if pathInjection is "" then
+          set pathEnv to "PATH='#{escaped_path}' "
+        else
+          set pathEnv to ""
+        end if
+        try
+          do shell script pathEnv & "#{prefix}/bin/emacsclient -n " & quoted form of this_URL
+        end try
+        tell application "Emacs" to activate
+      end open location
     EOS
 
     # Compile AppleScript to application bundle
@@ -652,6 +666,13 @@ class EmacsBase < Formula
     system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleDocumentTypes:0:LSItemContentTypes:3 string public.script", client_plist
     system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleDocumentTypes:0:LSItemContentTypes:4 string public.shell-script", client_plist
     system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleDocumentTypes:0:LSItemContentTypes:5 string public.data", client_plist
+
+    # Register org-protocol URL scheme for org-capture, org-roam, etc.
+    system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleURLTypes array", client_plist
+    system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleURLTypes:0 dict", client_plist
+    system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleURLTypes:0:CFBundleURLName string 'Org Protocol'", client_plist
+    system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleURLTypes:0:CFBundleURLSchemes array", client_plist
+    system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string org-protocol", client_plist
 
     # Install custom icon (replace osacompile's default droplet icon)
     client_resources_dir = buildpath/"nextstep/Emacs Client.app/Contents/Resources"

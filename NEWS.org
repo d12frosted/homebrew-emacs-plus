@@ -23,6 +23,10 @@ The environment variables =HOMEBREW_EMACS_PLUS_XX_REVISION= are now deprecated i
 
 Added =mac-font-use-typo-metrics= patch (from railwaycat/emacs-mac) that fixes line height calculation for mixed CJK and English text. This resolves issues with partial screen rendering in vterm and other applications.
 
+*** org-protocol support in Emacs Client.app
+
+=Emacs Client.app= now handles =org-protocol://= URLs out of the box. This enables org-capture from browser extensions, org-roam protocol, and other integrations without additional configuration. Just add =(require 'org-protocol)= to your Emacs init file.
+
 ** Improvements
 
 *** Better error messages for incompatible options
