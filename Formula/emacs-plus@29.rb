@@ -103,6 +103,8 @@ class EmacsPlusAT29 < EmacsBase
   def install
     # Check for deprecated --with-*-icon options and auto-migrate
     check_deprecated_icon_option
+    # Check icon options are not used with non-Cocoa builds
+    check_icon_compatibility
     # Validate build.yml configuration early to fail fast
     validate_custom_config
 

@@ -217,6 +217,25 @@ class EmacsBase < Formula
     puts
   end
 
+  def check_icon_compatibility
+    # Check if any icon option is used with non-Cocoa builds
+    return if (build.with? "cocoa") && (build.without? "x11")
+
+    # Check for --with-*-icon options
+    used_icon = ICONS_CONFIG.keys.find { |icon| build.with? "#{icon}-icon" }
+    if used_icon
+      odie "Icon options (--with-#{used_icon}-icon) are not compatible with --with-x11 or --without-cocoa. " \
+           "These build configurations do not produce Emacs.app."
+    end
+
+    # Check for icon in build.yml config
+    config = custom_config
+    if config["icon"]
+      odie "Icon configuration in build.yml is not compatible with --with-x11 or --without-cocoa. " \
+           "These build configurations do not produce Emacs.app."
+    end
+  end
+
   def validate_custom_config
     config = custom_config
     return if config.empty?
