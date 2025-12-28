@@ -30,7 +30,27 @@ Then rebuild Emacs:
 brew reinstall emacs-plus@31
 ```
 
-To use the new features, add alpha transparency and blur radius parameters in your config:
+To use the new features, choose which elements should be rendered with transparency
+
+``` emacs-lisp
+;; None:
+(set-frame-parameter nil 'ns-alpha-elements nil)
+
+;; All:
+(set-frame-parameter nil 'ns-alpha-elements '(ns-alpha-all))
+
+;; Choose elements:
+;; - Full list: ns-alpha-default (default face/background)
+;;              ns-alpha-fringe (fringes + internal border clears)
+;;              ns-alpha-box (boxed face outlines)
+;;              ns-alpha-stipple (stipple mask background clears)
+;;              ns-alpha-relief (3D relief/shadow lines)
+;;              ns-alpha-glyphs (glyph background fills like hl-line/region)
+(set-frame-parameter nil 'ns-alpha-elements
+    '(ns-alpha-default ns-alpha-fringe ns-alpha-glyphs)) ;; e.g.
+```
+
+Then add alpha transparency and blur radius parameters in your config:
 
 ``` emacs-lisp
 (set-frame-parameter nil 'alpha-background 0.5) 
