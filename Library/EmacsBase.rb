@@ -236,6 +236,18 @@ class EmacsBase < Formula
     end
   end
 
+  def check_revision_env_var(version)
+    env_var = "HOMEBREW_EMACS_PLUS_#{version}_REVISION"
+    revision = ENV[env_var]
+    return unless revision
+
+    opoo "Building from pinned revision via #{env_var}"
+    puts "  Revision: #{revision}"
+    puts "  To use the latest commit, unset this variable:"
+    puts "    unset #{env_var}"
+    puts
+  end
+
   def validate_custom_config
     config = custom_config
     return if config.empty?

@@ -105,6 +105,8 @@ class EmacsPlusAT29 < EmacsBase
     check_deprecated_icon_option
     # Check icon options are not used with non-Cocoa builds
     check_icon_compatibility
+    # Warn if revision is pinned via environment variable
+    check_revision_env_var(29)
     # Validate build.yml configuration early to fail fast
     validate_custom_config
 
