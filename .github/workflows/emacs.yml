@@ -28,6 +28,10 @@ jobs:
           - ""
           - "--build-from-source"
           - "--with-spacemacs-icon"
+        exclude:
+          # Icon options don't work on Linux (no Emacs.app)
+          - os: ubuntu-latest
+            build_opts: "--with-spacemacs-icon"
         include:
           - os: macos-latest
             logs: "~/Library/Logs/Homebrew"
