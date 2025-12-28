@@ -18,6 +18,7 @@ ICONS_CONFIG = {
   "emacs-card-carmine" => "02ec20c8fd0e08bbf457efcc5655c04e2de371171e39eb9f736e8f96ce360101",
   "emacs-card-green" => "d908f0073bd0449f06978459e7a4c6aa7219c9c38f31ae687ec15f8270213568",
   "gnu-head" => "6a4a4d905a265b1c5e09eaecb26459b62a667a3f9aff583e2ebf3a6586a78fe7",
+  "liquid-glass" => "37ede7e651ee46c5a914fd11b980c92c3ef692e41cb2676e2518d09e4d7d5de9",
   "memeplex-slim" => "b2dc2433b49f1be1db1e4c33ae91ac3281726020dbe92ba646389d60792201dc",
   "memeplex-wide" => "cfbc6d4eb6f1019bf47bc30c977540e00af0f8bf1f9bd04804830b3e49dbd98f",
   "modern-alecive-flatwoken" => "07e3ea3a46d8800beeb27278951131b0375b1d74b1d87439d0ad628fe64bbc6b",

@@ -1,0 +1,10 @@
+{
+  "name": "liquid-glass",
+  "description": "macOS Tahoe liquid glass icon with Emacs glyph",
+  "maintainer": {
+    "github": "leaferiksen"
+  },
+  "homepage": "https://github.com/leaferiksen/emacs-liquid-glass-icon",
+  "license": "GPL-3.0",
+  "legacy_sha256": "37ede7e651ee46c5a914fd11b980c92c3ef692e41cb2676e2518d09e4d7d5de9"
+}
