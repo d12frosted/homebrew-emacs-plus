@@ -304,6 +304,10 @@ class EmacsPlusAT30 < EmacsBase
       To disable PATH injection, set EMACS_PLUS_NO_PATH_INJECTION before running Emacs:
         export EMACS_PLUS_NO_PATH_INJECTION=1
 
+      If Emacs fails to start with "Library not loaded" errors after upgrading
+      dependencies (e.g., tree-sitter, libgccjit), reinstall emacs-plus:
+        brew reinstall emacs-plus@30
+
       Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS
   end
