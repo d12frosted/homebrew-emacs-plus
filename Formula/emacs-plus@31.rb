@@ -73,7 +73,7 @@ class EmacsPlusAT31 < EmacsBase
   # URL
   #
 
-  if (config_revision = revision_from_config(31))
+  if (config_revision = EmacsBase.revision_from_config(31))
     url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
   elsif ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
     url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_31_REVISION']

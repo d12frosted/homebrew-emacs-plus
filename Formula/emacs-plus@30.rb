@@ -10,7 +10,7 @@ class EmacsPlusAT30 < EmacsBase
   homepage "https://www.gnu.org/software/emacs/"
 
   head do
-    if (config_revision = revision_from_config(30))
+    if (config_revision = EmacsBase.revision_from_config(30))
       url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
     elsif ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
       url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
@@ -86,7 +86,7 @@ class EmacsPlusAT30 < EmacsBase
   # URL
   #
 
-  if (config_revision = revision_from_config(30))
+  if (config_revision = EmacsBase.revision_from_config(30))
     url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
   elsif ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
     url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
