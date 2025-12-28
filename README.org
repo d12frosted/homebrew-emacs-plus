@@ -68,8 +68,7 @@ Feel free to open an issue or contact me via email if you face any issues, quest
     - [[#emacs-27][Emacs 27]]
     - [[#emacs-26][Emacs 26]]
   - [[#faq][FAQ]]
-    - [[#how-to-changepin-commit-emacs-plus30-is-built-from][How to change/pin commit =emacs-plus@30= is built from]]
-    - [[#how-to-changepin-commit-emacs-plus31-is-built-from][How to change/pin commit =emacs-plus@31= is built from]]
+    - [[#how-to-pin-a-specific-commit][How to pin a specific commit]]
   - [[#screenshots][Screenshots]]
   - [[#acknowledgements][Acknowledgements]]
 
@@ -367,6 +366,11 @@ icon: modern-purple-flat
 #   url: https://example.com/my-icon.icns
 #   sha256: abc123...
 
+# Pin to a specific git revision (version-specific)
+# revision:
+#   "30": abc123def456
+#   "31": 789abcdef123
+
 # Apply community patches
 # patches:
 #   - patch-name-from-registry
@@ -543,29 +547,29 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 
 ** FAQ
 
-*** How to change/pin commit =emacs-plus@30= is built from
+*** How to pin a specific commit
 
-The most current development version is consistently compiled from a specific branch. At the time of this writing, for instance, =emacs-plus@30= is being built from the =emacs-30= branch.
+Development versions (=emacs-plus@30=, =emacs-plus@31=) are built from their respective branches (=emacs-30=, =master=). Ordinarily, =brew= will update to the latest commit during installation.
 
-Ordinarily, =brew= will update to the latest commit in the specified branch during installation, meaning the exact commit you're building from varies depending on the installation timing. As development versions are less stable than official releases, some users may prefer to pin a specific commit.
+As development versions are less stable than official releases, you may want to pin a specific commit. The recommended way is to use =~/.config/emacs-plus/build.yml=:
 
-Usually this is done by modifying formula (i.e. by executing =brew edit emacs-plus@30= and altering the =url= directive), but you can also set =HOMEBREW_EMACS_PLUS_30_REVISION= environment variable before installing =emacs-plus@30=:
-
-#+begin_src bash
-  $ HOMEBREW_EMACS_PLUS_30_REVISION=6abea4d98d1d964c68a78cb9b5321071da851654 brew install emacs-plus@30 [OPTIONS]
+#+begin_src yaml
+revision:
+  "30": 6abea4d98d1d964c68a78cb9b5321071da851654
+  "31": abc123def456789
 #+end_src
 
-*** How to change/pin commit =emacs-plus@31= is built from
-
-The most current development version is consistently compiled from a specific branch. At the time of this writing, for instance, =emacs-plus@31= is being built from the =master= branch.
-
-Ordinarily, =brew= will update to the latest commit in the specified branch during installation, meaning the exact commit you're building from varies depending on the installation timing. As development versions are less stable than official releases, some users may prefer to pin a specific commit.
-
-Usually this is done by modifying formula (i.e. by executing =brew edit emacs-plus@31= and altering the =url= directive), but you can also set =HOMEBREW_EMACS_PLUS_31_REVISION= environment variable before installing =emacs-plus@31=:
+Then install or reinstall:
 
 #+begin_src bash
-  $ HOMEBREW_EMACS_PLUS_31_REVISION=6abea4d98d1d964c68a78cb9b5321071da851654 brew install emacs-plus@31 [OPTIONS]
+  $ brew reinstall emacs-plus@30
 #+end_src
+
+The build will display the pinned revision during installation.
+
+#+begin_quote
+*Deprecated*: Environment variables =HOMEBREW_EMACS_PLUS_30_REVISION= and =HOMEBREW_EMACS_PLUS_31_REVISION= still work but are deprecated. Please migrate to =build.yml=.
+#+end_quote
 
 ** Screenshots
 
