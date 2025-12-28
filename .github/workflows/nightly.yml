@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: logs-${{ matrix.formula }}${{ matrix.build_opts }}
           path: "*.tar.gz"
