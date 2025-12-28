@@ -438,12 +438,36 @@ class EmacsBase < Formula
     system "/usr/libexec/PlistBuddy -c \"Add :#{key} #{type} #{escaped_value}\" \"#{plist}\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Set :#{key} #{escaped_value}\" \"#{plist}\""
   end
 
+  # Escape a string for embedding in an AppleScript double-quoted string
+  # that will be passed to `do shell script` with single-quoted arguments.
+  #
+  # The escaping handles two layers:
+  # 1. Shell: single quotes need '\'' idiom (end quote, escaped quote, start quote)
+  # 2. AppleScript: backslashes and double quotes need escaping in double-quoted strings
+  #
+  # Example: PATH /usr/bin:/a'b becomes /usr/bin:/a'\\''b in the AppleScript source,
+  # which AppleScript parses as /usr/bin:/a'\''b, which shell interprets correctly.
+  #
+  # Note: We use block form for gsub to avoid special meaning of \& and \' in
+  # replacement strings (which would cause incorrect substitutions).
+  def self.escape_for_applescript_shell(str)
+    # First escape single quotes for shell: ' -> '\''
+    shell_escaped = str.to_s.gsub("'") { "'\\''" }
+    # Then escape backslashes and double quotes for AppleScript: \ -> \\, " -> \"
+    shell_escaped.gsub('\\') { '\\\\' }.gsub('"') { '\\"' }
+  end
+
+  # Instance method wrapper for convenience
+  def escape_for_applescript_shell(str)
+    self.class.escape_for_applescript_shell(str)
+  end
+
   def create_emacs_client_app(icons_dir)
     ohai "Creating Emacs Client.app"
 
-    # Prepare PATH for injection into AppleScript
+    # Prepare PATH for injection into AppleScript (see escape_for_applescript_shell)
     path = PATH.new(ORIGINAL_PATHS)
-    escaped_path = path.to_s.gsub("'", "'\\''")
+    escaped_path = escape_for_applescript_shell(path.to_s)
 
     # Create AppleScript source
     client_script = buildpath/"emacs-client.applescript"

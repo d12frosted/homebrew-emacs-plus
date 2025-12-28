@@ -1,0 +1,34 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "Library/EmacsBase.rb"
+      - "tests/**"
+      - ".github/workflows/test.yml"
+  pull_request:
+    paths:
+      - "Library/EmacsBase.rb"
+      - "tests/**"
+      - ".github/workflows/test.yml"
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: ruby tests/test_applescript_escaping.rb
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "✓ All tests passed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Test suites:" >> $GITHUB_STEP_SUMMARY
+          echo "- AppleScript escaping (unit + integration + e2e)" >> $GITHUB_STEP_SUMMARY
