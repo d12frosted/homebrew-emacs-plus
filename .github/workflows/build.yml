@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "Formula/**"
+      - "patches/**"
+      - "Library/**"
+      - ".github/workflows/build.yml"
+  pull_request:
+    paths:
+      - "Formula/**"
+      - "patches/**"
+      - "Library/**"
+      - ".github/workflows/build.yml"
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    env:
+      HOMEBREW_GITHUB_REF: ${{ github.head_ref || github.ref }}
+      HOMEBREW_GITHUB_REPOSITORY: ${{ github.repository }}
+      HOMEBREW_GITHUB_ACTOR: ${{ github.actor }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build emacs-plus@30
+        run: |
+          export HOMEBREW_DEVELOPER=1
+          brew install Formula/emacs-plus@30.rb --verbose
+
+      - name: Test installation
+        run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
+
+      - name: Pack up build logs
+        if: always()
+        run: |
+          LOG_DIR=~/Library/Logs/Homebrew/emacs-plus@30
+          if [ -d "$LOG_DIR" ]; then
+            tar -C "$LOG_DIR" -czvf emacs-plus@30-build.tar.gz .
+          fi
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: emacs-plus@30-build.tar.gz
+          if-no-files-found: ignore

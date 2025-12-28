@@ -4,14 +4,11 @@
 </p>
 <h1 align="center">Emacs Plus</h1>
 <p align="center">
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-31.yml">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-31.yml/badge.svg" alt="Emacs 31 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/build.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/build.yml/badge.svg" alt="Build Status">
   </a>
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-30.yml">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-30.yml/badge.svg" alt="Emacs 30 CI Status Badge">
-  </a>
-  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-29.yml">
-    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/emacs-29.yml/badge.svg" alt="Emacs 29 CI Status Badge">
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/nightly.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/nightly.yml/badge.svg" alt="Nightly Status">
   </a>
 </p>
 #+end_html

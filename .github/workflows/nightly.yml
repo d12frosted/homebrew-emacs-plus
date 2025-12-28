@@ -1,0 +1,58 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        formula:
+          - emacs-plus@29
+          - emacs-plus@30
+          - emacs-plus@31
+        build_opts:
+          - ""
+        include:
+          # Test xwidgets on @30 and @31
+          - formula: emacs-plus@30
+            build_opts: "--with-xwidgets"
+          - formula: emacs-plus@31
+            build_opts: "--with-xwidgets"
+          # Test an icon option on @30
+          - formula: emacs-plus@30
+            build_opts: "--with-modern-icon"
+
+    steps:
+      - name: Tap emacs-plus
+        run: brew tap d12frosted/emacs-plus
+
+      - name: Build ${{ matrix.formula }} ${{ matrix.build_opts }}
+        run: |
+          export HOMEBREW_DEVELOPER=1
+          brew install ${{ matrix.formula }} ${{ matrix.build_opts }} --verbose
+
+      - name: Test installation
+        run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
+
+      - name: Pack up build logs
+        if: always()
+        run: |
+          FORMULA_NAME=$(echo "${{ matrix.formula }}" | tr '@' '-')
+          BUILD_OPTS=$(echo "${{ matrix.build_opts }}" | tr -d ' -')
+          LOG_DIR=~/Library/Logs/Homebrew/${{ matrix.formula }}
+          if [ -d "$LOG_DIR" ]; then
+            tar -C "$LOG_DIR" -czvf "${FORMULA_NAME}${BUILD_OPTS}.tar.gz" .
+          fi
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.formula }}${{ matrix.build_opts }}
+          path: "*.tar.gz"
+          if-no-files-found: ignore

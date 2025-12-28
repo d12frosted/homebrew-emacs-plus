@@ -1,0 +1,29 @@
+name: Validate
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+
+      - name: Run unit tests
+        run: ruby tests/test_applescript_escaping.rb
+
+      - name: Validate icons
+        run: ruby scripts/validate-icons.rb
+
+      - name: Validate community registry
+        run: ruby scripts/validate-registry.rb
