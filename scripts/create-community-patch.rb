@@ -104,7 +104,7 @@ def create_patch(name:, description:, maintainer:, versions:, homepage: nil)
 
     ## Maintainer
 
-    #{maintainer}
+    #{maintainer['github'] ? "[@#{maintainer['github']}](https://github.com/#{maintainer['github']})" : maintainer['name']}
 
     ## Usage
 
@@ -170,12 +170,18 @@ def main
     exit 1
   end
 
-  # Get maintainer
-  maintainer = prompt('Maintainer (name or GitHub username)')
-  unless maintainer && !maintainer.empty?
-    puts "Error: Maintainer is required"
-    exit 1
-  end
+  # Get maintainer (as object, matching icon format)
+  github_user = prompt('Maintainer GitHub username (leave blank if no GitHub)')
+  maintainer = if github_user && !github_user.empty?
+                 { 'github' => github_user }
+               else
+                 name = prompt('Maintainer name')
+                 unless name && !name.empty?
+                   puts "Error: Either GitHub username or name is required"
+                   exit 1
+                 end
+                 { 'name' => name }
+               end
 
   # Get homepage (optional)
   homepage = prompt('Homepage URL (optional, press Enter to skip)')
@@ -189,10 +195,11 @@ def main
   end
 
   puts
+  maintainer_display = maintainer['github'] ? "@#{maintainer['github']}" : maintainer['name']
   puts "Creating patch with:"
   puts "  Name: #{name}"
   puts "  Description: #{description}"
-  puts "  Maintainer: #{maintainer}"
+  puts "  Maintainer: #{maintainer_display}"
   puts "  Homepage: #{homepage || '(none)'}"
   puts "  Versions: #{versions.join(', ')}"
   puts

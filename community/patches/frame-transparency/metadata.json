@@ -1,7 +1,9 @@
 {
   "name": "frame-transparency",
   "description": "Adds configurable frame transparency and background blur support on macOS using CGS APIs",
-  "maintainer": "aaratha",
+  "maintainer": {
+    "github": "aaratha"
+  },
   "compatibility": {
     "emacs_versions": [
       "31"

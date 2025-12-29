@@ -1,7 +1,9 @@
 {
   "name": "aggressive-read-buffering",
   "description": "Improve processing large quantities of data from tty/pty reads on macOS",
-  "maintainer": "aport",
+  "maintainer": {
+    "github": "aport"
+  },
   "compatibility": {
     "emacs_versions": [
       "29",

@@ -128,6 +128,19 @@ class EmacsBase < Formula
     end
   end
 
+  # Format maintainer for display, handling both string and object formats
+  # Returns nil if maintainer is not provided or empty
+  def format_maintainer(maintainer)
+    return nil unless maintainer
+    if maintainer.is_a?(String)
+      "@#{maintainer}"
+    elsif maintainer["github"]
+      "@#{maintainer["github"]}"
+    elsif maintainer["name"]
+      maintainer["name"]
+    end
+  end
+
   def self.formula_root
     @@formula_root
   end
@@ -166,10 +179,11 @@ class EmacsBase < Formula
 
     emacs_ver = version.to_s.split(".").first
     unless metadata["compatibility"]["emacs_versions"].include?(emacs_ver)
+      maintainer_str = format_maintainer(metadata["maintainer"]) || "Unknown"
       odie <<~ERROR
         Patch '#{name}' does not support Emacs #{emacs_ver}
         Supported versions: #{metadata["compatibility"]["emacs_versions"].join(", ")}
-        Maintainer: @#{metadata["maintainer"]["github"]}
+        Maintainer: #{maintainer_str}
       ERROR
     end
 
@@ -391,9 +405,8 @@ class EmacsBase < Formula
       puts "  - #{patch[:name]} (#{patch[:type]})"
 
       if patch[:type] == "community"
-        if patch[:metadata] && patch[:metadata]["maintainer"]
-          puts "    Maintainer: @#{patch[:metadata]["maintainer"]["github"]}"
-        end
+        maintainer_str = format_maintainer(patch[:metadata]&.dig("maintainer"))
+        puts "    Maintainer: #{maintainer_str}" if maintainer_str
         system "patch", "-p1", "-i", patch[:path]
         odie "Failed to apply community patch: #{patch[:name]}" unless $?.success?
       else
@@ -432,9 +445,8 @@ class EmacsBase < Formula
 
     case icon[:type]
     when "community", "legacy"
-      if icon[:metadata] && icon[:metadata]["maintainer"]
-        puts "  Maintainer: @#{icon[:metadata]["maintainer"]["github"]}"
-      end
+      maintainer_str = format_maintainer(icon[:metadata]&.dig("maintainer"))
+      puts "  Maintainer: #{maintainer_str}" if maintainer_str
       puts "  Copying #{icon[:path]} -> #{target_icon}"
       FileUtils.rm_f(target_icon)
       FileUtils.cp(icon[:path], target_icon)
