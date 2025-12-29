@@ -1,0 +1,85 @@
+name: "Contribute icon/patch"
+description: |
+  Contribute a new icon or patch to the community registry
+title: "[Contribution]: "
+labels: ["contribution"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing to Emacs+!
+
+        Before submitting, please review the [community documentation](https://github.com/d12frosted/homebrew-emacs-plus/blob/master/community/README.md).
+  - type: dropdown
+    id: contribution-type
+    attributes:
+      label: Contribution type
+      description: "What are you contributing?"
+      options:
+        - Icon
+        - Patch
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: "Name"
+      description: "A short, lowercase name with hyphens (e.g., modern-doom, fix-scroll)"
+      placeholder: "my-awesome-icon"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "A brief description of your icon or what your patch does"
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: "Source URL"
+      description: "Link to the original source (GitHub repo, gist, etc.)"
+      placeholder: "https://github.com/..."
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: "Author"
+      description: "Your GitHub username or name"
+      placeholder: "@username or Full Name"
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: "Files"
+      description: |
+        For icons: attach the .icns file or link to it
+        For patches: paste the patch content or link to it
+      placeholder: "Attach files or paste content here"
+    validations:
+      required: true
+  - type: dropdown
+    id: patch-versions
+    attributes:
+      label: "Supported Emacs versions (patches only)"
+      description: "Which Emacs versions does your patch support?"
+      multiple: true
+      options:
+        - "29"
+        - "30"
+        - "31"
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "I am the author or have permission to contribute this"
+          required: true
+        - label: "For icons: the file is in .icns format"
+        - label: "For patches: I have tested the patch builds successfully"

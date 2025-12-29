@@ -10,14 +10,26 @@ body:
   - type: dropdown
     id: version
     attributes:
-      label: Version
+      label: Emacs Version
       description: "What version of Emacs are you building?"
       options:
+        - emacs-plus@31
         - emacs-plus@30
         - emacs-plus@29
-        - emacs-plus@28
-        - emacs-plus@27
-        - emacs-plus@26
+      default: 1
+    validations:
+      required: true
+  - type: dropdown
+    id: macos-version
+    attributes:
+      label: macOS Version
+      description: "What version of macOS are you using?"
+      options:
+        - macOS 15 (Sequoia)
+        - macOS 14 (Sonoma)
+        - macOS 13 (Ventura)
+        - macOS 12 (Monterey)
+        - Other (specify in extra info)
       default: 0
     validations:
       required: true
@@ -42,17 +54,26 @@ body:
         <pre>
         $ brew install emacs-plus [OPTIONS]
         </pre>
-        
+
         <details>
           <summary>Command output</summary>
           <pre>
-        
+
           <!-- replace this with the command output -->
-        
+
           </pre>
         </details>
     validations:
       required: true
+  - type: textarea
+    id: build-config
+    attributes:
+      label: "build.yml contents (if applicable)"
+      description: "If you have a custom build config, paste its contents here"
+      placeholder: "Contents of ~/.config/emacs-plus/build.yml"
+      render: yaml
+    validations:
+      required: false
   - type: textarea
     id: doctor-output
     attributes:

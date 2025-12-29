@@ -8,11 +8,33 @@ body:
       value: |
         Thanks for taking the time to request a new feature.
 
-        Please remember that Emacs+ is just a formula for homebrew. If you have a feature request to GNU Emacs, you should request it via mailing list.
-  - type: textarea
-    id: build-output
+        - Emacs+ is a Homebrew formula. For GNU Emacs feature requests, use the Emacs mailing list.
+        - Want to contribute an icon or patch? Use the **Contribute icon/patch** template instead.
+  - type: dropdown
+    id: feature-type
     attributes:
-      label: "Feature request description"
-      description: "A clear and concise description of what the desired feature is. If the feature request is about adding existing patch, please share the link to it."
+      label: Feature type
+      description: "What kind of feature are you requesting?"
+      options:
+        - New patch (apply upstream or third-party patch)
+        - New build option
+        - Formula improvement
+        - Documentation
+        - Other
+      default: 0
     validations:
       required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Feature description"
+      description: "A clear and concise description of the desired feature. If requesting a patch, please share a link to it."
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: "Use case"
+      description: "Why do you need this feature? What problem does it solve?"
+    validations:
+      required: false

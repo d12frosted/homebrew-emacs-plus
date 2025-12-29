@@ -8,13 +8,55 @@ body:
       value: |
         Thanks for taking the time to report an issue.
 
-        - Please remember that Emacs+ is just a formula for homebrew. 
-        - If you have an issue with GNU Emacs, you should ask for help via mailing list.
-        - If you have a question, feel free to use [discussions](https://github.com/d12frosted/homebrew-emacs-plus/discussions).
+        - Emacs+ is a Homebrew formula. For GNU Emacs issues, use the Emacs mailing list.
+        - For questions, use [discussions](https://github.com/d12frosted/homebrew-emacs-plus/discussions).
+  - type: dropdown
+    id: version
+    attributes:
+      label: Emacs Version
+      description: "What version of Emacs are you using?"
+      options:
+        - emacs-plus@31
+        - emacs-plus@30
+        - emacs-plus@29
+        - Not applicable
+      default: 1
+    validations:
+      required: true
+  - type: dropdown
+    id: macos-version
+    attributes:
+      label: macOS Version
+      description: "What version of macOS are you using?"
+      options:
+        - macOS 15 (Sequoia)
+        - macOS 14 (Sonoma)
+        - macOS 13 (Ventura)
+        - macOS 12 (Monterey)
+        - Other / Not applicable
+      default: 0
+    validations:
+      required: true
   - type: textarea
-    id: build-output
+    id: description
     attributes:
       label: "Issue description"
       description: "A clear and concise description of the issue."
     validations:
       required: true
+  - type: textarea
+    id: build-config
+    attributes:
+      label: "build.yml contents (if applicable)"
+      description: "If you have a custom build config, paste its contents here"
+      placeholder: "Contents of ~/.config/emacs-plus/build.yml"
+      render: yaml
+    validations:
+      required: false
+  - type: textarea
+    id: extra-info
+    attributes:
+      label: "Any extra information"
+      description: "Steps to reproduce, screenshots, or any other relevant details"
+    validations:
+      required: false
