@@ -3,6 +3,29 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2025-12-29
+
+** New Icons
+
+*** liquid-glass
+
+New icon designed for macOS 26 (Tahoe) liquid glass aesthetic. Contributed by [[https://github.com/leaferiksen][leaferiksen]].
+
+*** 17 icons from homebrew-emacs-head
+
+Added icons from the [[https://github.com/daviderestivo/homebrew-emacs-head][homebrew-emacs-head]] project:
+
+- =golden-yak= - by emacsfodder
+- =infinity-yak-*= (13 variants) - by emacsfodder
+- =modern-paper-icons= - by snwh
+- =modern-purple= - by NicolasPetton
+
+** Improvements
+
+*** Icons gallery
+
+All 76 icons are now browsable in a [[./community/icons/README.md][visual gallery]] with previews, author attribution, and source links.
+
 * 2025-12-28
 
 ** New Features
