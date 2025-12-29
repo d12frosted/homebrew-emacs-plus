@@ -96,6 +96,78 @@ jobs:
           ls -la emacs-src/nextstep/
           ./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version
 
+      - name: Bundle dylibs
+        run: |
+          APP="emacs-src/nextstep/Emacs.app"
+          MACOS_DIR="$APP/Contents/MacOS"
+          FRAMEWORKS_DIR="$APP/Contents/Frameworks"
+          mkdir -p "$FRAMEWORKS_DIR"
+
+          # Function to get non-system dylib dependencies
+          get_dylibs() {
+            otool -L "$1" 2>/dev/null | grep -E '^\t/(opt/homebrew|usr/local)' | awk '{print $1}'
+          }
+
+          # Function to copy and fix a dylib
+          copy_and_fix_dylib() {
+            local src="$1"
+            local dest="$FRAMEWORKS_DIR/$(basename "$src")"
+
+            if [[ -f "$dest" ]]; then
+              return 0  # Already copied
+            fi
+
+            echo "Bundling: $src"
+            cp -L "$src" "$dest"
+            chmod 644 "$dest"
+
+            # Fix the dylib's own ID
+            install_name_tool -id "@executable_path/../Frameworks/$(basename "$src")" "$dest"
+
+            # Recursively process this dylib's dependencies
+            for dep in $(get_dylibs "$dest"); do
+              local dep_name=$(basename "$dep")
+              install_name_tool -change "$dep" "@executable_path/../Frameworks/$dep_name" "$dest"
+              copy_and_fix_dylib "$dep"
+            done
+          }
+
+          # Process the main Emacs binary
+          EMACS_BIN="$MACOS_DIR/Emacs"
+          echo "Processing Emacs binary..."
+          for dylib in $(get_dylibs "$EMACS_BIN"); do
+            dylib_name=$(basename "$dylib")
+            install_name_tool -change "$dylib" "@executable_path/../Frameworks/$dylib_name" "$EMACS_BIN"
+            copy_and_fix_dylib "$dylib"
+          done
+
+          # Also process any helper binaries in bin/
+          if [[ -d "$MACOS_DIR/bin" ]]; then
+            for bin in "$MACOS_DIR/bin"/*; do
+              if [[ -x "$bin" ]] && file "$bin" | grep -q "Mach-O"; then
+                echo "Processing: $bin"
+                for dylib in $(get_dylibs "$bin"); do
+                  dylib_name=$(basename "$dylib")
+                  install_name_tool -change "$dylib" "@executable_path/../Frameworks/$dylib_name" "$bin"
+                  copy_and_fix_dylib "$dylib"
+                done
+              fi
+            done
+          fi
+
+          # List bundled libraries
+          echo "Bundled libraries:"
+          ls -la "$FRAMEWORKS_DIR/"
+
+          # Verify the binary no longer references /opt/homebrew
+          echo "Checking for remaining Homebrew references..."
+          if otool -L "$EMACS_BIN" | grep -q '/opt/homebrew\|/usr/local'; then
+            echo "WARNING: Still has Homebrew references:"
+            otool -L "$EMACS_BIN" | grep '/opt/homebrew\|/usr/local'
+          else
+            echo "OK: No Homebrew references in main binary"
+          fi
+
       - name: Package
         run: |
           cd emacs-src/nextstep
