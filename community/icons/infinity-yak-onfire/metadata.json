@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-onfire",
+  "description": "Infinity Yak onfire Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "fdacca93c11177b618ebc4f821b89b86359ec866dd1452cb4ccf45184d6dc04a"
+}

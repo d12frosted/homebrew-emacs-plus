@@ -1,0 +1,9 @@
+{
+  "name": "modern-paper-icons",
+  "description": "Paper Icons style Emacs icon",
+  "maintainer": {
+    "github": "snwh"
+  },
+  "homepage": "https://github.com/snwh/paper-icon-theme",
+  "legacy_sha256": "209f7ea9e3b04d9b152e0580642e926d7e875bd1e33242616d266dd596f74c7a"
+}

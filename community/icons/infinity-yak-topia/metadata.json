@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-topia",
+  "description": "Infinity Yak topia Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "9152ae3a931cec1a252def60cb7a181034246d66897e75b014860352ded05ccf"
+}

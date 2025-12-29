@@ -1,0 +1,9 @@
+{
+  "name": "modern-purple",
+  "description": "Modern purple Emacs icon from official Emacs",
+  "maintainer": {
+    "github": "NicolasPetton"
+  },
+  "homepage": "https://git.savannah.gnu.org/cgit/emacs.git/tree/etc/images/icons",
+  "legacy_sha256": "249e0b9f5c4abba008c34bec4e787b9df114229ee91d2724865e2c4da5790e3b"
+}

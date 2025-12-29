@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-shack",
+  "description": "Infinity Yak shack Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "243006332098453773c817ff8553d3cab6f3ddd7a78175d7134168e39f68b169"
+}

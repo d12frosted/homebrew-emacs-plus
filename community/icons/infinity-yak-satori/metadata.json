@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-satori",
+  "description": "Infinity Yak satori Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "0dd3c7f81f08e27c97668b3aaa075ab32cad783b464dd42b81169240610be368"
+}

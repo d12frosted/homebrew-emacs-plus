@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-astra",
+  "description": "Infinity Yak astra Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "467d98d4585b4df614fa58c0c133b20905a54971cd37f1070d96954542737a95"
+}

@@ -66,6 +66,48 @@
     "gnu-head": {
       "directory": "icons/gnu-head"
     },
+    "golden-yak": {
+      "directory": "icons/golden-yak"
+    },
+    "infinity-yak-adacious": {
+      "directory": "icons/infinity-yak-adacious"
+    },
+    "infinity-yak-akadabra": {
+      "directory": "icons/infinity-yak-akadabra"
+    },
+    "infinity-yak-alaka": {
+      "directory": "icons/infinity-yak-alaka"
+    },
+    "infinity-yak-amoto": {
+      "directory": "icons/infinity-yak-amoto"
+    },
+    "infinity-yak-amura": {
+      "directory": "icons/infinity-yak-amura"
+    },
+    "infinity-yak-andwhite": {
+      "directory": "icons/infinity-yak-andwhite"
+    },
+    "infinity-yak-astra": {
+      "directory": "icons/infinity-yak-astra"
+    },
+    "infinity-yak-noir": {
+      "directory": "icons/infinity-yak-noir"
+    },
+    "infinity-yak-onfire": {
+      "directory": "icons/infinity-yak-onfire"
+    },
+    "infinity-yak-onthewater": {
+      "directory": "icons/infinity-yak-onthewater"
+    },
+    "infinity-yak-satori": {
+      "directory": "icons/infinity-yak-satori"
+    },
+    "infinity-yak-shack": {
+      "directory": "icons/infinity-yak-shack"
+    },
+    "infinity-yak-topia": {
+      "directory": "icons/infinity-yak-topia"
+    },
     "liquid-glass": {
       "directory": "icons/liquid-glass"
     },
@@ -123,6 +165,9 @@
     "modern-paper": {
       "directory": "icons/modern-paper"
     },
+    "modern-paper-icons": {
+      "directory": "icons/modern-paper-icons"
+    },
     "modern-papirus": {
       "directory": "icons/modern-papirus"
     },
@@ -140,6 +185,9 @@
     },
     "modern-purple-flat": {
       "directory": "icons/modern-purple-flat"
+    },
+    "modern-purple": {
+      "directory": "icons/modern-purple"
     },
     "modern-sexy-v1": {
       "directory": "icons/modern-sexy-v1"
