@@ -108,6 +108,31 @@ jobs:
             otool -L "$1" 2>/dev/null | grep -E '^\t/(opt/homebrew|usr/local)' | awk '{print $1}'
           }
 
+          # Function to get @rpath and @loader_path dependencies
+          get_rpath_dylibs() {
+            otool -L "$1" 2>/dev/null | grep -E '^\t@(rpath|loader_path)/' | awk '{print $1}'
+          }
+
+          # Function to resolve @rpath to actual file
+          resolve_rpath() {
+            local dylib_name=$(basename "$1")
+            # Search in Homebrew locations
+            for prefix in /opt/homebrew/lib /usr/local/lib; do
+              if [[ -f "$prefix/$dylib_name" ]]; then
+                echo "$prefix/$dylib_name"
+                return 0
+              fi
+            done
+            # Search in Cellar
+            local found=$(find /opt/homebrew/Cellar -name "$dylib_name" -type f 2>/dev/null | head -1)
+            if [[ -n "$found" ]]; then
+              echo "$found"
+              return 0
+            fi
+            echo ""
+            return 1
+          }
+
           # Function to copy and fix a dylib
           copy_and_fix_dylib() {
             local src="$1"
@@ -124,11 +149,23 @@ jobs:
             # Fix the dylib's own ID
             install_name_tool -id "@executable_path/../Frameworks/$(basename "$src")" "$dest"
 
-            # Recursively process this dylib's dependencies
+            # Recursively process this dylib's absolute path dependencies
             for dep in $(get_dylibs "$dest"); do
               local dep_name=$(basename "$dep")
               install_name_tool -change "$dep" "@executable_path/../Frameworks/$dep_name" "$dest"
               copy_and_fix_dylib "$dep"
+            done
+
+            # Also process @rpath dependencies
+            for rpath_dep in $(get_rpath_dylibs "$dest"); do
+              local resolved=$(resolve_rpath "$rpath_dep")
+              if [[ -n "$resolved" ]]; then
+                local dep_name=$(basename "$resolved")
+                install_name_tool -change "$rpath_dep" "@executable_path/../Frameworks/$dep_name" "$dest"
+                copy_and_fix_dylib "$resolved"
+              else
+                echo "Warning: Could not resolve $rpath_dep"
+              fi
             done
           }
 
