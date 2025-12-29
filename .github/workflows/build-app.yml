@@ -205,6 +205,112 @@ jobs:
             echo "OK: No Homebrew references in main binary"
           fi
 
+      - name: Create Emacs Client.app
+        run: |
+          APP_DIR="emacs-src/nextstep"
+
+          # For cask install, the app will be in /Applications
+          # emacsclient path: /Applications/Emacs.app/Contents/MacOS/bin/emacsclient
+          EMACSCLIENT_PATH="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+
+          # Create AppleScript source
+          cat > "$APP_DIR/emacs-client.applescript" << 'APPLESCRIPT_EOF'
+          -- Emacs Client AppleScript Application
+          -- Handles opening files from Finder, drag-and-drop, and launching from Spotlight/Dock
+
+          on open theDropped
+            repeat with oneDrop in theDropped
+              set dropPath to quoted form of POSIX path of oneDrop
+              try
+                do shell script "EMACSCLIENT_PATH -c -a '' -n " & dropPath
+              end try
+            end repeat
+            try
+              do shell script "open -a Emacs"
+            end try
+          end open
+
+          -- Handle launch without files (from Spotlight, Dock, or Finder)
+          on run
+            try
+              do shell script "EMACSCLIENT_PATH -c -a '' -n"
+            end try
+            try
+              do shell script "open -a Emacs"
+            end try
+          end run
+
+          -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
+          on open location this_URL
+            try
+              do shell script "EMACSCLIENT_PATH -n " & quoted form of this_URL
+            end try
+            try
+              do shell script "open -a Emacs"
+            end try
+          end open location
+          APPLESCRIPT_EOF
+
+          # Replace placeholder with actual path
+          sed -i '' "s|EMACSCLIENT_PATH|$EMACSCLIENT_PATH|g" "$APP_DIR/emacs-client.applescript"
+
+          # Compile AppleScript to application bundle
+          osacompile -o "$APP_DIR/Emacs Client.app" "$APP_DIR/emacs-client.applescript"
+
+          # Get Emacs version for metadata
+          EMACS_FULL_VERSION=$("$APP_DIR/Emacs.app/Contents/MacOS/Emacs" --version | head -1 | sed 's/GNU Emacs //')
+
+          # Update Info.plist with proper metadata
+          CLIENT_PLIST="$APP_DIR/Emacs Client.app/Contents/Info.plist"
+
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier org.gnu.EmacsClient" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleName 'Emacs Client'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string 'Emacs Client'" "$CLIENT_PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName 'Emacs Client'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleGetInfoString string 'Emacs Client $EMACS_FULL_VERSION'" "$CLIENT_PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :CFBundleGetInfoString 'Emacs Client $EMACS_FULL_VERSION'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion '$EMACS_FULL_VERSION'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString '$EMACS_FULL_VERSION'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :LSApplicationCategoryType string 'public.app-category.productivity'" "$CLIENT_PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSHumanReadableCopyright string 'Copyright © 1989-$(date +%Y) Free Software Foundation, Inc.'" "$CLIENT_PLIST" 2>/dev/null || true
+
+          # Add document types for file associations
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleDocumentTypes" "$CLIENT_PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0 dict" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:CFBundleTypeRole string Editor" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:CFBundleTypeName string 'Text Document'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:0 string public.text" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:1 string public.plain-text" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:2 string public.source-code" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:3 string public.script" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:4 string public.shell-script" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:5 string public.data" "$CLIENT_PLIST"
+
+          # Register org-protocol URL scheme
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string 'Org Protocol'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string org-protocol" "$CLIENT_PLIST"
+
+          # Copy icon from Emacs.app
+          CLIENT_RESOURCES="$APP_DIR/Emacs Client.app/Contents/Resources"
+          cp "$APP_DIR/Emacs.app/Contents/Resources/Emacs.icns" "$CLIENT_RESOURCES/applet.icns"
+
+          # Remove default droplet resources from osacompile
+          rm -f "$CLIENT_RESOURCES/droplet.icns"
+          rm -f "$CLIENT_RESOURCES/droplet.rsrc"
+          rm -f "$CLIENT_RESOURCES/Assets.car"
+
+          # Set icon file reference
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIconFile" "$CLIENT_PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIconFile string applet" "$CLIENT_PLIST"
+
+          echo "Created Emacs Client.app"
+          ls -la "$APP_DIR/Emacs Client.app/Contents/"
+
       - name: Package
         run: |
           cd emacs-src/nextstep
@@ -213,9 +319,9 @@ jobs:
           echo "Build: $BUILD_DATE" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
           echo "Revision: $EMACS_REV" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
 
-          # Package
+          # Package both apps
           ZIPNAME="emacs-plus-${EMACS_VERSION}-${MAC_ARCH}-${OS_VER}.zip"
-          zip -r -y "$ZIPNAME" Emacs.app
+          zip -r -y "$ZIPNAME" Emacs.app "Emacs Client.app"
           shasum -a 256 "$ZIPNAME" > "$ZIPNAME.sha256"
           mv "$ZIPNAME" "$ZIPNAME.sha256" "$GITHUB_WORKSPACE/"
 
