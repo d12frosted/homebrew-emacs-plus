@@ -337,12 +337,41 @@ jobs:
             emacs-plus-*.zip
             emacs-plus-*.sha256
 
-  # TODO Phase 2: Add release job
-  # release:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #     - uses: softprops/action-gh-release@v2
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure
+        run: |
+          ls -laR artifacts/
+          cat artifacts/*/*.sha256
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cask-${{ github.run_number }}
+          name: Emacs+ Cask Build ${{ github.run_number }}
+          draft: false
+          prerelease: true
+          files: |
+            artifacts/*/*.zip
+            artifacts/*/*.sha256
+          body: |
+            Pre-built Emacs+ for cask installation.
+
+            **Build info:**
+            - Workflow run: ${{ github.run_number }}
+            - Commit: ${{ github.sha }}
+
+            **Installation:**
+            ```
+            brew tap d12frosted/emacs-plus
+            brew install --cask emacs-plus
+            ```
