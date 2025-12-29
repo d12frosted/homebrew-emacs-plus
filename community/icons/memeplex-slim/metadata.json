@@ -1,8 +1,8 @@
 {
   "name": "memeplex-slim",
-  "description": "Memeplex Emacs icon",
+  "description": "Emacs icon by memeplex",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "memeplex"
   },
-  "legacy_sha256": "b2dc2433b49f1be1db1e4c33ae91ac3281726020dbe92ba646389d60792201dc"
+  "homepage": "https://github.com/d12frosted/homebrew-emacs-plus/issues/419#issuecomment-966735773"
 }

@@ -1,8 +1,8 @@
 {
   "name": "modern-pen-3d",
-  "description": "Modern pen-style Emacs icon",
+  "description": "3D pen style Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Unknown"
   },
-  "legacy_sha256": "f27466714f928f38d149d3b15276c43f52d3d2c3862c22af0314482cc2588e07"
+  "homepage": "https://download-mirror.savannah.gnu.org/releases/emacs/icons"
 }

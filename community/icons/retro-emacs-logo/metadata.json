@@ -1,8 +1,8 @@
 {
   "name": "retro-emacs-logo",
-  "description": "Retro-style Emacs icon",
+  "description": "Retro Emacs logo",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Luis Fernandes"
   },
-  "legacy_sha256": "71e351bce65d3390268dfe2eb6013e057b58c888fb27876a95fae90f2bda93c8"
+  "homepage": "https://en.m.wikipedia.org/wiki/File:Emacs-logo.svg"
 }

@@ -1,8 +1,8 @@
 {
   "name": "EmacsIcon5",
-  "description": "Classic Emacs icon variant 5",
+  "description": "Emacs icon by Jason Milkins",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "jasonm23"
   },
-  "legacy_sha256": "5a14b54858bf09be6593a6fcd499b3db81de8576db91ae69f0e9468d04748216"
+  "homepage": "https://github.com/emacsfodder/emacs-icons-project"
 }

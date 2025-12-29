@@ -1,8 +1,8 @@
 {
   "name": "modern-black-gnu-head",
-  "description": "Modern black-themed Emacs icon",
+  "description": "Black GNU head Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Aha-Soft"
   },
-  "legacy_sha256": "febb947afa2ad9dfe6bd9cbc3e4682e93965408a5cefcca75ca727f9420263c7"
+  "homepage": "https://www.iconfinder.com/iconsets/flat-round-system"
 }

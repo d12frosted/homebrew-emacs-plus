@@ -1,8 +1,8 @@
 {
   "name": "retro-sink-bw",
-  "description": "Retro-style Emacs icon",
+  "description": "Kitchen sink B&W Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Unknown"
   },
-  "legacy_sha256": "1070658acb238558901f5d13e1178e5bd09e2aceda205c033ca9a18a430facb1"
+  "homepage": "https://www.teuton.org/~ejm/emacsicon/"
 }

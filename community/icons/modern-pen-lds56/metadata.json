@@ -1,8 +1,8 @@
 {
   "name": "modern-pen-lds56",
-  "description": "Modern pen-style Emacs icon",
+  "description": "Redesigned pen Emacs icon",
   "maintainer": {
-    "github": "lds56"
+    "name": "lds56"
   },
-  "legacy_sha256": "f596518cfd7f1dbad18360dc9836f7449d15f24e73ed6879958c07d7760a923e"
+  "homepage": "http://lds56.github.io/notes/emacs-icon-redesigned"
 }

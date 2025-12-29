@@ -1,8 +1,8 @@
 {
   "name": "modern-nuvola",
-  "description": "Nuvola-style Emacs icon",
+  "description": "Nuvola style Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "David Vignoni"
   },
-  "legacy_sha256": "f6103ce4a1c43db81e37d6fcb0ed649c3e3bc5df56f46c12e4b15632a079c64a"
+  "homepage": "https://commons.wikimedia.org/wiki/File:Nuvola_apps_emacs_vector.svg"
 }

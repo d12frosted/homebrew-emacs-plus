@@ -1,8 +1,8 @@
 {
   "name": "emacs-card-carmine",
-  "description": "Card-style Emacs icon",
+  "description": "Emacs icon by Jason Milkins",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "jasonm23"
   },
-  "legacy_sha256": "02ec20c8fd0e08bbf457efcc5655c04e2de371171e39eb9f736e8f96ce360101"
+  "homepage": "https://github.com/emacsfodder/emacs-icons-project"
 }

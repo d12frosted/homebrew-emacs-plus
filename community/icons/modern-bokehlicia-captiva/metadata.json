@@ -1,8 +1,8 @@
 {
   "name": "modern-bokehlicia-captiva",
-  "description": "Modern bokehlicia captiva Emacs icon",
+  "description": "Captiva style Emacs icon",
   "maintainer": {
-    "github": "bokehlicia"
+    "name": "Bokehlicia"
   },
-  "legacy_sha256": "f712c64e96f751ec4c42b6845ec8781a34d5870e37095200163a20ef6d222080"
+  "homepage": "https://www.iconarchive.com/show/captiva-icons-by-bokehlicia/emacs-icon.html"
 }

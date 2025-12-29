@@ -1,8 +1,8 @@
 {
   "name": "modern-pen",
-  "description": "Modern pen-style Emacs icon",
+  "description": "Pen style Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "nanasess"
   },
-  "legacy_sha256": "9a14068bc1824999d77213c6e748b48077b5106013c7dc16cf9c971e513ed30d"
+  "homepage": "https://github.com/nanasess/EmacsIconCollections"
 }

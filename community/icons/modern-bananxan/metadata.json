@@ -1,8 +1,8 @@
 {
   "name": "modern-bananxan",
-  "description": "Modern bananxan Emacs icon",
+  "description": "Emacs icon by BananXan",
   "maintainer": {
-    "github": "bananxan"
+    "name": "BananXan"
   },
-  "legacy_sha256": "53304d3390dec67692773287fe06deb0ca2699cf7e3b69edea974e8f648b3964"
+  "homepage": "https://www.deviantart.com/bananxan/art/Emacs-icon-207744728"
 }

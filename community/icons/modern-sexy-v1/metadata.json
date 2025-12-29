@@ -1,8 +1,8 @@
 {
   "name": "modern-sexy-v1",
-  "description": "Modern sexy Emacs icon variant 1",
+  "description": "Emacs is Sexy icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Emacs is Sexy"
   },
-  "legacy_sha256": "a1fc43d037940dc21fda6f1072c7d87643786fb258b7528940bbc808010c054b"
+  "homepage": "https://emacs.sexy"
 }

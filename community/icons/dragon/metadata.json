@@ -2,7 +2,7 @@
   "name": "dragon",
   "description": "Dragon Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "willbchang"
   },
-  "legacy_sha256": "01ce40deb70f9394eef1cc5e8eda936fa73f80c4c0ab99642547df007d3016e9"
+  "homepage": "https://github.com/willbchang/emacs-dragon-icon"
 }

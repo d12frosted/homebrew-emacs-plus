@@ -1,8 +1,8 @@
 {
   "name": "emacs-card-green",
-  "description": "Card-style Emacs icon",
+  "description": "Emacs icon by Jason Milkins",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "jasonm23"
   },
-  "legacy_sha256": "d908f0073bd0449f06978459e7a4c6aa7219c9c38f31ae687ec15f8270213568"
+  "homepage": "https://github.com/emacsfodder/emacs-icons-project"
 }

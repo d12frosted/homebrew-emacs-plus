@@ -1,8 +1,8 @@
 {
   "name": "modern-black-variant",
-  "description": "Modern black-themed Emacs icon",
+  "description": "Black variant Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "BlackVariant"
   },
-  "legacy_sha256": "882e3a5363b4f924eba005adf7b716acffdf2705d2061c6b6ebb3549fc8b7323"
+  "homepage": "https://www.deviantart.com/blackvariant"
 }

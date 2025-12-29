@@ -1,8 +1,8 @@
 {
   "name": "modern-azhilin",
-  "description": "Modern azhilin Emacs icon",
+  "description": "Emacs icon by Andrew Zhilin",
   "maintainer": {
-    "github": "azhilin"
+    "name": "Andrew Zhilin"
   },
-  "legacy_sha256": "0baf631548fdcb2c847ebf8b39aac94194d71400dffe25a23f94dffab41e1794"
+  "homepage": "https://commons.wikimedia.org/wiki/File:Emacs-icon-48x48.png"
 }

@@ -1,8 +1,8 @@
 {
   "name": "modern-paper",
-  "description": "Modern paper-style Emacs icon",
+  "description": "Paper style Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "snwh"
   },
-  "legacy_sha256": "271066eda440b1acd94087b600c64e7a7e9d24a70b25a16d1b08d7705636c53f"
+  "homepage": "https://github.com/snwh/paper-icon-theme"
 }

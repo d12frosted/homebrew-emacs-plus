@@ -1,8 +1,8 @@
 {
   "name": "modern-mzaplotnik",
-  "description": "Modern mzaplotnik Emacs icon",
+  "description": "Emacs icon by Matjaz Zaplotnik",
   "maintainer": {
-    "github": "mzaplotnik"
+    "name": "Matjaz Zaplotnik"
   },
-  "legacy_sha256": "004364d52db2d94b67a7db909c5d73794a9b3bbd92b2a7155ca269f637c520a8"
+  "homepage": "https://commons.wikimedia.org/wiki/File:Emacs-icon-48x48.svg"
 }

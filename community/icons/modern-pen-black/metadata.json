@@ -1,8 +1,8 @@
 {
   "name": "modern-pen-black",
-  "description": "Modern pen-style Emacs icon",
+  "description": "Black pen style Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "csantosb"
   },
-  "legacy_sha256": "bd20e494e0fba4a44f064d36ac0d06f48cc3fd74cb0a0baa41e5a3f817c03d7d"
+  "homepage": "https://gitlab.com/csantosb"
 }

@@ -1,8 +1,8 @@
 {
   "name": "savchenkovaleriy-big-sur-curvy-3d",
-  "description": "macOS Big Sur-style Emacs icon",
+  "description": "Big Sur style Emacs icon",
   "maintainer": {
-    "github": "savchenkovaleriy"
+    "github": "SavchenkoValeriy"
   },
-  "legacy_sha256": "d69852471cc711b2bcbe3ecc77262360e2a985bdc91f459eb38639c8838befee"
+  "homepage": "https://github.com/SavchenkoValeriy/emacs-icons"
 }

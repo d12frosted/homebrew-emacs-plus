@@ -1,8 +1,8 @@
 {
   "name": "retro-sink",
-  "description": "Retro-style Emacs icon",
+  "description": "Kitchen sink Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Erik Mugele"
   },
-  "legacy_sha256": "e8b842ea6f7b677f8cc0dff179686b6513e9214e479e91b40e357b3e3901c48d"
+  "homepage": "https://www.teuton.org/~ejm/emacsicon/"
 }

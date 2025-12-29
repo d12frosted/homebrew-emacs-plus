@@ -2,7 +2,7 @@
   "name": "spacemacs",
   "description": "Spacemacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "nashamri"
   },
-  "legacy_sha256": "ff2bdfe9d7bec826fb8f3bb9c2b2237ba838a8cb5afc6a15be1db4ace89d8d4b"
+  "homepage": "https://github.com/nashamri/spacemacs-logo"
 }

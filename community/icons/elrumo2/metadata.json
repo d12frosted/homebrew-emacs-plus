@@ -1,8 +1,8 @@
 {
   "name": "elrumo2",
-  "description": "Elrumo2 Emacs icon",
+  "description": "Emacs icon by Elias",
   "maintainer": {
     "github": "elrumo"
   },
-  "legacy_sha256": "b77cc5494d827b08603190ee57c35ae01f1d94355a4386e00e0f03cb3a4fd7f8"
+  "homepage": "https://github.com/d12frosted/homebrew-emacs-plus/issues/303#issuecomment-763928162"
 }

@@ -1,8 +1,8 @@
 {
   "name": "skamacs",
-  "description": "Skamacs icon",
+  "description": "Skamacs Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "compufox"
   },
-  "legacy_sha256": "cca424a6e8328b1bc70047fbba284724aa0dc274ceefabacd08d75732867a71d"
+  "homepage": "https://github.com/compufox/skamacs-icon"
 }

@@ -1,8 +1,8 @@
 {
   "name": "modern-vscode",
-  "description": "VS Code-inspired Emacs icon",
+  "description": "VSCode style Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "github": "vdegenne"
   },
-  "legacy_sha256": "80e0782c8a868f92d1ba5f91fe00655e5f1865c44a49b12db6b3cd976f106320"
+  "homepage": "https://github.com/VSCodeEmacs/Emacs"
 }

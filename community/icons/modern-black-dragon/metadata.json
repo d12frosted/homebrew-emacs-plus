@@ -1,8 +1,8 @@
 {
   "name": "modern-black-dragon",
-  "description": "Modern black-themed Emacs icon",
+  "description": "Black dragon Emacs icon",
   "maintainer": {
-    "github": "d12frosted"
+    "name": "Osike"
   },
-  "legacy_sha256": "ad438122669e56db11d7d66eb06b999e6fc0f08635182216667f84eff7004846"
+  "homepage": "https://www.cleanpng.com/png-spacemacs-computer-software-command-line-interface-3947037"
 }
