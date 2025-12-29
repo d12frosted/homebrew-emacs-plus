@@ -1,0 +1,124 @@
+name: Build Emacs.app
+
+on:
+  # Manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Emacs version to build'
+        required: true
+        default: '30'
+        type: choice
+        options:
+          - '30'
+          - '31'
+
+  # TODO Phase 2: Enable nightly builds
+  # schedule:
+  #   - cron: '0 3 * * *'  # 3 AM UTC daily
+
+jobs:
+  build:
+    runs-on: macos-26  # Phase 1: test on Tahoe (add matrix later)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment
+        run: |
+          echo "EMACS_VERSION=${{ inputs.version || '30' }}" >> $GITHUB_ENV
+          echo "MAC_ARCH=$(uname -m)" >> $GITHUB_ENV
+          echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install autoconf automake texinfo gnutls librsvg libxml2 \
+            imagemagick libgccjit tree-sitter pkg-config
+
+      - name: Clone Emacs source
+        run: |
+          if [[ "$EMACS_VERSION" == "31" ]]; then
+            BRANCH="master"
+          else
+            BRANCH="emacs-$EMACS_VERSION"
+          fi
+          git clone --depth 1 --branch "$BRANCH" \
+            https://git.savannah.gnu.org/git/emacs.git emacs-src
+          cd emacs-src
+          echo "EMACS_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "Building Emacs $EMACS_VERSION at $(git rev-parse --short HEAD)"
+
+      - name: Apply unconditional patches
+        run: |
+          cd emacs-src
+          # Only apply patches that are unconditionally applied in the formula
+          PATCHES=(
+            "fix-window-role"
+            "system-appearance"
+            "round-undecorated-frame"
+            "mac-font-use-typo-metrics"
+          )
+          for patch_name in "${PATCHES[@]}"; do
+            patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
+            if [[ -f "$patch_file" ]]; then
+              echo "Applying $patch_name"
+              patch -p1 < "$patch_file"
+            else
+              echo "Warning: $patch_file not found, skipping"
+            fi
+          done
+
+      - name: Build Emacs
+        run: |
+          cd emacs-src
+          ./autogen.sh
+          ./configure \
+            --with-ns \
+            --with-native-compilation=aot \
+            --with-xwidgets \
+            --with-tree-sitter \
+            --with-imagemagick \
+            --with-mailutils \
+            --with-modules \
+            --without-dbus \
+            --without-compress-install
+          make -j$(sysctl -n hw.ncpu)
+          make install
+
+      - name: Verify build
+        run: |
+          ls -la emacs-src/nextstep/
+          ./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version
+
+      - name: Package
+        run: |
+          cd emacs-src/nextstep
+          # Create version file
+          echo "Emacs+ $EMACS_VERSION" > Emacs.app/Contents/Resources/emacs-plus-version.txt
+          echo "Build: $BUILD_DATE" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
+          echo "Revision: $EMACS_REV" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
+
+          # Package
+          ZIPNAME="emacs-plus-${EMACS_VERSION}-${MAC_ARCH}-${OS_VER}.zip"
+          zip -r -y "$ZIPNAME" Emacs.app
+          shasum -a 256 "$ZIPNAME" > "$ZIPNAME.sha256"
+          mv "$ZIPNAME" "$ZIPNAME.sha256" "$GITHUB_WORKSPACE/"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: emacs-plus-${{ env.EMACS_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_VER }}
+          path: |
+            emacs-plus-*.zip
+            emacs-plus-*.sha256
+
+  # TODO Phase 2: Add release job
+  # release:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #     - uses: softprops/action-gh-release@v2
