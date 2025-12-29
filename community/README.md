@@ -2,6 +2,8 @@
 
 This directory contains community-maintained patches and icons for Emacs+.
 
+**[→ Browse Icons Gallery](./icons/README.md)** - View all 76 available icons with previews.
+
 ## Important
 
 **You are responsible for maintaining features you use from this directory.**

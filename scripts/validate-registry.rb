@@ -219,6 +219,12 @@ class RegistryValidator
         warning("Icon '#{name}' metadata missing field: #{field}")
       end
     end
+
+    # Check preview.png exists
+    preview_file = File.join(icon_dir, 'preview.png')
+    unless File.exist?(preview_file)
+      error("Icon '#{name}' missing preview.png (run: ruby scripts/generate-icon-previews.rb)")
+    end
   end
 end
 

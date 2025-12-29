@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+export PATH=/opt/homebrew/opt/llvm/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
+
+./build 28 --verbose
