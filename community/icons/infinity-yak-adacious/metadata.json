@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-adacious",
+  "description": "Infinity Yak adacious Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "fb7d39ff5f8fc7fa2a5f881b2dbe3f700b0e8392b2065ae311813393816afc51"
+}

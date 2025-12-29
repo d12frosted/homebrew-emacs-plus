@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-noir",
+  "description": "Infinity Yak noir Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "26ea6fcb94d61bdb783978a8843b3abd02554c8ea566e77faf58ecaf7313571f"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-akadabra",
+  "description": "Infinity Yak akadabra Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "f69b0134e3b172d9fa94ce55e99a2e745be98f7fb643af87e75d688399db9fe1"
+}

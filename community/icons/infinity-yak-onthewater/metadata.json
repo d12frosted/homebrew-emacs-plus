@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-onthewater",
+  "description": "Infinity Yak onthewater Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "7da11d9362a7fa26c4b0769eeff70287d6dfcd88f0d2dd9be4804274a3d6634f"
+}

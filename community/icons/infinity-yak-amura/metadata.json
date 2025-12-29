@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-amura",
+  "description": "Infinity Yak amura Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "03dc8a5e08e7e2bce4594e675b2cf0f2c5aca82249d19bd92100d8241c9cf429"
+}

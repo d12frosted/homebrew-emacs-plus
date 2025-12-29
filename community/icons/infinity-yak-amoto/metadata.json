@@ -1,0 +1,9 @@
+{
+  "name": "infinity-yak-amoto",
+  "description": "Infinity Yak amoto Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "1c98ddfc069e12e3d9e4b3bbd17f3e563bfffb29d34a90117bcce221afb1e375"
+}

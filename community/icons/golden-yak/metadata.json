@@ -1,0 +1,9 @@
+{
+  "name": "golden-yak",
+  "description": "Golden Yak Emacs icon",
+  "maintainer": {
+    "github": "emacsfodder"
+  },
+  "homepage": "https://github.com/emacsfodder/Infinite-Yak-Icons",
+  "legacy_sha256": "bf4826e53a3e519b20b616080d1b91159fca57df946d68bb3fa6ff025cbcffa3"
+}
