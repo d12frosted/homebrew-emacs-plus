@@ -263,16 +263,20 @@ jobs:
           # Update Info.plist with proper metadata
           CLIENT_PLIST="$APP_DIR/Emacs Client.app/Contents/Info.plist"
 
-          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier org.gnu.EmacsClient" "$CLIENT_PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleName 'Emacs Client'" "$CLIENT_PLIST"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string 'Emacs Client'" "$CLIENT_PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName 'Emacs Client'" "$CLIENT_PLIST"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleGetInfoString string 'Emacs Client $EMACS_FULL_VERSION'" "$CLIENT_PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Set :CFBundleGetInfoString 'Emacs Client $EMACS_FULL_VERSION'" "$CLIENT_PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion '$EMACS_FULL_VERSION'" "$CLIENT_PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString '$EMACS_FULL_VERSION'" "$CLIENT_PLIST"
-          /usr/libexec/PlistBuddy -c "Add :LSApplicationCategoryType string 'public.app-category.productivity'" "$CLIENT_PLIST" 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :NSHumanReadableCopyright string 'Copyright © 1989-$(date +%Y) Free Software Foundation, Inc.'" "$CLIENT_PLIST" 2>/dev/null || true
+          # Helper function to set or add plist values
+          plist_set() {
+            /usr/libexec/PlistBuddy -c "Add :$1 $2 $3" "$CLIENT_PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Set :$1 $3" "$CLIENT_PLIST"
+          }
+
+          plist_set "CFBundleIdentifier" "string" "org.gnu.EmacsClient"
+          plist_set "CFBundleName" "string" "Emacs Client"
+          plist_set "CFBundleDisplayName" "string" "Emacs Client"
+          plist_set "CFBundleGetInfoString" "string" "Emacs Client $EMACS_FULL_VERSION"
+          plist_set "CFBundleVersion" "string" "$EMACS_FULL_VERSION"
+          plist_set "CFBundleShortVersionString" "string" "$EMACS_FULL_VERSION"
+          plist_set "LSApplicationCategoryType" "string" "public.app-category.productivity"
+          plist_set "NSHumanReadableCopyright" "string" "Copyright © 1989-$(date +%Y) Free Software Foundation, Inc."
 
           # Add document types for file associations
           /usr/libexec/PlistBuddy -c "Delete :CFBundleDocumentTypes" "$CLIENT_PLIST" 2>/dev/null || true
