@@ -34,6 +34,16 @@ cask "emacs-plus" do
   app "Emacs.app"
   app "Emacs Client.app"
 
+  # Remove quarantine attribute (app is not code signed)
+  postflight do
+    system_command "/usr/bin/xattr",
+                   args: ["-cr", "#{appdir}/Emacs.app"],
+                   sudo: false
+    system_command "/usr/bin/xattr",
+                   args: ["-cr", "#{appdir}/Emacs Client.app"],
+                   sudo: false
+  end
+
   # Symlink binaries
   binary "#{appdir}/Emacs.app/Contents/MacOS/Emacs", target: "emacs"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
