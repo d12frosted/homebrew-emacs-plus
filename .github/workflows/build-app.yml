@@ -387,7 +387,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download artifacts for Emacs ${{ matrix.emacs_version }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
           pattern: emacs-plus-${{ matrix.emacs_version }}.*
