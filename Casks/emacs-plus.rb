@@ -23,17 +23,11 @@ cask "emacs-plus" do
   desc "GNU Emacs text editor with patches for macOS"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
-  # Conflict with other Emacs installations
+  # Conflict with other Emacs cask installations
   conflicts_with cask: [
     "emacs",
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
-  ]
-  conflicts_with formula: [
-    "emacs",
-    "emacs-plus@29",
-    "emacs-plus@30",
-    "emacs-plus@31",
   ]
 
   # Install the app
