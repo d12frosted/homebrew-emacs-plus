@@ -1,7 +1,7 @@
 cask "emacs-plus" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "30-8"
+  version "30-9"
 
   # TODO: Add Intel and other macOS version builds in Phase 4
   # For now, only ARM64 + Tahoe is supported
@@ -11,7 +11,7 @@ cask "emacs-plus" do
 
   on_arm do
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "609d5f9972908431a58261d17d6611adf874ca1a2d16f4574656e3525af28c61"
+      sha256 "5616e9854a28fb78e2119be83484da781065d2ad68b6c808984694336ab97ccd"
       url "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-#{version.sub(/^\d+-/, "")}/emacs-plus-#{version.sub(/-\d+$/, "")}-arm64-26.0.1.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     else
