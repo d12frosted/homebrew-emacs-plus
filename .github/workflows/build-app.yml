@@ -40,7 +40,7 @@ jobs:
             os_name: sequoia-intel
     runs-on: ${{ matrix.platform.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set environment
         run: |
@@ -384,7 +384,7 @@ jobs:
         emacs_version: ${{ github.event_name == 'schedule' && fromJSON('["30", "31"]') || fromJSON(format('["{0}"]', inputs.version || '30')) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download artifacts for Emacs ${{ matrix.emacs_version }}
         uses: actions/download-artifact@v7
