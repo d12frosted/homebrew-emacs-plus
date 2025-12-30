@@ -219,7 +219,11 @@ class EmacsBase < Formula
       metadata_file = "#{icon_dir}/metadata.json"
       metadata = File.exist?(metadata_file) ? JSON.parse(File.read(metadata_file)) : {}
 
-      return { name: name, path: icon_file, type: "community", metadata: metadata }
+      # Check for Tahoe Assets.car (macOS 26+)
+      assets_car = "#{icon_dir}/Assets.car"
+      tahoe_path = File.exist?(assets_car) ? assets_car : nil
+
+      return { name: name, path: icon_file, tahoe_path: tahoe_path, type: "community", metadata: metadata }
     end
 
     # Fallback to legacy icons (during deprecation period)
@@ -450,6 +454,14 @@ class EmacsBase < Formula
       puts "  Copying #{icon[:path]} -> #{target_icon}"
       FileUtils.rm_f(target_icon)
       FileUtils.cp(icon[:path], target_icon)
+
+      # Copy Tahoe Assets.car if available (macOS 26+)
+      if icon[:tahoe_path]
+        target_assets = "#{icons_dir}/Assets.car"
+        puts "  Copying #{icon[:tahoe_path]} -> #{target_assets} (Tahoe)"
+        FileUtils.rm_f(target_assets)
+        FileUtils.cp(icon[:tahoe_path], target_assets)
+      end
     when "external"
       # External: download with curl, verify SHA256
       tmpfile = Tempfile.new(["icon-", ".icns"])
@@ -702,9 +714,13 @@ class EmacsBase < Formula
     system "rm", "-f", client_resources_dir/"droplet.icns"
     system "rm", "-f", client_resources_dir/"droplet.rsrc"
 
-    # Remove Assets.car file - on macOS 26+, the system prioritizes icon images
-    # from Assets.car over .icns files, so we must remove it to use our custom icon
+    # Handle Assets.car for macOS 26+ (Tahoe)
+    # On Tahoe, the system prioritizes icon images from Assets.car over .icns files
     system "rm", "-f", client_resources_dir/"Assets.car"
+    # If we have a custom Tahoe icon, copy it; otherwise the removal ensures .icns is used
+    if File.exist?(icons_dir/"Assets.car")
+      system "cp", icons_dir/"Assets.car", client_resources_dir/"Assets.car"
+    end
 
     # Set icon file reference (use simple name without spaces)
     # Try Delete first in case osacompile set it, then Add

@@ -6,5 +6,6 @@
   },
   "homepage": "https://github.com/leaferiksen/emacs-liquid-glass-icon",
   "license": "GPL-3.0",
-  "legacy_sha256": "37ede7e651ee46c5a914fd11b980c92c3ef692e41cb2676e2518d09e4d7d5de9"
+  "legacy_sha256": "37ede7e651ee46c5a914fd11b980c92c3ef692e41cb2676e2518d09e4d7d5de9",
+  "tahoe_sha256": "0dd32f47944f294dabbc44eb748345667bced820e1a51e90a44fc368dcf37f21"
 }
