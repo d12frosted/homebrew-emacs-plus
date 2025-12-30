@@ -19,15 +19,34 @@ on:
 
 jobs:
   build:
-    runs-on: macos-26  # Phase 1: test on Tahoe (add matrix later)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ARM64 builds
+          - runner: macos-26
+            arch: arm64
+            os_name: tahoe
+          - runner: macos-15
+            arch: arm64
+            os_name: sequoia
+          - runner: macos-14
+            arch: arm64
+            os_name: sonoma
+          # Intel build
+          - runner: macos-13
+            arch: x86_64
+            os_name: ventura
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Set environment
         run: |
           echo "EMACS_VERSION=${{ inputs.version || '30' }}" >> $GITHUB_ENV
-          echo "MAC_ARCH=$(uname -m)" >> $GITHUB_ENV
+          echo "MAC_ARCH=${{ matrix.arch }}" >> $GITHUB_ENV
           echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
+          echo "OS_NAME=${{ matrix.os_name }}" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
       - name: Install dependencies
@@ -95,6 +114,10 @@ jobs:
         run: |
           ls -la emacs-src/nextstep/
           ./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version
+          # Capture full Emacs version (e.g., 30.1 or 30.0.92)
+          FULL_VER=$(./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version | head -1 | sed 's/GNU Emacs //' | cut -d' ' -f1)
+          echo "EMACS_FULL_VERSION=$FULL_VER" >> $GITHUB_ENV
+          echo "Full Emacs version: $FULL_VER"
 
       - name: Bundle dylibs
         run: |
@@ -329,19 +352,25 @@ jobs:
           echo "Build: $BUILD_DATE" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
           echo "Revision: $EMACS_REV" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
 
-          # Package both apps
-          ZIPNAME="emacs-plus-${EMACS_VERSION}-${MAC_ARCH}-${OS_VER}.zip"
+          # Package both apps (use full Emacs version and major OS version)
+          OS_MAJOR=$(echo "$OS_VER" | cut -d. -f1)
+          ZIPNAME="emacs-plus-${EMACS_FULL_VERSION}-${MAC_ARCH}-${OS_MAJOR}.zip"
           zip -r -y "$ZIPNAME" Emacs.app "Emacs Client.app"
           shasum -a 256 "$ZIPNAME" > "$ZIPNAME.sha256"
-          mv "$ZIPNAME" "$ZIPNAME.sha256" "$GITHUB_WORKSPACE/"
+          # Save metadata for release job
+          echo "${EMACS_FULL_VERSION}" > emacs-version.txt
+          mv "$ZIPNAME" "$ZIPNAME.sha256" emacs-version.txt "$GITHUB_WORKSPACE/"
+          echo "ZIPNAME=$ZIPNAME" >> $GITHUB_ENV
+          echo "OS_MAJOR=$OS_MAJOR" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: emacs-plus-${{ env.EMACS_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_VER }}
+          name: emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
           path: |
             emacs-plus-*.zip
             emacs-plus-*.sha256
+            emacs-version.txt
 
   release:
     needs: build
@@ -387,18 +416,37 @@ jobs:
 
       - name: Update cask file
         run: |
-          # Get the SHA256 from artifact
-          SHA256=$(cat artifacts/*/*.sha256 | awk '{print $1}')
           BUILD_NUM=${{ github.run_number }}
-          EMACS_VER=${{ inputs.version || '30' }}
 
-          echo "Updating cask to version ${EMACS_VER}-${BUILD_NUM} with SHA256: ${SHA256}"
+          # Get Emacs version from any artifact
+          EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
+          echo "Emacs version: $EMACS_VER"
+
+          # Extract SHA256 for each build
+          for sha_file in artifacts/*/*.sha256; do
+            filename=$(basename "$sha_file" .sha256)
+            sha=$(awk '{print $1}' "$sha_file")
+            echo "Found: $filename -> $sha"
+
+            # Determine arch and OS from filename (emacs-plus-30.1-arm64-26.zip)
+            if [[ "$filename" =~ arm64-([0-9]+) ]]; then
+              os_ver="${BASH_REMATCH[1]}"
+              placeholder="PLACEHOLDER_ARM64_${os_ver}"
+            elif [[ "$filename" =~ x86_64-([0-9]+) ]]; then
+              os_ver="${BASH_REMATCH[1]}"
+              placeholder="PLACEHOLDER_X86_64_${os_ver}"
+            else
+              echo "Unknown filename pattern: $filename"
+              continue
+            fi
+
+            echo "Replacing $placeholder with $sha"
+            sed -i "s/$placeholder/$sha/" Casks/emacs-plus.rb
+          done
 
           # Update version
-          sed -i "s/version \"${EMACS_VER}-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" Casks/emacs-plus.rb
-
-          # Update SHA256
-          sed -i "s/sha256 \"[a-f0-9]*\"/sha256 \"${SHA256}\"/" Casks/emacs-plus.rb
+          echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
+          sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" Casks/emacs-plus.rb
 
           # Show the changes
           git diff Casks/emacs-plus.rb
@@ -408,5 +456,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Casks/emacs-plus.rb
-          git commit -m "chore: update cask to build ${{ github.run_number }}"
+          git commit -m "chore(emacs-plus): update cask to build ${{ github.run_number }}"
           git push

@@ -1,21 +1,31 @@
 cask "emacs-plus" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "30-9"
+  version "30.1-9"
 
-  # TODO: Add Intel and other macOS version builds in Phase 4
-  # For now, only ARM64 + Tahoe is supported
+  # Base URL for release assets
+  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-#{version.sub(/^[\d.]+-/, "")}"
+  emacs_ver = version.sub(/-\d+$/, "")
+
   on_intel do
-    odie "Intel builds are not yet available. Use the formula instead: brew install emacs-plus@30"
+    sha256 "PLACEHOLDER_X86_64_13"
+    url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-13.zip",
+        verified: "github.com/d12frosted/homebrew-emacs-plus"
   end
 
   on_arm do
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "5616e9854a28fb78e2119be83484da781065d2ad68b6c808984694336ab97ccd"
-      url "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-#{version.sub(/^\d+-/, "")}/emacs-plus-#{version.sub(/-\d+$/, "")}-arm64-26.0.1.zip",
+      sha256 "PLACEHOLDER_ARM64_26"
+      url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
-    else
-      odie "Pre-built cask only available for macOS Tahoe (26+) currently. Use the formula instead: brew install emacs-plus@30"
+    elsif MacOS.version >= :sequoia # macOS 15
+      sha256 "PLACEHOLDER_ARM64_15"
+      url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
+          verified: "github.com/d12frosted/homebrew-emacs-plus"
+    else # macOS 14 (Sonoma) and 13 (Ventura)
+      sha256 "PLACEHOLDER_ARM64_14"
+      url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
+          verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
   end
 
