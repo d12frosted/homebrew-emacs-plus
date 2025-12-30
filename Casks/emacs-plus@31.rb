@@ -1,11 +1,10 @@
-cask "emacs-plus" do
+cask "emacs-plus@31" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  # Note: This unversioned cask points to stable Emacs 30
-  version "30.0.0-0"
+  version "31.0.50-0"
 
-  # Base URL for release assets (uses versioned releases: cask-30-<build>)
-  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-30-#{version.sub(/^[\d.]+-/, "")}"
+  # Base URL for release assets (versioned releases: cask-31-<build>)
+  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-31-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
   on_intel do
@@ -30,8 +29,8 @@ cask "emacs-plus" do
     end
   end
 
-  name "Emacs+"
-  desc "GNU Emacs text editor with patches for macOS"
+  name "Emacs+ (Development)"
+  desc "GNU Emacs text editor with patches for macOS (development version)"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
   # Conflict with other Emacs cask installations
@@ -39,8 +38,8 @@ cask "emacs-plus" do
     "emacs",
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
+    "emacs-plus",
     "emacs-plus@30",
-    "emacs-plus@31",
   ]
 
   # Install the app
@@ -79,11 +78,11 @@ cask "emacs-plus" do
   ]
 
   caveats <<~EOS
-    Emacs+ has been installed to /Applications.
+    Emacs+ (development) has been installed to /Applications.
 
-    This is a pre-built binary. For custom patches or build options,
-    use the formula instead:
-      brew install emacs-plus@30 --with-...
+    This is a pre-built binary from the Emacs master branch.
+    For custom patches or build options, use the formula instead:
+      brew install emacs-plus@31 --with-...
 
     Note: Emacs Client.app requires Emacs to be running as a daemon.
     Add to your Emacs config: (server-start)

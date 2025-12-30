@@ -1,10 +1,9 @@
-cask "emacs-plus" do
+cask "emacs-plus@30" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  # Note: This unversioned cask points to stable Emacs 30
   version "30.0.0-0"
 
-  # Base URL for release assets (uses versioned releases: cask-30-<build>)
+  # Base URL for release assets (versioned releases: cask-30-<build>)
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-30-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
@@ -39,7 +38,7 @@ cask "emacs-plus" do
     "emacs",
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
-    "emacs-plus@30",
+    "emacs-plus",
     "emacs-plus@31",
   ]
 

@@ -13,16 +13,17 @@ on:
           - '30'
           - '31'
 
-  # TODO Phase 2: Enable nightly builds
-  # schedule:
-  #   - cron: '0 3 * * *'  # 3 AM UTC daily
+  # Nightly builds at 3 AM UTC
+  schedule:
+    - cron: '0 3 * * *'
 
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        include:
+        emacs_version: ${{ github.event_name == 'schedule' && fromJSON('["30", "31"]') || fromJSON(format('["{0}"]', inputs.version || '30')) }}
+        platform:
           # ARM64 builds
           - runner: macos-26
             arch: arm64
@@ -37,16 +38,16 @@ jobs:
           - runner: macos-15-intel
             arch: x86_64
             os_name: sequoia-intel
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.platform.runner }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Set environment
         run: |
-          echo "EMACS_VERSION=${{ inputs.version || '30' }}" >> $GITHUB_ENV
-          echo "MAC_ARCH=${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "EMACS_VERSION=${{ matrix.emacs_version }}" >> $GITHUB_ENV
+          echo "MAC_ARCH=${{ matrix.platform.arch }}" >> $GITHUB_ENV
           echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
-          echo "OS_NAME=${{ matrix.os_name }}" >> $GITHUB_ENV
+          echo "OS_NAME=${{ matrix.platform.os_name }}" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
 
       - name: Install dependencies
@@ -377,85 +378,110 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        emacs_version: ${{ github.event_name == 'schedule' && fromJSON('["30", "31"]') || fromJSON(format('["{0}"]', inputs.version || '30')) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download artifacts
+      - name: Download artifacts for Emacs ${{ matrix.emacs_version }}
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: emacs-plus-${{ matrix.emacs_version }}.*
 
       - name: Display structure
         run: |
           ls -laR artifacts/
-          cat artifacts/*/*.sha256
+          cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
-      - name: Create Release
+      - name: Create Release for Emacs ${{ matrix.emacs_version }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: cask-${{ github.run_number }}
-          name: Emacs+ Cask Build ${{ github.run_number }}
+          tag_name: cask-${{ matrix.emacs_version }}-${{ github.run_number }}
+          name: Emacs+ ${{ matrix.emacs_version }} Cask Build ${{ github.run_number }}
           draft: false
-          prerelease: true
+          prerelease: ${{ matrix.emacs_version == '31' }}
           files: |
             artifacts/*/*.zip
             artifacts/*/*.sha256
           body: |
-            Pre-built Emacs+ for cask installation.
+            Pre-built Emacs+ ${{ matrix.emacs_version }} for cask installation.
 
             **Build info:**
+            - Emacs version: ${{ matrix.emacs_version }}
             - Workflow run: ${{ github.run_number }}
             - Commit: ${{ github.sha }}
 
             **Installation:**
             ```
             brew tap d12frosted/emacs-plus
-            brew install --cask emacs-plus
+            brew install --cask emacs-plus@${{ matrix.emacs_version }}
             ```
 
       - name: Update cask file
         run: |
           BUILD_NUM=${{ github.run_number }}
+          EMACS_MAJOR=${{ matrix.emacs_version }}
 
-          # Get Emacs version from any artifact
+          # Get Emacs full version from artifact
           EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
           echo "Emacs version: $EMACS_VER"
 
-          # Extract SHA256 for each build
-          for sha_file in artifacts/*/*.sha256; do
-            filename=$(basename "$sha_file" .sha256)
-            sha=$(awk '{print $1}' "$sha_file")
-            echo "Found: $filename -> $sha"
+          # Determine which cask files to update
+          # For Emacs 30, also update the unversioned emacs-plus.rb (alias to @30)
+          if [[ "$EMACS_MAJOR" == "30" ]]; then
+            CASK_FILES=("Casks/emacs-plus@30.rb" "Casks/emacs-plus.rb")
+          else
+            CASK_FILES=("Casks/emacs-plus@${EMACS_MAJOR}.rb")
+          fi
 
-            # Determine arch and OS from filename (emacs-plus-30.1-arm64-26.zip)
-            if [[ "$filename" =~ arm64-([0-9]+) ]]; then
-              os_ver="${BASH_REMATCH[1]}"
-              placeholder="PLACEHOLDER_ARM64_${os_ver}"
-            elif [[ "$filename" =~ x86_64-([0-9]+) ]]; then
-              os_ver="${BASH_REMATCH[1]}"
-              placeholder="PLACEHOLDER_X86_64_${os_ver}"
-            else
-              echo "Unknown filename pattern: $filename"
-              continue
-            fi
+          for CASK_FILE in "${CASK_FILES[@]}"; do
+            echo "Updating $CASK_FILE"
 
-            echo "Replacing $placeholder with $sha"
-            sed -i "s/$placeholder/$sha/" Casks/emacs-plus.rb
+            # Extract SHA256 for each build
+            for sha_file in artifacts/*/*.sha256; do
+              filename=$(basename "$sha_file" .sha256)
+              sha=$(awk '{print $1}' "$sha_file")
+              echo "Found: $filename -> $sha"
+
+              # Determine arch and OS from filename (emacs-plus-30.1-arm64-26.zip)
+              if [[ "$filename" =~ arm64-([0-9]+) ]]; then
+                os_ver="${BASH_REMATCH[1]}"
+                placeholder="PLACEHOLDER_ARM64_${os_ver}"
+              elif [[ "$filename" =~ x86_64-([0-9]+) ]]; then
+                os_ver="${BASH_REMATCH[1]}"
+                placeholder="PLACEHOLDER_X86_64_${os_ver}"
+              else
+                echo "Unknown filename pattern: $filename"
+                continue
+              fi
+
+              echo "Replacing $placeholder with $sha in $CASK_FILE"
+              sed -i "s/$placeholder/$sha/" "$CASK_FILE"
+            done
+
+            # Update version
+            echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
+            sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
           done
 
-          # Update version
-          echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
-          sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" Casks/emacs-plus.rb
-
           # Show the changes
-          git diff Casks/emacs-plus.rb
+          git diff Casks/
 
       - name: Commit and push cask update
         run: |
+          EMACS_MAJOR=${{ matrix.emacs_version }}
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Casks/emacs-plus.rb
-          git commit -m "chore(emacs-plus): update cask to build ${{ github.run_number }}"
-          git pull --rebase origin master
-          git push
+          git add Casks/
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(emacs-plus@${EMACS_MAJOR}): update cask to build ${{ github.run_number }}"
+            git pull --rebase origin master
+            git push
+          fi
