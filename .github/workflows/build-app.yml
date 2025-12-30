@@ -205,6 +205,12 @@ jobs:
             echo "OK: No Homebrew references in main binary"
           fi
 
+          # Re-sign the app after modifying binaries (adhoc signature)
+          echo "Re-signing Emacs.app..."
+          codesign --force --deep --sign - "$APP"
+          codesign --verify --deep --strict "$APP"
+          echo "Code signing verified"
+
       - name: Create Emacs Client.app
         run: |
           APP_DIR="emacs-src/nextstep"
