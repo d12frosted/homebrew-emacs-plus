@@ -349,6 +349,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -381,3 +384,29 @@ jobs:
             brew tap d12frosted/emacs-plus
             brew install --cask emacs-plus
             ```
+
+      - name: Update cask file
+        run: |
+          # Get the SHA256 from artifact
+          SHA256=$(cat artifacts/*/*.sha256 | awk '{print $1}')
+          BUILD_NUM=${{ github.run_number }}
+          EMACS_VER=${{ inputs.version || '30' }}
+
+          echo "Updating cask to version ${EMACS_VER}-${BUILD_NUM} with SHA256: ${SHA256}"
+
+          # Update version
+          sed -i "s/version \"${EMACS_VER}-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" Casks/emacs-plus.rb
+
+          # Update SHA256
+          sed -i "s/sha256 \"[a-f0-9]*\"/sha256 \"${SHA256}\"/" Casks/emacs-plus.rb
+
+          # Show the changes
+          git diff Casks/emacs-plus.rb
+
+      - name: Commit and push cask update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/emacs-plus.rb
+          git commit -m "chore: update cask to build ${{ github.run_number }}"
+          git push
