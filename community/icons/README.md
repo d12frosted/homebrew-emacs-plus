@@ -117,11 +117,17 @@ For icons designed for macOS Tahoe's liquid glass aesthetic, you can also includ
 On macOS 26+, the system prioritizes `Assets.car` over `.icns` files. If your icon includes
 `Assets.car`, it will be used on Tahoe while the `.icns` provides fallback for older macOS versions.
 
+**Metadata fields for Tahoe icons:**
+- `tahoe_sha256` - SHA256 checksum of Assets.car (for verification)
+- `tahoe_icon_name` - Icon name inside Assets.car (defaults to "Emacs" if not specified)
+
 To create `Assets.car` from an `.icon` bundle, use Apple's `actool`:
 ```bash
 actool YourIcon.icon --compile output --app-icon YourIcon --enable-on-demand-resources NO \
   --minimum-deployment-target 26.0 --platform macosx
 ```
+
+The `--app-icon` value becomes the icon name that should be set in `tahoe_icon_name`.
 
 To regenerate previews and this README, run:
 ```bash
