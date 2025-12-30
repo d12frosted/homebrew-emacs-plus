@@ -41,11 +41,11 @@ cask "emacs-plus" do
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ctags", target: "emacs-ctags"
 
-  # Man pages
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacs.1.gz"
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacsclient.1.gz"
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/ebrowse.1.gz"
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/etags.1.gz"
+  # Man pages (not gzipped in the build)
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacs.1"
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacsclient.1"
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/ebrowse.1"
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/etags.1"
 
   # Cleanup on uninstall
   zap trash: [
