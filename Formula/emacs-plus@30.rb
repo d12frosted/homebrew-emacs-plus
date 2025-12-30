@@ -107,6 +107,7 @@ class EmacsPlusAT30 < EmacsBase
   local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
   local_patch "mac-font-use-typo-metrics", sha: "318395d3869d3479da4593360bcb11a5df08b494b995287074d0d744ec562c17"
+  local_patch "treesit-compatibility", sha: "7cb460084261af2b6ce04ddaefeffa658c35caa931bbf99ab6053ce7b23f2359" if build.with? "tree-sitter"
 
   #
   # Install
