@@ -290,6 +290,13 @@ class EmacsPlusAT29 < EmacsBase
     if build.with? "native-comp"
       ln_sf "#{Dir[opt_prefix/"lib/emacs/*"].first}/native-lisp", "#{opt_prefix}/Emacs.app/Contents/native-lisp"
     end
+
+    # Re-sign the app for macOS Sequoia compatibility (issue #742)
+    app_path = prefix/"Emacs.app"
+    if app_path.exist?
+      ohai "Re-signing Emacs.app for macOS compatibility..."
+      system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
+    end
   end
 
   def caveats

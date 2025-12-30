@@ -278,6 +278,13 @@ class EmacsPlusAT31 < EmacsBase
     Dir.glob(emacs_info_dir/"*.info") do |info_filename|
       system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
     end
+
+    # Re-sign the app for macOS Sequoia compatibility (issue #742)
+    app_path = prefix/"Emacs.app"
+    if app_path.exist?
+      ohai "Re-signing Emacs.app for macOS compatibility..."
+      system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
+    end
   end
 
   def caveats

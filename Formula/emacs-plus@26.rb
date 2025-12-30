@@ -110,6 +110,15 @@ class EmacsPlusAT26 < EmacsBase
     (man1/"ctags.1.gz").unlink
   end
 
+  def post_install
+    # Re-sign the app for macOS Sequoia compatibility (issue #742)
+    app_path = prefix/"Emacs.app"
+    if app_path.exist?
+      ohai "Re-signing Emacs.app for macOS compatibility..."
+      system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
+    end
+  end
+
   def caveats
     <<~EOS
       Emacs.app was installed to:
