@@ -8,8 +8,8 @@ cask "emacs-plus" do
   emacs_ver = version.sub(/-\d+$/, "")
 
   on_intel do
-    sha256 "PLACEHOLDER_X86_64_13"
-    url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-13.zip",
+    sha256 "PLACEHOLDER_X86_64_15"
+    url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
   end
 

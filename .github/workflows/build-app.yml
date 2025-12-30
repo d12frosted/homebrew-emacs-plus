@@ -33,10 +33,10 @@ jobs:
           - runner: macos-14
             arch: arm64
             os_name: sonoma
-          # Intel build
-          - runner: macos-13
+          # Intel build (macos-15-intel is the only Intel runner available)
+          - runner: macos-15-intel
             arch: x86_64
-            os_name: ventura
+            os_name: sequoia-intel
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
