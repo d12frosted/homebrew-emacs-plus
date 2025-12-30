@@ -364,7 +364,7 @@ jobs:
           echo "OS_MAJOR=$OS_MAJOR" >> $GITHUB_ENV
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
           path: |
