@@ -468,7 +468,7 @@ class EmacsBase < Formula
         plist_path = File.expand_path("../Info.plist", icons_dir)
         if File.exist?(plist_path)
           puts "  Setting CFBundleIconName = #{tahoe_icon_name}"
-          system "/usr/libexec/PlistBuddy", "-c", "Delete :CFBundleIconName", plist_path, err: File::NULL
+          system "/usr/libexec/PlistBuddy -c 'Delete :CFBundleIconName' '#{plist_path}' 2>/dev/null || true"
           system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleIconName string #{tahoe_icon_name}", plist_path
         end
       end
@@ -733,7 +733,7 @@ class EmacsBase < Formula
       # Set CFBundleIconName to match the icon name in Assets.car (defaults to "Emacs")
       icon = resolve_icon
       tahoe_icon_name = icon&.dig(:metadata, "tahoe_icon_name") || "Emacs"
-      system "/usr/libexec/PlistBuddy", "-c", "Delete :CFBundleIconName", client_plist, err: File::NULL
+      system "/usr/libexec/PlistBuddy -c 'Delete :CFBundleIconName' '#{client_plist}' 2>/dev/null || true"
       system "/usr/libexec/PlistBuddy", "-c", "Add :CFBundleIconName string #{tahoe_icon_name}", client_plist
     end
 
