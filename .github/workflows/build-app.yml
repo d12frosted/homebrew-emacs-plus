@@ -140,19 +140,23 @@ jobs:
           # Function to resolve @rpath to actual file
           resolve_rpath() {
             local dylib_name=$(basename "$1")
-            # Search in Homebrew locations
+            # Search in Homebrew lib locations
             for prefix in /opt/homebrew/lib /usr/local/lib; do
               if [[ -f "$prefix/$dylib_name" ]]; then
                 echo "$prefix/$dylib_name"
                 return 0
               fi
             done
-            # Search in Cellar
-            local found=$(find /opt/homebrew/Cellar -name "$dylib_name" -type f 2>/dev/null | head -1)
-            if [[ -n "$found" ]]; then
-              echo "$found"
-              return 0
-            fi
+            # Search in Cellar (both ARM and Intel Homebrew prefixes)
+            for cellar in /opt/homebrew/Cellar /usr/local/Cellar; do
+              if [[ -d "$cellar" ]]; then
+                local found=$(find "$cellar" -name "$dylib_name" -type f 2>/dev/null | head -1)
+                if [[ -n "$found" ]]; then
+                  echo "$found"
+                  return 0
+                fi
+              fi
+            done
             echo ""
             return 1
           }
