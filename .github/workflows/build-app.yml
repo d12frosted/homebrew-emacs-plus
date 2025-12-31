@@ -53,8 +53,13 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
+          # Use tree-sitter@0.25 for Emacs 30 compatibility (0.26+ has API changes)
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            imagemagick libgccjit tree-sitter pkg-config
+            imagemagick libgccjit tree-sitter@0.25 pkg-config
+          # Ensure tree-sitter@0.25 is in PATH
+          echo "$(brew --prefix tree-sitter@0.25)/bin" >> $GITHUB_PATH
+          export PKG_CONFIG_PATH="$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH"
+          echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Clone Emacs source
         run: |
