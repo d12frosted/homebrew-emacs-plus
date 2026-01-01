@@ -186,6 +186,12 @@ class EmacsPlusAT28 < EmacsBase
       system "gmake"
       system "gmake", "install"
 
+      # Generate dSYM bundle for debugging (clang stores symbols in .o files,
+      # which Homebrew cleans up, so we must run dsymutil before that happens)
+      if build.with? "debug"
+        system "dsymutil", "nextstep/Emacs.app/Contents/MacOS/Emacs"
+      end
+
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
         next if build.without? "#{icon}-icon"
@@ -242,6 +248,11 @@ class EmacsPlusAT28 < EmacsBase
 
       system "gmake"
       system "gmake", "install"
+
+      # Generate dSYM bundle for debugging (non-Cocoa build)
+      if build.with? "debug"
+        system "dsymutil", bin/"emacs"
+      end
     end
 
     # Follow MacPorts and don't install ctags from Emacs. This allows Vim
