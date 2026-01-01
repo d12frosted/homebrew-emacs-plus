@@ -473,6 +473,10 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore(emacs-plus@${EMACS_MAJOR}): update cask to build ${{ github.run_number }}"
-            git pull --rebase origin master
-            git push
+            # Retry push with exponential backoff (handles race with other release jobs)
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin master && git push && break
+              echo "Push failed, retrying in $((i * 2)) seconds..."
+              sleep $((i * 2))
+            done
           fi
