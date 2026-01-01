@@ -124,20 +124,27 @@ class EmacsPlusAT31 < EmacsBase
 
     args << "--without-compress-install" if build.without? "compress-install"
 
-    ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
-    ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
-
-    ENV.append "CFLAGS", "-I#{Formula["sqlite"].include}"
-    ENV.append "LDFLAGS", "-L#{Formula["sqlite"].opt_lib}"
-
     # Necessary for libgccjit library discovery
     gcc_ver = Formula["gcc"].any_installed_version
     gcc_ver_major = gcc_ver.major
     gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
 
-    ENV.append "CFLAGS", "-I#{Formula["gcc"].include}"
-    ENV.append "CFLAGS", "-I#{Formula["libgccjit"].include}"
+    # Enable debug symbols in Homebrew's superenv
+    if build.with? "debug"
+      ENV.set_debug_symbols
+    end
 
+    # Build CFLAGS - pass to configure for includes and defines
+    # Note: Homebrew's superenv handles optimization (-O2) and debug (-g) flags
+    cflags = []
+    cflags << "-DFD_SETSIZE=10000"
+    cflags << "-DDARWIN_UNLIMITED_SELECT"
+    cflags << "-I#{Formula["sqlite"].include}"
+    cflags << "-I#{Formula["gcc"].include}"
+    cflags << "-I#{Formula["libgccjit"].include}"
+    args << "CFLAGS=#{cflags.join(" ")}"
+
+    ENV.append "LDFLAGS", "-L#{Formula["sqlite"].opt_lib}"
     ENV.append "LDFLAGS", "-L#{gcc_lib}"
     ENV.append "LDFLAGS", "-Wl,-rpath,#{gcc_lib}"
 
@@ -195,13 +202,13 @@ class EmacsPlusAT31 < EmacsBase
 
       system "gmake"
 
-      system "gmake", "install"
-
-      # Generate dSYM bundle for debugging (clang stores symbols in .o files,
-      # which Homebrew cleans up, so we must run dsymutil before that happens)
+      # Generate dSYM bundle for debugging BEFORE install (clang stores symbols
+      # in .o files, and dsymutil needs them to extract debug info)
       if build.with? "debug"
         system "dsymutil", "nextstep/Emacs.app/Contents/MacOS/Emacs"
       end
+
+      system "gmake", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
       ICONS_CONFIG.each_key do |icon|
@@ -275,12 +282,13 @@ class EmacsPlusAT31 < EmacsBase
       end
 
       system "gmake"
-      system "gmake", "install"
 
-      # Generate dSYM bundle for debugging (non-Cocoa build)
+      # Generate dSYM bundle for debugging BEFORE install (non-Cocoa build)
       if build.with? "debug"
-        system "dsymutil", bin/"emacs"
+        system "dsymutil", "src/emacs"
       end
+
+      system "gmake", "install"
     end
   end
 

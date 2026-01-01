@@ -94,8 +94,17 @@ class EmacsPlusAT27 < EmacsBase
     args << "--with-xml2"
     args << "--with-gnutls"
 
-    ENV.append "CFLAGS", "-g -Og" if build.with? "debug"
-    ENV.append "CFLAGS", "-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+    # Enable debug symbols in Homebrew's superenv
+    if build.with? "debug"
+      ENV.set_debug_symbols
+    end
+
+    # Build CFLAGS - pass to configure for includes and defines
+    # Note: Homebrew's superenv handles optimization (-O2) and debug (-g) flags
+    cflags = []
+    cflags << "-DFD_SETSIZE=10000"
+    cflags << "-DDARWIN_UNLIMITED_SELECT"
+    args << "CFLAGS=#{cflags.join(" ")}"
 
     args <<
       if build.with? "dbus"
@@ -147,6 +156,13 @@ class EmacsPlusAT27 < EmacsBase
       end
 
       system "make"
+
+      # Generate dSYM bundle for debugging BEFORE install (clang stores symbols
+      # in .o files, and dsymutil needs them to extract debug info)
+      if build.with? "debug"
+        system "dsymutil", "nextstep/Emacs.app/Contents/MacOS/Emacs"
+      end
+
       system "make", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
@@ -196,6 +212,12 @@ class EmacsPlusAT27 < EmacsBase
       end
 
       system "make"
+
+      # Generate dSYM bundle for debugging BEFORE install (non-Cocoa build)
+      if build.with? "debug"
+        system "dsymutil", "src/emacs"
+      end
+
       system "make", "install"
     end
 
