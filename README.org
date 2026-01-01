@@ -10,6 +10,9 @@
   <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/nightly.yml">
     <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/nightly.yml/badge.svg" alt="Nightly Status">
   </a>
+  <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/build-app.yml">
+    <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/build-app.yml/badge.svg" alt="Cask Build Status">
+  </a>
 </p>
 #+end_html
 
@@ -36,6 +39,7 @@ For recent changes, see [[./NEWS.org][→ News]].
 ** Table of Contents :TOC_3:
   - [[#about][About]]
   - [[#install][Install]]
+    - [[#pre-built-binaries-cask][Pre-built binaries (Cask)]]
     - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
   - [[#emacs-31][Emacs 31]]
@@ -89,6 +93,34 @@ Emacs Plus contains separate formulas for different Emacs versions:
 #+end_src
 
 By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Note that =imagemagick= is not included by default (opt-in for all versions), =webp= is included by default in =emacs-plus@30= and =emacs-plus@31= only, and =tree-sitter= is included by default in =emacs-plus@29=, =emacs-plus@30=, and =emacs-plus@31=. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
+
+*** Pre-built binaries (Cask)
+
+For faster installation without compilation, pre-built binaries are available as Homebrew casks:
+
+#+begin_src bash
+  $ brew tap d12frosted/emacs-plus
+  $ brew install --cask emacs-plus@30   # Stable (Emacs 30)
+  $ brew install --cask emacs-plus@31   # Development (Emacs 31)
+#+end_src
+
+Cask builds are self-contained applications with all dependencies bundled. They include:
+
+- Native compilation (AOT)
+- =xwidgets=, =tree-sitter=, =imagemagick=, =mailutils=
+- =Emacs.app= and =Emacs Client.app=
+- Default Emacs icon
+
+*Cask vs Formula:*
+
+| Feature              | Cask (=--cask=)          | Formula                   |
+|----------------------+--------------------------+---------------------------|
+| Install time         | ~1 minute (download)     | ~30 minutes (compile)     |
+| Custom build options | No                       | Yes (icons, patches, etc) |
+| macOS versions       | 14+ (Sonoma, Sequoia, Tahoe) | Any supported         |
+| Architectures        | ARM64 and Intel          | Any                       |
+
+Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults.
 
 *** Installing from feature branch
 

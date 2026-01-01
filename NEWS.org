@@ -3,6 +3,30 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2025-12-31
+
+** New Features
+
+*** Pre-built binaries via Homebrew Cask
+
+Emacs+ is now available as pre-built binaries for faster installation:
+
+#+begin_src bash
+  $ brew install --cask emacs-plus@30   # Stable
+  $ brew install --cask emacs-plus@31   # Development
+#+end_src
+
+Benefits:
+- *Fast installation* - Download instead of compile (~1 min vs ~30 min)
+- *Self-contained* - All dependencies bundled, no Homebrew libs required
+- *Nightly builds* - Automatically updated at 3 AM UTC
+
+Cask builds include: native compilation (AOT), xwidgets, tree-sitter, imagemagick, mailutils, and Emacs Client.app.
+
+Use the formula (=brew install emacs-plus@30=) if you need custom icons, patches, or specific build options. Use the cask for quick installation with sensible defaults.
+
+Supported platforms: macOS 14+ (Sonoma, Sequoia, Tahoe) on ARM64 and Intel.
+
 * 2025-12-29
 
 ** New Icons
