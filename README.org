@@ -264,6 +264,24 @@ In case you have a non-trivial setup relying on specific value of =PATH= inherit
 
 And if for some reason PATH injection doesn't work for you, report it either in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]] or open a new issue.
 
+*** Detecting Emacs Plus
+
+Starting with =emacs-plus@30= and =emacs-plus@31=, the variable =ns-emacs-plus-version= is defined, allowing you to detect Emacs Plus in your init.el:
+
+#+begin_src elisp
+(when (bound-and-true-p ns-emacs-plus-version)
+  ;; Emacs Plus specific configuration
+  )
+
+;; Or check specific version
+(when (and (bound-and-true-p ns-emacs-plus-version)
+           (>= ns-emacs-plus-version 31))
+  ;; Emacs Plus 31+ specific
+  )
+#+end_src
+
+This is useful for conditionally enabling features that are specific to Emacs Plus, such as the =ns-system-appearance-change-functions= hook.
+
 *** Emacs Client.app
 
 Starting with =emacs-plus@30= and =emacs-plus@31=, the formula includes a companion application called =Emacs Client.app=. This application provides a user-friendly way to open files in Emacs from Finder, Spotlight, and other macOS applications.

@@ -3,6 +3,38 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2025-01-02
+
+** New Features
+
+*** Detect Emacs Plus in init.el
+
+Emacs Plus @30 and @31 now define =ns-emacs-plus-version= which you can use to detect Emacs Plus in your init.el:
+
+#+begin_src elisp
+(when (bound-and-true-p ns-emacs-plus-version)
+  ;; Emacs Plus specific configuration
+  )
+
+;; Or check specific version
+(when (and (bound-and-true-p ns-emacs-plus-version)
+           (>= ns-emacs-plus-version 31))
+  ;; Emacs Plus 31+ specific
+  )
+#+end_src
+
+** Deprecations
+
+*** --with-imagemagick deprecated in @31
+
+The =--with-imagemagick= option is deprecated in =emacs-plus@31=. Modern Emacs has native support for most image formats (SVG via librsvg, WebP, PNG, JPEG, GIF). If you rely on ImageMagick, please open an issue describing your use case.
+
+** Bug Fixes
+
+*** Info dir file regeneration
+
+Fixed the =dir= file not being created in the Info directory. Homebrew's cleaning phase was deleting it, but =post_install= now regenerates it properly. Also fixed the glob pattern to handle both =.info= and =.info.gz= files for users with =--with-compress-install=.
+
 * 2025-12-31
 
 ** New Features
