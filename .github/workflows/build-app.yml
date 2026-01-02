@@ -779,26 +779,39 @@ jobs:
           CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
           echo "Updating $CASK_FILE"
 
-          # Extract SHA256 for each build
+          # Extract SHA256 for each build and update cask
           for sha_file in artifacts/*/*.sha256; do
             filename=$(basename "$sha_file" .sha256)
             sha=$(awk '{print $1}' "$sha_file")
             echo "Found: $filename -> $sha"
 
             # Determine arch and OS from filename (emacs-plus-30.1-arm64-26.zip)
-            if [[ "$filename" =~ arm64-([0-9]+) ]]; then
-              os_ver="${BASH_REMATCH[1]}"
-              placeholder="PLACEHOLDER_ARM64_${os_ver}"
-            elif [[ "$filename" =~ x86_64-([0-9]+) ]]; then
-              os_ver="${BASH_REMATCH[1]}"
-              placeholder="PLACEHOLDER_X86_64_${os_ver}"
+            if [[ "$filename" =~ (arm64|x86_64)-([0-9]+)\.zip$ ]]; then
+              arch="${BASH_REMATCH[1]}"
+              os_ver="${BASH_REMATCH[2]}"
+              url_pattern="${arch}-${os_ver}.zip"
+
+              echo "Updating SHA for $url_pattern to $sha"
+
+              # Find sha256 line before matching URL and update it
+              python3 << PYEOF
+import re
+
+with open("$CASK_FILE", 'r') as f:
+    lines = f.readlines()
+
+for i, line in enumerate(lines):
+    if "$url_pattern" in line and i > 0 and 'sha256' in lines[i-1]:
+        lines[i-1] = re.sub(r'"[a-f0-9]{64}"', '"$sha"', lines[i-1])
+        print(f"  Updated SHA on line {i} for $url_pattern")
+        break
+
+with open("$CASK_FILE", 'w') as f:
+    f.writelines(lines)
+PYEOF
             else
               echo "Unknown filename pattern: $filename"
-              continue
             fi
-
-            echo "Replacing $placeholder with $sha in $CASK_FILE"
-            sed -i "s/$placeholder/$sha/" "$CASK_FILE"
           done
 
           # Update version
@@ -884,26 +897,39 @@ jobs:
           CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
           echo "Updating $CASK_FILE"
 
-          # Extract SHA256 for each build
+          # Extract SHA256 for each build and update cask
           for sha_file in artifacts/*/*.sha256; do
             filename=$(basename "$sha_file" .sha256)
             sha=$(awk '{print $1}' "$sha_file")
             echo "Found: $filename -> $sha"
 
             # Determine arch and OS from filename (emacs-plus-31.1-arm64-26.zip)
-            if [[ "$filename" =~ arm64-([0-9]+) ]]; then
-              os_ver="${BASH_REMATCH[1]}"
-              placeholder="PLACEHOLDER_ARM64_${os_ver}"
-            elif [[ "$filename" =~ x86_64-([0-9]+) ]]; then
-              os_ver="${BASH_REMATCH[1]}"
-              placeholder="PLACEHOLDER_X86_64_${os_ver}"
+            if [[ "$filename" =~ (arm64|x86_64)-([0-9]+)\.zip$ ]]; then
+              arch="${BASH_REMATCH[1]}"
+              os_ver="${BASH_REMATCH[2]}"
+              url_pattern="${arch}-${os_ver}.zip"
+
+              echo "Updating SHA for $url_pattern to $sha"
+
+              # Find sha256 line before matching URL and update it
+              python3 << PYEOF
+import re
+
+with open("$CASK_FILE", 'r') as f:
+    lines = f.readlines()
+
+for i, line in enumerate(lines):
+    if "$url_pattern" in line and i > 0 and 'sha256' in lines[i-1]:
+        lines[i-1] = re.sub(r'"[a-f0-9]{64}"', '"$sha"', lines[i-1])
+        print(f"  Updated SHA on line {i} for $url_pattern")
+        break
+
+with open("$CASK_FILE", 'w') as f:
+    f.writelines(lines)
+PYEOF
             else
               echo "Unknown filename pattern: $filename"
-              continue
             fi
-
-            echo "Replacing $placeholder with $sha in $CASK_FILE"
-            sed -i "s/$placeholder/$sha/" "$CASK_FILE"
           done
 
           # Update version
