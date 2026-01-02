@@ -15,7 +15,7 @@ cask "emacs-plus@31" do
 
   on_arm do
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "6e809806a65c79c35cb58c46f5d1ecd87d96aa6ab2190f7bc0b7b325142e4edd"
+      sha256 "f133d7e0d6d3d2225e8cbdf34f8ffad03b3376346e7471d410f48231f84dc946"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     elsif MacOS.version >= :sequoia # macOS 15
