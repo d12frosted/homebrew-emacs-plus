@@ -55,6 +55,8 @@ jobs:
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
             imagemagick libgccjit tree-sitter@0.25 pkg-config
+          # tree-sitter@0.25 is keg-only, set up paths
+          echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Clone Emacs source
         run: |
@@ -405,6 +407,8 @@ jobs:
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
             imagemagick libgccjit tree-sitter@0.25 pkg-config
+          # tree-sitter@0.25 is keg-only, set up paths
+          echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Clone Emacs source
         run: |
