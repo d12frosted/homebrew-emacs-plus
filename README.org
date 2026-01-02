@@ -440,7 +440,7 @@ For more information, see [[./community/README.md][→ Community Documentation]]
 Emacs+ supports 76 custom icons. To use one, add it to your =~/.config/emacs-plus/build.yml=:
 
 #+begin_src yaml
-icon: modern-doom
+icon: dragon-plus
 #+end_src
 
 See the [[./community/icons/README.md][→ Icons Gallery]] for all available icons with previews.

@@ -12,18 +12,18 @@ icon: icon-name
 
 For example:
 ```yaml
-icon: modern-doom
+icon: dragon-plus
 ```
 
 ## macOS 26+ (Tahoe) Compliant Icons (2)
 
 These icons include `Assets.car` for native macOS Tahoe support. They display
-properly without the "icon jail" effect and may react to system appearance changes.
+properly without the "icon jail" effect and react to system appearance changes.
 
-| Preview | Name | Author | Source |
-|:-------:|------|--------|--------|
-| ![dragon-plus](dragon-plus/preview.png) | `dragon-plus` | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
-| ![liquid-glass](liquid-glass/preview.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
+| Light | Dark | Name | Author | Source |
+|:-----:|:----:|------|--------|--------|
+| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
+| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
 
 ## All Icons (75)
 
@@ -123,8 +123,12 @@ Each icon must include:
 
 #### Optional: macOS 26+ (Tahoe) Support
 
-For icons designed for macOS Tahoe's liquid glass aesthetic, you can also include:
+For icons designed for macOS Tahoe's liquid glass aesthetic, include:
+- `icon.icon/` - Source Icon Composer bundle
 - `Assets.car` - Compiled asset catalog for Tahoe
+
+The script will automatically generate `preview-light.png` and `preview-dark.png`
+from the `icon.icon` source using `ictool`.
 
 On macOS 26+, the system prioritizes `Assets.car` over `.icns` files. If your icon includes
 `Assets.car`, it will be used on Tahoe while the `.icns` provides fallback for older macOS versions.
@@ -133,13 +137,11 @@ On macOS 26+, the system prioritizes `Assets.car` over `.icns` files. If your ic
 - `tahoe_sha256` - SHA256 checksum of Assets.car (for verification)
 - `tahoe_icon_name` - Icon name inside Assets.car (defaults to "Emacs" if not specified)
 
-To create `Assets.car` from an `.icon` bundle, use Apple's `actool`:
+To compile `Assets.car` from an `.icon` bundle, use Apple's `actool`:
 ```bash
-actool YourIcon.icon --compile output --app-icon YourIcon --enable-on-demand-resources NO \
-  --minimum-deployment-target 26.0 --platform macosx
+actool icon.icon --compile . --app-icon IconName --enable-on-demand-resources NO \
+  --minimum-deployment-target 26.0 --platform macosx --output-partial-info-plist /dev/null
 ```
-
-The `--app-icon` value becomes the icon name that should be set in `tahoe_icon_name`.
 
 To regenerate previews and this README, run:
 ```bash
