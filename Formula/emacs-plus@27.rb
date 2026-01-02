@@ -230,6 +230,11 @@ class EmacsPlusAT27 < EmacsBase
   end
 
   def post_install
+    emacs_info_dir = info/"emacs"
+    Dir.glob(emacs_info_dir/"*.info{,.gz}") do |info_filename|
+      system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
+    end
+
     # Re-sign the app for macOS Sequoia compatibility (issue #742)
     app_path = prefix/"Emacs.app"
     if app_path.exist?

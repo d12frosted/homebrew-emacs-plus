@@ -326,7 +326,7 @@ class EmacsPlusAT30 < EmacsBase
 
   def post_install
     emacs_info_dir = info/"emacs"
-    Dir.glob(emacs_info_dir/"*.info") do |info_filename|
+    Dir.glob(emacs_info_dir/"*.info{,.gz}") do |info_filename|
       system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
     end
 
