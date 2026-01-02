@@ -234,6 +234,9 @@ class EmacsPlusAT31 < EmacsBase
       (prefix/"Emacs.app/Contents").install "native-lisp"
       prefix.install "nextstep/Emacs Client.app"
 
+      # inject Emacs Plus site-lisp with ns-emacs-plus-version
+      inject_emacs_plus_site_lisp(31)
+
       # inject PATH to Info.plist
       inject_path
 
