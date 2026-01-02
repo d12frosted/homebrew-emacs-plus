@@ -18,11 +18,11 @@ on:
     - cron: '0 3 * * *'
 
 jobs:
-  build:
+  build-30:
+    if: github.event_name == 'schedule' || inputs.version == '30'
     strategy:
       fail-fast: false
       matrix:
-        emacs_version: ${{ github.event_name == 'schedule' && fromJSON('["30", "31"]') || fromJSON(format('["{0}"]', inputs.version || '30')) }}
         platform:
           # ARM64 builds
           - runner: macos-26
@@ -44,7 +44,7 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "EMACS_VERSION=${{ matrix.emacs_version }}" >> $GITHUB_ENV
+          echo "EMACS_VERSION=30" >> $GITHUB_ENV
           echo "MAC_ARCH=${{ matrix.platform.arch }}" >> $GITHUB_ENV
           echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
           echo "OS_NAME=${{ matrix.platform.os_name }}" >> $GITHUB_ENV
@@ -58,11 +58,7 @@ jobs:
 
       - name: Clone Emacs source
         run: |
-          if [[ "$EMACS_VERSION" == "31" ]]; then
-            BRANCH="master"
-          else
-            BRANCH="emacs-$EMACS_VERSION"
-          fi
+          BRANCH="emacs-$EMACS_VERSION"
           git clone --depth 1 --branch "$BRANCH" \
             https://git.savannah.gnu.org/git/emacs.git emacs-src
           cd emacs-src
@@ -373,58 +369,406 @@ jobs:
             emacs-plus-*.sha256
             emacs-version.txt
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  build-31:
+    if: github.event_name == 'schedule' || inputs.version == '31'
     strategy:
       fail-fast: false
       matrix:
-        emacs_version: ${{ github.event_name == 'schedule' && fromJSON('["30", "31"]') || fromJSON(format('["{0}"]', inputs.version || '30')) }}
+        platform:
+          # ARM64 builds
+          - runner: macos-26
+            arch: arm64
+            os_name: tahoe
+          - runner: macos-15
+            arch: arm64
+            os_name: sequoia
+          - runner: macos-14
+            arch: arm64
+            os_name: sonoma
+          # Intel build (macos-15-intel is the only Intel runner available)
+          - runner: macos-15-intel
+            arch: x86_64
+            os_name: sequoia-intel
+    runs-on: ${{ matrix.platform.runner }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set environment
+        run: |
+          echo "EMACS_VERSION=31" >> $GITHUB_ENV
+          echo "MAC_ARCH=${{ matrix.platform.arch }}" >> $GITHUB_ENV
+          echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
+          echo "OS_NAME=${{ matrix.platform.os_name }}" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install autoconf automake texinfo gnutls librsvg libxml2 \
+            imagemagick libgccjit tree-sitter pkg-config
+
+      - name: Clone Emacs source
+        run: |
+          # Emacs 31 uses master branch
+          BRANCH="master"
+          git clone --depth 1 --branch "$BRANCH" \
+            https://git.savannah.gnu.org/git/emacs.git emacs-src
+          cd emacs-src
+          echo "EMACS_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "Building Emacs $EMACS_VERSION at $(git rev-parse --short HEAD)"
+
+      - name: Apply unconditional patches
+        run: |
+          cd emacs-src
+          # Only apply patches that are unconditionally applied in the formula
+          PATCHES=(
+            "fix-window-role"
+            "system-appearance"
+            "round-undecorated-frame"
+            "mac-font-use-typo-metrics"
+            "treesit-compatibility"
+          )
+          for patch_name in "${PATCHES[@]}"; do
+            patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
+            if [[ -f "$patch_file" ]]; then
+              echo "Applying $patch_name"
+              patch -p1 < "$patch_file"
+            else
+              echo "Warning: $patch_file not found, skipping"
+            fi
+          done
+
+      - name: Build Emacs
+        run: |
+          cd emacs-src
+          ./autogen.sh
+          ./configure \
+            --with-ns \
+            --with-native-compilation=aot \
+            --with-xwidgets \
+            --with-tree-sitter \
+            --with-imagemagick \
+            --with-mailutils \
+            --with-modules \
+            --without-dbus \
+            --without-compress-install
+          make -j$(sysctl -n hw.ncpu)
+          make install
+
+      - name: Verify build
+        run: |
+          ls -la emacs-src/nextstep/
+          ./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version
+          # Capture full Emacs version (e.g., 31.1 or 31.0.50)
+          FULL_VER=$(./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version | head -1 | sed 's/GNU Emacs //' | cut -d' ' -f1)
+          echo "EMACS_FULL_VERSION=$FULL_VER" >> $GITHUB_ENV
+          echo "Full Emacs version: $FULL_VER"
+
+      - name: Bundle dylibs
+        run: |
+          APP="emacs-src/nextstep/Emacs.app"
+          MACOS_DIR="$APP/Contents/MacOS"
+          FRAMEWORKS_DIR="$APP/Contents/Frameworks"
+          mkdir -p "$FRAMEWORKS_DIR"
+
+          # Function to get non-system dylib dependencies
+          get_dylibs() {
+            otool -L "$1" 2>/dev/null | grep -E '^\t/(opt/homebrew|usr/local)' | awk '{print $1}'
+          }
+
+          # Function to get @rpath and @loader_path dependencies
+          get_rpath_dylibs() {
+            otool -L "$1" 2>/dev/null | grep -E '^\t@(rpath|loader_path)/' | awk '{print $1}'
+          }
+
+          # Function to resolve @rpath to actual file
+          resolve_rpath() {
+            local dylib_name=$(basename "$1")
+            # Search in Homebrew lib locations
+            for prefix in /opt/homebrew/lib /usr/local/lib; do
+              if [[ -f "$prefix/$dylib_name" ]]; then
+                echo "$prefix/$dylib_name"
+                return 0
+              fi
+            done
+            # Search in Cellar (both ARM and Intel Homebrew prefixes)
+            for cellar in /opt/homebrew/Cellar /usr/local/Cellar; do
+              if [[ -d "$cellar" ]]; then
+                local found=$(find "$cellar" -name "$dylib_name" -type f 2>/dev/null | head -1)
+                if [[ -n "$found" ]]; then
+                  echo "$found"
+                  return 0
+                fi
+              fi
+            done
+            echo ""
+            return 1
+          }
+
+          # Function to copy and fix a dylib
+          copy_and_fix_dylib() {
+            local src="$1"
+            local dest="$FRAMEWORKS_DIR/$(basename "$src")"
+
+            if [[ -f "$dest" ]]; then
+              return 0  # Already copied
+            fi
+
+            echo "Bundling: $src"
+            cp -L "$src" "$dest"
+            chmod 644 "$dest"
+
+            # Fix the dylib's own ID
+            install_name_tool -id "@executable_path/../Frameworks/$(basename "$src")" "$dest"
+
+            # Recursively process this dylib's absolute path dependencies
+            for dep in $(get_dylibs "$dest"); do
+              local dep_name=$(basename "$dep")
+              install_name_tool -change "$dep" "@executable_path/../Frameworks/$dep_name" "$dest"
+              copy_and_fix_dylib "$dep"
+            done
+
+            # Also process @rpath dependencies
+            for rpath_dep in $(get_rpath_dylibs "$dest"); do
+              local resolved=$(resolve_rpath "$rpath_dep")
+              if [[ -n "$resolved" ]]; then
+                local dep_name=$(basename "$resolved")
+                install_name_tool -change "$rpath_dep" "@executable_path/../Frameworks/$dep_name" "$dest"
+                copy_and_fix_dylib "$resolved"
+              else
+                echo "Warning: Could not resolve $rpath_dep"
+              fi
+            done
+          }
+
+          # Process the main Emacs binary
+          EMACS_BIN="$MACOS_DIR/Emacs"
+          echo "Processing Emacs binary..."
+          for dylib in $(get_dylibs "$EMACS_BIN"); do
+            dylib_name=$(basename "$dylib")
+            install_name_tool -change "$dylib" "@executable_path/../Frameworks/$dylib_name" "$EMACS_BIN"
+            copy_and_fix_dylib "$dylib"
+          done
+
+          # Also process any helper binaries in bin/
+          if [[ -d "$MACOS_DIR/bin" ]]; then
+            for bin in "$MACOS_DIR/bin"/*; do
+              if [[ -x "$bin" ]] && file "$bin" | grep -q "Mach-O"; then
+                echo "Processing: $bin"
+                for dylib in $(get_dylibs "$bin"); do
+                  dylib_name=$(basename "$dylib")
+                  install_name_tool -change "$dylib" "@executable_path/../Frameworks/$dylib_name" "$bin"
+                  copy_and_fix_dylib "$dylib"
+                done
+              fi
+            done
+          fi
+
+          # List bundled libraries
+          echo "Bundled libraries:"
+          ls -la "$FRAMEWORKS_DIR/"
+
+          # Verify the binary no longer references /opt/homebrew
+          echo "Checking for remaining Homebrew references..."
+          if otool -L "$EMACS_BIN" | grep -q '/opt/homebrew\|/usr/local'; then
+            echo "WARNING: Still has Homebrew references:"
+            otool -L "$EMACS_BIN" | grep '/opt/homebrew\|/usr/local'
+          else
+            echo "OK: No Homebrew references in main binary"
+          fi
+
+          # Re-sign the app after modifying binaries (adhoc signature)
+          echo "Re-signing Emacs.app..."
+          codesign --force --deep --sign - "$APP"
+          codesign --verify --deep --strict "$APP"
+          echo "Code signing verified"
+
+      - name: Create Emacs Client.app
+        run: |
+          APP_DIR="emacs-src/nextstep"
+
+          # For cask install, the app will be in /Applications
+          # emacsclient path: /Applications/Emacs.app/Contents/MacOS/bin/emacsclient
+          EMACSCLIENT_PATH="/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+
+          # Create AppleScript source
+          cat > "$APP_DIR/emacs-client.applescript" << 'APPLESCRIPT_EOF'
+          -- Emacs Client AppleScript Application
+          -- Handles opening files from Finder, drag-and-drop, and launching from Spotlight/Dock
+
+          on open theDropped
+            repeat with oneDrop in theDropped
+              set dropPath to quoted form of POSIX path of oneDrop
+              try
+                do shell script "EMACSCLIENT_PATH -c -a '' -n " & dropPath
+              end try
+            end repeat
+            try
+              do shell script "open -a Emacs"
+            end try
+          end open
+
+          -- Handle launch without files (from Spotlight, Dock, or Finder)
+          on run
+            try
+              do shell script "EMACSCLIENT_PATH -c -a '' -n"
+            end try
+            try
+              do shell script "open -a Emacs"
+            end try
+          end run
+
+          -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
+          on open location this_URL
+            try
+              do shell script "EMACSCLIENT_PATH -n " & quoted form of this_URL
+            end try
+            try
+              do shell script "open -a Emacs"
+            end try
+          end open location
+          APPLESCRIPT_EOF
+
+          # Replace placeholder with actual path
+          sed -i '' "s|EMACSCLIENT_PATH|$EMACSCLIENT_PATH|g" "$APP_DIR/emacs-client.applescript"
+
+          # Compile AppleScript to application bundle
+          osacompile -o "$APP_DIR/Emacs Client.app" "$APP_DIR/emacs-client.applescript"
+
+          # Get Emacs version for metadata
+          EMACS_FULL_VERSION=$("$APP_DIR/Emacs.app/Contents/MacOS/Emacs" --version | head -1 | sed 's/GNU Emacs //')
+
+          # Update Info.plist with proper metadata
+          CLIENT_PLIST="$APP_DIR/Emacs Client.app/Contents/Info.plist"
+
+          # Helper function to set or add plist values
+          plist_set() {
+            /usr/libexec/PlistBuddy -c "Add :$1 $2 $3" "$CLIENT_PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Set :$1 $3" "$CLIENT_PLIST"
+          }
+
+          plist_set "CFBundleIdentifier" "string" "org.gnu.EmacsClient"
+          plist_set "CFBundleName" "string" "Emacs Client"
+          plist_set "CFBundleDisplayName" "string" "Emacs Client"
+          plist_set "CFBundleGetInfoString" "string" "Emacs Client $EMACS_FULL_VERSION"
+          plist_set "CFBundleVersion" "string" "$EMACS_FULL_VERSION"
+          plist_set "CFBundleShortVersionString" "string" "$EMACS_FULL_VERSION"
+          plist_set "LSApplicationCategoryType" "string" "public.app-category.productivity"
+          plist_set "NSHumanReadableCopyright" "string" "Copyright © 1989-$(date +%Y) Free Software Foundation, Inc."
+
+          # Add document types for file associations
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleDocumentTypes" "$CLIENT_PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0 dict" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:CFBundleTypeRole string Editor" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:CFBundleTypeName string 'Text Document'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:0 string public.text" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:1 string public.plain-text" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:2 string public.source-code" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:3 string public.script" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:4 string public.shell-script" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:5 string public.data" "$CLIENT_PLIST"
+
+          # Register org-protocol URL scheme
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string 'Org Protocol'" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$CLIENT_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string org-protocol" "$CLIENT_PLIST"
+
+          # Copy icon from Emacs.app
+          CLIENT_RESOURCES="$APP_DIR/Emacs Client.app/Contents/Resources"
+          cp "$APP_DIR/Emacs.app/Contents/Resources/Emacs.icns" "$CLIENT_RESOURCES/applet.icns"
+
+          # Remove default droplet resources from osacompile
+          rm -f "$CLIENT_RESOURCES/droplet.icns"
+          rm -f "$CLIENT_RESOURCES/droplet.rsrc"
+          rm -f "$CLIENT_RESOURCES/Assets.car"
+
+          # Set icon file reference
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIconFile" "$CLIENT_PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIconFile string applet" "$CLIENT_PLIST"
+
+          echo "Created Emacs Client.app"
+          ls -la "$APP_DIR/Emacs Client.app/Contents/"
+
+      - name: Package
+        run: |
+          cd emacs-src/nextstep
+          # Create version file
+          echo "Emacs+ $EMACS_VERSION" > Emacs.app/Contents/Resources/emacs-plus-version.txt
+          echo "Build: $BUILD_DATE" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
+          echo "Revision: $EMACS_REV" >> Emacs.app/Contents/Resources/emacs-plus-version.txt
+
+          # Package both apps (use full Emacs version and major OS version)
+          OS_MAJOR=$(echo "$OS_VER" | cut -d. -f1)
+          ZIPNAME="emacs-plus-${EMACS_FULL_VERSION}-${MAC_ARCH}-${OS_MAJOR}.zip"
+          zip -r -y "$ZIPNAME" Emacs.app "Emacs Client.app"
+          shasum -a 256 "$ZIPNAME" > "$ZIPNAME.sha256"
+          # Save metadata for release job
+          echo "${EMACS_FULL_VERSION}" > emacs-version.txt
+          mv "$ZIPNAME" "$ZIPNAME.sha256" emacs-version.txt "$GITHUB_WORKSPACE/"
+          echo "ZIPNAME=$ZIPNAME" >> $GITHUB_ENV
+          echo "OS_MAJOR=$OS_MAJOR" >> $GITHUB_ENV
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
+          path: |
+            emacs-plus-*.zip
+            emacs-plus-*.sha256
+            emacs-version.txt
+
+  release-30:
+    needs: build-30
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Download artifacts for Emacs ${{ matrix.emacs_version }}
+      - name: Download artifacts for Emacs 30
         uses: actions/download-artifact@v7
         with:
           path: artifacts
-          pattern: emacs-plus-${{ matrix.emacs_version }}.*
+          pattern: emacs-plus-30.*
 
       - name: Display structure
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
-      - name: Create Release for Emacs ${{ matrix.emacs_version }}
+      - name: Create Release for Emacs 30
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: cask-${{ matrix.emacs_version }}-${{ github.run_number }}
-          name: Emacs+ ${{ matrix.emacs_version }} Cask Build ${{ github.run_number }}
+          tag_name: cask-30-${{ github.run_number }}
+          name: Emacs+ 30 Cask Build ${{ github.run_number }}
           draft: false
-          prerelease: ${{ matrix.emacs_version == '31' }}
+          prerelease: false
           files: |
             artifacts/*/*.zip
             artifacts/*/*.sha256
           body: |
-            Pre-built Emacs+ ${{ matrix.emacs_version }} for cask installation.
+            Pre-built Emacs+ 30 for cask installation.
 
             **Build info:**
-            - Emacs version: ${{ matrix.emacs_version }}
+            - Emacs version: 30
             - Workflow run: ${{ github.run_number }}
             - Commit: ${{ github.sha }}
 
             **Installation:**
             ```
             brew tap d12frosted/emacs-plus
-            brew install --cask emacs-plus@${{ matrix.emacs_version }}
+            brew install --cask emacs-plus@30
             ```
 
       - name: Update cask file
         run: |
           BUILD_NUM=${{ github.run_number }}
-          EMACS_MAJOR=${{ matrix.emacs_version }}
+          EMACS_MAJOR=30
 
           # Get Emacs full version from artifact
           EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
@@ -464,7 +808,112 @@ jobs:
 
       - name: Commit and push cask update
         run: |
-          EMACS_MAJOR=${{ matrix.emacs_version }}
+          EMACS_MAJOR=30
+          CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$CASK_FILE"
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(emacs-plus@${EMACS_MAJOR}): update cask to build ${{ github.run_number }}"
+            # Retry push with exponential backoff (handles race with other release jobs)
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin master && git push && break
+              echo "Push failed, retrying in $((i * 2)) seconds..."
+              sleep $((i * 2))
+            done
+          fi
+
+  release-31:
+    needs: build-31
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download artifacts for Emacs 31
+        uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+          pattern: emacs-plus-31.*
+
+      - name: Display structure
+        run: |
+          ls -laR artifacts/
+          cat artifacts/*/*.sha256 || echo "No sha256 files found"
+
+      - name: Create Release for Emacs 31
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cask-31-${{ github.run_number }}
+          name: Emacs+ 31 Cask Build ${{ github.run_number }}
+          draft: false
+          prerelease: true
+          files: |
+            artifacts/*/*.zip
+            artifacts/*/*.sha256
+          body: |
+            Pre-built Emacs+ 31 for cask installation.
+
+            **Build info:**
+            - Emacs version: 31
+            - Workflow run: ${{ github.run_number }}
+            - Commit: ${{ github.sha }}
+
+            **Installation:**
+            ```
+            brew tap d12frosted/emacs-plus
+            brew install --cask emacs-plus@31
+            ```
+
+      - name: Update cask file
+        run: |
+          BUILD_NUM=${{ github.run_number }}
+          EMACS_MAJOR=31
+
+          # Get Emacs full version from artifact
+          EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
+          echo "Emacs version: $EMACS_VER"
+
+          CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
+          echo "Updating $CASK_FILE"
+
+          # Extract SHA256 for each build
+          for sha_file in artifacts/*/*.sha256; do
+            filename=$(basename "$sha_file" .sha256)
+            sha=$(awk '{print $1}' "$sha_file")
+            echo "Found: $filename -> $sha"
+
+            # Determine arch and OS from filename (emacs-plus-31.1-arm64-26.zip)
+            if [[ "$filename" =~ arm64-([0-9]+) ]]; then
+              os_ver="${BASH_REMATCH[1]}"
+              placeholder="PLACEHOLDER_ARM64_${os_ver}"
+            elif [[ "$filename" =~ x86_64-([0-9]+) ]]; then
+              os_ver="${BASH_REMATCH[1]}"
+              placeholder="PLACEHOLDER_X86_64_${os_ver}"
+            else
+              echo "Unknown filename pattern: $filename"
+              continue
+            fi
+
+            echo "Replacing $placeholder with $sha in $CASK_FILE"
+            sed -i "s/$placeholder/$sha/" "$CASK_FILE"
+          done
+
+          # Update version
+          echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
+          sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+
+          # Show the changes
+          git diff "$CASK_FILE"
+
+      - name: Commit and push cask update
+        run: |
+          EMACS_MAJOR=31
           CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
