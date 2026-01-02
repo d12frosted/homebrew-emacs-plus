@@ -332,11 +332,20 @@ class EmacsPlusAT30 < EmacsBase
       system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
     end
 
+    # Re-apply icon from build.yml (allows quick testing via `brew postinstall`)
+    apply_icon_post_install
+
     # Re-sign the app for macOS Sequoia compatibility (issue #742)
     app_path = prefix/"Emacs.app"
     if app_path.exist?
       ohai "Re-signing Emacs.app for macOS compatibility..."
       system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
+    end
+
+    # Also re-sign Emacs Client.app
+    client_path = prefix/"Emacs Client.app"
+    if client_path.exist?
+      system "codesign", "--force", "--deep", "--sign", "-", client_path.to_s
     end
   end
 
