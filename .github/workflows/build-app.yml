@@ -794,21 +794,19 @@ jobs:
               echo "Updating SHA for $url_pattern to $sha"
 
               # Find sha256 line before matching URL and update it
-              python3 << PYEOF
-import re
-
-with open("$CASK_FILE", 'r') as f:
+              python3 -c '
+import re, sys
+cask_file, sha, pattern = sys.argv[1:4]
+with open(cask_file, "r") as f:
     lines = f.readlines()
-
 for i, line in enumerate(lines):
-    if "$url_pattern" in line and i > 0 and 'sha256' in lines[i-1]:
-        lines[i-1] = re.sub(r'"[a-f0-9]{64}"', '"$sha"', lines[i-1])
-        print(f"  Updated SHA on line {i} for $url_pattern")
+    if pattern in line and i > 0 and "sha256" in lines[i-1]:
+        lines[i-1] = re.sub(r"\"[a-f0-9]{64}\"", "\"" + sha + "\"", lines[i-1])
+        print(f"  Updated SHA on line {i} for {pattern}")
         break
-
-with open("$CASK_FILE", 'w') as f:
+with open(cask_file, "w") as f:
     f.writelines(lines)
-PYEOF
+' "$CASK_FILE" "$sha" "$url_pattern"
             else
               echo "Unknown filename pattern: $filename"
             fi
@@ -912,21 +910,19 @@ PYEOF
               echo "Updating SHA for $url_pattern to $sha"
 
               # Find sha256 line before matching URL and update it
-              python3 << PYEOF
-import re
-
-with open("$CASK_FILE", 'r') as f:
+              python3 -c '
+import re, sys
+cask_file, sha, pattern = sys.argv[1:4]
+with open(cask_file, "r") as f:
     lines = f.readlines()
-
 for i, line in enumerate(lines):
-    if "$url_pattern" in line and i > 0 and 'sha256' in lines[i-1]:
-        lines[i-1] = re.sub(r'"[a-f0-9]{64}"', '"$sha"', lines[i-1])
-        print(f"  Updated SHA on line {i} for $url_pattern")
+    if pattern in line and i > 0 and "sha256" in lines[i-1]:
+        lines[i-1] = re.sub(r"\"[a-f0-9]{64}\"", "\"" + sha + "\"", lines[i-1])
+        print(f"  Updated SHA on line {i} for {pattern}")
         break
-
-with open("$CASK_FILE", 'w') as f:
+with open(cask_file, "w") as f:
     f.writelines(lines)
-PYEOF
+' "$CASK_FILE" "$sha" "$url_pattern"
             else
               echo "Unknown filename pattern: $filename"
             fi
