@@ -45,6 +45,9 @@
     "dragon": {
       "directory": "icons/dragon"
     },
+    "dragon-plus": {
+      "directory": "icons/dragon-plus"
+    },
     "elrumo1": {
       "directory": "icons/elrumo1"
     },

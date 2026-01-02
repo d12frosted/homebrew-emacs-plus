@@ -5,6 +5,12 @@ This file documents notable changes to Emacs Plus.
 
 * 2025-01-02
 
+** New Icons
+
+*** dragon-plus
+
+New Tahoe-compatible version of the dragon icon with liquid glass effects. Designed for macOS 26+ using Icon Composer with proper layering, gradients, and translucency.
+
 ** New Features
 
 *** Detect Emacs Plus in init.el

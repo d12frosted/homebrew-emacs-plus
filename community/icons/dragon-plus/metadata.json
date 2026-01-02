@@ -1,0 +1,10 @@
+{
+  "name": "dragon-plus",
+  "description": "Dragon Emacs icon with Tahoe liquid glass effects",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "homepage": "https://github.com/d12frosted/homebrew-emacs-plus",
+  "tahoe_icon_name": "dragon",
+  "tahoe_sha256": "9bf396e67da78364510ac78b6876c42e20b96848af6e1c0b9fc4746f62bf9cee"
+}

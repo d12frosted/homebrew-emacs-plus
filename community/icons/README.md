@@ -15,13 +15,14 @@ For example:
 icon: modern-doom
 ```
 
-## macOS 26+ (Tahoe) Compliant Icons (1)
+## macOS 26+ (Tahoe) Compliant Icons (2)
 
 These icons include `Assets.car` for native macOS Tahoe support. They display
 properly without the "icon jail" effect and may react to system appearance changes.
 
 | Preview | Name | Author | Source |
 |:-------:|------|--------|--------|
+| ![dragon-plus](dragon-plus/preview.png) | `dragon-plus` | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
 | ![liquid-glass](liquid-glass/preview.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
 
 ## All Icons (75)
