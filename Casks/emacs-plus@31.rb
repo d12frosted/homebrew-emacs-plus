@@ -46,7 +46,7 @@ cask "emacs-plus@31" do
   app "Emacs.app"
   app "Emacs Client.app"
 
-  # Remove quarantine attribute (app is not code signed)
+  # Remove quarantine attribute and apply custom icon
   postflight do
     system_command "/usr/bin/xattr",
                    args: ["-cr", "#{appdir}/Emacs.app"],
@@ -54,6 +54,19 @@ cask "emacs-plus@31" do
     system_command "/usr/bin/xattr",
                    args: ["-cr", "#{appdir}/Emacs Client.app"],
                    sudo: false
+
+    # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
+    tap = Tap.fetch("d12frosted", "emacs-plus")
+    load "#{tap.path}/Library/IconApplier.rb"
+    if IconApplier.apply("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app")
+      # Re-sign after icon change
+      system_command "/usr/bin/codesign",
+                     args: ["--force", "--deep", "--sign", "-", "#{appdir}/Emacs.app"],
+                     sudo: false
+      system_command "/usr/bin/codesign",
+                     args: ["--force", "--deep", "--sign", "-", "#{appdir}/Emacs Client.app"],
+                     sudo: false
+    end
   end
 
   # Symlink binaries
@@ -83,6 +96,12 @@ cask "emacs-plus@31" do
     This is a pre-built binary from the Emacs master branch.
     For custom patches or build options, use the formula instead:
       brew install emacs-plus@31 --with-...
+
+    Custom icons can be configured via ~/.config/emacs-plus/build.yml:
+      icon: dragon-plus
+
+    To re-apply an icon after changing build.yml:
+      brew reinstall --cask emacs-plus@31
 
     Note: Emacs Client.app requires Emacs to be running as a daemon.
     Add to your Emacs config: (server-start)
