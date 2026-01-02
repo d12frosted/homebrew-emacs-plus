@@ -53,7 +53,7 @@ class EmacsPlusAT30 < EmacsBase
   depends_on "gnutls"
   depends_on "librsvg"
   depends_on "little-cms2"
-  depends_on "tree-sitter"
+  depends_on "tree-sitter@0.25"
   depends_on "webp"
   depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
@@ -107,7 +107,6 @@ class EmacsPlusAT30 < EmacsBase
   local_patch "system-appearance", sha: "9eb3ce80640025bff96ebaeb5893430116368d6349f4eb0cb4ef8b3d58477db6"
   local_patch "round-undecorated-frame", sha: "7451f80f559840e54e6a052e55d1100778abc55f98f1d0c038a24e25773f2874"
   local_patch "mac-font-use-typo-metrics", sha: "318395d3869d3479da4593360bcb11a5df08b494b995287074d0d744ec562c17"
-  local_patch "treesit-compatibility", sha: "cc91dc43ad380fb0f7a4217e84d7db7fca75c56e78f74cb3accb75954b322506"
 
   #
   # Install

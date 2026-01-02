@@ -54,7 +54,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            imagemagick libgccjit tree-sitter pkg-config
+            imagemagick libgccjit tree-sitter@0.25 pkg-config
 
       - name: Clone Emacs source
         run: |
@@ -74,7 +74,6 @@ jobs:
             "system-appearance"
             "round-undecorated-frame"
             "mac-font-use-typo-metrics"
-            "treesit-compatibility"
           )
           for patch_name in "${PATCHES[@]}"; do
             patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
@@ -405,7 +404,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            imagemagick libgccjit tree-sitter pkg-config
+            imagemagick libgccjit tree-sitter@0.25 pkg-config
 
       - name: Clone Emacs source
         run: |
@@ -426,7 +425,6 @@ jobs:
             "system-appearance"
             "round-undecorated-frame"
             "mac-font-use-typo-metrics"
-            "treesit-compatibility"
           )
           for patch_name in "${PATCHES[@]}"; do
             patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
