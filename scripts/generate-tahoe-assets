@@ -1,0 +1,226 @@
+#!/usr/bin/env bash
+
+set -e
+
+#
+# Generate Assets.car for a single icon (macOS 26 Tahoe support)
+#
+# Usage:
+#   ./scripts/generate-tahoe-assets <png-file> [output-dir]
+#   ./scripts/generate-tahoe-assets community/icons/modern-doom
+#
+# Examples:
+#   # From a PNG file (outputs to current directory)
+#   ./scripts/generate-tahoe-assets icons/original/modern-doom.png
+#
+#   # From a PNG file with custom output directory
+#   ./scripts/generate-tahoe-assets icons/original/modern-doom.png community/icons/modern-doom/
+#
+#   # From a community icon directory (auto-detects PNG, outputs in-place)
+#   ./scripts/generate-tahoe-assets community/icons/modern-doom
+#
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+error() { echo -e "${RED}ERROR:${NC} $1" >&2; exit 1; }
+warn() { echo -e "${YELLOW}WARNING:${NC} $1" >&2; }
+success() { echo -e "${GREEN}✓${NC} $1"; }
+
+# Check dependencies
+check_actool() {
+  local actool_paths=(
+    "/Applications/Xcode.app/Contents/Developer/usr/bin/actool"
+    "$(xcrun --find actool 2>/dev/null || true)"
+  )
+
+  for path in "${actool_paths[@]}"; do
+    if [ -n "$path" ] && [ -x "$path" ]; then
+      ACTOOL="$path"
+      return 0
+    fi
+  done
+
+  error "actool not found. Please install Xcode or Xcode Command Line Tools.
+       If Xcode is installed, try running:
+         sudo xcode-select -s /Applications/Xcode.app
+         xcodebuild -runFirstLaunch"
+}
+
+# Generate icon.json for .icon bundle
+generate_icon_json() {
+  local name="$1"
+  cat <<EOF
+{
+  "fill" : "automatic",
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "hidden" : false,
+          "image-name" : "${name}.png",
+          "name" : "${name}",
+          "position" : {
+            "scale" : 1.0,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.3
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.0
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
+EOF
+}
+
+# Process a single icon
+process_icon() {
+  local png_file="$1"
+  local output_dir="$2"
+  local icon_name="$3"
+
+  # Validate PNG exists
+  [ -f "$png_file" ] || error "PNG file not found: $png_file"
+
+  # Use filename as icon name if not provided
+  if [ -z "$icon_name" ]; then
+    icon_name="$(basename "${png_file%.png}")"
+  fi
+
+  echo "==> Processing: $icon_name"
+  echo "    Source: $png_file"
+  echo "    Output: $output_dir"
+  echo ""
+
+  # Create temporary .icon bundle
+  local temp_dir
+  temp_dir="$(mktemp -d)"
+  local icon_bundle="$temp_dir/${icon_name}.icon"
+  local compile_output="$temp_dir/output"
+
+  mkdir -p "$icon_bundle/Assets"
+  mkdir -p "$compile_output"
+
+  # Copy PNG to Assets folder
+  cp "$png_file" "$icon_bundle/Assets/${icon_name}.png"
+
+  # Generate icon.json
+  echo "    Generating .icon bundle..."
+  generate_icon_json "$icon_name" > "$icon_bundle/icon.json"
+
+  # Compile with actool
+  echo "    Compiling with actool..."
+  if ! $ACTOOL "$icon_bundle" \
+    --compile "$compile_output" \
+    --platform macosx \
+    --minimum-deployment-target 11.0 \
+    --app-icon "$icon_name" \
+    --output-partial-info-plist "$compile_output/partial-info.plist" \
+    --enable-icon-stack-fallback-generation=disabled \
+    2>&1 | grep -v "^$"; then
+    rm -rf "$temp_dir"
+    error "actool compilation failed"
+  fi
+
+  # Check if Assets.car was generated
+  if [ ! -f "$compile_output/Assets.car" ]; then
+    rm -rf "$temp_dir"
+    error "Assets.car was not generated. Check actool output above."
+  fi
+
+  # Copy to output directory
+  mkdir -p "$output_dir"
+  cp "$compile_output/Assets.car" "$output_dir/Assets.car"
+
+  # Cleanup
+  rm -rf "$temp_dir"
+
+  echo ""
+  success "Created $output_dir/Assets.car"
+
+  # Show file size
+  local size
+  size="$(du -h "$output_dir/Assets.car" | cut -f1)"
+  echo "    Size: $size"
+
+  # Reminder about metadata.json
+  if [ -f "$output_dir/metadata.json" ]; then
+    if ! grep -q "tahoe_sha256" "$output_dir/metadata.json"; then
+      echo ""
+      warn "Don't forget to add tahoe_sha256 to metadata.json:"
+      echo "    $(shasum -a 256 "$output_dir/Assets.car" | cut -d' ' -f1)"
+    fi
+  fi
+}
+
+# Main
+main() {
+  [ $# -ge 1 ] || {
+    echo "Usage: $0 <png-file|community-icon-dir> [output-dir]"
+    echo ""
+    echo "Examples:"
+    echo "  $0 icons/original/modern-doom.png"
+    echo "  $0 icons/original/modern-doom.png community/icons/modern-doom/"
+    echo "  $0 community/icons/modern-doom"
+    exit 1
+  }
+
+  check_actool
+  echo "==> Using actool: $ACTOOL"
+  echo ""
+
+  local input="$1"
+  local output_dir="$2"
+
+  # Handle community icon directory
+  if [ -d "$input" ]; then
+    # Look for PNG in the directory
+    local png_file
+    png_file="$(find "$input" -maxdepth 1 -name "*.png" -not -name "preview.png" | head -1)"
+
+    if [ -z "$png_file" ]; then
+      # Try to find icon.icns and extract PNG (would need sips)
+      error "No PNG found in $input. Please provide a source PNG file."
+    fi
+
+    # Output in-place if not specified
+    [ -z "$output_dir" ] && output_dir="$input"
+
+    # Extract icon name from directory
+    local icon_name
+    icon_name="$(basename "$input")"
+
+    process_icon "$png_file" "$output_dir" "$icon_name"
+  else
+    # Handle PNG file
+    [ -z "$output_dir" ] && output_dir="."
+    process_icon "$input" "$output_dir" ""
+  fi
+
+  echo ""
+  echo "==> Done!"
+}
+
+main "$@"
