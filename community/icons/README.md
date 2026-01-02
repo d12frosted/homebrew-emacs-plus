@@ -15,7 +15,19 @@ For example:
 icon: modern-doom
 ```
 
-## Available Icons (76)
+## macOS 26+ (Tahoe) Compliant Icons (1)
+
+These icons include `Assets.car` for native macOS Tahoe support. They display
+properly without the "icon jail" effect and may react to system appearance changes.
+
+| Preview | Name | Author | Source |
+|:-------:|------|--------|--------|
+| ![liquid-glass](liquid-glass/preview.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
+
+## All Icons (75)
+
+Standard icons using `.icns` format. On macOS 26+, these may appear in "icon jail"
+(displayed smaller within a rounded square container).
 
 | Preview | Name | Author | Source |
 |:-------:|------|--------|--------|
@@ -52,7 +64,6 @@ icon: modern-doom
 | ![infinity-yak-satori](infinity-yak-satori/preview.png) | `infinity-yak-satori` | [emacsfodder](https://github.com/emacsfodder) | [Source](https://github.com/emacsfodder/Infinite-Yak-Icons) |
 | ![infinity-yak-shack](infinity-yak-shack/preview.png) | `infinity-yak-shack` | [emacsfodder](https://github.com/emacsfodder) | [Source](https://github.com/emacsfodder/Infinite-Yak-Icons) |
 | ![infinity-yak-topia](infinity-yak-topia/preview.png) | `infinity-yak-topia` | [emacsfodder](https://github.com/emacsfodder) | [Source](https://github.com/emacsfodder/Infinite-Yak-Icons) |
-| ![liquid-glass](liquid-glass/preview.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
 | ![memeplex-slim](memeplex-slim/preview.png) | `memeplex-slim` | [memeplex](https://github.com/memeplex) | [Source](https://github.com/d12frosted/homebrew-emacs-plus/issues/419#issuecomment-966735773) |
 | ![memeplex-wide](memeplex-wide/preview.png) | `memeplex-wide` | [memeplex](https://github.com/memeplex) | [Source](https://github.com/d12frosted/homebrew-emacs-plus/issues/419#issuecomment-966735773) |
 | ![modern](modern/preview.png) | `modern` | Unknown |  |
