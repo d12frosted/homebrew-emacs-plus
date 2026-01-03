@@ -19,7 +19,8 @@ on:
 
 jobs:
   build-30:
-    if: github.event_name == 'schedule' || inputs.version == '30'
+    # Emacs 30 is a stable release - only build on manual trigger, not nightly
+    if: github.event_name == 'workflow_dispatch' && inputs.version == '30'
     strategy:
       fail-fast: false
       matrix:
