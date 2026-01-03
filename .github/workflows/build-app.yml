@@ -1,7 +1,7 @@
 name: Build Emacs.app
 
 on:
-  # Manual trigger for testing
+  # Manual trigger
   workflow_dispatch:
     inputs:
       version:
@@ -13,14 +13,22 @@ on:
           - '30'
           - '31'
 
-  # Nightly builds at 3 AM UTC
+  # Nightly builds at 3 AM UTC (for Emacs 31 development version)
   schedule:
     - cron: '0 3 * * *'
 
+  # Rebuild Emacs 30 when formula, patches, or build logic changes
+  push:
+    branches: [master]
+    paths:
+      - 'Formula/emacs-plus@30.rb'
+      - 'patches/emacs-30/**'
+      - 'Library/**'
+
 jobs:
   build-30:
-    # Emacs 30 is a stable release - only build on manual trigger, not nightly
-    if: github.event_name == 'workflow_dispatch' && inputs.version == '30'
+    # Emacs 30 (stable): build on formula/patch changes or manual trigger
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.version == '30')
     strategy:
       fail-fast: false
       matrix:
@@ -372,7 +380,8 @@ jobs:
             emacs-version.txt
 
   build-31:
-    if: github.event_name == 'schedule' || inputs.version == '31'
+    # Emacs 31 (development): build nightly or on manual trigger
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.version == '31')
     strategy:
       fail-fast: false
       matrix:
