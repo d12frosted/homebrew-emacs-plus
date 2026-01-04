@@ -34,7 +34,10 @@ cask "emacs-plus@31" do
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
   # Required for native compilation (JIT) at runtime
+  # - libgccjit: JIT compilation library
+  # - gcc: provides toolchain and libemutls_w.a runtime library
   depends_on formula: "libgccjit"
+  depends_on formula: "gcc"
 
   # Conflict with other Emacs cask installations
   conflicts_with cask: [
