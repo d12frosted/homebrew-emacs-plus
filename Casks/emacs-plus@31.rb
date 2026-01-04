@@ -46,7 +46,7 @@ cask "emacs-plus@31" do
   app "Emacs.app"
   app "Emacs Client.app"
 
-  # Remove quarantine attribute and apply custom icon
+  # Remove quarantine attribute, inject PATH, and apply custom icon
   postflight do
     system_command "/usr/bin/xattr",
                    args: ["-cr", "#{appdir}/Emacs.app"],
@@ -55,11 +55,17 @@ cask "emacs-plus@31" do
                    args: ["-cr", "#{appdir}/Emacs Client.app"],
                    sudo: false
 
-    # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
+    # PATH injection for native compilation (libgccjit needs gcc in PATH)
     tap = Tap.fetch("d12frosted", "emacs-plus")
+    load "#{tap.path}/Library/PathInjector.rb"
+    needs_resign = PathInjector.inject("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app")
+
+    # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
     load "#{tap.path}/Library/IconApplier.rb"
-    if IconApplier.apply("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app")
-      # Re-sign after icon change
+    needs_resign = IconApplier.apply("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app") || needs_resign
+
+    if needs_resign
+      # Re-sign after modifications
       system_command "/usr/bin/codesign",
                      args: ["--force", "--deep", "--sign", "-", "#{appdir}/Emacs.app"],
                      sudo: false
