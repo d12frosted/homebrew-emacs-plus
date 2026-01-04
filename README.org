@@ -159,6 +159,8 @@ Emacs+ can be configured using =~/.config/emacs-plus/build.yml=. This file contr
 #+begin_src yaml
 # Example build.yml
 icon: dragon-plus
+patches:
+  - fix-window-role
 native_comp_env: true
 #+end_src
 
@@ -167,6 +169,8 @@ native_comp_env: true
 | Option            | Default | Description                                                                 |
 |-------------------+---------+-----------------------------------------------------------------------------|
 | =icon=            | /none/  | Custom icon to apply. See [[./community/icons/README.md][→ Icons Gallery]] for available icons.           |
+| =patches=         | /none/  | (Formula only) List of community patches to apply. See [[#community-features][→ Community Features]]. |
+| =revision=        | /none/  | (Formula only) Pin Emacs source to a specific git revision.                 |
 | =native_comp_env= | =true=  | (Cask only) Inject environment variables for native compilation.           |
 
 *** Native Compilation Environment (Cask)
