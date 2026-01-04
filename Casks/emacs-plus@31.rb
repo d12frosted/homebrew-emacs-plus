@@ -33,6 +33,9 @@ cask "emacs-plus@31" do
   desc "GNU Emacs text editor with patches for macOS (development version)"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
+  # Required for native compilation (JIT) at runtime
+  depends_on formula: "libgccjit"
+
   # Conflict with other Emacs cask installations
   conflicts_with cask: [
     "emacs",
