@@ -152,6 +152,35 @@ In short, =brew= doesn't really support options. They break time to time ([[http
   $ brew install emacs-plus [options]
 #+END_SRC
 
+** Build Configuration
+
+Emacs+ can be configured using =~/.config/emacs-plus/build.yml=. This file controls options that are applied during installation (formula) or post-installation (cask).
+
+#+begin_src yaml
+# Example build.yml
+icon: dragon-plus
+native_comp_env: true
+#+end_src
+
+*** Available Options
+
+| Option            | Default | Description                                                                 |
+|-------------------+---------+-----------------------------------------------------------------------------|
+| =icon=            | /none/  | Custom icon to apply. See [[./community/icons/README.md][→ Icons Gallery]] for available icons.           |
+| =native_comp_env= | =true=  | (Cask only) Inject environment variables for native compilation.           |
+
+*** Native Compilation Environment (Cask)
+
+When installing via cask, Emacs+ automatically injects environment variables (=PATH=, =CC=, =LIBRARY_PATH=) into =Emacs.app= so that native compilation works when launching from Finder/Dock. This ensures =libgccjit= can find =gcc= and its libraries without requiring shell configuration.
+
+To disable this (e.g., if you manage your environment differently):
+
+#+begin_src yaml
+native_comp_env: false
+#+end_src
+
+For more customization options, see [[#community-features][→ Community Features]] for patches and [[#icons][→ Icons]] for icon customization.
+
 ** Emacs 31
 
 *** Included
