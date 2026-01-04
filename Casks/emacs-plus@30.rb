@@ -73,10 +73,24 @@ cask "emacs-plus@30" do
                      args: ["--force", "--deep", "--sign", "-", "#{appdir}/Emacs Client.app"],
                      sudo: false
     end
+
+    # Create emacs symlink manually (can't use binary stanza since wrapper is created above)
+    emacs_wrapper = "#{appdir}/Emacs.app/Contents/MacOS/bin/emacs"
+    emacs_symlink = "#{HOMEBREW_PREFIX}/bin/emacs"
+    if File.exist?(emacs_wrapper) && !File.exist?(emacs_symlink)
+      FileUtils.ln_sf(emacs_wrapper, emacs_symlink)
+    end
   end
 
-  # Symlink binaries (emacs uses wrapper script created by PathInjector for proper path resolution)
-  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacs"
+  # Clean up emacs symlink on uninstall (since we create it manually in postflight)
+  uninstall_postflight do
+    emacs_symlink = "#{HOMEBREW_PREFIX}/bin/emacs"
+    FileUtils.rm_f(emacs_symlink) if File.symlink?(emacs_symlink)
+  end
+
+  # Symlink binaries (emacs symlink created in postflight after wrapper is generated)
+  # Note: emacs is symlinked manually in postflight because the wrapper script
+  # is created there and binary stanzas run before postflight
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
