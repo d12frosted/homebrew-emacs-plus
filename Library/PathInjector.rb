@@ -128,7 +128,32 @@ module PathInjector
       # Touch the app to update LaunchServices cache
       system("touch", app_path)
 
+      # Create CLI wrapper script for terminal usage
+      create_cli_wrapper(app_path)
+
       true
+    end
+
+    # Create a wrapper script at Emacs.app/Contents/MacOS/bin/emacs
+    # This fixes the issue where running via symlink breaks Emacs's bundle path resolution
+    def create_cli_wrapper(app_path)
+      bin_dir = "#{app_path}/Contents/MacOS/bin"
+      wrapper_path = "#{bin_dir}/emacs"
+
+      # Skip if wrapper already exists
+      return if File.exist?(wrapper_path) && File.read(wrapper_path).include?("emacs-plus wrapper")
+
+      puts "Creating CLI wrapper script at #{wrapper_path}"
+
+      # The wrapper uses the absolute path to the real binary
+      File.write(wrapper_path, <<~SCRIPT)
+        #!/bin/bash
+        # emacs-plus wrapper script for CLI usage
+        # This ensures Emacs can find its bundle resources when invoked via symlink
+        exec "#{app_path}/Contents/MacOS/Emacs" "$@"
+      SCRIPT
+
+      File.chmod(0755, wrapper_path)
     end
 
     # Inject PATH into Emacs Client.app by recompiling the AppleScript

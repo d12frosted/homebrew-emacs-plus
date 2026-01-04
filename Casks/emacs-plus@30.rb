@@ -75,8 +75,8 @@ cask "emacs-plus@30" do
     end
   end
 
-  # Symlink binaries
-  binary "#{appdir}/Emacs.app/Contents/MacOS/Emacs", target: "emacs"
+  # Symlink binaries (emacs uses wrapper script created by PathInjector for proper path resolution)
+  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacs"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
