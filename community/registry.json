@@ -6,6 +6,9 @@
     },
     "aggressive-read-buffering": {
       "directory": "patches/aggressive-read-buffering"
+    },
+    "mac-font-use-typo-metrics": {
+      "directory": "patches/mac-font-use-typo-metrics"
     }
   },
   "icons": {
