@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
-# PathInjector - Inject environment variables into Emacs.app for cask installations
+# CaskEnv - Environment setup for Emacs+ cask installations
 #
-# This module sets LSEnvironment in Info.plist to ensure Homebrew's tools are
-# available when Emacs is launched from Finder/Dock. This is necessary for
-# native compilation (libgccjit) to find gcc and its libraries.
+# This module configures the Emacs.app bundle for proper operation when
+# installed via cask. It handles:
 #
-# Environment variables set:
-#   PATH         - Homebrew bin directories
-#   CC           - Path to gcc (e.g., gcc-15)
-#   LIBRARY_PATH - Paths to gcc libraries including libemutls_w
+# 1. LSEnvironment in Info.plist - Sets PATH, CC, LIBRARY_PATH so native
+#    compilation works when launching from Finder/Dock
+#
+# 2. CLI wrapper script - Creates bin/emacs wrapper so running via symlink
+#    from terminal can find bundle resources
+#
+# 3. Emacs Client.app - Recompiles AppleScript with proper PATH
 #
 # Configuration via ~/.config/emacs-plus/build.yml:
 #   native_comp_env: true   # Enable (default)
@@ -17,7 +19,7 @@
 
 require_relative 'BuildConfig'
 
-module PathInjector
+module CaskEnv
   class << self
     # Inject environment into Emacs.app and Emacs Client.app
     # Returns true if any modifications were made

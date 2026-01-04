@@ -55,10 +55,10 @@ cask "emacs-plus@31" do
                    args: ["-cr", "#{appdir}/Emacs Client.app"],
                    sudo: false
 
-    # PATH injection for native compilation (libgccjit needs gcc in PATH)
+    # Environment setup for native compilation and CLI usage
     tap = Tap.fetch("d12frosted", "emacs-plus")
-    load "#{tap.path}/Library/PathInjector.rb"
-    needs_resign = PathInjector.inject("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app")
+    load "#{tap.path}/Library/CaskEnv.rb"
+    needs_resign = CaskEnv.inject("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app")
 
     # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
     load "#{tap.path}/Library/IconApplier.rb"
