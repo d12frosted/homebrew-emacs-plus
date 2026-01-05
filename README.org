@@ -18,10 +18,6 @@
 
 ** About
 
-#+begin_html
-<img align="right" width="40%" src="images/screenshot-01.png" alt="Screenshot">
-#+end_html
-
 Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide range of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs+ intent is to give the most of 'plus' stuff by default, leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
 
 #+begin_src bash
@@ -35,6 +31,12 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
   $ brew install emacs-plus        [options]    # latest stable
   $ brew install emacs-plus@master [options]    # from master
 #+end_src
+
+#+begin_html
+<p align="center">
+  <img width="60%" src="images/screenshot-01.png" alt="Screenshot">
+</p>
+#+end_html
 
 Feel free to open an issue or contact me via email if you face any issues, questions or feature requests. I love pull requests, so do send them. You might want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better understanding on how to contribute.
 
