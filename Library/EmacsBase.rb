@@ -1,5 +1,4 @@
 require_relative "UrlResolver"
-require_relative "Icons"
 
 class CopyDownloadStrategy < AbstractFileDownloadStrategy
   def initialize(url, name, version, **meta)
@@ -22,17 +21,6 @@ class EmacsBase < Formula
     patch do
       url (@@urlResolver.patch_url name), :using => CopyDownloadStrategy
       sha256 sha
-    end
-  end
-
-  def self.inject_icon_options
-    ICONS_CONFIG.each do |icon, sha|
-      option "with-#{icon}-icon", "Using Emacs #{icon} icon"
-      next if build.without? "#{icon}-icon"
-      resource "#{icon}-icon" do
-        url (@@urlResolver.icon_url icon), :using => CopyDownloadStrategy
-        sha256 sha
-      end
     end
   end
 
@@ -209,83 +197,26 @@ class EmacsBase < Formula
   end
 
   def resolve_registry_icon(name)
-    # First check community registry
     info = registry.dig("icons", name)
-    if info
-      icon_dir = "#{formula_root}/community/#{info['directory']}"
-      icon_file = "#{icon_dir}/icon.icns"
-      odie "Missing icon file: #{icon_file}" unless File.exist?(icon_file)
+    odie "Unknown icon: #{name}\nCheck community/registry.json for available icons" unless info
 
-      metadata_file = "#{icon_dir}/metadata.json"
-      metadata = File.exist?(metadata_file) ? JSON.parse(File.read(metadata_file)) : {}
+    icon_dir = "#{formula_root}/community/#{info['directory']}"
+    icon_file = "#{icon_dir}/icon.icns"
+    odie "Missing icon file: #{icon_file}" unless File.exist?(icon_file)
 
-      # Check for Tahoe Assets.car (macOS 26+)
-      assets_car = "#{icon_dir}/Assets.car"
-      tahoe_path = File.exist?(assets_car) ? assets_car : nil
+    metadata_file = "#{icon_dir}/metadata.json"
+    metadata = File.exist?(metadata_file) ? JSON.parse(File.read(metadata_file)) : {}
 
-      return { name: name, path: icon_file, tahoe_path: tahoe_path, type: "community", metadata: metadata }
-    end
+    # Check for Tahoe Assets.car (macOS 26+)
+    assets_car = "#{icon_dir}/Assets.car"
+    tahoe_path = File.exist?(assets_car) ? assets_car : nil
 
-    # Fallback to legacy icons (during deprecation period)
-    if ICONS_CONFIG.key?(name)
-      legacy_icon_path = "#{formula_root}/icons/#{name}.icns"
-      if File.exist?(legacy_icon_path)
-        ohai "Using legacy icon: #{name} (will be migrated to community registry)"
-        return { name: name, path: legacy_icon_path, type: "legacy" }
-      end
-    end
-
-    odie "Unknown icon: #{name}\nCheck community/registry.json or icons/ directory for available icons"
-  end
-
-  def check_deprecated_icon_option
-    # Find if any deprecated --with-*-icon option is being used
-    used_icon = ICONS_CONFIG.keys.find { |icon| build.with? "#{icon}-icon" }
-    return unless used_icon
-
-    require 'etc'
-
-    real_home = Etc.getpwuid.dir
-    deprecation_date = "2026-03-14"
-
-    config_paths = [
-      "#{real_home}/.config/emacs-plus/build.yml",
-      "#{real_home}/.emacs-plus-build.yml"
-    ]
-    existing_config = config_paths.find { |p| File.exist?(p) }
-
-    opoo "Icon options (--with-*-icon) are deprecated and will be removed on #{deprecation_date}"
-    puts
-
-    if existing_config
-      # Config exists - show migration instructions
-      puts "Please add the following to #{existing_config}:"
-      puts
-      puts "  icon: #{used_icon}"
-      puts
-      puts "Then reinstall without the --with-#{used_icon}-icon option."
-    else
-      # No config - show creation instructions
-      # Note: Can't auto-migrate due to Homebrew's sandbox
-      puts "Please create ~/.config/emacs-plus/build.yml with:"
-      puts
-      puts "  icon: #{used_icon}"
-      puts
-      puts "Then reinstall without the --with-#{used_icon}-icon option."
-    end
-    puts
+    { name: name, path: icon_file, tahoe_path: tahoe_path, type: "community", metadata: metadata }
   end
 
   def check_icon_compatibility
-    # Check if any icon option is used with non-Cocoa builds
+    # Check if icon is configured for non-Cocoa builds
     return if (build.with? "cocoa") && (build.without? "x11")
-
-    # Check for --with-*-icon options
-    used_icon = ICONS_CONFIG.keys.find { |icon| build.with? "#{icon}-icon" }
-    if used_icon
-      odie "Icon options (--with-#{used_icon}-icon) are not compatible with --with-x11 or --without-cocoa. " \
-           "These build configurations do not produce Emacs.app."
-    end
 
     # Check for icon in build.yml config
     config = custom_config
@@ -350,11 +281,10 @@ class EmacsBase < Formula
     if config["icon"]
       case config["icon"]
       when String
-        # Validate icon exists (community or legacy)
+        # Validate icon exists in community registry
         name = config["icon"]
-        unless registry.dig("icons", name) || ICONS_CONFIG.key?(name)
-          available = ICONS_CONFIG.keys.first(5).join(", ")
-          errors << "Unknown icon '#{name}'. Available legacy icons: #{available}..."
+        unless registry.dig("icons", name)
+          errors << "Unknown icon '#{name}'. Check community/registry.json for available icons."
         end
       when Hash
         unless config["icon"]["url"] && config["icon"]["sha256"]

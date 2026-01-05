@@ -61,11 +61,6 @@ class EmacsPlusAT27 < EmacsBase
   end
 
   #
-  # Icons
-  #
-
-  inject_icon_options
-
   #
   # Patches
   #
@@ -166,14 +161,9 @@ class EmacsPlusAT27 < EmacsBase
       system "make", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
-      ICONS_CONFIG.each_key do |icon|
-        next if build.without? "#{icon}-icon"
 
-        rm "#{icons_dir}/Emacs.icns"
-        resource("#{icon}-icon").stage do
-          icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
-        end
-      end
+      # Apply custom icon from build.yml
+      apply_custom_icon(icons_dir)
 
       prefix.install "nextstep/Emacs.app"
 
