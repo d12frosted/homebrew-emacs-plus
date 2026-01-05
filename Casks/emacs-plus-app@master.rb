@@ -1,36 +1,36 @@
-cask "emacs-plus@30" do
+cask "emacs-plus-app@master" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "30.2.50-36"
+  version "31.0.50-34"
 
-  # Base URL for release assets (versioned releases: cask-30-<build>)
-  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-30-#{version.sub(/^[\d.]+-/, "")}"
+  # Base URL for release assets (versioned releases: cask-31-<build>)
+  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-31-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
   on_intel do
-    sha256 "ab4b60e5a1780a1a2ad389d60d3c763c32ecf595c23c9f0578e9301482e8c28a"
+    sha256 "e43d7ea8f521c60255b9ae6f67cd8d7fa172fa64f185bde5068affba09f9eed0"
     url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
   end
 
   on_arm do
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "061f778b6ea68a37d0f90fbd98560ab142ab878a0081cf5ac2a8bc48abffd8d0"
+      sha256 "aa2c3b393d98ad35985b5dd0757e1575f191ba62a54eb387e8fd5088e3da9889"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     elsif MacOS.version >= :sequoia # macOS 15
-      sha256 "e397b8ac5ba2277c895111e584ba451f05a73b0c90b6f9849229e34c9b431f21"
+      sha256 "89e1bb1ab40349da96fd9581027b820fb88c39b495ea29cbafc381d4a1f1805c"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     else # macOS 14 (Sonoma) and 13 (Ventura)
-      sha256 "80506e1686d117df0772fb290f6b94b9facf7cb60ab4ee33b08e6abdbdbc10d9"
+      sha256 "8a707950e7e8cb78ef820a33dc9830773108411d91ab96504be67f234afde712"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
   end
 
-  name "Emacs+"
-  desc "GNU Emacs text editor with patches for macOS"
+  name "Emacs+ (Development)"
+  desc "GNU Emacs text editor with patches for macOS (development version)"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
   # Required for native compilation (JIT) at runtime
@@ -44,8 +44,7 @@ cask "emacs-plus@30" do
     "emacs",
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
-    "emacs-plus",
-    "emacs-plus@31",
+    "emacs-plus-app",
   ]
 
   # Install the app
@@ -100,7 +99,6 @@ cask "emacs-plus@30" do
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
-  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ctags", target: "emacs-ctags"
 
   # Man pages (not gzipped in the build)
   manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacs.1"
@@ -117,17 +115,17 @@ cask "emacs-plus@30" do
   ]
 
   caveats <<~EOS
-    Emacs+ has been installed to /Applications.
+    Emacs+ (development) has been installed to /Applications.
 
-    This is a pre-built binary. For custom patches or build options,
-    use the formula instead:
-      brew install emacs-plus@30 --with-...
+    This is a pre-built binary from the Emacs master branch.
+    For custom patches or build options, use the formula instead:
+      brew install emacs-plus@master --with-...
 
     Custom icons can be configured via ~/.config/emacs-plus/build.yml:
       icon: dragon-plus
 
     To re-apply an icon after changing build.yml:
-      brew reinstall --cask emacs-plus@30
+      brew reinstall --cask emacs-plus-app@master
 
     Note: Emacs Client.app requires Emacs to be running as a daemon.
     Add to your Emacs config: (server-start)

@@ -774,19 +774,18 @@ jobs:
             **Installation:**
             ```
             brew tap d12frosted/emacs-plus
-            brew install --cask emacs-plus@30
+            brew install --cask emacs-plus-app
             ```
 
       - name: Update cask file
         run: |
           BUILD_NUM=${{ github.run_number }}
-          EMACS_MAJOR=30
 
           # Get Emacs full version from artifact
           EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
           echo "Emacs version: $EMACS_VER"
 
-          CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
+          CASK_FILE="Casks/emacs-plus-app.rb"
           echo "Updating $CASK_FILE"
 
           # Extract SHA256 for each build and update cask
@@ -876,19 +875,18 @@ jobs:
             **Installation:**
             ```
             brew tap d12frosted/emacs-plus
-            brew install --cask emacs-plus@31
+            brew install --cask emacs-plus-app@master
             ```
 
       - name: Update cask file
         run: |
           BUILD_NUM=${{ github.run_number }}
-          EMACS_MAJOR=31
 
           # Get Emacs full version from artifact
           EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
           echo "Emacs version: $EMACS_VER"
 
-          CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
+          CASK_FILE="Casks/emacs-plus-app@master.rb"
           echo "Updating $CASK_FILE"
 
           # Extract SHA256 for each build and update cask
