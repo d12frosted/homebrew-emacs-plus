@@ -26,10 +26,14 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus        [options] # install the latest release (Emacs 30)
-  $ brew install emacs-plus@master [options] # install Emacs master (alias for @31)
-  $ brew install emacs-plus@30     [options] # install Emacs 30 (emacs-30)
-  $ brew install emacs-plus@29     [options] # install Emacs 29
+
+  # Pre-built binaries (fast, ~1 min)
+  $ brew install --cask emacs-plus-app          # latest stable
+  $ brew install --cask emacs-plus-app@master   # nightly from master
+
+  # Build from source (customizable, ~30 min)
+  $ brew install emacs-plus        [options]    # latest stable
+  $ brew install emacs-plus@master [options]    # from master
 #+end_src
 
 Feel free to open an issue or contact me via email if you face any issues, questions or feature requests. I love pull requests, so do send them. You might want to check [[docs/development-guidelines.org][→ Development guidelines]] to have better understanding on how to contribute.
@@ -81,31 +85,14 @@ For recent changes, see [[./NEWS.org][→ News]].
 
 ** Install
 
-Emacs Plus contains separate formulas for different Emacs versions:
-
-- =emacs-plus= install current release version (Emacs 30);
-- =emacs-plus@master= alias for development version (currently Emacs 31).
-- =emacs-plus@30= install Emacs 30, current version.
-- =emacs-plus@29= install Emacs 29, previous version.
-
-  #+begin_src bash
-  $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus        [options] # install the latest release (Emacs 30)
-  $ brew install emacs-plus@master [options] # install Emacs master
-  $ brew install emacs-plus@30     [options] # install Emacs 30
-  $ brew install emacs-plus@29     [options] # install Emacs 29
-#+end_src
-
-By default (without any addition options) this formula install Cocoa version of Emacs with support of =gnutls=, =librsvg=, =libxml2=, dynamic modules and multicolor fonts. Note that =imagemagick= is not included by default (opt-in for all versions), =webp= is included by default in =emacs-plus@30= and =emacs-plus@31= only, and =tree-sitter= is included by default in =emacs-plus@29=, =emacs-plus@30=, and =emacs-plus@31=. Please see the list of available options to disable any bit of default behaviour or add even more stuff.
-
 *** Pre-built binaries (Cask)
 
-For faster installation without compilation, pre-built binaries are available as Homebrew casks:
+For fast installation without compilation (~1 min), pre-built binaries are available:
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install --cask emacs-plus-app           # Stable (Emacs 30)
-  $ brew install --cask emacs-plus-app@master    # Development (Emacs master)
+  $ brew install --cask emacs-plus-app           # latest stable
+  $ brew install --cask emacs-plus-app@master    # nightly from master
 #+end_src
 
 Cask builds are self-contained applications with all dependencies bundled. They include:
@@ -127,6 +114,20 @@ Cask builds are self-contained applications with all dependencies bundled. They 
 *Note:* Cask builds are architecture and macOS version specific. ARM64 has dedicated builds for Sonoma (14), Sequoia (15), and Tahoe (26); Ventura (13) users get the Sonoma build. Intel has a single Sequoia (15) build.
 
 Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults.
+
+*** Build from source (Formula)
+
+For custom build options (~30 min compile time):
+
+#+begin_src bash
+  $ brew tap d12frosted/emacs-plus
+  $ brew install emacs-plus        [options]    # latest stable
+  $ brew install emacs-plus@master [options]    # from master
+#+end_src
+
+Versioned formulas are also available: =emacs-plus@30=, =emacs-plus@29=, etc.
+
+By default, formulas build Cocoa Emacs with =gnutls=, =librsvg=, =libxml2=, =tree-sitter=, =webp=, native compilation, dynamic modules, and multicolor fonts. See [[#options][→ Options]] for customization.
 
 *** Installing from feature branch
 
