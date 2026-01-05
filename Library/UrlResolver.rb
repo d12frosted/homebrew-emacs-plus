@@ -15,8 +15,4 @@ class UrlResolver
   def patch_url name
     "#{@formula_root}/patches/emacs-#@version/#{name}.patch"
   end
-
-  def icon_url name
-    "#{@formula_root}/icons/#{name}.icns"
-  end
 end
