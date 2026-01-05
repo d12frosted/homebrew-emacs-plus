@@ -3,6 +3,66 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-01-05
+
+** Breaking Changes
+
+*** Cask renamed to =emacs-plus-app=
+
+Pre-built binary casks have been renamed to follow homebrew-core conventions:
+
+#+begin_src bash
+  # Old (no longer works)
+  $ brew install --cask emacs-plus@30
+  $ brew install --cask emacs-plus@31
+
+  # New
+  $ brew install --cask emacs-plus-app           # Stable (currently Emacs 30)
+  $ brew install --cask emacs-plus-app@master    # Development (Emacs master)
+#+end_src
+
+This naming scheme:
+- Follows homebrew-core convention (=emacs= formula vs =emacs-app= cask)
+- Uses semantic names (=@master=) instead of version numbers
+- Simplifies upgrades: stable users always use =emacs-plus-app= regardless of Emacs version
+
+*** Removed =--with-no-frame-refocus= option
+
+The =--with-no-frame-refocus= option has been removed from =emacs-plus@30= and =emacs-plus@31=. This can now be achieved via Emacs Lisp in your =early-init.el=:
+
+#+begin_src elisp
+(setq ns-use-native-fullscreen nil)
+#+end_src
+
+** New Features
+
+*** Formula alias =emacs-plus@master=
+
+A new formula alias =emacs-plus@master= points to the current development version (=emacs-plus@31=):
+
+#+begin_src bash
+  $ brew install emacs-plus@master    # Always installs development version
+#+end_src
+
+** Deprecations
+
+*** Removed deprecated =--with-X-icon= options
+
+The legacy icon options (=--with-modern-icon=, =--with-spacemacs-icon=, etc.) have been removed. Use the unified =--with-icon= option or configure via =~/.config/emacs-plus/build.yml=:
+
+#+begin_src bash
+  # Using --with-icon
+  $ brew install emacs-plus --with-icon=modern-icon
+
+  # Using build.yml
+  $ echo "icon: modern-icon" > ~/.config/emacs-plus/build.yml
+  $ brew install emacs-plus
+#+end_src
+
+*** Removed legacy icons directory
+
+The =icons/= directory has been removed. All icons are now in =community/icons/=.
+
 * 2025-01-02
 
 ** New Icons
@@ -50,8 +110,8 @@ Fixed the =dir= file not being created in the Info directory. Homebrew's cleanin
 Emacs+ is now available as pre-built binaries for faster installation:
 
 #+begin_src bash
-  $ brew install --cask emacs-plus@30   # Stable
-  $ brew install --cask emacs-plus@31   # Development
+  $ brew install --cask emacs-plus-app           # Stable
+  $ brew install --cask emacs-plus-app@master    # Development
 #+end_src
 
 Benefits:
