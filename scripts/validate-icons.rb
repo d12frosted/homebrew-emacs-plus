@@ -2,26 +2,28 @@
 # frozen_string_literal: true
 
 require 'digest'
+require 'json'
 require 'pathname'
-require_relative '../Library/Icons'
 
-# Validation script for icon files and their SHA256 checksums
+# Validation script for community icon files
 class IconValidator
-  ICONS_DIR = Pathname.new(__dir__).parent / 'icons'
-  EXCLUDED_FILES = ['.DS_Store'].freeze
+  REPO_ROOT = Pathname.new(__dir__).parent
+  COMMUNITY_ICONS_DIR = REPO_ROOT / 'community' / 'icons'
+  REGISTRY_FILE = REPO_ROOT / 'community' / 'registry.json'
 
   def initialize
     @errors = []
     @warnings = []
+    @registry = JSON.parse(File.read(REGISTRY_FILE))
   end
 
   def validate!
-    puts "Validating icons in #{ICONS_DIR}..."
+    puts "Validating community icons..."
     puts
 
-    validate_icons_config_files_exist
-    validate_all_icon_files_in_config
-    validate_checksums
+    validate_registry_icons_exist
+    validate_icon_metadata
+    validate_icns_files
 
     print_results
     exit(1) unless @errors.empty?
@@ -29,55 +31,64 @@ class IconValidator
 
   private
 
-  def validate_icons_config_files_exist
-    puts "Checking that all icons in ICONS_CONFIG exist on disk..."
-    ICONS_CONFIG.each_key do |icon_name|
-      icon_path = ICONS_DIR / "#{icon_name}.icns"
-      unless icon_path.exist?
-        @errors << "Icon '#{icon_name}' is defined in ICONS_CONFIG but file '#{icon_path}' does not exist"
+  def validate_registry_icons_exist
+    puts "Checking that all icons in registry exist on disk..."
+    @registry['icons'].each do |name, info|
+      icon_dir = REPO_ROOT / 'community' / info['directory']
+      icon_file = icon_dir / 'icon.icns'
+
+      unless icon_dir.exist?
+        @errors << "Icon '#{name}' directory does not exist: #{icon_dir}"
+        next
+      end
+
+      unless icon_file.exist?
+        @errors << "Icon '#{name}' is missing icon.icns file: #{icon_file}"
       end
     end
-    puts "  ✓ All icons in ICONS_CONFIG exist on disk" if @errors.empty?
+    puts "  #{@registry['icons'].size} icons checked"
     puts
   end
 
-  def validate_all_icon_files_in_config
-    puts "Checking that all icon files are mentioned in ICONS_CONFIG..."
-    icon_files = Dir.glob(ICONS_DIR / '*.icns').map do |path|
-      File.basename(path, '.icns')
-    end
+  def validate_icon_metadata
+    puts "Checking icon metadata files..."
+    @registry['icons'].each do |name, info|
+      icon_dir = REPO_ROOT / 'community' / info['directory']
+      metadata_file = icon_dir / 'metadata.json'
 
-    icon_files.each do |icon_name|
-      next if EXCLUDED_FILES.include?("#{icon_name}.icns")
+      unless metadata_file.exist?
+        @warnings << "Icon '#{name}' is missing metadata.json"
+        next
+      end
 
-      unless ICONS_CONFIG.key?(icon_name)
-        @warnings << "Icon file '#{icon_name}.icns' exists but is not defined in ICONS_CONFIG"
+      begin
+        metadata = JSON.parse(File.read(metadata_file))
+        unless metadata['maintainer']
+          @warnings << "Icon '#{name}' metadata is missing 'maintainer' field"
+        end
+      rescue JSON::ParserError => e
+        @errors << "Icon '#{name}' has invalid metadata.json: #{e.message}"
       end
     end
-
-    if @warnings.empty?
-      puts "  ✓ All icon files are mentioned in ICONS_CONFIG"
-    else
-      puts "  ⚠ Some icon files are not in ICONS_CONFIG (see warnings below)"
-    end
+    puts "  Metadata validated"
     puts
   end
 
-  def validate_checksums
-    puts "Validating SHA256 checksums..."
-    ICONS_CONFIG.each do |icon_name, expected_sha|
-      icon_path = ICONS_DIR / "#{icon_name}.icns"
-      next unless icon_path.exist?
+  def validate_icns_files
+    puts "Validating .icns files are valid..."
+    @registry['icons'].each do |name, info|
+      icon_dir = REPO_ROOT / 'community' / info['directory']
+      icon_file = icon_dir / 'icon.icns'
 
-      actual_sha = Digest::SHA256.file(icon_path).hexdigest
-      if actual_sha != expected_sha
-        @errors << "SHA256 mismatch for '#{icon_name}':\n" \
-                   "  Expected: #{expected_sha}\n" \
-                   "  Actual:   #{actual_sha}\n" \
-                   "  File:     #{icon_path}"
+      next unless icon_file.exist?
+
+      # Check file has valid icns magic bytes
+      magic = File.binread(icon_file, 4)
+      unless magic == 'icns'
+        @errors << "Icon '#{name}' has invalid icns file (bad magic bytes)"
       end
     end
-    puts "  ✓ All SHA256 checksums are correct" if @errors.select { |e| e.include?('SHA256') }.empty?
+    puts "  All .icns files validated"
     puts
   end
 
@@ -88,7 +99,7 @@ class IconValidator
     if @warnings.any?
       puts "Warnings:"
       @warnings.each do |warning|
-        puts "  ⚠ #{warning}"
+        puts "  - #{warning}"
       end
       puts
     end
@@ -96,13 +107,13 @@ class IconValidator
     if @errors.any?
       puts "Errors:"
       @errors.each do |error|
-        puts "  ✗ #{error}"
+        puts "  x #{error}"
       end
       puts
       puts "Validation FAILED with #{@errors.size} error(s) and #{@warnings.size} warning(s)"
     else
-      puts "✓ All validations passed!"
-      puts "  #{ICONS_CONFIG.size} icons validated successfully"
+      puts "All validations passed!"
+      puts "  #{@registry['icons'].size} icons validated successfully"
     end
 
     puts '=' * 80

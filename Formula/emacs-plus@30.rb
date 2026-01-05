@@ -92,12 +92,6 @@ class EmacsPlusAT30 < EmacsBase
   end
 
   #
-  # Icons
-  #
-
-  inject_icon_options
-
-  #
   # Patches
   #
 
@@ -110,8 +104,6 @@ class EmacsPlusAT30 < EmacsBase
   #
 
   def install
-    # Check for deprecated --with-*-icon options and auto-migrate
-    check_deprecated_icon_option
     # Check icon options are not used with non-Cocoa builds
     check_icon_compatibility
     # Warn if revision is pinned via config or environment variable
@@ -220,19 +212,9 @@ class EmacsPlusAT30 < EmacsBase
       system "gmake", "install"
 
       icons_dir = buildpath/"nextstep/Emacs.app/Contents/Resources"
-      ICONS_CONFIG.each_key do |icon|
-        next if build.without? "#{icon}-icon"
 
-        rm "#{icons_dir}/Emacs.icns"
-        resource("#{icon}-icon").stage do
-          icons_dir.install Dir["*.icns*"].first => "Emacs.icns"
-        end
-      end
-
-      # Apply custom icon from build.yml (if no deprecated --with-*-icon option used)
-      unless ICONS_CONFIG.keys.any? { |icon| build.with? "#{icon}-icon" }
-        apply_custom_icon(icons_dir)
-      end
+      # Apply custom icon from build.yml
+      apply_custom_icon(icons_dir)
 
       # Create Emacs Client.app (AppleScript-based to handle file opening from Finder)
       create_emacs_client_app(icons_dir)
