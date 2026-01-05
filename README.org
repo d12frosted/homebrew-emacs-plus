@@ -42,6 +42,9 @@ For recent changes, see [[./NEWS.org][→ News]].
     - [[#pre-built-binaries-cask][Pre-built binaries (Cask)]]
     - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
+  - [[#build-configuration][Build Configuration]]
+    - [[#available-options][Available Options]]
+    - [[#native-compilation-environment-cask][Native Compilation Environment (Cask)]]
   - [[#emacs-31][Emacs 31]]
     - [[#included][Included]]
     - [[#options][Options]]
@@ -56,6 +59,7 @@ For recent changes, see [[./NEWS.org][→ News]].
     - [[#no-title-bar-2][No title bar]]
   - [[#features-explained][Features explained]]
     - [[#injected-path][Injected PATH]]
+    - [[#detecting-emacs-plus][Detecting Emacs Plus]]
     - [[#emacs-clientapp][Emacs Client.app]]
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
@@ -113,12 +117,14 @@ Cask builds are self-contained applications with all dependencies bundled. They 
 
 *Cask vs Formula:*
 
-| Feature              | Cask (=--cask=)          | Formula                   |
-|----------------------+--------------------------+---------------------------|
-| Install time         | ~1 minute (download)     | ~30 minutes (compile)     |
-| Custom build options | No                       | Yes (icons, patches, etc) |
-| macOS versions       | 14+ (Sonoma, Sequoia, Tahoe) | Any supported         |
-| Architectures        | ARM64 and Intel          | Any                       |
+| Feature              | Cask (=--cask=)        | Formula                   |
+|----------------------+------------------------+---------------------------|
+| Install time         | ~1 minute (download)   | ~30 minutes (compile)     |
+| Custom build options | No                     | Yes (icons, patches, etc) |
+| macOS versions       | ARM64: 13+, Intel: 15+ | Any supported             |
+| Architectures        | ARM64 and Intel        | Any                       |
+
+*Note:* Cask builds are architecture and macOS version specific. ARM64 has dedicated builds for Sonoma (14), Sequoia (15), and Tahoe (26); Ventura (13) users get the Sonoma build. Intel has a single Sequoia (15) build.
 
 Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults.
 
@@ -156,6 +162,11 @@ In short, =brew= doesn't really support options. They break time to time ([[http
 
 Emacs+ can be configured using =~/.config/emacs-plus/build.yml=. This file controls options that are applied during installation (formula) or post-installation (cask).
 
+The configuration file is searched in this order:
+1. Path specified by =HOMEBREW_EMACS_PLUS_BUILD_CONFIG= environment variable
+2. =~/.config/emacs-plus/build.yml=
+3. =~/.emacs-plus-build.yml= (fallback)
+
 #+begin_src yaml
 # Example build.yml
 icon: dragon-plus
@@ -166,12 +177,12 @@ native_comp_env: true
 
 *** Available Options
 
-| Option            | Default | Description                                                                 |
-|-------------------+---------+-----------------------------------------------------------------------------|
-| =icon=            | /none/  | Custom icon to apply. See [[./community/icons/README.md][→ Icons Gallery]] for available icons.           |
+| Option            | Default | Description                                                                  |
+|-------------------+---------+------------------------------------------------------------------------------|
+| =icon=            | /none/  | Custom icon to apply. See [[./community/icons/README.md][→ Icons Gallery]] for available icons.               |
 | =patches=         | /none/  | (Formula only) List of community patches to apply. See [[#community-features][→ Community Features]]. |
-| =revision=        | /none/  | (Formula only) Pin Emacs source to a specific git revision.                 |
-| =native_comp_env= | =true=  | (Cask only) Inject environment variables for native compilation.           |
+| =revision=        | /none/  | (Formula only) Pin Emacs source to a specific git revision.                  |
+| =native_comp_env= | =true=  | (Cask only) Inject environment variables for native compilation.             |
 
 *** Native Compilation Environment (Cask)
 
@@ -198,17 +209,15 @@ By default =emacs-plus@31= uses the following features.
 
 *** Options
 
-| Option                  | Description                                                                  |
-|-------------------------+------------------------------------------------------------------------------|
-| =--with-compress-install= | build with compressed install optimization                                   |
-| =--with-dbus=             | build with dbus support                                                      |
-| =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
-| =--with-imagemagick=      | build with =imagemagick= support                                               |
-| =--with-mailutils=        | build with mailutils support                                                 |
-| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
-| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
-| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
+| Option                    | Description                                                               |
+|---------------------------+---------------------------------------------------------------------------|
+| =--with-compress-install= | build with compressed install optimization                                |
+| =--with-dbus=             | build with dbus support                                                   |
+| =--with-debug=            | build with debug symbols and debugger friendly optimizations              |
+| =--with-mailutils=        | build with mailutils support                                              |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)            |
+| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                             |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle) |
 
 *Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
@@ -228,18 +237,17 @@ By default =emacs-plus@30= uses the following features.
 
 *** Options
 
-| Option                  | Description                                                                  |
-|-------------------------+------------------------------------------------------------------------------|
-| =--with-compress-install= | build with compressed install optimization                                   |
-| =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
-| =--with-dbus=             | build with dbus support                                                      |
-| =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
-| =--with-imagemagick=      | build with =imagemagick= support                                               |
-| =--with-mailutils=        | build with mailutils support                                                 |
-| =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
-| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
-| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
-| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
+| Option                    | Description                                                               |
+|---------------------------+---------------------------------------------------------------------------|
+| =--with-compress-install= | build with compressed install optimization                                |
+| =--with-ctags=            | don't remove the ctags executable that Emacs provides                     |
+| =--with-dbus=             | build with dbus support                                                   |
+| =--with-debug=            | build with debug symbols and debugger friendly optimizations              |
+| =--with-imagemagick=      | build with =imagemagick= support                                          |
+| =--with-mailutils=        | build with mailutils support                                              |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)            |
+| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                             |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle) |
 
 *Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
@@ -258,13 +266,13 @@ By default =emacs-plus@29= uses the following features.
 
 *** Options
 
-| Option                  | Description                                                                  |
-|-------------------------+------------------------------------------------------------------------------|
+| Option                    | Description                                                                  |
+|---------------------------+------------------------------------------------------------------------------|
 | =--with-compress-install= | build with compressed install optimization                                   |
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
-| =--with-imagemagick=      | build with =imagemagick= support                                               |
+| =--with-imagemagick=      | build with =imagemagick= support                                             |
 | =--with-mailutils=        | build with mailutils support                                                 |
 | =--with-native-comp=      | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
 | =--with-no-frame-refocus= | disables frame re-focus (ie. closing one frame does not refocus another one) |
@@ -295,6 +303,8 @@ All that being said, during installation Emacs+ injects value of =PATH= into =Em
 
 In case you have a non-trivial setup relying on specific value of =PATH= inherited from current terminal session, it is advised to start Emacs using =/opt/homebrew/bin/emacs= instead of =open -n -a /path/to/Emacs.app=, because =open= messes around with =PATH= value even without Emacs+ injection. You can find more information in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]].
 
+To disable PATH injection at runtime, set the =EMACS_PLUS_NO_PATH_INJECTION= environment variable to any non-empty value before launching Emacs.
+
 And if for some reason PATH injection doesn't work for you, report it either in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]] or open a new issue.
 
 *** Detecting Emacs Plus
@@ -321,10 +331,10 @@ Starting with =emacs-plus@30= and =emacs-plus@31=, the formula includes a compan
 
 **** When to use Emacs.app vs Emacs Client.app
 
-| Application          | Use Case                                                                                           |
-|----------------------+----------------------------------------------------------------------------------------------------|
-| *Emacs.app*          | Launch Emacs directly, start a new Emacs session, or when you want full control over the instance |
-| *Emacs Client.app*   | Open files from Finder, set as default application for file types, quick file editing             |
+| Application        | Use Case                                                                                          |
+|--------------------+---------------------------------------------------------------------------------------------------|
+| *Emacs.app*        | Launch Emacs directly, start a new Emacs session, or when you want full control over the instance |
+| *Emacs Client.app* | Open files from Finder, set as default application for file types, quick file editing             |
 
 **** How it works
 
@@ -526,8 +536,8 @@ By default =emacs-plus@28= uses the following features.
 
 **** Options
 
-| Option                               | Description                                                                  |
-|--------------------------------------+------------------------------------------------------------------------------|
+| Option                                 | Description                                                                  |
+|----------------------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=                         | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=                          | build with dbus support                                                      |
 | =--with-debug=                         | build with debug symbols and debugger friendly optimizations                 |
@@ -538,10 +548,10 @@ By default =emacs-plus@28= uses the following features.
 | =--with-x11=                           | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=                      | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=                      | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
-| =--with-imagemagick=                   | build with =imagemagick= support                                               |
-| =--HEAD=                               | build from =emacs-28= branch                                                   |
+| =--with-imagemagick=                   | build with =imagemagick= support                                             |
+| =--HEAD=                               | build from =emacs-28= branch                                                 |
 | =--with-native-comp=                   | build with native compilation aka [[#gccemacs][→ gccemacs]]                                 |
-|                                      |                                                                              |
+|                                        |                                                                              |
 
 *Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
@@ -556,8 +566,8 @@ By default =emacs-plus@27= uses the following features.
 
 **** Options
 
-| Option                  | Description                                                                  |
-|-------------------------+------------------------------------------------------------------------------|
+| Option                    | Description                                                                  |
+|---------------------------+------------------------------------------------------------------------------|
 | =--with-ctags=            | don't remove the ctags executable that Emacs provides                        |
 | =--with-dbus=             | build with dbus support                                                      |
 | =--with-debug=            | build with debug symbols and debugger friendly optimizations                 |
@@ -567,8 +577,8 @@ By default =emacs-plus@27= uses the following features.
 | =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)               |
 | =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                                |
 | =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle)    |
-| =--without-imagemagick=   | build without =imagemagick= support                                            |
-| =--HEAD=                  | build from =emacs-27= branch                                                   |
+| =--without-imagemagick=   | build without =imagemagick= support                                          |
+| =--HEAD=                  | build from =emacs-27= branch                                                 |
 
 *Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
 
