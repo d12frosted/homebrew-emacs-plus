@@ -63,7 +63,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            imagemagick libgccjit tree-sitter@0.25 pkg-config webp
+            libgccjit tree-sitter@0.25 pkg-config webp
           # tree-sitter@0.25 is keg-only, set up paths
           echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
@@ -103,13 +103,13 @@ jobs:
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
+          # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \
             --with-tree-sitter \
-            --with-imagemagick \
             --with-mailutils \
             --with-modules \
             --with-rsvg \
@@ -422,7 +422,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            imagemagick libgccjit tree-sitter@0.25 pkg-config webp
+            libgccjit tree-sitter@0.25 pkg-config webp
           # tree-sitter@0.25 is keg-only, set up paths
           echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
@@ -463,13 +463,13 @@ jobs:
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
+          # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \
             --with-tree-sitter \
-            --with-imagemagick \
             --with-mailutils \
             --with-modules \
             --with-rsvg \
