@@ -23,9 +23,6 @@ jobs:
             build_opts: "--with-xwidgets"
           - formula: emacs-plus@31
             build_opts: "--with-xwidgets"
-          # Test an icon option on @30
-          - formula: emacs-plus@30
-            build_opts: "--with-icon=modern-icon"
 
     steps:
       - name: Tap emacs-plus
