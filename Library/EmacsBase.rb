@@ -2,6 +2,7 @@ require_relative "UrlResolver"
 
 class CopyDownloadStrategy < AbstractFileDownloadStrategy
   def initialize(url, name, version, **meta)
+    super
     @cached_location = Pathname.new url
   end
 end
