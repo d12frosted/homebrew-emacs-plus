@@ -816,8 +816,7 @@ jobs:
 
       - name: Commit and push cask update
         run: |
-          EMACS_MAJOR=30
-          CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
+          CASK_FILE="Casks/emacs-plus-app.rb"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "$CASK_FILE"
@@ -825,7 +824,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore(emacs-plus@${EMACS_MAJOR}): update cask to build ${{ github.run_number }}"
+            git commit -m "chore(emacs-plus-app): update cask to build ${{ github.run_number }}"
             # Retry push with exponential backoff (handles race with other release jobs)
             for i in 1 2 3 4 5; do
               git pull --rebase origin master && git push && break
@@ -917,8 +916,7 @@ jobs:
 
       - name: Commit and push cask update
         run: |
-          EMACS_MAJOR=31
-          CASK_FILE="Casks/emacs-plus@${EMACS_MAJOR}.rb"
+          CASK_FILE="Casks/emacs-plus-app@master.rb"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "$CASK_FILE"
@@ -926,7 +924,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore(emacs-plus@${EMACS_MAJOR}): update cask to build ${{ github.run_number }}"
+            git commit -m "chore(emacs-plus-app@master): update cask to build ${{ github.run_number }}"
             # Retry push with exponential backoff (handles race with other release jobs)
             for i in 1 2 3 4 5; do
               git pull --rebase origin master && git push && break
