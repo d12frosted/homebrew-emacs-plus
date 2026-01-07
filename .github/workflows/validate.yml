@@ -15,7 +15,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Run unit tests
-        run: ruby tests/test_applescript_escaping.rb
+        run: |
+          for test in tests/test_*.rb; do
+            echo "Running $test..."
+            ruby "$test"
+          done
 
       - name: Validate icons
         run: ruby scripts/validate-icons.rb

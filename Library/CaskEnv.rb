@@ -28,6 +28,11 @@ module CaskEnv
       result = BuildConfig.load_config
       config = result[:config]
 
+      if result[:source]
+        puts "==> Loaded build config from: #{result[:source]}"
+        BuildConfig.print_config(config, result[:source], context: :cask, output: method(:puts))
+      end
+
       if config.key?("native_comp_env") && !config["native_comp_env"]
         puts "Native compilation environment injection disabled in build.yml"
         return false

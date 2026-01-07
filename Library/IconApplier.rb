@@ -24,9 +24,7 @@ module IconApplier
       result = BuildConfig.load_config
       config = result[:config]
 
-      if result[:source]
-        ohai "Loaded build config from: #{result[:source]}"
-      end
+      # Config details are already printed by CaskEnv.inject
 
       icon = BuildConfig.resolve_icon(config)
       unless icon
