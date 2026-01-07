@@ -231,8 +231,8 @@ def main
   end
   puts
   puts "2. Test the patch:"
-  puts "   echo 'patches:\\n  - #{name}' > test-build.yml"
-  puts "   ./build 30 --build-config test-build.yml"
+  puts "   echo 'patches:\\n  - #{name}' > ~/.config/emacs-plus/build.yml"
+  puts "   make formula-30"
   puts
   puts "3. Submit a PR to add your patch to the community registry"
 end

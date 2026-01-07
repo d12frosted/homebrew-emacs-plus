@@ -84,18 +84,39 @@ Follow these simple steps to add a new icon.
 
 * Building locally
 
-Sometimes there is a need to test the build locally without uninstalling =emacs-plus= (otherwise it's impossible to make any further fixes or improvements if the build breaks). For this reason, =emacs-plus= repository has a =build= script, which installs =emacs-plus-local= with passed options.
+Sometimes there is a need to test the build locally without uninstalling =emacs-plus= (otherwise it's impossible to make any further fixes or improvements if the build breaks). For this reason, =emacs-plus= repository has a =Makefile= with development targets.
+
+** Formula builds
+
+Build formulas from source (tests local Formula/ and Library/ changes):
 
 #+begin_src bash
-  $ ./build VERSION [options]
-  $ ./build 26
-  $ ./build 27
-  $ ./build 27 --with-no-titlebar
-  $ ./build 28
-  $ ./build 28 --with-no-titlebar
+  $ make formula-30              # Build Emacs 30
+  $ make formula-31              # Build Emacs 31
+  $ make formula-31 --HEAD       # Build from HEAD
 #+end_src
 
-This script is super simple. It makes a copy of =emacs-plus= named =emacs-plus-local= and installs it. That way you can play with formula without uninstalling =emacs-plus=.
+This creates a temporary =emacs-plus-local= formula and installs it. That way you can play with formula without uninstalling =emacs-plus=.
+
+** Cask builds
+
+Install casks from pre-built binaries (tests local Cask/ and Library/ changes):
+
+#+begin_src bash
+  $ make cask                    # Install emacs-plus-app cask
+  $ make cask@master             # Install emacs-plus-app@master cask
+#+end_src
+
+** Testing and validation
+
+#+begin_src bash
+  $ make test                    # Run all unit tests
+  $ make validate                # Validate build.yml config
+  $ make postinstall-formula     # Simulate formula post_install
+  $ make postinstall-cask        # Simulate cask postflight
+#+end_src
+
+Run =make help= for the full list of targets.
 
 * Questions?
 
