@@ -46,6 +46,7 @@ For recent changes, see [[./NEWS.org][→ News]].
   - [[#about][About]]
   - [[#install][Install]]
     - [[#pre-built-binaries-cask][Pre-built binaries (Cask)]]
+    - [[#build-from-source-formula][Build from source (Formula)]]
     - [[#installing-from-feature-branch][Installing from feature branch]]
   - [[#reinstall][Reinstall]]
   - [[#build-configuration][Build Configuration]]
@@ -503,6 +504,7 @@ Emacs is a journey. And for some of you these projects might be inspiring.
 - [[https://github.com/syl20bnr/spacemacs/][→ Spacemacs]]
 - [[https://github.com/hlissner/doom-emacs][→ doom-emacs]]
 - [[https://github.com/bbatsov/prelude][→ Prelude]]
+- [[https://github.com/seagle0128/.emacs.d][→ Centuar Emacs]]
 
 ** Known Issues
 
