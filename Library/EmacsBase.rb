@@ -1,4 +1,5 @@
 require_relative "UrlResolver"
+require_relative "BuildConfig"
 
 class CopyDownloadStrategy < AbstractFileDownloadStrategy
   def initialize(url, name, version, **meta)
@@ -27,29 +28,13 @@ class EmacsBase < Formula
 
   # Read revision from build.yml at class definition time
   # Returns revision string for given version, or nil if not set
+  # Note: This runs at class load time, so we silently ignore config errors here.
+  # The error will be shown with full details when the formula actually runs.
   def self.revision_from_config(version)
-    require 'yaml'
-    require 'etc'
-
-    # Get real home directory
-    real_home = Etc.getpwuid.dir
-
-    # Check for config file
-    config_path = if ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"]
-      File.expand_path(ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"])
-    else
-      paths = [
-        "#{real_home}/.config/emacs-plus/build.yml",
-        "#{real_home}/.emacs-plus-build.yml"
-      ]
-      paths.find { |p| File.exist?(p) }
-    end
-
-    return nil unless config_path && File.exist?(config_path)
-
     begin
-      config = YAML.load_file(config_path)
-      return nil unless config.is_a?(Hash) && config["revision"]
+      result = BuildConfig.load_config
+      config = result[:config]
+      return nil unless config["revision"]
 
       revision = config["revision"]
       # Support both: revision: "abc" (single) or revision: { "30": "abc" } (versioned)
@@ -60,8 +45,11 @@ class EmacsBase < Formula
         # Single revision applies to all versions (not recommended but supported)
         revision
       end
-    rescue => e
-      # Silently ignore parse errors at class load time
+    rescue BuildConfig::ConfigurationError
+      # Silently ignore - error will be shown with full context during formula run
+      nil
+    rescue
+      # Silently ignore other errors at class load time
       nil
     end
   end
@@ -74,60 +62,29 @@ class EmacsBase < Formula
     @custom_config ||= load_custom_config
   end
 
+  def custom_config_source
+    @custom_config_source
+  end
+
   def load_custom_config
-    require 'yaml'
-    require 'etc'
-    config = {}
-    config_source = nil
+    result = BuildConfig.load_config
+    @custom_config_source = result[:source]
 
-    # Get real home directory (Homebrew sandboxes HOME to a temp dir)
-    real_home = Etc.getpwuid.dir
-
-    if ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"]
-      path = File.expand_path(ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"])
-      if File.exist?(path)
-        config = YAML.load_file(path)
-        config_source = path
-      end
-    else
-      # Use real home directory, not sandboxed HOME
-      paths = [
-        "#{real_home}/.config/emacs-plus/build.yml",
-        "#{real_home}/.emacs-plus-build.yml"
-      ]
-      config_file = paths.find { |p| File.exist?(p) }
-      if config_file
-        config = YAML.load_file(config_file)
-        config_source = config_file
-      end
+    if result[:source]
+      ohai "Loaded build config from: #{result[:source]}"
+      BuildConfig.print_config(result[:config], result[:source], context: :formula, output: method(:puts))
     end
 
-    if config_source
-      ohai "Loaded build config from: #{config_source}"
-    end
-
-    config
+    result[:config]
   end
 
   def registry
-    @registry ||= begin
-      require 'json'
-      registry_file = "#{formula_root}/community/registry.json"
-      File.exist?(registry_file) ? JSON.parse(File.read(registry_file)) : { "patches" => {}, "icons" => {} }
-    end
+    @registry ||= BuildConfig.registry
   end
 
-  # Format maintainer for display, handling both string and object formats
-  # Returns nil if maintainer is not provided or empty
+  # Format maintainer for display - delegate to BuildConfig
   def format_maintainer(maintainer)
-    return nil unless maintainer
-    if maintainer.is_a?(String)
-      "@#{maintainer}"
-    elsif maintainer["github"]
-      "@#{maintainer["github"]}"
-    elsif maintainer["name"]
-      maintainer["name"]
-    end
+    BuildConfig.format_maintainer(maintainer)
   end
 
   def self.formula_root
@@ -269,50 +226,25 @@ class EmacsBase < Formula
     config = custom_config
     return if config.empty?
 
+    # BuildConfig already validated syntax and types during load_config
+    # Here we do additional formula-specific validation (e.g., icon exists in registry)
     errors = []
 
-    # Validate patches
-    if config["patches"]
-      unless config["patches"].is_a?(Array)
-        errors << "'patches' must be an array"
+    # Validate icon exists in registry (if it's a string reference)
+    if config["icon"].is_a?(String)
+      name = config["icon"]
+      unless registry.dig("icons", name)
+        errors << "Unknown icon '#{name}'. Check community/registry.json for available icons."
       end
     end
 
-    # Validate icon
-    if config["icon"]
-      case config["icon"]
-      when String
-        # Validate icon exists in community registry
-        name = config["icon"]
-        unless registry.dig("icons", name)
-          errors << "Unknown icon '#{name}'. Check community/registry.json for available icons."
+    # Validate patches exist in registry (if they're string references)
+    if config["patches"].is_a?(Array)
+      config["patches"].each do |patch_ref|
+        next unless patch_ref.is_a?(String)
+        unless registry.dig("patches", patch_ref)
+          errors << "Unknown patch '#{patch_ref}'. Check community/registry.json for available patches."
         end
-      when Hash
-        unless config["icon"]["url"] && config["icon"]["sha256"]
-          errors << "External icon requires 'url' and 'sha256'"
-        end
-      else
-        errors << "'icon' must be a string or hash with url/sha256"
-      end
-    end
-
-    # Validate revision
-    if config["revision"]
-      case config["revision"]
-      when String
-        # Single revision for all versions (valid but not recommended)
-        unless config["revision"].match?(/\A[a-f0-9]+\z/i)
-          errors << "'revision' must be a valid git commit hash"
-        end
-      when Hash
-        # Version-specific revisions: { "30": "abc123", "31": "def456" }
-        config["revision"].each do |ver, rev|
-          unless rev.is_a?(String) && rev.match?(/\A[a-f0-9]+\z/i)
-            errors << "'revision.#{ver}' must be a valid git commit hash"
-          end
-        end
-      else
-        errors << "'revision' must be a string or hash with version keys"
       end
     end
 
