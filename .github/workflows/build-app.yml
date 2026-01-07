@@ -69,7 +69,8 @@ jobs:
 
       - name: Clone Emacs source
         run: |
-          BRANCH="emacs-$EMACS_VERSION"
+          # Emacs 30 uses the latest release tag (update when new version is released)
+          BRANCH="emacs-30.2"
           git clone --depth 1 --branch "$BRANCH" \
             https://git.savannah.gnu.org/git/emacs.git emacs-src
           cd emacs-src
