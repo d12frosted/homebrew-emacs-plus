@@ -99,8 +99,9 @@ module IconApplier
       client_plist = "#{client_app_path}/Contents/Info.plist"
 
       puts "  Updating Emacs Client.app icon..."
-      FileUtils.rm_f("#{client_icons}/Emacs.icns")
-      FileUtils.cp(icon[:path], "#{client_icons}/Emacs.icns")
+      # AppleScript apps use applet.icns, not Emacs.icns
+      FileUtils.rm_f("#{client_icons}/applet.icns")
+      FileUtils.cp(icon[:path], "#{client_icons}/applet.icns")
 
       if icon[:tahoe_path]
         FileUtils.rm_f("#{client_icons}/Assets.car")
