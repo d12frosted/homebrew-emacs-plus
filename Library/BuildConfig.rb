@@ -12,8 +12,8 @@ module BuildConfig
   class ConfigurationError < StandardError; end
 
   # Known configuration keys by context
-  FORMULA_KEYS = %w[icon patches revision].freeze
-  CASK_KEYS = %w[icon native_comp_env].freeze
+  FORMULA_KEYS = %w[icon patches revision inject_path].freeze
+  CASK_KEYS = %w[icon inject_path].freeze
   ALL_KEYS = (FORMULA_KEYS + CASK_KEYS).uniq.freeze
 
   class << self
@@ -97,7 +97,7 @@ module BuildConfig
       validate_icon!(config["icon"], path) if config.key?("icon")
       validate_patches!(config["patches"], path) if config.key?("patches")
       validate_revision!(config["revision"], path) if config.key?("revision")
-      validate_native_comp_env!(config["native_comp_env"], path) if config.key?("native_comp_env")
+      validate_inject_path!(config["inject_path"], path) if config.key?("inject_path")
     end
 
     # Suggest correct key name for typos
@@ -148,11 +148,11 @@ module BuildConfig
       end
     end
 
-    def validate_native_comp_env!(value, path)
+    def validate_inject_path!(value, path)
       return if [true, false].include?(value)
 
       raise ConfigurationError,
-        "Invalid 'native_comp_env' in #{path}\n" \
+        "Invalid 'inject_path' in #{path}\n" \
         "Expected: true or false\n" \
         "Got: #{value.inspect} (#{value.class})"
     end
@@ -235,8 +235,6 @@ module BuildConfig
       when :cask
         warnings << "'patches' is ignored (patches are only applied during formula builds)" if config.key?("patches")
         warnings << "'revision' is ignored (revision pinning is only used during formula builds)" if config.key?("revision")
-      when :formula
-        warnings << "'native_comp_env' is ignored (only used in cask installations)" if config.key?("native_comp_env")
       end
       warnings
     end

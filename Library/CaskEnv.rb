@@ -5,17 +5,23 @@
 # This module configures the Emacs.app bundle for proper operation when
 # installed via cask. It handles:
 #
-# 1. LSEnvironment in Info.plist - Sets PATH, CC, LIBRARY_PATH so native
+# 1. LSEnvironment in Info.plist - Sets CC and LIBRARY_PATH so native
 #    compilation works when launching from Finder/Dock
 #
 # 2. CLI wrapper script - Creates bin/emacs wrapper so running via symlink
 #    from terminal can find bundle resources
 #
-# 3. Emacs Client.app - Recompiles AppleScript with proper PATH
+# 3. Emacs Client.app - Recompiles AppleScript with PATH for emacsclient
 #
-# Configuration via ~/.config/emacs-plus/build.yml:
-#   native_comp_env: true   # Enable (default)
-#   native_comp_env: false  # Disable
+# 4. site-start.el - Adds ns-emacs-plus-version and PATH injection code
+#
+# LIMITATION: Unlike formula builds, cask postflight runs in Homebrew's
+# controlled environment without access to the user's full PATH. Therefore:
+# - User PATH injection (inject_path option) does not apply to cask builds
+# - ns-emacs-plus-injected-path will always be nil for cask builds
+# - Cask users should use exec-path-from-shell or switch to formula
+#
+# Native compilation works via CC and LIBRARY_PATH without needing PATH.
 
 require_relative 'BuildConfig'
 
@@ -24,27 +30,28 @@ module CaskEnv
     # Inject environment into Emacs.app and Emacs Client.app
     # Returns true if any modifications were made
     def inject(emacs_app, emacs_client_app)
-      # Check if injection is disabled in build.yml
       result = BuildConfig.load_config
-      config = result[:config]
+      @config = result[:config]
 
       if result[:source]
         puts "==> Loaded build config from: #{result[:source]}"
-        BuildConfig.print_config(config, result[:source], context: :cask, output: method(:puts))
-      end
-
-      if config.key?("native_comp_env") && !config["native_comp_env"]
-        puts "Native compilation environment injection disabled in build.yml"
-        return false
+        BuildConfig.print_config(@config, result[:source], context: :cask, output: method(:puts))
       end
 
       modified = false
       modified |= inject_emacs_app(emacs_app)
       modified |= inject_emacs_client_app(emacs_client_app)
+      update_site_start_el(emacs_app)
       modified
     end
 
     private
+
+    # Check if user PATH injection is enabled (default: true)
+    def inject_path?
+      return true unless @config
+      !@config.key?("inject_path") || @config["inject_path"]
+    end
 
     # Detect Homebrew prefix based on architecture
     def homebrew_prefix
@@ -55,8 +62,8 @@ module CaskEnv
       end
     end
 
-    # Build the PATH value for injection
-    def build_path
+    # Build the base PATH for native compilation (always included first)
+    def native_comp_path
       prefix = homebrew_prefix
       [
         "#{prefix}/bin",
@@ -66,6 +73,43 @@ module CaskEnv
         "/usr/sbin",
         "/sbin",
       ].join(":")
+    end
+
+    # Build the full PATH value for injection
+    # Native comp paths come first, user PATH appended when inject_path: true
+    def build_path
+      path = native_comp_path
+
+      if inject_path?
+        # Get user's real PATH from a login shell
+        # (cask postflight runs in Homebrew's modified environment)
+        user_path = get_user_path
+        if user_path && !user_path.empty?
+          # Filter out paths that are already in native_comp_path to avoid duplicates
+          native_parts = path.split(':')
+          user_parts = user_path.split(':').reject { |p| native_parts.include?(p) }
+          path = "#{path}:#{user_parts.join(':')}" unless user_parts.empty?
+        end
+      end
+
+      path
+    end
+
+    # Get PATH from current environment, filtering out Homebrew shim paths
+    #
+    # NOTE: In cask postflight, ENV['PATH'] only contains system paths, not
+    # the user's shell PATH. This is a Homebrew limitation. The result is
+    # that cask builds only get native compilation paths, not user paths.
+    # Users who need their full PATH should use the formula or exec-path-from-shell.
+    def get_user_path
+      current_path = ENV['PATH']
+      return nil if current_path.nil? || current_path.empty?
+
+      # Filter out Homebrew shim paths and deduplicate
+      filtered = current_path.split(':')
+                             .reject { |p| p.include?('Homebrew/shims') }
+                             .uniq
+      filtered.empty? ? nil : filtered.join(':')
     end
 
     # Find the gcc version number (e.g., "15")
@@ -114,15 +158,25 @@ module CaskEnv
       existing = `defaults read "#{plist}" LSEnvironment 2>/dev/null`.strip
       return false unless existing.empty? || existing.include?("does not exist")
 
+      # Note: For cask, we can only inject native compilation paths (not user PATH)
+      # due to Homebrew limitation - cask postflight doesn't have user's shell environment
       puts "Injecting native compilation environment into #{app_path}"
 
       prefix = homebrew_prefix
       version = gcc_version
 
-      # Add LSEnvironment dict with PATH, CC, and LIBRARY_PATH
+      # Add LSEnvironment dict
       system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment dict", plist)
-      system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:PATH string '#{build_path}'", plist)
 
+      # NOTE: We intentionally do NOT set EMACS_PLUS_PATH for cask builds.
+      # Since cask postflight can't access user's shell PATH (Homebrew limitation),
+      # setting EMACS_PLUS_PATH would only contain native comp paths, and
+      # ns-emacs-plus-injected-path would be t - misleading users into thinking
+      # their full PATH was injected. Instead, we let ns-emacs-plus-injected-path
+      # be nil so users properly use exec-path-from-shell.
+      # Native compilation still works via CC and LIBRARY_PATH below.
+
+      # CC and LIBRARY_PATH: Always set for native compilation
       if version
         system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:CC string '#{prefix}/bin/gcc-#{version}'", plist)
       end
@@ -172,7 +226,8 @@ module CaskEnv
       marker_check = `defaults read "#{plist}" EmacsPlusPathInjected 2>/dev/null`.strip
       return false if marker_check == "1"
 
-      puts "Injecting PATH into #{app_path}"
+      # Note: For cask, we can only inject native compilation paths (not user PATH)
+      puts "Injecting native compilation environment into #{app_path}"
 
       # The emacsclient path - use the symlinked binary from Homebrew prefix
       emacsclient = "#{homebrew_prefix}/bin/emacsclient"
@@ -260,6 +315,50 @@ module CaskEnv
       system("/usr/libexec/PlistBuddy", "-c", "Set :CFBundleIconFile applet", plist)
 
       true
+    end
+
+    # Update site-start.el to add PATH injection code
+    # The CI build creates site-start.el with ns-emacs-plus-version, but
+    # the PATH injection code must be added at user install time since
+    # that's when EMACS_PLUS_PATH is set via LSEnvironment
+    def update_site_start_el(app_path)
+      site_start = "#{app_path}/Contents/Resources/site-lisp/site-start.el"
+      return unless File.exist?(site_start)
+
+      content = File.read(site_start)
+
+      # Skip if already has ns-emacs-plus-injected-path
+      return if content.include?("ns-emacs-plus-injected-path")
+
+      # Insert PATH injection code before (provide 'emacs-plus)
+      # ns-emacs-plus-injected-path is dynamically computed from EMACS_PLUS_PATH
+      new_content = content.sub(
+        "(provide 'emacs-plus)",
+        <<~ELISP.chomp
+          ;; PATH injection via EMACS_PLUS_PATH
+          ;; macOS blocks PATH in LSEnvironment for security reasons, so we store
+          ;; the desired PATH in EMACS_PLUS_PATH and apply it here at startup.
+          (defconst ns-emacs-plus-injected-path
+            (not (null (getenv "EMACS_PLUS_PATH")))
+            "Non-nil if PATH was injected by Emacs Plus at install time.
+          When this is t, you can skip exec-path-from-shell-initialize:
+
+            (unless (bound-and-true-p ns-emacs-plus-injected-path)
+              (exec-path-from-shell-initialize))")
+
+          (when-let ((emacs-plus-path (getenv "EMACS_PLUS_PATH")))
+            ;; Set exec-path for Emacs to find executables
+            (setq exec-path (append (split-string emacs-plus-path ":" t)
+                                    (list exec-directory)))
+            ;; Set PATH in process-environment for subprocesses
+            (setenv "PATH" emacs-plus-path))
+
+          (provide 'emacs-plus)
+        ELISP
+      )
+
+      File.write(site_start, new_content)
+      puts "Updated site-start.el with PATH injection code"
     end
 
     # Escape a string for embedding in an AppleScript double-quoted string
