@@ -45,29 +45,29 @@ class TestBuildConfig < Minitest::Test
     end
   end
 
-  def test_valid_native_comp_env_true
-    with_temp_config("native_comp_env: true") do |path|
+  def test_valid_inject_path_true
+    with_temp_config("inject_path: true") do |path|
       result = load_config_from_path(path)
-      assert_equal true, result[:config]["native_comp_env"]
+      assert_equal true, result[:config]["inject_path"]
     end
   end
 
-  def test_valid_native_comp_env_false
-    with_temp_config("native_comp_env: false") do |path|
+  def test_valid_inject_path_false
+    with_temp_config("inject_path: false") do |path|
       result = load_config_from_path(path)
-      assert_equal false, result[:config]["native_comp_env"]
+      assert_equal false, result[:config]["inject_path"]
     end
   end
 
   def test_valid_full_config
     yaml = <<~YAML
       icon: spacemacs
-      native_comp_env: true
+      inject_path: true
     YAML
     with_temp_config(yaml) do |path|
       result = load_config_from_path(path)
       assert_equal "spacemacs", result[:config]["icon"]
-      assert_equal true, result[:config]["native_comp_env"]
+      assert_equal true, result[:config]["inject_path"]
     end
   end
 
@@ -124,23 +124,23 @@ class TestBuildConfig < Minitest::Test
   # Tests for invalid field values
   # ===========================================
 
-  def test_invalid_native_comp_env_string
+  def test_invalid_inject_path_string
     # Note: YAML 1.1 treats "yes"/"no" as booleans, so we use a quoted string
-    with_temp_config('native_comp_env: "yes"') do |path|
+    with_temp_config('inject_path: "yes"') do |path|
       error = assert_raises(BuildConfig::ConfigurationError) do
         load_config_from_path(path)
       end
-      assert_includes error.message, "Invalid 'native_comp_env'"
+      assert_includes error.message, "Invalid 'inject_path'"
       assert_includes error.message, "Expected: true or false"
     end
   end
 
-  def test_invalid_native_comp_env_number
-    with_temp_config("native_comp_env: 1") do |path|
+  def test_invalid_inject_path_number
+    with_temp_config("inject_path: 1") do |path|
       error = assert_raises(BuildConfig::ConfigurationError) do
         load_config_from_path(path)
       end
-      assert_includes error.message, "Invalid 'native_comp_env'"
+      assert_includes error.message, "Invalid 'inject_path'"
     end
   end
 
@@ -416,12 +416,11 @@ class TestBuildConfig < Minitest::Test
     assert_includes warnings.first, "ignored"
   end
 
-  def test_formula_context_warns_about_native_comp_env
-    config = { "native_comp_env" => true }
+  def test_formula_context_no_warning_for_inject_path
+    # inject_path applies to both formula and cask, so no warning
+    config = { "inject_path" => true }
     warnings = BuildConfig.context_warnings(config, :formula)
-    assert_equal 1, warnings.length
-    assert_includes warnings.first, "native_comp_env"
-    assert_includes warnings.first, "ignored"
+    assert_empty warnings
   end
 
   def test_cask_context_no_warning_for_icon

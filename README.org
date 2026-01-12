@@ -176,27 +176,17 @@ The configuration file is searched in this order:
 icon: dragon-plus
 patches:
   - fix-window-role
-native_comp_env: true
+inject_path: true
 #+end_src
 
 *** Available Options
 
-| Option            | Default | Description                                                                  |
-|-------------------+---------+------------------------------------------------------------------------------|
-| =icon=            | /none/  | Custom icon to apply. See [[./community/icons/README.md][→ Icons Gallery]] for available icons.               |
-| =patches=         | /none/  | (Formula only) List of community patches to apply. See [[#community-features][→ Community Features]]. |
-| =revision=        | /none/  | (Formula only) Pin Emacs source to a specific git revision.                  |
-| =native_comp_env= | =true=  | (Cask only) Inject environment variables for native compilation.             |
-
-*** Native Compilation Environment (Cask)
-
-When installing via cask, Emacs+ automatically injects environment variables (=PATH=, =CC=, =LIBRARY_PATH=) into =Emacs.app= so that native compilation works when launching from Finder/Dock. This ensures =libgccjit= can find =gcc= and its libraries without requiring shell configuration.
-
-To disable this (e.g., if you manage your environment differently):
-
-#+begin_src yaml
-native_comp_env: false
-#+end_src
+| Option        | Default | Description                                                                  |
+|---------------+---------+------------------------------------------------------------------------------|
+| =icon=        | /none/  | Custom icon to apply. See [[./community/icons/README.md][→ Icons Gallery]] for available icons.               |
+| =patches=     | /none/  | (Formula only) List of community patches to apply. See [[#community-features][→ Community Features]]. |
+| =revision=    | /none/  | (Formula only) Pin Emacs source to a specific git revision.                  |
+| =inject_path= | =true=  | (Formula only) Inject user's PATH into Emacs.app. See [[#injected-path][→ Injected PATH]].     |
 
 For more customization options, see [[#community-features][→ Community Features]] for patches and [[#icons][→ Icons]] for icon customization.
 
@@ -303,24 +293,51 @@ In macOS applications are started in the login environment, meaning that all use
 
 There is a wonderful solution to overcome this problem, [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]]. As with any package that is not preinstalled with Emacs, you need to discover it first, and then install it. And while being a well known package and popular package (top 100 on MELPA), not everyone install it. In addition, with =native-comp= feature you might need it's functionality before any package is bootstrapped.
 
-All that being said, during installation Emacs+ injects value of =PATH= into =Emacs.app/Contents/Info.plist= file, making this value available whenever you start =Emacs.app= from Finder, Docker, Spotlight, =open= command in Terminal or via =launchd=. This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]], but if needed you can still fall back to this wonderful package, especially if you need other variables.
+**** Formula builds
+
+For formula builds (=brew install emacs-plus@30=), Emacs+ captures your shell's PATH at install time and injects it into =Emacs.app=. This makes your PATH available whenever you start =Emacs.app= from Finder, Dock, Spotlight, =open= command, or =launchd=. This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]].
+
+To disable PATH injection for formula builds, set =inject_path: false= in your =build.yml= and reinstall:
+
+#+begin_src yaml
+inject_path: false
+#+end_src
 
 In case you have a non-trivial setup relying on specific value of =PATH= inherited from current terminal session, it is advised to start Emacs using =/opt/homebrew/bin/emacs= instead of =open -n -a /path/to/Emacs.app=, because =open= messes around with =PATH= value even without Emacs+ injection. You can find more information in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]].
 
-To disable PATH injection at runtime, set the =EMACS_PLUS_NO_PATH_INJECTION= environment variable to any non-empty value before launching Emacs.
+**** Cask builds
 
-And if for some reason PATH injection doesn't work for you, report it either in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/469][#469]] or open a new issue.
+For cask builds (=brew install --cask emacs-plus-app=), PATH injection is *not available* due to a Homebrew limitation - cask postflight doesn't have access to the user's shell environment. Native compilation still works because =CC= and =LIBRARY_PATH= are injected.
+
+Cask users who need their shell PATH in Emacs should use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]]:
+
+#+begin_src elisp
+(exec-path-from-shell-initialize)
+#+end_src
+
+If you need full PATH injection, use the formula instead of the cask.
 
 *** Detecting Emacs Plus
 
-Starting with =emacs-plus@30= and =emacs-plus@31=, the variable =ns-emacs-plus-version= is defined, allowing you to detect Emacs Plus in your init.el:
+Starting with =emacs-plus@30= and =emacs-plus@31=, the following variables are defined in =site-start.el=:
+
+| Variable                      | Description                                                           |
+|-------------------------------+-----------------------------------------------------------------------|
+| =ns-emacs-plus-version=       | Major version of Emacs Plus (e.g., 30 or 31)                          |
+| =ns-emacs-plus-injected-path= | Non-nil if user PATH was injected (formula with =inject_path: true=)  |
+
+This allows you to detect Emacs Plus and conditionally configure your init.el:
 
 #+begin_src elisp
 (when (bound-and-true-p ns-emacs-plus-version)
   ;; Emacs Plus specific configuration
   )
 
-;; Or check specific version
+;; Skip exec-path-from-shell if PATH was already injected
+(unless (bound-and-true-p ns-emacs-plus-injected-path)
+  (exec-path-from-shell-initialize))
+
+;; Check specific version
 (when (and (bound-and-true-p ns-emacs-plus-version)
            (>= ns-emacs-plus-version 31))
   ;; Emacs Plus 31+ specific

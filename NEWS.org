@@ -3,6 +3,51 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-01-11
+
+** Breaking Changes
+
+*** Replaced =native_comp_env= with =inject_path= in build.yml
+
+The =native_comp_env= option in =build.yml= has been replaced with =inject_path=:
+
+#+begin_src yaml
+# Old (no longer works)
+native_comp_env: false
+
+# New
+inject_path: false
+#+end_src
+
+Native compilation environment (=CC=, =LIBRARY_PATH=) is now always injected. The =inject_path= option controls whether user's PATH is also injected.
+
+*** Removed =EMACS_PLUS_NO_PATH_INJECTION= environment variable
+
+The runtime opt-out via =EMACS_PLUS_NO_PATH_INJECTION= environment variable has been removed. To disable PATH injection, use =inject_path: false= in =build.yml= and reinstall.
+
+** New Features
+
+*** =inject_path= option for formula builds
+
+The =inject_path= option in =build.yml= controls user PATH injection for formula builds (default: =true=). When enabled, your shell's full PATH is captured at install time and injected into =Emacs.app=.
+
+Note: This option does not apply to cask builds. Due to a Homebrew limitation, cask postflight doesn't have access to the user's shell environment. Cask users should use =exec-path-from-shell= or switch to the formula for full PATH injection.
+
+*** =ns-emacs-plus-injected-path= variable
+
+A new variable =ns-emacs-plus-injected-path= is defined in =site-start.el=. It is non-nil only for formula builds with =inject_path: true=. This allows you to conditionally skip =exec-path-from-shell=:
+
+#+begin_src elisp
+(unless (bound-and-true-p ns-emacs-plus-injected-path)
+  (exec-path-from-shell-initialize))
+#+end_src
+
+** Internal Changes
+
+*** Unified PATH injection via LSEnvironment
+
+Both formula and cask now use =LSEnvironment= in =Info.plist= for PATH injection (previously formula used a wrapper script). This simplifies the codebase and ensures consistent behavior.
+
 * 2026-01-05
 
 ** Breaking Changes

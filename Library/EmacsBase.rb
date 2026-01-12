@@ -367,33 +367,92 @@ class EmacsBase < Formula
   end
 
   # ============================================================
-  # PATH Injection
+  # PATH Injection via LSEnvironment
   # ============================================================
 
-  def path_injection_snippet
-    path = PATH.new(ORIGINAL_PATHS)
+  # Check if user PATH injection is enabled (default: true)
+  def inject_path?
+    config = custom_config
+    !config.key?("inject_path") || config["inject_path"]
+  end
 
-    # Escape single quotes for use within single-quoted shell string
-    # Replace ' with '\'' (end quote, escaped quote, start quote)
-    escaped_path = path.to_s.gsub("'", "'\\''")
+  # Build the base PATH for native compilation (always included first)
+  def native_comp_path
+    # Use Homebrew's detected prefix
+    prefix_path = HOMEBREW_PREFIX.to_s
+    [
+      "#{prefix_path}/bin",
+      "#{prefix_path}/sbin",
+      "/usr/bin",
+      "/bin",
+      "/usr/sbin",
+      "/sbin",
+    ].join(":")
+  end
 
-    <<~EOS
-      if [ -z "$EMACS_PLUS_NO_PATH_INJECTION" ]; then
-        export PATH='#{escaped_path}'
-      fi
-    EOS
+  # Build the full PATH value for injection
+  # Native comp paths come first, user PATH appended when inject_path: true
+  def build_path
+    path = native_comp_path
+
+    if inject_path?
+      # Use ORIGINAL_PATHS from Homebrew (user's PATH before superenv)
+      user_path = PATH.new(ORIGINAL_PATHS).to_s
+      if user_path && !user_path.empty?
+        # Filter out paths that are already in native_comp_path to avoid duplicates
+        native_parts = path.split(':')
+        user_parts = user_path.split(':').reject { |p| native_parts.include?(p) }
+        path = "#{path}:#{user_parts.join(':')}" unless user_parts.empty?
+      end
+    end
+
+    path
+  end
+
+  # Find the gcc version number (e.g., "15")
+  def gcc_version
+    Dir.glob("#{HOMEBREW_PREFIX}/bin/gcc-*").map do |path|
+      File.basename(path).sub("gcc-", "")
+    end.select { |v| v.match?(/^\d+$/) }.max
+  end
+
+  # Find the directory containing libemutls_w.a
+  def find_emutls_dir
+    gcc_cellar = "#{HOMEBREW_PREFIX}/Cellar/gcc"
+    return nil unless File.directory?(gcc_cellar)
+
+    emutls_files = Dir.glob("#{gcc_cellar}/**/libemutls_w.a")
+    return nil if emutls_files.empty?
+
+    File.dirname(emutls_files.first)
+  end
+
+  # Build LIBRARY_PATH for native compilation
+  def build_library_path
+    paths = []
+
+    # Add emutls directory (critical for native compilation)
+    emutls_dir = find_emutls_dir
+    paths << emutls_dir if emutls_dir
+
+    # Add gcc library directories
+    paths << "#{HOMEBREW_PREFIX}/lib/gcc/current"
+    paths << "#{HOMEBREW_PREFIX}/lib"
+
+    paths.compact.join(":")
   end
 
   def inject_emacs_plus_site_lisp(major_version)
-    app = "#{prefix}/Emacs.app"
-    site_lisp_dir = "#{app}/Contents/Resources/site-lisp"
+    # Install to Homebrew's shared site-lisp directory
+    # Emacs looks here for site-start.el at startup
+    site_lisp_dir = "#{share}/emacs/site-lisp"
 
     ohai "Creating Emacs Plus site-lisp with ns-emacs-plus-version = #{major_version}"
 
     # Create site-lisp directory
     FileUtils.mkdir_p(site_lisp_dir)
 
-    # Create site-start.el with the version variable
+    # Create site-start.el with the version variable and PATH injection code
     File.open("#{site_lisp_dir}/site-start.el", "w") do |f|
       f.write <<~EOS
         ;;; site-start.el --- Emacs Plus site initialization -*- lexical-binding: t -*-
@@ -409,6 +468,24 @@ class EmacsBase < Formula
             ;; Emacs Plus specific configuration
             )")
 
+        ;; PATH injection via EMACS_PLUS_PATH
+        ;; macOS blocks PATH in LSEnvironment for security reasons, so we store
+        ;; the desired PATH in EMACS_PLUS_PATH and apply it here at startup.
+        (defconst ns-emacs-plus-injected-path
+          (not (null (getenv "EMACS_PLUS_PATH")))
+          "Non-nil if PATH was injected by Emacs Plus at install time.
+        When this is t, you can skip exec-path-from-shell-initialize:
+
+          (unless (bound-and-true-p ns-emacs-plus-injected-path)
+            (exec-path-from-shell-initialize))")
+
+        (when-let ((emacs-plus-path (getenv "EMACS_PLUS_PATH")))
+          ;; Set exec-path for Emacs to find executables
+          (setq exec-path (append (split-string emacs-plus-path ":" t)
+                                  (list exec-directory)))
+          ;; Set PATH in process-environment for subprocesses
+          (setenv "PATH" emacs-plus-path))
+
         (provide 'emacs-plus)
 
         ;;; site-start.el ends here
@@ -417,37 +494,41 @@ class EmacsBase < Formula
   end
 
   def inject_path
-    ohai "Injecting PATH via wrapper script in Emacs.app/Contents/MacOS/Emacs"
     app = "#{prefix}/Emacs.app"
-    emacs_binary = "#{app}/Contents/MacOS/Emacs"
-    emacs_real = "#{app}/Contents/MacOS/Emacs-real"
-    path = PATH.new(ORIGINAL_PATHS)
+    plist = "#{app}/Contents/Info.plist"
 
-    puts "Creating wrapper script with following PATH value:"
-    path.each_entry { |x|
-      puts x
-    }
-
-    # Rename original binary
-    File.rename(emacs_binary, emacs_real) unless File.exist?(emacs_real)
-
-    # Create wrapper script with relative path for relocatability
-    File.open(emacs_binary, "w") do |f|
-      f.write <<~EOS
-        #!/bin/sh
-        #{path_injection_snippet.chomp}
-        # Prepend Emacs Plus site-lisp to load-path for site-start.el
-        EMACS_PLUS_SITE_LISP="$(dirname "$0")/../Resources/site-lisp"
-        if [ -d "$EMACS_PLUS_SITE_LISP" ]; then
-          export EMACSLOADPATH="$EMACS_PLUS_SITE_LISP:${EMACSLOADPATH:-}"
-        fi
-        exec "$(dirname "$0")/Emacs-real" "$@"
-      EOS
+    if inject_path?
+      ohai "Injecting native compilation environment and user PATH into #{app}"
+    else
+      ohai "Injecting native compilation environment into #{app}"
     end
 
-    # Make executable
-    File.chmod(0755, emacs_binary)
-    system "touch '#{app}'"
+    # Add LSEnvironment dict
+    system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment dict", plist)
+
+    # EMACS_PLUS_PATH: Only set when inject_path is enabled
+    # macOS blocks PATH in LSEnvironment for security reasons, so we use
+    # a custom env var that site-start.el reads to set exec-path and PATH
+    if inject_path?
+      path = build_path
+      puts "EMACS_PLUS_PATH value:"
+      path.split(':').each { |p| puts "  #{p}" }
+      system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:EMACS_PLUS_PATH string '#{path}'", plist)
+    end
+
+    # CC and LIBRARY_PATH: Always set for native compilation
+    version = gcc_version
+    if version
+      system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:CC string '#{HOMEBREW_PREFIX}/bin/gcc-#{version}'", plist)
+    end
+
+    library_path = build_library_path
+    unless library_path.empty?
+      system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:LIBRARY_PATH string '#{library_path}'", plist)
+    end
+
+    # Touch the app to update LaunchServices cache
+    system("touch", app)
   end
 
   def print_env
@@ -525,8 +606,8 @@ class EmacsBase < Formula
     ohai "Creating Emacs Client.app"
 
     # Prepare PATH for injection into AppleScript (see escape_for_applescript_shell)
-    path = PATH.new(ORIGINAL_PATHS)
-    escaped_path = escape_for_applescript_shell(path.to_s)
+    # Use the same build_path logic as inject_path for consistency
+    escaped_path = escape_for_applescript_shell(build_path)
 
     # Create AppleScript source
     client_script = buildpath/"emacs-client.applescript"
@@ -537,14 +618,8 @@ class EmacsBase < Formula
       on open theDropped
         repeat with oneDrop in theDropped
           set dropPath to quoted form of POSIX path of oneDrop
-          set pathInjection to system attribute "EMACS_PLUS_NO_PATH_INJECTION"
-          if pathInjection is "" then
-            set pathEnv to "PATH='#{escaped_path}' "
-          else
-            set pathEnv to ""
-          end if
           try
-            do shell script pathEnv & "#{prefix}/bin/emacsclient -c -a '' -n " & dropPath
+            do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n " & dropPath
           end try
         end repeat
         try
@@ -554,14 +629,8 @@ class EmacsBase < Formula
 
       -- Handle launch without files (from Spotlight, Dock, or Finder)
       on run
-        set pathInjection to system attribute "EMACS_PLUS_NO_PATH_INJECTION"
-        if pathInjection is "" then
-          set pathEnv to "PATH='#{escaped_path}' "
-        else
-          set pathEnv to ""
-        end if
         try
-          do shell script pathEnv & "#{prefix}/bin/emacsclient -c -a '' -n"
+          do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n"
         end try
         try
           do shell script "open -a Emacs"
@@ -570,14 +639,8 @@ class EmacsBase < Formula
 
       -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
       on open location this_URL
-        set pathInjection to system attribute "EMACS_PLUS_NO_PATH_INJECTION"
-        if pathInjection is "" then
-          set pathEnv to "PATH='#{escaped_path}' "
-        else
-          set pathEnv to ""
-        end if
         try
-          do shell script pathEnv & "#{prefix}/bin/emacsclient -n " & quoted form of this_URL
+          do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -n " & quoted form of this_URL
         end try
         try
           do shell script "open -a Emacs"

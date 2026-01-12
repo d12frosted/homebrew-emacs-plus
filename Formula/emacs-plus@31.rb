@@ -219,14 +219,6 @@ class EmacsPlusAT31 < EmacsBase
       # inject PATH to Info.plist
       inject_path
 
-      # Rename dSYM to match the binary name (Emacs-real) so lldb auto-finds it
-      if build.with? "debug"
-        dsym_path = prefix/"Emacs.app/Contents/MacOS/Emacs.dSYM"
-        if dsym_path.exist?
-          mv dsym_path, prefix/"Emacs.app/Contents/MacOS/Emacs-real.dSYM"
-        end
-      end
-
       # inject description for protected resources usage
       inject_protected_resources_usage_desc
 
