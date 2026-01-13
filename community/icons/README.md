@@ -30,10 +30,15 @@ brew reinstall --cask emacs-plus@31 # cask
 These icons include `Assets.car` for native macOS Tahoe support. They display
 properly without the "icon jail" effect and react to system appearance changes.
 
-| Light | Dark | Name | Author | Source |
-|:-----:|:----:|------|--------|--------|
-| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
-| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
+**Note on pre-Tahoe compatibility:** Tahoe icons may contain multiple style variants
+(light, dark, tinted, etc.) that only macOS 26+ can display. On older systems, the
+fallback `.icns` file is used, which may not match the colorful preview shown here.
+Check the "Pre-Tahoe" column to see if an icon has proper pre-Tahoe support.
+
+| Light | Dark | Name | Pre-Tahoe | Author | Source |
+|:-----:|:----:|------|:---------:|--------|--------|
+| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | ✓ | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
+| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | ✗ | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
 
 ## All Icons (75)
 
