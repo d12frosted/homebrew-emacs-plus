@@ -76,23 +76,18 @@ module CaskEnv
     end
 
     # Build the full PATH value for injection
-    # Native comp paths come first, user PATH appended when inject_path: true
+    # User PATH comes first (preserving order), native comp paths appended if missing
     def build_path
-      path = native_comp_path
-
       if inject_path?
-        # Get user's real PATH from a login shell
-        # (cask postflight runs in Homebrew's modified environment)
         user_path = get_user_path
         if user_path && !user_path.empty?
-          # Filter out paths that are already in native_comp_path to avoid duplicates
-          native_parts = path.split(':')
-          user_parts = user_path.split(':').reject { |p| native_parts.include?(p) }
-          path = "#{path}:#{user_parts.join(':')}" unless user_parts.empty?
+          user_parts = user_path.split(':')
+          native_parts = native_comp_path.split(':')
+          missing_native = native_parts.reject { |p| user_parts.include?(p) }
+          return missing_native.empty? ? user_path : "#{user_path}:#{missing_native.join(':')}"
         end
       end
-
-      path
+      native_comp_path
     end
 
     # Get PATH from current environment, filtering out Homebrew shim paths

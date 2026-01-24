@@ -391,22 +391,18 @@ class EmacsBase < Formula
   end
 
   # Build the full PATH value for injection
-  # Native comp paths come first, user PATH appended when inject_path: true
+  # User PATH comes first (preserving order), native comp paths appended if missing
   def build_path
-    path = native_comp_path
-
     if inject_path?
-      # Use ORIGINAL_PATHS from Homebrew (user's PATH before superenv)
       user_path = PATH.new(ORIGINAL_PATHS).to_s
       if user_path && !user_path.empty?
-        # Filter out paths that are already in native_comp_path to avoid duplicates
-        native_parts = path.split(':')
-        user_parts = user_path.split(':').reject { |p| native_parts.include?(p) }
-        path = "#{path}:#{user_parts.join(':')}" unless user_parts.empty?
+        user_parts = user_path.split(':')
+        native_parts = native_comp_path.split(':')
+        missing_native = native_parts.reject { |p| user_parts.include?(p) }
+        return missing_native.empty? ? user_path : "#{user_path}:#{missing_native.join(':')}"
       end
     end
-
-    path
+    native_comp_path
   end
 
   # Find the gcc version number (e.g., "15")
