@@ -53,9 +53,14 @@ module CaskEnv
       !@config.key?("inject_path") || @config["inject_path"]
     end
 
-    # Detect Homebrew prefix based on architecture
+    # Detect Homebrew prefix
+    # Uses HOMEBREW_PREFIX constant (available in cask context) or falls back to architecture guess
     def homebrew_prefix
-      if Hardware::CPU.arm?
+      if defined?(HOMEBREW_PREFIX)
+        HOMEBREW_PREFIX.to_s
+      elsif ENV['HOMEBREW_PREFIX']
+        ENV['HOMEBREW_PREFIX']
+      elsif Hardware::CPU.arm?
         "/opt/homebrew"
       else
         "/usr/local"

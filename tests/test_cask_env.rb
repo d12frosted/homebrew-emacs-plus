@@ -79,12 +79,20 @@ class TestCaskEnv < Minitest::Test
 
   def test_native_comp_path_intel
     Hardware::CPU.mock_arm = false
-    path = CaskEnv.send(:native_comp_path)
+    # Clear HOMEBREW_PREFIX to test architecture-based fallback
+    original_env = ENV['HOMEBREW_PREFIX']
+    ENV.delete('HOMEBREW_PREFIX')
 
-    assert_includes path, "/usr/local/bin"
-    assert_includes path, "/usr/local/sbin"
-    assert_includes path, "/usr/bin"
-    refute_includes path, "/opt/homebrew"
+    begin
+      path = CaskEnv.send(:native_comp_path)
+
+      assert_includes path, "/usr/local/bin"
+      assert_includes path, "/usr/local/sbin"
+      assert_includes path, "/usr/bin"
+      refute_includes path, "/opt/homebrew"
+    ensure
+      ENV['HOMEBREW_PREFIX'] = original_env if original_env
+    end
   end
 
   def test_native_comp_path_order
@@ -98,6 +106,25 @@ class TestCaskEnv < Minitest::Test
     # System paths after
     assert_equal "/usr/bin", parts[2]
     assert_equal "/bin", parts[3]
+  end
+
+  def test_homebrew_prefix_uses_env_when_available
+    # Save and set environment variable
+    original_env = ENV['HOMEBREW_PREFIX']
+    ENV['HOMEBREW_PREFIX'] = '/custom/homebrew'
+
+    begin
+      # Since HOMEBREW_PREFIX constant won't be defined in test context,
+      # it should fall back to the environment variable
+      prefix = CaskEnv.send(:homebrew_prefix)
+      assert_equal '/custom/homebrew', prefix
+    ensure
+      if original_env
+        ENV['HOMEBREW_PREFIX'] = original_env
+      else
+        ENV.delete('HOMEBREW_PREFIX')
+      end
+    end
   end
 
   # ===========================================
