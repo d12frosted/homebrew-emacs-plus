@@ -1,0 +1,32 @@
+Fix macOS 26 (Tahoe) scrolling lag and input handling issues.
+
+macOS 26 introduced new event processing behavior that causes scrolling
+lag and input handling problems in Emacs. This patch disables two
+features via NSUserDefaults before the application is initialized:
+- NSEventConcurrentProcessingEnabled
+- NSApplicationUpdateCycleEnabled
+
+This fix is based on the equivalent patch in emacs-mac by Mitsuharu Yamamoto.
+See: https://bitbucket.org/mituharu/emacs-mac/
+
+diff --git a/src/nsterm.m b/src/nsterm.m
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -5642,6 +5642,17 @@ ns_term_init (Lisp_Object display_name)
+   ns_pending_service_names = [[NSMutableArray alloc] init];
+   ns_pending_service_args = [[NSMutableArray alloc] init];
+
++#ifdef NS_IMPL_COCOA
++  /* Disable problematic event processing on macOS 26 (Tahoe) to avoid
++     scrolling lag and input handling issues.  */
++  NSOperatingSystemVersion osVersion =
++    [[NSProcessInfo processInfo] operatingSystemVersion];
++  if (osVersion.majorVersion >= 26)
++    [NSUserDefaults.standardUserDefaults
++        registerDefaults:@{@"NSEventConcurrentProcessingEnabled" : @"NO",
++          @"NSApplicationUpdateCycleEnabled" : @"NO"}];
++#endif
++
+   /* Start app and create the main menu, window, view.
+      Needs to be here because ns_initialize_display_info () uses AppKit classes.
+      The view will then ask the NSApp to stop and return to Emacs.  */

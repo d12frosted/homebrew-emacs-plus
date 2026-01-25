@@ -1,0 +1,14 @@
+{
+  "name": "fix-macos-tahoe-scrolling",
+  "description": "Fixes scrolling lag and input handling issues on macOS 26 (Tahoe) by disabling problematic event processing features",
+  "maintainer": {
+    "github": "d12frosted"
+  },
+  "compatibility": {
+    "emacs_versions": [
+      "30",
+      "31"
+    ]
+  },
+  "created_at": "2026-01-25"
+}
