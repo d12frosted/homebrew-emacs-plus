@@ -9,9 +9,6 @@
     },
     "mac-font-use-typo-metrics": {
       "directory": "patches/mac-font-use-typo-metrics"
-    },
-    "fix-macos-tahoe-scrolling": {
-      "directory": "patches/fix-macos-tahoe-scrolling"
     }
   },
   "icons": {

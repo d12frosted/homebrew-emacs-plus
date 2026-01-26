@@ -3,6 +3,24 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-01-26
+
+** Bug Fixes
+
+*** macOS 26 (Tahoe) scrolling lag fix now built-in
+
+The =fix-macos-tahoe-scrolling= patch has been promoted from community patch to built-in. It is now automatically applied to all =emacs-plus@30= and =emacs-plus@31= builds, including cask builds.
+
+This patch fixes scrolling lag and input handling issues on macOS 26 (Tahoe) by disabling Apple's new concurrent event processing which interferes with Emacs's NS event loop. Based on the equivalent fix in [[https://bitbucket.org/mituharu/emacs-mac/][emacs-mac]] by Mitsuharu Yamamoto.
+
+If you previously added this patch via =build.yml=, you can now remove it:
+
+#+begin_src yaml
+# No longer needed - remove from build.yml
+patches:
+  - fix-macos-tahoe-scrolling
+#+end_src
+
 * 2026-01-11
 
 ** Breaking Changes
