@@ -87,7 +87,7 @@ class EmacsPlusAT31 < EmacsBase
   opoo "The option --with-imagemagick is deprecated and will be removed in a future version. Modern Emacs has native support for most image formats (SVG via librsvg, WebP, PNG, JPEG, GIF). If you rely on ImageMagick, please open an issue describing your use case." if build.with? "imagemagick"
   local_patch "system-appearance", sha: "53283503db5ed2887e9d733baaaf80f2c810e668e782e988bda5855a0b1ebeb4"
   local_patch "round-undecorated-frame", sha: "26947b6724fc29fadd44889808c5cf0b4ce6278cf04f46086a21df50c8c4151d"
-  local_patch "fix-macos-tahoe-scrolling", sha: "8396ab7795daea1ce698ebdb03f573c07e8067e944dc74c87da8b64a3175603b"
+  local_patch "fix-macos-tahoe-scrolling", sha: "1774fcc0141c663f8d7051cc6a55f4e8233d31ebf5c3c8678e15a8a01d786de7"
 
   #
   # Install
