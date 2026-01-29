@@ -489,6 +489,12 @@ icon: modern-purple-flat
 # Apply community patches
 # patches:
 #   - patch-name-from-registry
+#   - my-patch:
+#       url: https://example.com/external.patch
+#       sha256: abc123...
+#   - local-patch:
+#       url: ~/.config/emacs-plus/my-local.patch
+#       sha256: abc123...
 #+end_src
 
 Then rebuild Emacs:

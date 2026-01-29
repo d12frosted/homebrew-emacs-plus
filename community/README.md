@@ -26,7 +26,7 @@ This directory contains community-maintained patches and icons for Emacs+.
 - No SLA - can break
 
 ### Wild-West
-- Any external URL
+- Any external URL or local file path
 - Requires SHA256 hash
 - Maximum flexibility
 
@@ -40,6 +40,12 @@ patches:
   - my-patch:
       url: https://example.com/external.patch
       sha256: abc123...
+  - local-patch:
+      url: ~/.config/emacs-plus/my-local.patch
+      sha256: abc123...
+  - relative-patch:
+      url: ./my-relative.patch   # relative to build.yml directory
+      sha256: abc123...
 
 icon: icon-name-from-registry
 # OR
@@ -47,6 +53,8 @@ icon:
   url: https://example.com/external.icns
   sha256: def456...
 ```
+
+Local file paths (`/absolute/path`, `~/home/path`, `./relative/path`) are supported for patches. Relative paths are resolved relative to the directory containing `build.yml`.
 
 See `registry.json` for available features.
 

@@ -3,6 +3,26 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-01-29
+
+** New Features
+
+*** Local file paths for patches
+
+External patches in =build.yml= now support local file paths in addition to URLs. This makes configurations portable across machines.
+
+#+begin_src yaml
+patches:
+  - my-patch:
+      url: ~/.config/emacs-plus/my-patch.patch
+      sha256: abc123...
+  - another-patch:
+      url: ./relative-to-config.patch
+      sha256: def456...
+#+end_src
+
+Supported path formats: absolute (=/path/to/patch=), home-relative (=~/path=), and relative (=./path=, =../path=). Relative paths resolve against the directory containing =build.yml=.
+
 * 2026-01-26
 
 ** Bug Fixes

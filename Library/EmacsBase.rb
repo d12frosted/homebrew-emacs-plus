@@ -106,7 +106,14 @@ class EmacsBase < Formula
         name = patch_ref.keys.first
         spec = patch_ref[name]
         odie "External patch '#{name}' requires 'url' and 'sha256'" unless spec["url"] && spec["sha256"]
-        { name: name, url: spec["url"], sha256: spec["sha256"], type: "external" }
+        url = spec["url"]
+        if local_path?(url)
+          resolved = resolve_local_path(url)
+          odie "Local patch file not found: #{resolved}" unless File.exist?(resolved)
+          { name: name, path: resolved, sha256: spec["sha256"], type: "local" }
+        else
+          { name: name, url: url, sha256: spec["sha256"], type: "external" }
+        end
       else
         odie "Invalid patch specification: #{patch_ref}"
       end
@@ -137,6 +144,21 @@ class EmacsBase < Formula
     odie "Missing patch file: #{patch_file}" unless File.exist?(patch_file)
 
     { name: name, path: patch_file, type: "community", metadata: metadata }
+  end
+
+  def local_path?(url)
+    url.start_with?("/", "./", "../", "~")
+  end
+
+  def resolve_local_path(path)
+    real_home = Etc.getpwuid.dir
+    expanded = path.sub(/\A~/, real_home)
+    if expanded.start_with?("/")
+      expanded
+    else
+      config_dir = File.dirname(custom_config_source || "#{real_home}/.config/emacs-plus/build.yml")
+      File.expand_path(expanded, config_dir)
+    end
   end
 
   def resolve_icon
@@ -276,6 +298,17 @@ class EmacsBase < Formula
         puts "    Maintainer: #{maintainer_str}" if maintainer_str
         system "patch", "-p1", "-i", patch[:path]
         odie "Failed to apply community patch: #{patch[:name]}" unless $?.success?
+      elsif patch[:type] == "local"
+        actual_sha = Digest::SHA256.file(patch[:path]).hexdigest
+        if actual_sha != patch[:sha256]
+          odie <<~ERROR
+            SHA256 mismatch for local patch: #{patch[:name]}
+            Expected: #{patch[:sha256]}
+            Actual:   #{actual_sha}
+          ERROR
+        end
+        system "patch", "-p1", "-i", patch[:path]
+        odie "Failed to apply local patch: #{patch[:name]}" unless $?.success?
       else
         # External: download with curl, verify SHA256
         tmpfile = Tempfile.new(["patch-#{patch[:name]}-", ".patch"])
