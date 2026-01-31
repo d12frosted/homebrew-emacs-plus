@@ -469,7 +469,6 @@ jobs:
             "system-appearance"
             "round-undecorated-frame"
             "mac-font-use-typo-metrics"
-            "fix-macos-tahoe-scrolling"
           )
           for patch_name in "${PATCHES[@]}"; do
             patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
