@@ -13,6 +13,8 @@
   <a href="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/build-app.yml">
     <img src="https://github.com/d12frosted/homebrew-emacs-plus/actions/workflows/build-app.yml/badge.svg" alt="Cask Build Status">
   </a>
+
+  <a href="https://github.com/sponsors/d12frosted"><img alt="Sponsor" src="https://img.shields.io/badge/Sponsor-d12frosted-pink?logo=githubsponsors&logoColor=white"/></a>
 </p>
 #+end_html
 
@@ -658,7 +660,6 @@ The build will display the pinned revision during installation.
 
 Many thanks to all [[https://github.com/d12frosted/homebrew-emacs-plus/graphs/contributors][→ contributors]], issue reporters and bottle providers ([[https://github.com/wadkar][→ Sudarshan Wadkar]], [[https://github.com/jonhermansen][→ Jon Hermansen]]).
 
-Special thanks to patrons [[https://www.patreon.com/d12frosted][supporting]] existence of this project:
+* Support
 
-- [[https://github.com/jidicula][→ Johanan Idicula]]
-- [[http://github.com/lyndondrake][→ Lyndon Drake]]
+If you enjoy this project, you can support its development via [[https://github.com/sponsors/d12frosted][GitHub Sponsors]] or [[https://www.patreon.com/d12frosted][Patreon]].
