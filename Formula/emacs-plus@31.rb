@@ -228,8 +228,17 @@ class EmacsPlusAT31 < EmacsBase
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
         #!/bin/bash
+        EXPECTED_VERSION="#{version}"
         for app in "/Applications/Emacs.app" "$HOME/Applications/Emacs.app" "#{prefix}/Emacs.app"; do
           if [ -x "$app/Contents/MacOS/Emacs" ]; then
+            # Warn if a user-copied app has a different version than the installed formula
+            if [ "$app" != "#{prefix}/Emacs.app" ]; then
+              found_version=$("$app/Contents/MacOS/Emacs" --version 2>/dev/null | head -1 | sed 's/GNU Emacs //')
+              if [ -n "$found_version" ] && [ "$found_version" != "$EXPECTED_VERSION" ]; then
+                echo "Warning: $app is version $found_version (expected $EXPECTED_VERSION)" >&2
+                echo "Update with: cp -r #{prefix}/Emacs.app \\\"\\${app%Emacs.app}\\\"" >&2
+              fi
+            fi
             exec "$app/Contents/MacOS/Emacs" "$@"
           fi
         done
