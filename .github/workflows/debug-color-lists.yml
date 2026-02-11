@@ -1,0 +1,27 @@
+name: Debug NS Color Lists
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug-color-lists:
+    runs-on: macos-latest
+    steps:
+      - name: Print available NSColorLists
+        run: |
+          cat > /tmp/list_colors.m << 'EOF'
+          #import <Cocoa/Cocoa.h>
+
+          int main() {
+              @autoreleasepool {
+                  NSArray *lists = [NSColorList availableColorLists];
+                  NSLog(@"Available color lists (%lu):", (unsigned long)[lists count]);
+                  for (NSColorList *clist in lists) {
+                      NSLog(@"  - '%@' (%lu colors)", [clist name], (unsigned long)[[clist allKeys] count]);
+                  }
+              }
+              return 0;
+          }
+          EOF
+          clang -framework Cocoa /tmp/list_colors.m -o /tmp/list_colors
+          /tmp/list_colors 2>&1
