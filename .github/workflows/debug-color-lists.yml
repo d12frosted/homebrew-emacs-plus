@@ -5,12 +5,67 @@ on:
   pull_request:
     paths:
       - '.github/workflows/debug-color-lists.yml'
+      - 'patches/emacs-31/stephane-ns-init-colors.patch'
 
 jobs:
   debug-color-lists:
     runs-on: macos-latest
     steps:
-      - name: Print available NSColorLists
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Print available NSColorLists (before Emacs build)
+        run: |
+          cat > /tmp/list_colors.m << 'EOF'
+          #import <Cocoa/Cocoa.h>
+
+          int main() {
+              @autoreleasepool {
+                  NSArray *lists = [NSColorList availableColorLists];
+                  NSLog(@"Available color lists (%lu):", (unsigned long)[lists count]);
+                  for (NSColorList *clist in lists) {
+                      NSLog(@"  - '%@' (%lu colors)", [clist name], (unsigned long)[[clist allKeys] count]);
+                  }
+              }
+              return 0;
+          }
+          EOF
+          clang -framework Cocoa /tmp/list_colors.m -o /tmp/list_colors
+          /tmp/list_colors 2>&1
+
+  test-stephane-patch:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install autoconf automake pkg-config texinfo gnutls libxml2 jansson tree-sitter
+
+      - name: Clone Emacs
+        run: |
+          git clone --depth 1 https://github.com/emacs-mirror/emacs.git emacs-src
+
+      - name: Apply Stéphane's patch
+        run: |
+          cd emacs-src
+          patch -p1 < ../patches/emacs-31/stephane-ns-init-colors.patch
+
+      - name: Build Emacs
+        run: |
+          cd emacs-src
+          ./autogen.sh
+          ./configure --with-ns --without-x --with-native-compilation=no
+          make -j$(sysctl -n hw.ncpu)
+
+      - name: Check x-colors length
+        run: |
+          cd emacs-src
+          echo "Testing x-colors length..."
+          ./src/emacs --batch --eval '(progn (message "x-colors length: %d" (length x-colors)) (message "ns-list-colors length: %d" (length (ns-list-colors))))'
+
+      - name: Print available NSColorLists (after Emacs build)
         run: |
           cat > /tmp/list_colors.m << 'EOF'
           #import <Cocoa/Cocoa.h>

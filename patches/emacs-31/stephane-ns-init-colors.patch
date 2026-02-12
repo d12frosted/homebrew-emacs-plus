@@ -1,0 +1,168 @@
+From 921415ed6dbd8d621b7c8c0cfef6a5a997fedabe Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marks?= <shipmints@gmail.com>
+Date: Wed, 11 Feb 2026 10:10:36 -0500
+Subject: [PATCH] Move ns_init_colors from ns_term_init to emacs.c (bug#80377)
+
+Accommodate NS Emacs on a headless system.
+
+Add error checking for failed calls to NSColorList writeToURL
+and writeToFile.
+
+* src/nsterm.m (ns_term_init): Move color initialization to
+nsfns.m.
+* src/nsfns.m (ns_init_colors): New function.
+(Fns_list_colors): Call ns_init_colors.
+---
+ src/nsfns.m  | 62 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/nsterm.m | 48 ----------------------------------------
+ 2 files changed, 62 insertions(+), 48 deletions(-)
+
+diff --git a/src/nsfns.m b/src/nsfns.m
+index 3d3d5ec1bde..dddceb8d17b 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -2209,6 +2209,62 @@ Frames are listed from topmost (first) to bottommost (last).  */)
+   return build_string (ns_xlfd_to_fontname (SSDATA (name)));
+ }
+ 
++static void
++ns_init_colors (void)
++{
++  NSTRACE ("ns_init_colors");
++
++  NSColorList *cl = [NSColorList colorListNamed: @"Emacs"];
++
++  /* There are 752 colors defined in rgb.txt.  */
++  if ( cl == nil || [[cl allKeys] count] < 752)
++    {
++      Lisp_Object color_file, color_map, color, name;
++      unsigned long c;
++
++      color_file = Fexpand_file_name (build_string ("rgb.txt"),
++				      Fsymbol_value (intern ("data-directory")));
++
++      color_map = Fx_load_color_file (color_file);
++      if (NILP (color_map))
++	fatal ("Could not read %s.\n", SDATA (color_file));
++
++      cl = [[NSColorList alloc] initWithName: @"Emacs"];
++      for ( ; CONSP (color_map); color_map = XCDR (color_map))
++	{
++	  color = XCAR (color_map);
++	  name = XCAR (color);
++	  c = XFIXNUM (XCDR (color));
++	  c |= 0xFF000000;
++	  [cl setColor:
++		[NSColor colorWithUnsignedLong:c]
++		forKey: [NSString stringWithLispString: name]];
++	}
++      @try
++	{
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
++#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100
++	  if ([cl respondsToSelector:@selector(writeToURL:error:)])
++#endif
++	    if ([cl writeToURL:nil error:nil] == false)
++	      fprintf (stderr, "ns_init_colors: could not write Emacs.clr\n");
++#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100
++	    else
++#endif
++#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101100 */
++#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100 || defined (NS_IMPL_GNUSTEP)
++	      if ([cl writeToFile: nil] == false)
++		fprintf (stderr, "ns_init_colors: could not write Emacs.clr\n");
++#endif
++	}
++      @catch (NSException *e)
++	{
++	  NSLog(@"ns_init_colors: could not write Emacs.clr: %@", e.reason);
++	}
++    }
++}
++
++static BOOL ns_init_colors_done = NO;
+ 
+ DEFUN ("ns-list-colors", Fns_list_colors, Sns_list_colors, 0, 1, 0,
+        doc: /* Return a list of all available colors.
+@@ -2220,6 +2276,12 @@ Frames are listed from topmost (first) to bottommost (last).  */)
+   NSColorList *clist;
+   NSAutoreleasePool *pool;
+ 
++  if (ns_init_colors_done == NO)
++    {
++      ns_init_colors ();
++      ns_init_colors_done = YES;
++    }
++
+   if (!NILP (frame))
+     {
+       CHECK_FRAME (frame);
+diff --git a/src/nsterm.m b/src/nsterm.m
+index d0bbd1b4660..932d209f56b 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -591,7 +591,6 @@ - (unsigned long)unsignedLong
+   setenv ("LANG", lang, 1);
+ }
+ 
+-
+ void
+ ns_release_object (void *obj)
+ /* ----------------------------------------------------------------------------
+@@ -5891,53 +5890,6 @@ Needs to be here because ns_initialize_display_info () uses AppKit classes.
+       ns_antialias_threshold = NILP (tmp) ? 10.0 : extract_float (tmp);
+     }
+ 
+-  NSTRACE_MSG ("Colors");
+-
+-  {
+-    NSColorList *cl = [NSColorList colorListNamed: @"Emacs"];
+-
+-    /* There are 752 colors defined in rgb.txt.  */
+-    if ( cl == nil || [[cl allKeys] count] < 752)
+-      {
+-        Lisp_Object color_file, color_map, color, name;
+-        unsigned long c;
+-
+-        color_file = Fexpand_file_name (build_string ("rgb.txt"),
+-                         Fsymbol_value (intern ("data-directory")));
+-
+-        color_map = Fx_load_color_file (color_file);
+-        if (NILP (color_map))
+-          fatal ("Could not read %s.\n", SDATA (color_file));
+-
+-        cl = [[NSColorList alloc] initWithName: @"Emacs"];
+-        for ( ; CONSP (color_map); color_map = XCDR (color_map))
+-          {
+-            color = XCAR (color_map);
+-            name = XCAR (color);
+-            c = XFIXNUM (XCDR (color));
+-            c |= 0xFF000000;
+-            [cl setColor:
+-                  [NSColor colorWithUnsignedLong:c]
+-                  forKey: [NSString stringWithLispString: name]];
+-          }
+-
+-        /* FIXME: Report any errors writing the color file below.  */
+-#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
+-#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100
+-        if ([cl respondsToSelector:@selector(writeToURL:error:)])
+-#endif
+-          [cl writeToURL:nil error:nil];
+-#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100
+-        else
+-#endif
+-#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 101100 */
+-#if MAC_OS_X_VERSION_MIN_REQUIRED < 101100 \
+-  || defined (NS_IMPL_GNUSTEP)
+-          [cl writeToFile: nil];
+-#endif
+-      }
+-  }
+-
+   NSTRACE_MSG ("Versions");
+ 
+   delete_keyboard_wait_descriptor (0);
+-- 
+2.52.0
+
