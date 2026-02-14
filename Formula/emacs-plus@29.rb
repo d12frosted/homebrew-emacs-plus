@@ -226,17 +226,8 @@ class EmacsPlusAT29 < EmacsBase
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
         #!/bin/bash
-        EXPECTED_VERSION="#{version}"
         for app in "/Applications/Emacs.app" "$HOME/Applications/Emacs.app" "#{prefix}/Emacs.app"; do
           if [ -x "$app/Contents/MacOS/Emacs" ]; then
-            # Warn if a user-copied app has a different version than the installed formula
-            if [ "$app" != "#{prefix}/Emacs.app" ]; then
-              found_version=$("$app/Contents/MacOS/Emacs" --version 2>/dev/null | head -1 | sed 's/GNU Emacs //')
-              if [ -n "$found_version" ] && [ "$found_version" != "$EXPECTED_VERSION" ]; then
-                echo "Warning: $app is version $found_version (expected $EXPECTED_VERSION)" >&2
-                echo "Update with: cp -r #{prefix}/Emacs.app \\\"\\${app%Emacs.app}\\\"" >&2
-              fi
-            fi
             exec "$app/Contents/MacOS/Emacs" "$@"
           fi
         done
@@ -308,6 +299,22 @@ class EmacsPlusAT29 < EmacsBase
       ohai "Re-signing Emacs.app for macOS compatibility..."
       system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
     end
+
+    # Auto-update /Applications copy if it exists (prevents stale binary issues, see #912)
+    ["/Applications/Emacs.app", "#{Dir.home}/Applications/Emacs.app"].each do |app_dest|
+      if File.exist?(app_dest)
+        ohai "Updating #{app_dest}..."
+        begin
+          FileUtils.rm_rf(app_dest)
+          FileUtils.cp_r((prefix/"Emacs.app").to_s, app_dest)
+          system "codesign", "--force", "--deep", "--sign", "-", app_dest
+        rescue => e
+          opoo "Could not update #{app_dest}: #{e.message}"
+          opoo "Update manually: cp -r #{prefix}/Emacs.app \"#{File.dirname(app_dest)}/\""
+        end
+      end
+    end
+
   end
 
   def caveats
