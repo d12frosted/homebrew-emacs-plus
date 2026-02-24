@@ -1,8 +1,7 @@
 require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT31 < EmacsBase
-  init 31
-  version "31.0.50"
+  init "31.0.50", branch: "master"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
@@ -66,18 +65,6 @@ class EmacsPlusAT31 < EmacsBase
     unless (build.with? "cocoa") && (build.without? "x11")
       odie "--with-xwidgets is not available when building --with-x11"
     end
-  end
-
-  #
-  # URL
-  #
-
-  if (config_revision = EmacsBase.revision_from_config(31))
-    url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
-  elsif ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
-    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_31_REVISION']
-  else
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "master"
   end
 
   #

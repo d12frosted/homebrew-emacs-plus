@@ -9,13 +9,57 @@ class CopyDownloadStrategy < AbstractFileDownloadStrategy
 end
 
 class EmacsBase < Formula
-  def self.init version
-    @@urlResolver = UrlResolver.new(version, ENV["HOMEBREW_EMACS_PLUS_MODE"] || "remote")
+  EMACS_GIT_URL = "https://github.com/emacs-mirror/emacs.git"
+
+  # Resolve a pinned revision from build.yml config or environment variable.
+  # Returns revision string or nil.
+  def self.resolve_revision(major_version)
+    revision_from_config(major_version) || ENV["HOMEBREW_EMACS_PLUS_#{major_version}_REVISION"]
+  end
+
+  def self.init(version_str, sha256: nil, branch: nil)
+    major_version = version_str.split(".").first.to_i
+    @@urlResolver = UrlResolver.new(major_version, ENV["HOMEBREW_EMACS_PLUS_MODE"] || "remote")
     # Capture formula_root at class load time (before Homebrew changes working directory)
     @@formula_root = begin
       tap = Tap.fetch(TAP_OWNER, TAP_REPO)
       ENV["HOMEBREW_EMACS_PLUS_MODE"] == "local" || !tap.installed? ?
         Dir.pwd : tap.path.to_s
+    end
+
+    # Always set explicit version to prevent nil when URL is overridden
+    version version_str
+
+    if sha256
+      # Stable release: set tarball URL, mirror, and checksum
+      url "https://ftpmirror.gnu.org/emacs/emacs-#{version_str}.tar.xz"
+      mirror "https://ftp.gnu.org/gnu/emacs/emacs-#{version_str}.tar.xz"
+      self.sha256 sha256
+
+      # Override stable URL with git if a revision is pinned
+      if (rev = resolve_revision(major_version))
+        url EMACS_GIT_URL, :revision => rev
+      end
+    end
+
+    if branch
+      if sha256
+        # Stable formula with head support
+        head do
+          if (rev = EmacsBase.resolve_revision(major_version))
+            url EmacsBase::EMACS_GIT_URL, :revision => rev
+          else
+            url EmacsBase::EMACS_GIT_URL, :branch => branch
+          end
+        end
+      else
+        # Dev formula: main URL is always git
+        if (rev = resolve_revision(major_version))
+          url EMACS_GIT_URL, :revision => rev
+        else
+          url EMACS_GIT_URL, :branch => branch
+        end
+      end
     end
   end
 
