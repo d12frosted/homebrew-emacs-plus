@@ -54,10 +54,10 @@ cask "emacs-plus-app@master" do
   # Remove quarantine attribute, inject PATH, and apply custom icon
   postflight do
     system_command "/usr/bin/xattr",
-                   args: ["-cr", "#{appdir}/Emacs.app"],
+                   args: ["-r", "-d", "com.apple.quarantine", "#{appdir}/Emacs.app"],
                    sudo: false
     system_command "/usr/bin/xattr",
-                   args: ["-cr", "#{appdir}/Emacs Client.app"],
+                   args: ["-r", "-d", "com.apple.quarantine", "#{appdir}/Emacs Client.app"],
                    sudo: false
 
     # Environment setup for native compilation and CLI usage
