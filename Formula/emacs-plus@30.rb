@@ -1,24 +1,10 @@
 require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT30 < EmacsBase
-  init 30
-  version "30.2"
-  url "https://ftpmirror.gnu.org/emacs/emacs-30.2.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/emacs/emacs-30.2.tar.xz"
-  sha256 "b3f36f18a6dd2715713370166257de2fae01f9d38cfe878ced9b1e6ded5befd9"
+  init "30.2", sha256: "b3f36f18a6dd2715713370166257de2fae01f9d38cfe878ced9b1e6ded5befd9", branch: "emacs-30"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-
-  head do
-    if (config_revision = EmacsBase.revision_from_config(30))
-      url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
-    elsif ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
-      url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
-    else
-      url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-30"
-    end
-  end
 
   #
   # Options
@@ -80,16 +66,6 @@ class EmacsPlusAT30 < EmacsBase
     unless (build.with? "cocoa") && (build.without? "x11")
       odie "--with-xwidgets is not available when building --with-x11"
     end
-  end
-
-  #
-  # URL
-  #
-
-  if (config_revision = EmacsBase.revision_from_config(30))
-    url "https://github.com/emacs-mirror/emacs.git", :revision => config_revision
-  elsif ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
-    url "https://github.com/emacs-mirror/emacs.git", :revision => ENV['HOMEBREW_EMACS_PLUS_30_REVISION']
   end
 
   #

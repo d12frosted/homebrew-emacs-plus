@@ -1,17 +1,10 @@
 require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT29 < EmacsBase
-  init 29
-  url "https://ftpmirror.gnu.org/emacs/emacs-29.4.tar.xz"
-  mirror "https://ftp.gnu.org/gnu/emacs/emacs-29.4.tar.xz"
-  sha256 "ba897946f94c36600a7e7bb3501d27aa4112d791bfe1445c61ed28550daca235"
+  init "29.4", sha256: "ba897946f94c36600a7e7bb3501d27aa4112d791bfe1445c61ed28550daca235", branch: "emacs-29"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
-
-  head do
-    url "https://github.com/emacs-mirror/emacs.git", :branch => "emacs-29"
-  end
 
   #
   # Options
