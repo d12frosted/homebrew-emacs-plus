@@ -297,6 +297,24 @@ class EmacsPlusAT30 < EmacsBase
     if client_path.exist?
       system "codesign", "--force", "--deep", "--sign", "-", client_path.to_s
     end
+
+    # Auto-update /Applications copies if they exist (prevents stale binary issues, see #912)
+    {"Emacs.app" => prefix/"Emacs.app", "Emacs Client.app" => prefix/"Emacs Client.app"}.each do |name, src|
+      ["/Applications/#{name}", "#{Dir.home}/Applications/#{name}"].each do |app_dest|
+        if File.exist?(app_dest) && src.exist?
+          ohai "Updating #{app_dest}..."
+          begin
+            FileUtils.rm_rf(app_dest)
+            FileUtils.cp_r(src.to_s, app_dest)
+            system "codesign", "--force", "--deep", "--sign", "-", app_dest
+          rescue => e
+            opoo "Could not update #{app_dest}: #{e.message}"
+            opoo "Update manually: cp -r #{src} \"#{File.dirname(app_dest)}/\""
+          end
+        end
+      end
+    end
+
   end
 
   def caveats
