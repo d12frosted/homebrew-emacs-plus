@@ -58,6 +58,11 @@ jobs:
           echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
           echo "OS_NAME=${{ matrix.platform.os_name }}" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+          if [ "${{ matrix.platform.arch }}" = "arm64" ]; then
+            echo "HOMEBREW_PREFIX=/opt/homebrew" >> $GITHUB_ENV
+          else
+            echo "HOMEBREW_PREFIX=/usr/local" >> $GITHUB_ENV
+          fi
 
       - name: Install dependencies
         run: |
@@ -108,6 +113,7 @@ jobs:
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
+            --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \
@@ -441,6 +447,11 @@ jobs:
           echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
           echo "OS_NAME=${{ matrix.platform.os_name }}" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+          if [ "${{ matrix.platform.arch }}" = "arm64" ]; then
+            echo "HOMEBREW_PREFIX=/opt/homebrew" >> $GITHUB_ENV
+          else
+            echo "HOMEBREW_PREFIX=/usr/local" >> $GITHUB_ENV
+          fi
 
       - name: Install dependencies
         run: |
@@ -491,6 +502,7 @@ jobs:
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
+            --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \
