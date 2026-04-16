@@ -825,7 +825,7 @@ jobs:
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
       - name: Create Release for Emacs 30
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: cask-30-${{ github.run_number }}
           name: Emacs+ 30 Cask Build ${{ github.run_number }}
@@ -925,7 +925,7 @@ jobs:
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
       - name: Create Release for Emacs 31
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: cask-31-${{ github.run_number }}
           name: Emacs+ 31 Cask Build ${{ github.run_number }}
