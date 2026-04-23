@@ -231,7 +231,7 @@ index 9468832b6d5..62c492660f0 100644
  #include <math.h>
  #include <pthread.h>
  #include <sys/types.h>
-@@ -71,6 +72,10 @@ Updated by Christian Limpach (chris@nice.ch)
+@@ -71,12 +72,16 @@ Updated by Christian Limpach (chris@nice.ch)
  #include "macfont.h"
  #include <Carbon/Carbon.h>
  #include <IOSurface/IOSurface.h>
@@ -239,8 +239,14 @@ index 9468832b6d5..62c492660f0 100644
 +                                             int windowNumber,
 +                                             int radius);
 +extern int CGSDefaultConnectionForThread (void);
+ /* ApplicationServices provides the macOS accessibility Zoom API
+    UAZoomEnabled and UAZoomChangeFocus (UniversalAccess framework).
+    Carbon.h already pulls in ApplicationServices on most SDK versions,
+    but the explicit import makes the dependency visible and guards
+    against SDK changes.  */
+ #import <ApplicationServices/ApplicationServices.h>
  #endif
- 
+
  static EmacsMenu *dockMenu;
 @@ -1536,6 +1541,9 @@ -(void)remove
            ns_set_offset(f, f->left_pos, f->top_pos, 0);
