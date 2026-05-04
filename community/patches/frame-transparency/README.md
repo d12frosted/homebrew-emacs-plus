@@ -85,8 +85,6 @@ Here is an example of how I use this feature. It works using emacs clients attac
 ;; where neither after-make-frame-functions nor window-setup-hook fires.
 (when (display-graphic-p)
   (my/apply-frame-transparency))
-(when (display-graphic-p)
-  (my/apply-frame-transparency))
 ```
 
 ## Patch Files
