@@ -461,9 +461,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter@0.25 pkg-config webp
-          # tree-sitter@0.25 is keg-only, set up paths
-          echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+            libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
@@ -480,10 +478,8 @@ jobs:
           cd emacs-src
           # Only apply patches that are unconditionally applied in the formula
           PATCHES=(
-            "fix-window-role"
             "system-appearance"
             "round-undecorated-frame"
-            "mac-font-use-typo-metrics"
             "fix-ns-x-colors"
           )
           for patch_name in "${PATCHES[@]}"; do
@@ -851,9 +847,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter@0.25 pkg-config webp
-          # tree-sitter@0.25 is keg-only, set up paths
-          echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+            libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
@@ -870,10 +864,8 @@ jobs:
           cd emacs-src
           # Only apply patches that are unconditionally applied in the formula
           PATCHES=(
-            "fix-window-role"
             "system-appearance"
             "round-undecorated-frame"
-            "mac-font-use-typo-metrics"
             "fix-ns-x-colors"
           )
           for patch_name in "${PATCHES[@]}"; do
