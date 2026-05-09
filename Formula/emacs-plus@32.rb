@@ -40,7 +40,6 @@ class EmacsPlusAT32 < EmacsBase
   depends_on "little-cms2"
   depends_on "tree-sitter"
   depends_on "webp"
-  depends_on "imagemagick" => :optional
   depends_on "dbus" => :optional
   depends_on "mailutils" => :optional
   # `libgccjit` and `gcc` are required when Emacs compiles `*.elc` files asynchronously (JIT)
@@ -71,7 +70,6 @@ class EmacsPlusAT32 < EmacsBase
   # Patches
   #
 
-  opoo "The option --with-imagemagick is deprecated and will be removed in a future version. Modern Emacs has native support for most image formats (SVG via librsvg, WebP, PNG, JPEG, GIF). If you rely on ImageMagick, please open an issue describing your use case." if build.with? "imagemagick"
   local_patch "fix-ns-x-colors", sha: "9e5d3e26a8d388d3a000b697d582769645ca93ad597b4113744deba4b89a8b9e"
   local_patch "system-appearance", sha: "53283503db5ed2887e9d733baaaf80f2c810e668e782e988bda5855a0b1ebeb4"
   local_patch "round-undecorated-frame", sha: "26947b6724fc29fadd44889808c5cf0b4ce6278cf04f46086a21df50c8c4151d"
@@ -133,21 +131,7 @@ class EmacsPlusAT32 < EmacsBase
         "--without-dbus"
       end
 
-    # Note that if ./configure is passed --with-imagemagick but can't find the
-    # library it does not fail but imagemagick support will not be available.
-    # See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=24455
-    args <<
-      if build.with?("imagemagick")
-        "--with-imagemagick"
-      else
-        "--without-imagemagick"
-      end
-
-    if build.with? "imagemagick"
-      imagemagick_lib_path = Formula["imagemagick"].opt_lib/"pkgconfig"
-      ohai "ImageMagick PKG_CONFIG_PATH: ", imagemagick_lib_path
-      ENV.prepend_path "PKG_CONFIG_PATH", imagemagick_lib_path
-    end
+    args << "--without-imagemagick"
 
     args << "--with-modules"
     args << "--with-rsvg"

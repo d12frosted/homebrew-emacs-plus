@@ -107,7 +107,7 @@ For fast installation without compilation (~1 min), pre-built binaries are avail
 Cask builds are self-contained applications with all dependencies bundled. They include:
 
 - Native compilation (AOT)
-- =xwidgets=, =tree-sitter=, =imagemagick=, =mailutils=
+- =xwidgets=, =tree-sitter=, =mailutils=
 - =Emacs.app= and =Emacs Client.app=
 - Default Emacs icon
 
