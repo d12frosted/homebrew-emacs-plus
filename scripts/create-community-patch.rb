@@ -12,7 +12,7 @@ COMMUNITY_DIR = File.join(REPO_ROOT, 'community')
 PATCHES_DIR = File.join(COMMUNITY_DIR, 'patches')
 REGISTRY_FILE = File.join(COMMUNITY_DIR, 'registry.json')
 
-SUPPORTED_VERSIONS = %w[29 30 31].freeze
+SUPPORTED_VERSIONS = %w[29 30 31 32].freeze
 
 def prompt(message, default: nil)
   print default ? "#{message} [#{default}]: " : "#{message}: "

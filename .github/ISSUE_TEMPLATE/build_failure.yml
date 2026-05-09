@@ -13,6 +13,7 @@ body:
       label: Emacs Version
       description: "What version of Emacs are you building?"
       options:
+        - emacs-plus@32
         - emacs-plus@31
         - emacs-plus@30
         - emacs-plus@29

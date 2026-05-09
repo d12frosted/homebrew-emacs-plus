@@ -29,6 +29,7 @@ We've been using GitHub workflows to run builds. Main targets are:
 - Emacs 29
 - Emacs 30
 - Emacs 31
+- Emacs 32
 
 Where it's applicable, we also run builds with different [[#options][→ options]]. The lesser options are available, the easier it is to cover all scenarios. Right now coverage is not the goal.
 
@@ -91,9 +92,10 @@ Sometimes there is a need to test the build locally without uninstalling =emacs-
 Build formulas from source (tests local Formula/ and Library/ changes):
 
 #+begin_src bash
-  $ make formula-30              # Build Emacs 30
-  $ make formula-31              # Build Emacs 31
-  $ make formula-31 --HEAD       # Build from HEAD
+  $ make formula-30              # Build Emacs 30 (stable release)
+  $ make formula-30 --HEAD       # Build Emacs 30 from emacs-30 branch HEAD
+  $ make formula-31              # Build Emacs 31 (always from emacs-31 branch HEAD)
+  $ make formula-32              # Build Emacs 32 (always from master HEAD)
 #+end_src
 
 This creates a temporary =emacs-plus-local= formula and installs it. That way you can play with formula without uninstalling =emacs-plus=.

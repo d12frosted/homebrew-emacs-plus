@@ -54,18 +54,22 @@ For recent changes, see [[./NEWS.org][→ News]].
   - [[#build-configuration][Build Configuration]]
     - [[#available-options][Available Options]]
     - [[#native-compilation-environment-cask][Native Compilation Environment (Cask)]]
-  - [[#emacs-31][Emacs 31]]
+  - [[#emacs-32][Emacs 32]]
     - [[#included][Included]]
     - [[#options][Options]]
     - [[#no-title-bar][No title bar]]
-  - [[#emacs-30][Emacs 30]]
+  - [[#emacs-31][Emacs 31]]
     - [[#included-1][Included]]
     - [[#options-1][Options]]
     - [[#no-title-bar-1][No title bar]]
-  - [[#emacs-29][Emacs 29]]
+  - [[#emacs-30][Emacs 30]]
     - [[#included-2][Included]]
     - [[#options-2][Options]]
     - [[#no-title-bar-2][No title bar]]
+  - [[#emacs-29][Emacs 29]]
+    - [[#included-3][Included]]
+    - [[#options-3][Options]]
+    - [[#no-title-bar-3][No title bar]]
   - [[#features-explained][Features explained]]
     - [[#injected-path][Injected PATH]]
     - [[#detecting-emacs-plus][Detecting Emacs Plus]]
@@ -130,7 +134,7 @@ For custom build options (~30 min compile time):
   $ brew install emacs-plus@master [options]    # from master
 #+end_src
 
-Versioned formulas are also available: =emacs-plus@30=, =emacs-plus@29=, etc.
+Versioned formulas are also available: =emacs-plus@32=, =emacs-plus@31=, =emacs-plus@30=, =emacs-plus@29=, etc. The =emacs-plus@master= alias points to the current development version (=emacs-plus@32=).
 
 By default, formulas build Cocoa Emacs with =gnutls=, =librsvg=, =libxml2=, =tree-sitter=, =webp=, native compilation, dynamic modules, and multicolor fonts. See [[#options][→ Options]] for customization.
 
@@ -191,6 +195,34 @@ inject_path: true
 | =inject_path= | =true=  | (Formula only) Inject user's PATH into Emacs.app. See [[#injected-path][→ Injected PATH]].     |
 
 For more customization options, see [[#community-features][→ Community Features]] for patches and [[#icons][→ Icons]] for icon customization.
+
+** Emacs 32
+
+*** Included
+
+By default =emacs-plus@32= uses the following features.
+
+- Injected =PATH= value from user shell (see separate section explaining this feature).
+- Cocoa version, e.g. builds =Emacs.app= and =Emacs Client.app= (see [[#emacs-clientapp][→ Emacs Client.app]] for details).
+- Unconditional support for =gnutls=, =librsvg=, =webp=, =libxml2=, =little-cms2=, =tree-sitter= and dynamic modules.
+- Build with native compilation.
+
+*** Options
+
+| Option                    | Description                                                               |
+|---------------------------+---------------------------------------------------------------------------|
+| =--with-compress-install= | build with compressed install optimization                                |
+| =--with-dbus=             | build with dbus support                                                   |
+| =--with-debug=            | build with debug symbols and debugger friendly optimizations              |
+| =--with-mailutils=        | build with mailutils support                                              |
+| =--with-x11=              | build with x11 support (disables Cocoa, no =Emacs.app= bundle)            |
+| =--with-xwidgets=         | build [[#xwidgets-webkit][→ with xwidgets]] support                                             |
+| =--without-cocoa=         | build a non-Cocoa version of Emacs (terminal only, no =Emacs.app= bundle) |
+
+*Note:* Options =--with-x11= and =--without-cocoa= produce terminal/X11 builds that do not include =Emacs.app=. Icon options are ignored for these builds.
+
+*** No title bar
+Please note, that ~--with-no-titlebar~ is no longer needed in Emacs 30+, since the same can be achieved natively using [[https://github.com/d12frosted/homebrew-emacs-plus#emacs-29-1][this method]].
 
 ** Emacs 31
 
@@ -321,11 +353,11 @@ If you need full PATH injection, use the formula instead of the cask.
 
 *** Detecting Emacs Plus
 
-Starting with =emacs-plus@30= and =emacs-plus@31=, the following variables are defined in =site-start.el=:
+Starting with =emacs-plus@30=, =emacs-plus@31=, and =emacs-plus@32=, the following variables are defined in =site-start.el=:
 
 | Variable                      | Description                                                           |
 |-------------------------------+-----------------------------------------------------------------------|
-| =ns-emacs-plus-version=       | Major version of Emacs Plus (e.g., 30 or 31)                          |
+| =ns-emacs-plus-version=       | Major version of Emacs Plus (e.g., 30, 31, or 32)                     |
 | =ns-emacs-plus-injected-path= | Non-nil if user PATH was injected (formula with =inject_path: true=)  |
 
 This allows you to detect Emacs Plus and conditionally configure your init.el:
@@ -350,7 +382,7 @@ This is useful for conditionally enabling features that are specific to Emacs Pl
 
 *** Emacs Client.app
 
-Starting with =emacs-plus@30= and =emacs-plus@31=, the formula includes a companion application called =Emacs Client.app=. This application provides a user-friendly way to open files in Emacs from Finder, Spotlight, and other macOS applications.
+Starting with =emacs-plus@30=, =emacs-plus@31=, and =emacs-plus@32=, the formula includes a companion application called =Emacs Client.app=. This application provides a user-friendly way to open files in Emacs from Finder, Spotlight, and other macOS applications.
 
 **** When to use Emacs.app vs Emacs Client.app
 
@@ -373,7 +405,7 @@ Starting with =emacs-plus@30= and =emacs-plus@31=, the formula includes a compan
 After installation, create aliases in =/Applications= (the formula will suggest these commands in the caveats):
 
 #+begin_src bash
-  # Get the installation prefix (use emacs-plus@30 or emacs-plus@31)
+  # Get the installation prefix (use emacs-plus@30, emacs-plus@31, or emacs-plus@32)
   PREFIX=$(brew --prefix emacs-plus@30)
 
   # Create aliases in /Applications
@@ -412,7 +444,7 @@ If you see gaps between your emacs frames and other windows, try this:
 
 **** Emacs 29+
 
-In =emacs-plus@29=, =emacs-plus@30=, and =emacs-plus@31= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
+In =emacs-plus@29=, =emacs-plus@30=, =emacs-plus@31=, and =emacs-plus@32= this option is not available anymore as you can achieve the same result using Emacs Lisp by adding the following line in your =early-init.el= file:
 
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(undecorated . t))
@@ -620,14 +652,14 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 
 *** How to pin a specific commit
 
-Development versions (=emacs-plus@30=, =emacs-plus@31=) are built from their respective branches (=emacs-30=, =master=). Ordinarily, =brew= will update to the latest commit during installation.
+Development versions (=emacs-plus@31=, =emacs-plus@32=) are built from their respective branches (=emacs-31=, =master=). Ordinarily, =brew= will update to the latest commit during installation.
 
 As development versions are less stable than official releases, you may want to pin a specific commit. The recommended way is to use =~/.config/emacs-plus/build.yml=:
 
 #+begin_src yaml
 revision:
-  "30": 6abea4d98d1d964c68a78cb9b5321071da851654
-  "31": abc123def456789
+  "31": 6abea4d98d1d964c68a78cb9b5321071da851654
+  "32": abc123def456789
 #+end_src
 
 Then install or reinstall:

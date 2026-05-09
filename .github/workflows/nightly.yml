@@ -15,13 +15,16 @@ jobs:
           - emacs-plus@29
           - emacs-plus@30
           - emacs-plus@31
+          - emacs-plus@32
         build_opts:
           - ""
         include:
-          # Test xwidgets on @30 and @31
+          # Test xwidgets on @30, @31, and @32
           - formula: emacs-plus@30
             build_opts: "--with-xwidgets"
           - formula: emacs-plus@31
+            build_opts: "--with-xwidgets"
+          - formula: emacs-plus@32
             build_opts: "--with-xwidgets"
 
     steps:

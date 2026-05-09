@@ -1,10 +1,10 @@
 cask "emacs-plus-app@master" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "31.0.50-176"
+  version "32.0.50-0"
 
-  # Base URL for release assets (versioned releases: cask-31-<build>)
-  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-31-#{version.sub(/^[\d.]+-/, "")}"
+  # Base URL for release assets (versioned releases: cask-32-<build>)
+  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-32-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
   on_intel do
@@ -117,7 +117,7 @@ cask "emacs-plus-app@master" do
   caveats <<~EOS
     Emacs+ (development) has been installed to /Applications.
 
-    This is a pre-built binary from the Emacs master branch.
+    This is a pre-built binary from the Emacs master branch (Emacs 32).
     For custom patches or build options, use the formula instead:
       brew install emacs-plus@master --with-...
 

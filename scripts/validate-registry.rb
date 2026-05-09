@@ -11,7 +11,7 @@ REPO_ROOT = File.expand_path('..', __dir__)
 COMMUNITY_DIR = File.join(REPO_ROOT, 'community')
 REGISTRY_FILE = File.join(COMMUNITY_DIR, 'registry.json')
 
-SUPPORTED_VERSIONS = %w[29 30 31].freeze
+SUPPORTED_VERSIONS = %w[29 30 31 32].freeze
 
 class RegistryValidator
   def initialize

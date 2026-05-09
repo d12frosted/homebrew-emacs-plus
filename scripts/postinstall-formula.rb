@@ -20,9 +20,11 @@ require 'IconApplier'
 def find_emacs_app(arg)
   candidates = [
     arg,
+    '/opt/homebrew/opt/emacs-plus@32/Emacs.app',
     '/opt/homebrew/opt/emacs-plus@31/Emacs.app',
     '/opt/homebrew/opt/emacs-plus@30/Emacs.app',
     '/opt/homebrew/opt/emacs-plus@29/Emacs.app',
+    '/usr/local/opt/emacs-plus@32/Emacs.app',
     '/usr/local/opt/emacs-plus@31/Emacs.app',
     '/usr/local/opt/emacs-plus@30/Emacs.app',
   ].compact
@@ -43,8 +45,8 @@ unless emacs_app
   puts "Usage: ruby scripts/postinstall-formula.rb [/path/to/Emacs.app]"
   puts ""
   puts "Searched locations:"
-  puts "  - /opt/homebrew/opt/emacs-plus@{29,30,31}/Emacs.app"
-  puts "  - /usr/local/opt/emacs-plus@{30,31}/Emacs.app"
+  puts "  - /opt/homebrew/opt/emacs-plus@{29,30,31,32}/Emacs.app"
+  puts "  - /usr/local/opt/emacs-plus@{30,31,32}/Emacs.app"
   exit 1
 end
 

@@ -1,7 +1,7 @@
 require_relative "../Library/EmacsBase"
 
-class EmacsPlusAT31 < EmacsBase
-  init "31.0.60", branch: "emacs-31"
+class EmacsPlusAT32 < EmacsBase
+  init "32.0.50", branch: "master"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
@@ -84,7 +84,7 @@ class EmacsPlusAT31 < EmacsBase
     # Check icon options are not used with non-Cocoa builds
     check_icon_compatibility
     # Warn if revision is pinned via config or environment variable
-    check_pinned_revision(31)
+    check_pinned_revision(32)
     # Validate build.yml configuration early to fail fast
     validate_custom_config
 
@@ -202,7 +202,7 @@ class EmacsPlusAT31 < EmacsBase
       prefix.install "nextstep/Emacs Client.app"
 
       # inject Emacs Plus site-lisp with ns-emacs-plus-version
-      inject_emacs_plus_site_lisp(31)
+      inject_emacs_plus_site_lisp(32)
 
       # inject PATH to Info.plist
       inject_path
@@ -305,7 +305,7 @@ class EmacsPlusAT31 < EmacsBase
 
       If Emacs fails to start with "Library not loaded" errors after upgrading
       dependencies (e.g., tree-sitter, libgccjit), reinstall emacs-plus:
-        brew reinstall emacs-plus@31
+        brew reinstall emacs-plus@32
 
       Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS

@@ -26,9 +26,11 @@ help:
 	@echo "  make validate                 Validate build.yml for formula & cask"
 	@echo ""
 	@echo "Formula (build from source):"
-	@echo "  make formula-VERSION [ARGS]   Build formula (VERSION: 29, 30, 31)"
-	@echo "  make formula-30               Build Emacs 30"
-	@echo "  make formula-31 --HEAD        Build Emacs 31 from HEAD"
+	@echo "  make formula-VERSION [ARGS]   Build formula (VERSION: 29, 30, 31, 32)"
+	@echo "  make formula-30               Build Emacs 30 (stable release)"
+	@echo "  make formula-30 --HEAD        Build Emacs 30 from emacs-30 branch HEAD"
+	@echo "  make formula-31               Build Emacs 31 (always from emacs-31 branch HEAD)"
+	@echo "  make formula-32               Build Emacs 32 (always from master HEAD)"
 	@echo ""
 	@echo "Cask (pre-built binary, tests local Cask/ and Library/ changes):"
 	@echo "  make cask                     Install emacs-plus-app cask"
@@ -81,7 +83,7 @@ formula-%:
 	TARGET_FILE="Formula/emacs-plus-local.rb"; \
 	if [ ! -f "$$SOURCE_FILE" ]; then \
 		echo "Error: $$SOURCE_FILE not found"; \
-		echo "Valid versions: 29, 30, 31"; \
+		echo "Valid versions: 29, 30, 31, 32"; \
 		exit 1; \
 	fi; \
 	cleanup() { rm -f "$$TARGET_FILE"; }; \
@@ -91,6 +93,7 @@ formula-%:
 		29) sed -i '' 's/class EmacsPlusAT29/class EmacsPlusLocal/g' "$$TARGET_FILE" ;; \
 		30) sed -i '' 's/class EmacsPlusAT30/class EmacsPlusLocal/g' "$$TARGET_FILE" ;; \
 		31) sed -i '' 's/class EmacsPlusAT31/class EmacsPlusLocal/g' "$$TARGET_FILE" ;; \
+		32) sed -i '' 's/class EmacsPlusAT32/class EmacsPlusLocal/g' "$$TARGET_FILE" ;; \
 	esac; \
 	export HOMEBREW_EMACS_PLUS_MODE=local; \
 	export HOMEBREW_NO_INSTALL_UPGRADE=true; \

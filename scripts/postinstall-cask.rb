@@ -17,6 +17,7 @@ def find_emacs_app(arg)
   candidates = [
     arg,
     '/Applications/Emacs.app',
+    '/opt/homebrew/opt/emacs-plus@32/Emacs.app',
     '/opt/homebrew/opt/emacs-plus@31/Emacs.app',
     '/opt/homebrew/opt/emacs-plus@30/Emacs.app',
     "#{ENV['HOME']}/Applications/Emacs.app",
@@ -39,7 +40,7 @@ unless emacs_app
   puts ""
   puts "Searched locations:"
   puts "  - /Applications/Emacs.app"
-  puts "  - /opt/homebrew/opt/emacs-plus@{30,31}/Emacs.app"
+  puts "  - /opt/homebrew/opt/emacs-plus@{30,31,32}/Emacs.app"
   puts "  - ~/Applications/Emacs.app"
   exit 1
 end
