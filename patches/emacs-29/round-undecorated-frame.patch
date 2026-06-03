@@ -110,7 +110,7 @@ diff --git a/src/nsterm.m b/src/nsterm.m
 index 82fe58e90e..f132a9591d 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -1798,6 +1798,44 @@ Hide the window (X11 semantics)
+@@ -1798,6 +1798,55 @@ Hide the window (X11 semantics)
      }
  }
  
@@ -139,6 +139,17 @@ index 82fe58e90e..f132a9591d 100644
 +
 +      newWindow = [[EmacsWindow alloc] initWithEmacsFrame:f];
 +
++      /* initWithEmacsFrame: builds the new window at the default size derived
++         from the frame's columns and rows, not at the current window size.
++         The EmacsView is reused, so its fullscreen state (fs_state) carries
++         over to the new window.  Copy the old window's frame here; otherwise a
++         frame that was maximized or resized before `undecorated-round' was
++         toggled comes back at the default size while fs_state still reports it
++         as, say, FULLSCREEN_MAXIMIZED.  The window would then look
++         un-maximized until a later fullscreen or zoom action applied the real
++         geometry.  */
++      [newWindow setFrame:[oldWindow frame] display:NO];
++
 +      if ([oldWindow isKeyWindow])
 +        [newWindow makeKeyAndOrderFront:NSApp];
 +
@@ -155,7 +166,7 @@ index 82fe58e90e..f132a9591d 100644
  void
  ns_set_parent_frame (struct frame *f, Lisp_Object new_value, Lisp_Object old_value)
  /* --------------------------------------------------------------------------
-@@ -9039,6 +9077,11 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9039,6 +9088,11 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
  		 | NSWindowStyleMaskMiniaturizable
  		 | NSWindowStyleMaskClosable);
  
@@ -167,7 +178,7 @@ index 82fe58e90e..f132a9591d 100644
    last_drag_event = nil;
  
    width = FRAME_TEXT_COLS_TO_PIXEL_WIDTH (f, f->text_cols);
-@@ -9122,13 +9165,22 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
+@@ -9122,13 +9176,22 @@ - (instancetype) initWithEmacsFrame: (struct frame *) f
  #endif
      }
  
