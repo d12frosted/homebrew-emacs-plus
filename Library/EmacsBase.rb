@@ -20,11 +20,14 @@ class EmacsBase < Formula
   def self.init(version_str, sha256: nil, branch: nil)
     major_version = version_str.split(".").first.to_i
     @@urlResolver = UrlResolver.new(major_version, ENV["HOMEBREW_EMACS_PLUS_MODE"] || "remote")
-    # Capture formula_root at class load time (before Homebrew changes working directory)
+    # Derive formula_root from this file's location (Library/..) rather
+    # than Dir.pwd: since Homebrew 5.1.15 formulas are loaded inside the
+    # build sandbox whose working directory is a temporary directory
+    # unrelated to the checkout.
     @@formula_root = begin
       tap = Tap.fetch(TAP_OWNER, TAP_REPO)
       ENV["HOMEBREW_EMACS_PLUS_MODE"] == "local" || !tap.installed? ?
-        Dir.pwd : tap.path.to_s
+        UrlResolver::REPO_ROOT : tap.path.to_s
     end
 
     # Always set explicit version to prevent nil when URL is overridden
