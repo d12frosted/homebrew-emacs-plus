@@ -292,6 +292,22 @@ class EmacsPlusAT29 < EmacsBase
       ohai "Re-signing Emacs.app for macOS compatibility..."
       system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
     end
+
+    # Auto-update /Applications copy if it exists (prevents stale binary issues, see #912)
+    ["/Applications/Emacs.app", "#{Dir.home}/Applications/Emacs.app"].each do |app_dest|
+      if File.exist?(app_dest)
+        ohai "Updating #{app_dest}..."
+        begin
+          FileUtils.rm_rf(app_dest)
+          FileUtils.cp_r((prefix/"Emacs.app").to_s, app_dest)
+          system "codesign", "--force", "--deep", "--sign", "-", app_dest
+        rescue => e
+          opoo "Could not update #{app_dest}: #{e.message}"
+          opoo "Update manually: cp -r #{prefix}/Emacs.app \"#{File.dirname(app_dest)}/\""
+        end
+      end
+    end
+
   end
 
   def caveats
