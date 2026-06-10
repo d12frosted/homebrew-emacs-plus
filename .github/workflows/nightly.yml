@@ -28,6 +28,14 @@ jobs:
             build_opts: "--with-xwidgets"
 
     steps:
+      # The runner image ships a stale Homebrew, while formula metadata
+      # comes fresh from the JSON API. When homebrew-core starts using a
+      # feature the bundled brew does not know yet (e.g. the install
+      # steps framework), dependency installation fails with errors like
+      # "unknown install step: gdk_pixbuf_query_loaders".
+      - name: Update Homebrew
+        run: brew update
+
       - name: Tap emacs-plus
         run: brew tap d12frosted/emacs-plus
 
