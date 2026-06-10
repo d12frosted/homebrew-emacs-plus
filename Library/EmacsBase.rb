@@ -642,7 +642,7 @@ class EmacsBase < Formula
     system "/usr/libexec/PlistBuddy -c 'Set NSSpeechRecognitionUsageDescription Emacs requires permission to handle any speech recognition.' '#{plist}' || true"
 
     # Prevent macOS from heuristically offering one-time-code AutoFill in Emacs text fields
-    system "/usr/libexec/PlistBuddy -c 'Add NSAutoFillRequiresTextContentTypeForOneTimeCodeOnMac bool true' '#{plist}'"
+    plist_set plist, "NSAutoFillRequiresTextContentTypeForOneTimeCodeOnMac", "bool", true
 
     system "touch '#{app}'"
   end
