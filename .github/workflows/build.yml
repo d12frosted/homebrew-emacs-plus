@@ -29,10 +29,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      # The runner image ships a stale Homebrew, while formula metadata
+      # comes fresh from the JSON API. When homebrew-core starts using a
+      # feature the bundled brew does not know yet (e.g. the install
+      # steps framework), dependency installation fails with errors like
+      # "unknown install step: gdk_pixbuf_query_loaders".
+      - name: Update Homebrew
+        run: brew update
+
       - name: Build emacs-plus@30
         run: |
           export HOMEBREW_DEVELOPER=1
-          brew install Formula/emacs-plus@30.rb --verbose
+          brew install --formula Formula/emacs-plus@30.rb --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
