@@ -629,8 +629,11 @@ class EmacsBase < Formula
     }
   end
 
-  def inject_protected_resources_usage_desc
-    ohai "Injecting description for protected resources usage"
+  # Inject Emacs Plus customizations into Emacs.app Info.plist: usage
+  # descriptions for protected resources (camera, microphone, speech
+  # recognition) and AutoFill opt-out.
+  def inject_plist_extras
+    ohai "Injecting Info.plist extras"
     app = "#{prefix}/Emacs.app"
     plist = "#{app}/Contents/Info.plist"
 
