@@ -3,6 +3,14 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-06-10
+
+** Bug Fixes
+
+*** =AutoFill (Emacs)= helper process disabled on macOS 26 (Tahoe)
+
+On macOS 26 (Tahoe), the system spawns an =AutoFill (Emacs)= helper process alongside Emacs that heuristically scans text fields for one-time codes. Emacs never marks fields as one-time-code, so the helper is pure overhead. All builds now set =NSAutoFillRequiresTextContentTypeForOneTimeCodeOnMac= in =Info.plist=, which prevents the helper from launching.
+
 * 2026-05-10
 
 ** New Features
