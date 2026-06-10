@@ -208,7 +208,7 @@ class EmacsPlusAT31 < EmacsBase
       inject_path
 
       # inject description for protected resources usage
-      inject_protected_resources_usage_desc
+      inject_plist_extras
 
       # Replace the symlink with one that avoids starting Cocoa.
       # Check multiple locations so users can copy Emacs.app to /Applications
