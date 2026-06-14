@@ -80,7 +80,7 @@ jobs:
           # Emacs 30 uses the latest release tag (update when new version is released)
           BRANCH="emacs-30.2"
           git clone --depth 1 --branch "$BRANCH" \
-            https://git.savannah.gnu.org/git/emacs.git emacs-src
+            https://github.com/emacs-mirror/emacs.git emacs-src
           cd emacs-src
           echo "EMACS_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "Building Emacs $EMACS_VERSION at $(git rev-parse --short HEAD)"
@@ -468,7 +468,7 @@ jobs:
           # Emacs 31 uses emacs-31 branch (pre-release)
           BRANCH="emacs-31"
           git clone --depth 1 --branch "$BRANCH" \
-            https://git.savannah.gnu.org/git/emacs.git emacs-src
+            https://github.com/emacs-mirror/emacs.git emacs-src
           cd emacs-src
           echo "EMACS_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "Building Emacs $EMACS_VERSION at $(git rev-parse --short HEAD)"
@@ -854,7 +854,7 @@ jobs:
           # Emacs 32 uses master branch
           BRANCH="master"
           git clone --depth 1 --branch "$BRANCH" \
-            https://git.savannah.gnu.org/git/emacs.git emacs-src
+            https://github.com/emacs-mirror/emacs.git emacs-src
           cd emacs-src
           echo "EMACS_REV=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "Building Emacs $EMACS_VERSION at $(git rev-parse --short HEAD)"
