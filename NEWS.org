@@ -3,6 +3,14 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-06-14
+
+** Bug Fixes
+
+*** Dropped =awk= build dependency
+
+=emacs-plus@28= through =emacs-plus@32= no longer depend on the =awk= formula at build time. It was added defensively alongside =gnu-tar= and =coreutils=, but Emacs builds fine with the system =awk= and has no need for a specific version. Removing it avoids forcing Homebrew's =awk= (onetrueawk) onto users' systems, where its recent versions break tools such as [[https://github.com/elasticdog/transcrypt/issues/213][transcrypt]]. See [[https://github.com/d12frosted/homebrew-emacs-plus/discussions/951][discussion #951]].
+
 * 2026-06-10
 
 ** Bug Fixes
