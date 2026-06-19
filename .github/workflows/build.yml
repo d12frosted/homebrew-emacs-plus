@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # The runner image ships a stale Homebrew, while formula metadata
       # comes fresh from the JSON API. When homebrew-core starts using a
