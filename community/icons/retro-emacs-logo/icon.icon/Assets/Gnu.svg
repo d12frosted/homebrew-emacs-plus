@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg6612"
+   sodipodi:version="0.32"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   width="270"
+   height="217"
+   version="1.0"
+   sodipodi:docname="Gnu.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata6617">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Dmitry Dzhus</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:date>2007-07</dc:date>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>emacs</rdf:li>
+            <rdf:li>logo</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:description>Emacs logo by Luis Fernandes was created in 2001. This is an SVG version created by hand from scratch in Inkscape.</dc:description>
+        <dc:language>en</dc:language>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Reproduction" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Distribution" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Notice" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/ShareAlike" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/SourceCode" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6615" />
+  <sodipodi:namedview
+     inkscape:window-height="1382"
+     inkscape:window-width="2560"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     inkscape:zoom="3.5852536"
+     inkscape:cx="228.01734"
+     inkscape:cy="149.0829"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:current-layer="svg6612"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:window-maximized="0" />
+  <g
+     id="g2233"
+     style="display:inline;stroke:none">
+    <path
+       sodipodi:nodetypes="cccsz"
+       id="path9706"
+       d="m 176.57988,37.972907 c -1.59278,1.03506 -7.7054,13.980618 -7.80158,15.560314 11.86356,19.580712 33.80125,-13.454437 37.77551,-28.552457 0,0 -10.38257,18.198239 -19.78064,18.546175 -11.01641,0.407851 -8.59763,-6.590966 -10.19329,-5.554032 z"
+       style="fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="ccsscsscsscsssc"
+       id="path7673"
+       d="m 22.47173,15.758997 -6.6617,16.726759 c 0,0 4.08049,9.732348 10.68066,10.352439 15.12668,1.421164 31.96176,-27.218658 36.7034,-27.079198 4.74165,0.13946 14.35944,7.663301 19.47161,18.163659 6.72965,-13.163585 14.92072,-19.011431 28.50269,-9.255641 7.90203,5.675951 24.42095,28.128211 34.3072,29.234334 10.70462,1.197688 19.90239,-8.988532 24.33579,-27.61311 -6.13625,7.949229 -8.63458,11.518467 -14.78278,11.923843 -6.34543,0.41838 -5.7876,1.673522 -27.96176,-21.337403 C 104.89268,-6.1362469 94.43317,4.8811053 87.87854,14.643316 86.41421,13.039524 78.99699,1.01863 70.05858,1.1156811 63.72511,1.1844483 53.17415,16.174161 46.86414,21.616488 40.30897,27.270272 36.37856,28.267647 33.99471,28.294944 30.30074,28.339067 25.84923,26.450798 22.47173,15.758997 Z"
+       style="fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="csscsssc"
+       id="path8693"
+       d="M 76.60517,33.616604 C 59.9071,53.934058 59.23819,54.418087 50.46092,68.860929 41.68365,83.303771 39.35397,92.905012 43.4733,96.486252 c 4.15059,3.608418 11.54583,3.807568 20.60541,-2.888666 12.60731,-9.661502 29.43545,-23.449417 34.05511,-35.18771 1.20073,-3.051 -20.66132,17.644277 -29.43456,22.776357 -5.26363,3.079071 -12.33922,3.888893 -16.14003,0.211492 -7.75632,-7.504489 26.9642,-44.622975 24.04594,-47.781121 z"
+       style="fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="cccsz"
+       id="path9704"
+       d="m 101.40617,64.709511 c -0.0349,-1.638657 8.43734,-14.155205 9.90167,-14.643316 21.24567,14.288092 10.1806,51.042425 3.20759,54.250005 0,0 1.22027,-15.759001 -1.95245,-25.660673 -3.17272,-9.901673 -11.12188,-12.304396 -11.15681,-13.946016 z"
+       style="fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="cscssscc"
+       id="path2171"
+       d="m 212.01995,32.790058 c -2.00565,-8.533948 7.10929,-31.6046438 18.73551,-31.6046438 29.02801,0 14.93144,46.2881448 9.2741,63.3846388 -13.80655,35.771527 -22.55479,89.254847 -23.15038,93.856677 -0.72704,5.61747 -9.40015,20.66814 -5.02057,-4.1838 4.37958,-24.85194 12.24829,-53.85299 21.70213,-87.693106 4.95832,-17.748393 10.9888,-49.402204 -5.77394,-49.449033 -8.55135,-0.109333 -8.06633,5.92502 -15.76685,15.689267 z"
+       style="fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <path
+     style="fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 127.36915,186.62713 C 122.37967,184.13239 151.44844,115.94374 155.47392,138.89833 C 157.2786,149.18917 173.91459,120.35904 173.91459,120.35904 C 173.91459,120.35904 186.98084,96.593259 187.62183,98.664137 C 190.66678,108.50167 152.1911,172.20679 149.45851,156.15564 C 146.69677,139.93327 127.96083,186.92297 127.36915,186.62713 z "
+     id="path3158"
+     sodipodi:nodetypes="cscsss" />
+  <path
+     style="display:inline;fill:#c64e3b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 59.52326,215.22497 c 0,0 -0.24653,-14.59477 24.45608,-45.55932 19.91181,-24.95932 42.99536,-60.94296 42.99536,-60.94296 0,0 -3.78468,18.9811 -20.60385,40.65158 -19.63196,25.29458 -46.84759,65.8507 -46.84759,65.8507 z"
+     id="path4129"
+     sodipodi:nodetypes="cscsc" />
+</svg>

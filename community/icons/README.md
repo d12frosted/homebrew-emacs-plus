@@ -23,32 +23,18 @@ For example:
 icon: dragon-plus
 ```
 
-This works for both **formula** and **cask** installations:
-- Formula: Icon is applied during `brew install emacs-plus@32 ...`
-- Cask: Icon is applied during `brew install --cask emacs-plus-app@master`
-
-To change icons after installation, update `build.yml` and reinstall:
-```bash
-brew reinstall emacs-plus@32              # formula
-brew reinstall --cask emacs-plus-app@master # cask
-```
-
-## macOS 26+ (Tahoe) Compliant Icons (2)
+## macOS 26+ (Tahoe) Compliant Icons (3)
 
 These icons include `Assets.car` for native macOS Tahoe support. They display
 properly without the "icon jail" effect and react to system appearance changes.
 
-**Note on pre-Tahoe compatibility:** Tahoe icons may contain multiple style variants
-(light, dark, tinted, etc.) that only macOS 26+ can display. On older systems, the
-fallback `.icns` file is used, which may not match the colorful preview shown here.
-Check the "Pre-Tahoe" column to see if an icon has proper pre-Tahoe support.
+| Light | Dark | Name | Author | Source |
+|:-----:|:----:|------|--------|--------|
+| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
+| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
+| ![Light](retro-emacs-logo/preview-light.png) | ![Dark](retro-emacs-logo/preview-dark.png) | `retro-emacs-logo` | [Mike-Woolley](https://github.com/Mike-Woolley) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
 
-| Light | Dark | Name | Pre-Tahoe | Author | Source |
-|:-----:|:----:|------|:---------:|--------|--------|
-| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | ✓ | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
-| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | ✗ | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
-
-## All Icons (75)
+## All Icons (74)
 
 Standard icons using `.icns` format. On macOS 26+, these may appear in "icon jail"
 (displayed smaller within a rounded square container).
@@ -120,7 +106,6 @@ Standard icons using `.icns` format. On macOS 26+, these may appear in "icon jai
 | ![modern-vscode](modern-vscode/preview.png) | `modern-vscode` | [vdegenne](https://github.com/vdegenne) | [Source](https://github.com/VSCodeEmacs/Emacs) |
 | ![modern-yellow](modern-yellow/preview.png) | `modern-yellow` | Unknown | [Source](http://getdrawings.com/emacs-icon) |
 | ![nobu417-big-sur](nobu417-big-sur/preview.png) | `nobu417-big-sur` | [nobu417](https://github.com/nobu417) | [Source](https://github.com/nobu417/emacs-icon-replacement-for-macos-big-sur) |
-| ![retro-emacs-logo](retro-emacs-logo/preview.png) | `retro-emacs-logo` | Luis Fernandes | [Source](https://en.m.wikipedia.org/wiki/File:Emacs-logo.svg) |
 | ![retro-gnu-meditate-levitate](retro-gnu-meditate-levitate/preview.png) | `retro-gnu-meditate-levitate` | Nevrax Design Team | [Source](https://www.gnu.org/graphics/meditate.en.html) |
 | ![retro-sink](retro-sink/preview.png) | `retro-sink` | Erik Mugele | [Source](https://www.teuton.org/~ejm/emacsicon/) |
 | ![retro-sink-bw](retro-sink-bw/preview.png) | `retro-sink-bw` | Unknown | [Source](https://www.teuton.org/~ejm/emacsicon/) |
