@@ -2,7 +2,9 @@
   "name": "retro-emacs-logo",
   "description": "Retro Emacs logo",
   "maintainer": {
-    "name": "Luis Fernandes"
+    "github": "Mike-Woolley"
   },
-  "homepage": "https://en.m.wikipedia.org/wiki/File:Emacs-logo.svg"
+  "homepage": "https://github.com/d12frosted/homebrew-emacs-plus",
+  "tahoe_icon_name": "retro-emacs-logo",
+  "tahoe_sha256": "8a2a3e582cb095bd1e3895b23df52cf68e6a2c8885e096032e9243c050597951"
 }

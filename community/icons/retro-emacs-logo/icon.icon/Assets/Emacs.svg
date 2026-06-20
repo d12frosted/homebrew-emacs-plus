@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg6612"
+   sodipodi:version="0.32"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   width="270"
+   height="217"
+   version="1.0"
+   sodipodi:docname="Emacs.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata6617">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Dmitry Dzhus</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:date>2007-07</dc:date>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>emacs</rdf:li>
+            <rdf:li>logo</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:description>Emacs logo by Luis Fernandes was created in 2001. This is an SVG version created by hand from scratch in Inkscape.</dc:description>
+        <dc:language>en</dc:language>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Reproduction" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Distribution" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Notice" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/ShareAlike" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/SourceCode" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6615" />
+  <sodipodi:namedview
+     inkscape:window-height="1382"
+     inkscape:window-width="2560"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     inkscape:zoom="3.5852536"
+     inkscape:cx="228.01734"
+     inkscape:cy="149.0829"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:current-layer="svg6612"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:window-maximized="0" />
+  <g
+     id="g2201"
+     style="fill:#2076c1;fill-opacity:1;stroke:none">
+    <path
+       sodipodi:nodetypes="cccscscscc"
+       id="path2173"
+       d="M 79.886738,152.50463 C 67.822172,155.61715 50.502331,192.18769 49.743523,198.14195 C 52.532726,198.83925 111.02019,130.19512 80.295208,193.81167 C 102.57324,174.95912 124.9556,141.04167 107.8027,183.94795 C 103.74903,194.08781 123.59559,194.09426 142.96938,172.96563 C 137.88975,176.22186 112.22868,191.62171 126.35499,159.60889 C 133.77483,142.79418 109.21923,159.41447 102.3683,165.83729 C 103.80096,159.33343 108.94433,147.78354 100.61675,150.98227 C 92.289176,154.181 83.310373,160.6892 67.937825,175.11509 C 76.765795,160.89643 77.224181,159.40756 79.886738,152.50463 z "
+       style="fill:#2076c1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1" />
+    <path
+       sodipodi:nodetypes="cscssccs"
+       id="path2183"
+       d="M 248.85492,188.50638 C 263.21933,186.53398 284.36437,164.67209 255.21207,163.30784 C 223.17817,161.81588 262.88238,150.47751 262.88238,150.47751 C 245.58932,149.36183 214.14946,168.68613 239.80172,165.74839 C 265.63062,162.76646 265.93049,186.17596 239.24388,186.14445 C 235.50916,186.14004 236.66387,182.41388 236.66387,182.41388 L 225.77752,187.22526 C 236.0826,190.18366 240.70876,189.62494 248.85492,188.50638 z "
+       style="fill:#2076c1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1" />
+    <path
+       sodipodi:nodetypes="cscccscssc"
+       id="path6069"
+       d="M 35.422878,148.66454 C 20.150885,157.04591 -6.2772909,190.95274 6.2647537,199.01662 C 17.984924,206.55208 68.941642,170.29445 77.667057,153.75538 C 4.3035383,211.52619 14.065561,174.90254 27.008448,162.02628 C 35.805465,151.30801 64.004057,143.68513 71.481066,128.52052 C 32.789119,149.29474 30.405114,131.50519 62.642197,110.82103 C 68.569623,107.02504 107.74937,89.042889 77.768775,114.28261 C 95.502651,106.02716 110.52675,93.267855 98.941531,90.767173 C 83.884151,87.517022 60.202847,105.92694 48.092626,115.80927 C 40.969928,121.62162 11.868522,145.38354 35.422878,148.66454 z "
+       style="fill:#2076c1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1" />
+    <g
+       id="g2188"
+       style="fill:#2076c1;fill-opacity:1;stroke:none">
+      <path
+         style="fill:#2076c1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+         d="M 153.52386,181.54504 C 114.3973,212.57672 133.43947,164.59338 180.00502,149.95001 C 144.43247,174.12306 139.76476,184.61018 153.52386,181.54504 z "
+         id="path2175"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:#2076c1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+         d="M 196.30981,176.96638 C 156.1373,209.46239 150.29865,172.10195 184.30492,155.10468 C 167.14111,181.92747 183.59666,177.6607 196.30981,176.96638 z "
+         id="path2177"
+         sodipodi:nodetypes="ccc" />
+    </g>
+    <path
+       sodipodi:nodetypes="ccc"
+       id="path2179"
+       d="M 229.3687,178.97034 C 185.57023,211.04797 178.47643,161.27557 237.30661,150.27509 C 188.34589,179.18978 219.44475,183.56954 229.3687,178.97034 z "
+       style="fill:#2076c1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1" />
+  </g>
+</svg>
