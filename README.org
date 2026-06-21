@@ -24,6 +24,7 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
+  $ brew trust d12frosted/emacs-plus
 
   # Pre-built binaries (fast, ~1 min)
   $ brew install --cask emacs-plus-app          # latest stable
