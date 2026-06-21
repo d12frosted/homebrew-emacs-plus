@@ -5,7 +5,7 @@
 # This module configures the Emacs.app bundle for proper operation when
 # installed via cask. It handles:
 #
-# 1. LSEnvironment in Info.plist - Sets CC and LIBRARY_PATH so native
+# 1. LSEnvironment in Info.plist - Sets LIBRARY_PATH so native
 #    compilation works when launching from Finder/Dock
 #
 # 2. CLI wrapper script - Creates bin/emacs wrapper so running via symlink
@@ -21,7 +21,7 @@
 # - ns-emacs-plus-injected-path will always be nil for cask builds
 # - Cask users should use exec-path-from-shell or switch to formula
 #
-# Native compilation works via CC and LIBRARY_PATH without needing PATH.
+# Native compilation works via LIBRARY_PATH without needing PATH.
 
 require_relative 'BuildConfig'
 
@@ -112,14 +112,6 @@ module CaskEnv
       filtered.empty? ? nil : filtered.join(':')
     end
 
-    # Find the gcc version number (e.g., "15")
-    def gcc_version
-      # Look for gcc-NN in Homebrew bin
-      Dir.glob("#{homebrew_prefix}/bin/gcc-*").map do |path|
-        File.basename(path).sub("gcc-", "")
-      end.select { |v| v.match?(/^\d+$/) }.max
-    end
-
     # Find the directory containing libemutls_w.a
     def find_emutls_dir
       gcc_cellar = "#{homebrew_prefix}/Cellar/gcc"
@@ -148,6 +140,24 @@ module CaskEnv
       paths.compact.join(":")
     end
 
+    # Environment variables injected into LSEnvironment for native compilation.
+    #
+    # Only LIBRARY_PATH is needed: it lets the libgccjit linker find
+    # libemutls_w.a when Emacs is launched from the GUI, where the user's
+    # shell environment is absent.
+    #
+    # We intentionally do NOT inject CC. Emacs native compilation never reads
+    # CC (libgccjit resolves its driver via PATH/GCC_EXEC_PREFIX), so setting
+    # it had no effect on compilation while leaking gcc-NN into every child
+    # process spawned by GUI Emacs (terminals, M-x compile, eshell), breaking
+    # builds that expect clang. See issue #939.
+    def native_comp_env
+      env = {}
+      library_path = build_library_path
+      env["LIBRARY_PATH"] = library_path unless library_path.empty?
+      env
+    end
+
     # Inject environment into Emacs.app via LSEnvironment in Info.plist
     def inject_emacs_app(app_path)
       return false unless File.exist?(app_path)
@@ -162,9 +172,6 @@ module CaskEnv
       # due to Homebrew limitation - cask postflight doesn't have user's shell environment
       puts "Injecting native compilation environment into #{app_path}"
 
-      prefix = homebrew_prefix
-      version = gcc_version
-
       # Add LSEnvironment dict
       system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment dict", plist)
 
@@ -174,16 +181,10 @@ module CaskEnv
       # ns-emacs-plus-injected-path would be t - misleading users into thinking
       # their full PATH was injected. Instead, we let ns-emacs-plus-injected-path
       # be nil so users properly use exec-path-from-shell.
-      # Native compilation still works via CC and LIBRARY_PATH below.
+      # Native compilation still works via LIBRARY_PATH below.
 
-      # CC and LIBRARY_PATH: Always set for native compilation
-      if version
-        system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:CC string '#{prefix}/bin/gcc-#{version}'", plist)
-      end
-
-      library_path = build_library_path
-      unless library_path.empty?
-        system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:LIBRARY_PATH string '#{library_path}'", plist)
+      native_comp_env.each do |key, value|
+        system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:#{key} string '#{value}'", plist)
       end
 
       # Touch the app to update LaunchServices cache

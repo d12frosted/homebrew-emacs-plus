@@ -3,6 +3,22 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-06-21
+
+** Bug Fixes
+
+*** =CC= no longer leaks into child processes of GUI Emacs
+
+Emacs Plus previously injected =CC=/opt/homebrew/bin/gcc-NN= into =Info.plist= under =LSEnvironment= for both formula and cask builds. macOS applies =LSEnvironment= to every process spawned by GUI-launched Emacs, so =CC= bled into terminal emulators (=vterm=, =eat=, =eshell=), =M-x compile=, and other subprocesses, breaking builds that expect the default =clang= toolchain.
+
+The injection turned out to be unnecessary. Emacs native compilation never reads =CC= (libgccjit resolves its driver via =PATH= / =GCC_EXEC_PREFIX=), so removing it has no effect on native compilation. =LIBRARY_PATH= is still injected so the linker can find =libemutls_w.a= when launching from the GUI. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/939][#939]].
+
+Reinstall to pick up the fix:
+
+#+begin_src bash
+brew reinstall emacs-plus@30   # or your version
+#+end_src
+
 * 2026-06-14
 
 ** Bug Fixes
