@@ -1,10 +1,16 @@
 {
   "name": "retro-emacs-logo",
   "description": "Retro Emacs logo",
+  "author": {
+    "name": "Luis Fernandes",
+    "url": "https://en.m.wikipedia.org/wiki/File:Emacs-logo.svg"
+  },
   "maintainer": {
     "github": "Mike-Woolley"
   },
+  "license": "GPL-2.0",
   "homepage": "https://github.com/d12frosted/homebrew-emacs-plus",
+  "pre_tahoe": true,
   "tahoe_icon_name": "retro-emacs-logo",
   "tahoe_sha256": "8a2a3e582cb095bd1e3895b23df52cf68e6a2c8885e096032e9243c050597951"
 }
