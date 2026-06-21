@@ -23,16 +23,31 @@ For example:
 icon: dragon-plus
 ```
 
+This works for both **formula** and **cask** installations:
+- Formula: Icon is applied during `brew install emacs-plus@32 ...`
+- Cask: Icon is applied during `brew install --cask emacs-plus-app@master`
+
+To change icons after installation, update `build.yml` and reinstall:
+```bash
+brew reinstall emacs-plus@32              # formula
+brew reinstall --cask emacs-plus-app@master # cask
+```
+
 ## macOS 26+ (Tahoe) Compliant Icons (3)
 
 These icons include `Assets.car` for native macOS Tahoe support. They display
 properly without the "icon jail" effect and react to system appearance changes.
 
-| Light | Dark | Name | Author | Source |
-|:-----:|:----:|------|--------|--------|
-| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
-| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
-| ![Light](retro-emacs-logo/preview-light.png) | ![Dark](retro-emacs-logo/preview-dark.png) | `retro-emacs-logo` | [Mike-Woolley](https://github.com/Mike-Woolley) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
+**Note on pre-Tahoe compatibility:** Tahoe icons may contain multiple style variants
+(light, dark, tinted, etc.) that only macOS 26+ can display. On older systems, the
+fallback `.icns` file is used, which may not match the colorful preview shown here.
+Check the "Pre-Tahoe" column to see if an icon has proper pre-Tahoe support.
+
+| Light | Dark | Name | Pre-Tahoe | Author | Source |
+|:-----:|:----:|------|:---------:|--------|--------|
+| ![Light](dragon-plus/preview-light.png) | ![Dark](dragon-plus/preview-dark.png) | `dragon-plus` | ✓ | [d12frosted](https://github.com/d12frosted) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
+| ![Light](liquid-glass/preview-light.png) | ![Dark](liquid-glass/preview-dark.png) | `liquid-glass` | ✗ | [leaferiksen](https://github.com/leaferiksen) | [Source](https://github.com/leaferiksen/emacs-liquid-glass-icon) |
+| ![Light](retro-emacs-logo/preview-light.png) | ![Dark](retro-emacs-logo/preview-dark.png) | `retro-emacs-logo` | ✓ | [Luis Fernandes](https://en.m.wikipedia.org/wiki/File:Emacs-logo.svg) (maintained by [Mike-Woolley](https://github.com/Mike-Woolley)) | [Source](https://github.com/d12frosted/homebrew-emacs-plus) |
 
 ## All Icons (74)
 
