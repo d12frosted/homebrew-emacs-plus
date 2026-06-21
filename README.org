@@ -341,7 +341,7 @@ In case you have a non-trivial setup relying on specific value of =PATH= inherit
 
 **** Cask builds
 
-For cask builds (=brew install --cask emacs-plus-app=), PATH injection is *not available* due to a Homebrew limitation - cask postflight doesn't have access to the user's shell environment. Native compilation still works because =CC= and =LIBRARY_PATH= are injected.
+For cask builds (=brew install --cask emacs-plus-app=), PATH injection is *not available* due to a Homebrew limitation - cask postflight doesn't have access to the user's shell environment. Native compilation still works because =LIBRARY_PATH= is injected.
 
 Cask users who need their shell PATH in Emacs should use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]]:
 

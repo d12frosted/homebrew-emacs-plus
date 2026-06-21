@@ -6,6 +6,7 @@
 # Run with: ruby tests/test_cask_env.rb
 
 require 'minitest/autorun'
+require 'minitest/mock'
 require 'tempfile'
 require 'fileutils'
 
@@ -384,6 +385,36 @@ class TestCaskEnv < Minitest::Test
       # Should not raise error
       CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
       CaskEnv.send(:update_site_start_el, app_path)
+    end
+  end
+
+  # ===========================================
+  # Tests for native_comp_env (LSEnvironment vars)
+  # ===========================================
+
+  def test_native_comp_env_does_not_include_cc
+    # Regression for #939: CC must never be injected into LSEnvironment.
+    # Emacs native compilation does not read CC (libgccjit resolves its
+    # driver via PATH/GCC_EXEC_PREFIX), so injecting CC=gcc-NN had no effect
+    # on compilation while leaking into every child process of GUI Emacs
+    # (terminals, compile, eshell), breaking builds that expect clang.
+    CaskEnv.stub(:build_library_path, "/opt/homebrew/lib/gcc/current") do
+      env = CaskEnv.send(:native_comp_env)
+      refute_includes env.keys, "CC"
+    end
+  end
+
+  def test_native_comp_env_includes_library_path
+    CaskEnv.stub(:build_library_path, "/opt/homebrew/lib/gcc/current") do
+      env = CaskEnv.send(:native_comp_env)
+      assert_equal "/opt/homebrew/lib/gcc/current", env["LIBRARY_PATH"]
+    end
+  end
+
+  def test_native_comp_env_omits_empty_library_path
+    CaskEnv.stub(:build_library_path, "") do
+      env = CaskEnv.send(:native_comp_env)
+      refute_includes env.keys, "LIBRARY_PATH"
     end
   end
 

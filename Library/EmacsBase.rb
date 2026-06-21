@@ -485,13 +485,6 @@ class EmacsBase < Formula
     native_comp_path
   end
 
-  # Find the gcc version number (e.g., "15")
-  def gcc_version
-    Dir.glob("#{HOMEBREW_PREFIX}/bin/gcc-*").map do |path|
-      File.basename(path).sub("gcc-", "")
-    end.select { |v| v.match?(/^\d+$/) }.max
-  end
-
   # Find the directory containing libemutls_w.a
   def find_emutls_dir
     gcc_cellar = "#{HOMEBREW_PREFIX}/Cellar/gcc"
@@ -592,12 +585,15 @@ class EmacsBase < Formula
       system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:EMACS_PLUS_PATH string '#{path}'", plist)
     end
 
-    # CC and LIBRARY_PATH: Always set for native compilation
-    version = gcc_version
-    if version
-      system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:CC string '#{HOMEBREW_PREFIX}/bin/gcc-#{version}'", plist)
-    end
-
+    # LIBRARY_PATH: set for native compilation so the libgccjit linker can
+    # find libemutls_w.a when Emacs is launched from the GUI, where the
+    # user's shell environment is absent.
+    #
+    # We intentionally do NOT inject CC. Emacs native compilation never reads
+    # CC (libgccjit resolves its driver via PATH/GCC_EXEC_PREFIX), so setting
+    # it had no effect on compilation while leaking gcc-NN into every child
+    # process spawned by GUI Emacs (terminals, M-x compile, eshell), breaking
+    # builds that expect clang. See issue #939.
     library_path = build_library_path
     unless library_path.empty?
       system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:LIBRARY_PATH string '#{library_path}'", plist)
