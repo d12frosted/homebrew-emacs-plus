@@ -24,7 +24,10 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew trust d12frosted/emacs-plus
+
+  # Homebrew 6.0+ won't load non-official taps until you trust them. If an
+  # install reports an "untrusted tap", run `brew trust d12frosted/emacs-plus`
+  # (or trust a single formula/cask) and retry. See https://docs.brew.sh/Tap-Trust.
 
   # Pre-built binaries (fast, ~1 min)
   $ brew install --cask emacs-plus-app          # latest stable
