@@ -39,6 +39,12 @@ jobs:
       - name: Tap emacs-plus
         run: brew tap d12frosted/emacs-plus
 
+      # Homebrew now refuses to load formulae from third-party taps unless
+      # they are explicitly trusted ("Refusing to load formula ... from
+      # untrusted tap"). Trust our own tap so install can proceed in CI.
+      - name: Trust emacs-plus tap
+        run: brew trust d12frosted/emacs-plus
+
       - name: Build ${{ matrix.formula }} ${{ matrix.build_opts }}
         run: |
           export HOMEBREW_DEVELOPER=1
