@@ -155,8 +155,16 @@ jobs:
       - name: Dump config.log on failure
         if: failure()
         run: |
-          echo "=== tail of emacs-src/config.log ==="
-          tail -n 150 emacs-src/config.log || true
+          echo "=== libgccjit-related lines from config.log ==="
+          grep -n -iE "gccjit|gcc_jit|conftest|^ld:|error:|undefined|cannot|no such|sysroot|sdk|fatal" emacs-src/config.log | tail -150 || true
+
+      - name: Upload config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: configlog-${{ matrix.platform.os_name }}
+          path: emacs-src/config.log
+          if-no-files-found: ignore
 
       - name: Verify build
         run: |
@@ -569,8 +577,16 @@ jobs:
       - name: Dump config.log on failure
         if: failure()
         run: |
-          echo "=== tail of emacs-src/config.log ==="
-          tail -n 150 emacs-src/config.log || true
+          echo "=== libgccjit-related lines from config.log ==="
+          grep -n -iE "gccjit|gcc_jit|conftest|^ld:|error:|undefined|cannot|no such|sysroot|sdk|fatal" emacs-src/config.log | tail -150 || true
+
+      - name: Upload config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: configlog-${{ matrix.platform.os_name }}
+          path: emacs-src/config.log
+          if-no-files-found: ignore
 
       - name: Verify build
         run: |
@@ -983,8 +999,16 @@ jobs:
       - name: Dump config.log on failure
         if: failure()
         run: |
-          echo "=== tail of emacs-src/config.log ==="
-          tail -n 150 emacs-src/config.log || true
+          echo "=== libgccjit-related lines from config.log ==="
+          grep -n -iE "gccjit|gcc_jit|conftest|^ld:|error:|undefined|cannot|no such|sysroot|sdk|fatal" emacs-src/config.log | tail -150 || true
+
+      - name: Upload config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: configlog-${{ matrix.platform.os_name }}
+          path: emacs-src/config.log
+          if-no-files-found: ignore
 
       - name: Verify build
         run: |
