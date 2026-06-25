@@ -111,11 +111,19 @@ jobs:
           cd emacs-src
           ./autogen.sh
           # Point configure at the Homebrew gcc runtime so the libgccjit
-          # test program links and runs. Without this, configure fails with
-          # "libgccjit failed to compile and run a test program" on arm64
-          # after a gcc bottle bump. Mirrors the LDFLAGS the formula sets
-          # (Formula/emacs-plus@*.rb) for native-compilation parity.
+          # test program compiles, links, AND runs:
+          # - LDFLAGS lets configure link the test binary and embeds an rpath
+          #   to libgccjit (mirrors Formula/emacs-plus@*.rb).
+          # - LIBRARY_PATH lets libgccjit's own driver find the gcc runtime
+          #   (libgcc, libemutls_w.a) when it links the JIT test program at
+          #   run time. Without it the test compiles but fails to run on arm64
+          #   ("libgccjit failed to compile and run a test program").
+          #   Mirrors Library/EmacsBase.rb#build_library_path.
           GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
+          EMUTLS_DIR=$(dirname "$(find "$HOMEBREW_PREFIX/Cellar/gcc" -name libemutls_w.a 2>/dev/null | head -1)")
+          LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
+          [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
+          export LIBRARY_PATH
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -504,11 +512,19 @@ jobs:
           cd emacs-src
           ./autogen.sh
           # Point configure at the Homebrew gcc runtime so the libgccjit
-          # test program links and runs. Without this, configure fails with
-          # "libgccjit failed to compile and run a test program" on arm64
-          # after a gcc bottle bump. Mirrors the LDFLAGS the formula sets
-          # (Formula/emacs-plus@*.rb) for native-compilation parity.
+          # test program compiles, links, AND runs:
+          # - LDFLAGS lets configure link the test binary and embeds an rpath
+          #   to libgccjit (mirrors Formula/emacs-plus@*.rb).
+          # - LIBRARY_PATH lets libgccjit's own driver find the gcc runtime
+          #   (libgcc, libemutls_w.a) when it links the JIT test program at
+          #   run time. Without it the test compiles but fails to run on arm64
+          #   ("libgccjit failed to compile and run a test program").
+          #   Mirrors Library/EmacsBase.rb#build_library_path.
           GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
+          EMUTLS_DIR=$(dirname "$(find "$HOMEBREW_PREFIX/Cellar/gcc" -name libemutls_w.a 2>/dev/null | head -1)")
+          LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
+          [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
+          export LIBRARY_PATH
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -897,11 +913,19 @@ jobs:
           cd emacs-src
           ./autogen.sh
           # Point configure at the Homebrew gcc runtime so the libgccjit
-          # test program links and runs. Without this, configure fails with
-          # "libgccjit failed to compile and run a test program" on arm64
-          # after a gcc bottle bump. Mirrors the LDFLAGS the formula sets
-          # (Formula/emacs-plus@*.rb) for native-compilation parity.
+          # test program compiles, links, AND runs:
+          # - LDFLAGS lets configure link the test binary and embeds an rpath
+          #   to libgccjit (mirrors Formula/emacs-plus@*.rb).
+          # - LIBRARY_PATH lets libgccjit's own driver find the gcc runtime
+          #   (libgcc, libemutls_w.a) when it links the JIT test program at
+          #   run time. Without it the test compiles but fails to run on arm64
+          #   ("libgccjit failed to compile and run a test program").
+          #   Mirrors Library/EmacsBase.rb#build_library_path.
           GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
+          EMUTLS_DIR=$(dirname "$(find "$HOMEBREW_PREFIX/Cellar/gcc" -name libemutls_w.a 2>/dev/null | head -1)")
+          LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
+          [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
+          export LIBRARY_PATH
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
