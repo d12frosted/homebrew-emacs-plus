@@ -71,7 +71,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter@0.25 pkg-config webp
+            gcc libgccjit tree-sitter@0.25 pkg-config webp
           # tree-sitter@0.25 is keg-only, set up paths
           echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
@@ -120,10 +120,32 @@ jobs:
           #   ("libgccjit failed to compile and run a test program").
           #   Mirrors Library/EmacsBase.rb#build_library_path.
           GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
-          EMUTLS_DIR=$(dirname "$(find "$HOMEBREW_PREFIX/Cellar/gcc" -name libemutls_w.a 2>/dev/null | head -1)")
-          LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
-          [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
+          # Locate libemutls_w.a via gcc itself: -print-file-name is what the
+          # driver uses internally, so it is authoritative and deterministic
+          # (a Cellar-wide `find | head -1` proved flaky across runners).
+          # gcc 16's libgccjit driver links the JIT program with -lemutls_w,
+          # so this dir MUST be on LIBRARY_PATH or the run-time test fails with
+          # "ld: library 'emutls_w' not found / error invoking gcc driver".
+          GCC_VER=$(brew list --versions gcc | awk '{print $2}' | head -1)
+          GCC_MAJOR=${GCC_VER%%.*}
+          GCC_EXE="$(brew --prefix gcc)/bin/gcc-${GCC_MAJOR}"
+          EMUTLS_DIR=$(dirname "$("$GCC_EXE" -print-file-name=libemutls_w.a)")
+          if [ ! -f "$EMUTLS_DIR/libemutls_w.a" ]; then
+            echo "::error::could not locate libemutls_w.a via '$GCC_EXE' (got '$EMUTLS_DIR')"
+            echo "debug: brew --prefix gcc=$(brew --prefix gcc); versions: $(brew list --versions gcc)"
+            ls -la "$(brew --prefix gcc)/bin" 2>&1 | head -20 || true
+            exit 1
+          fi
+          LIBRARY_PATH="$EMUTLS_DIR:$GCC_LIB:$(brew --prefix libgccjit)/lib/gcc/current:$HOMEBREW_PREFIX/lib"
           export LIBRARY_PATH
+          echo "Using LIBRARY_PATH=$LIBRARY_PATH"
+          # Pin SDKROOT to the installed SDK. The Homebrew gcc bottle behind
+          # libgccjit bakes in a sysroot at build time; on newer macOS SDKs
+          # (sequoia/tahoe) its JIT driver otherwise fails to find the system
+          # libraries it links against, so the libgccjit test compiles but
+          # fails to run. Homebrew's superenv sets SDKROOT for the formula
+          # build; replicate that here.
+          export SDKROOT="$(xcrun --show-sdk-path)"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -144,6 +166,20 @@ jobs:
             --without-compress-install
           make -j$(sysctl -n hw.ncpu)
           make install
+
+      - name: Dump config.log on failure
+        if: failure()
+        run: |
+          echo "=== libgccjit-related lines from config.log ==="
+          grep -n -iE "gccjit|gcc_jit|conftest|^ld:|error:|undefined|cannot|no such|sysroot|sdk|fatal" emacs-src/config.log | tail -150 || true
+
+      - name: Upload config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: configlog-${{ matrix.platform.os_name }}
+          path: emacs-src/config.log
+          if-no-files-found: ignore
 
       - name: Verify build
         run: |
@@ -476,7 +512,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter pkg-config webp
+            gcc libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
@@ -521,10 +557,32 @@ jobs:
           #   ("libgccjit failed to compile and run a test program").
           #   Mirrors Library/EmacsBase.rb#build_library_path.
           GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
-          EMUTLS_DIR=$(dirname "$(find "$HOMEBREW_PREFIX/Cellar/gcc" -name libemutls_w.a 2>/dev/null | head -1)")
-          LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
-          [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
+          # Locate libemutls_w.a via gcc itself: -print-file-name is what the
+          # driver uses internally, so it is authoritative and deterministic
+          # (a Cellar-wide `find | head -1` proved flaky across runners).
+          # gcc 16's libgccjit driver links the JIT program with -lemutls_w,
+          # so this dir MUST be on LIBRARY_PATH or the run-time test fails with
+          # "ld: library 'emutls_w' not found / error invoking gcc driver".
+          GCC_VER=$(brew list --versions gcc | awk '{print $2}' | head -1)
+          GCC_MAJOR=${GCC_VER%%.*}
+          GCC_EXE="$(brew --prefix gcc)/bin/gcc-${GCC_MAJOR}"
+          EMUTLS_DIR=$(dirname "$("$GCC_EXE" -print-file-name=libemutls_w.a)")
+          if [ ! -f "$EMUTLS_DIR/libemutls_w.a" ]; then
+            echo "::error::could not locate libemutls_w.a via '$GCC_EXE' (got '$EMUTLS_DIR')"
+            echo "debug: brew --prefix gcc=$(brew --prefix gcc); versions: $(brew list --versions gcc)"
+            ls -la "$(brew --prefix gcc)/bin" 2>&1 | head -20 || true
+            exit 1
+          fi
+          LIBRARY_PATH="$EMUTLS_DIR:$GCC_LIB:$(brew --prefix libgccjit)/lib/gcc/current:$HOMEBREW_PREFIX/lib"
           export LIBRARY_PATH
+          echo "Using LIBRARY_PATH=$LIBRARY_PATH"
+          # Pin SDKROOT to the installed SDK. The Homebrew gcc bottle behind
+          # libgccjit bakes in a sysroot at build time; on newer macOS SDKs
+          # (sequoia/tahoe) its JIT driver otherwise fails to find the system
+          # libraries it links against, so the libgccjit test compiles but
+          # fails to run. Homebrew's superenv sets SDKROOT for the formula
+          # build; replicate that here.
+          export SDKROOT="$(xcrun --show-sdk-path)"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -545,6 +603,20 @@ jobs:
             --without-compress-install
           make -j$(sysctl -n hw.ncpu)
           make install
+
+      - name: Dump config.log on failure
+        if: failure()
+        run: |
+          echo "=== libgccjit-related lines from config.log ==="
+          grep -n -iE "gccjit|gcc_jit|conftest|^ld:|error:|undefined|cannot|no such|sysroot|sdk|fatal" emacs-src/config.log | tail -150 || true
+
+      - name: Upload config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: configlog-${{ matrix.platform.os_name }}
+          path: emacs-src/config.log
+          if-no-files-found: ignore
 
       - name: Verify build
         run: |
@@ -877,7 +949,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter pkg-config webp
+            gcc libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
@@ -922,10 +994,32 @@ jobs:
           #   ("libgccjit failed to compile and run a test program").
           #   Mirrors Library/EmacsBase.rb#build_library_path.
           GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
-          EMUTLS_DIR=$(dirname "$(find "$HOMEBREW_PREFIX/Cellar/gcc" -name libemutls_w.a 2>/dev/null | head -1)")
-          LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
-          [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
+          # Locate libemutls_w.a via gcc itself: -print-file-name is what the
+          # driver uses internally, so it is authoritative and deterministic
+          # (a Cellar-wide `find | head -1` proved flaky across runners).
+          # gcc 16's libgccjit driver links the JIT program with -lemutls_w,
+          # so this dir MUST be on LIBRARY_PATH or the run-time test fails with
+          # "ld: library 'emutls_w' not found / error invoking gcc driver".
+          GCC_VER=$(brew list --versions gcc | awk '{print $2}' | head -1)
+          GCC_MAJOR=${GCC_VER%%.*}
+          GCC_EXE="$(brew --prefix gcc)/bin/gcc-${GCC_MAJOR}"
+          EMUTLS_DIR=$(dirname "$("$GCC_EXE" -print-file-name=libemutls_w.a)")
+          if [ ! -f "$EMUTLS_DIR/libemutls_w.a" ]; then
+            echo "::error::could not locate libemutls_w.a via '$GCC_EXE' (got '$EMUTLS_DIR')"
+            echo "debug: brew --prefix gcc=$(brew --prefix gcc); versions: $(brew list --versions gcc)"
+            ls -la "$(brew --prefix gcc)/bin" 2>&1 | head -20 || true
+            exit 1
+          fi
+          LIBRARY_PATH="$EMUTLS_DIR:$GCC_LIB:$(brew --prefix libgccjit)/lib/gcc/current:$HOMEBREW_PREFIX/lib"
           export LIBRARY_PATH
+          echo "Using LIBRARY_PATH=$LIBRARY_PATH"
+          # Pin SDKROOT to the installed SDK. The Homebrew gcc bottle behind
+          # libgccjit bakes in a sysroot at build time; on newer macOS SDKs
+          # (sequoia/tahoe) its JIT driver otherwise fails to find the system
+          # libraries it links against, so the libgccjit test compiles but
+          # fails to run. Homebrew's superenv sets SDKROOT for the formula
+          # build; replicate that here.
+          export SDKROOT="$(xcrun --show-sdk-path)"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -946,6 +1040,20 @@ jobs:
             --without-compress-install
           make -j$(sysctl -n hw.ncpu)
           make install
+
+      - name: Dump config.log on failure
+        if: failure()
+        run: |
+          echo "=== libgccjit-related lines from config.log ==="
+          grep -n -iE "gccjit|gcc_jit|conftest|^ld:|error:|undefined|cannot|no such|sysroot|sdk|fatal" emacs-src/config.log | tail -150 || true
+
+      - name: Upload config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: configlog-${{ matrix.platform.os_name }}
+          path: emacs-src/config.log
+          if-no-files-found: ignore
 
       - name: Verify build
         run: |
