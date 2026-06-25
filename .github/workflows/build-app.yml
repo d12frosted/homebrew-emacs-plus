@@ -124,6 +124,13 @@ jobs:
           LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
           [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
           export LIBRARY_PATH
+          # Pin SDKROOT to the installed SDK. The Homebrew gcc bottle behind
+          # libgccjit bakes in a sysroot at build time; on newer macOS SDKs
+          # (sequoia/tahoe) its JIT driver otherwise fails to find the system
+          # libraries it links against, so the libgccjit test compiles but
+          # fails to run. Homebrew's superenv sets SDKROOT for the formula
+          # build; replicate that here.
+          export SDKROOT="$(xcrun --show-sdk-path)"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -144,6 +151,12 @@ jobs:
             --without-compress-install
           make -j$(sysctl -n hw.ncpu)
           make install
+
+      - name: Dump config.log on failure
+        if: failure()
+        run: |
+          echo "=== tail of emacs-src/config.log ==="
+          tail -n 150 emacs-src/config.log || true
 
       - name: Verify build
         run: |
@@ -525,6 +538,13 @@ jobs:
           LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
           [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
           export LIBRARY_PATH
+          # Pin SDKROOT to the installed SDK. The Homebrew gcc bottle behind
+          # libgccjit bakes in a sysroot at build time; on newer macOS SDKs
+          # (sequoia/tahoe) its JIT driver otherwise fails to find the system
+          # libraries it links against, so the libgccjit test compiles but
+          # fails to run. Homebrew's superenv sets SDKROOT for the formula
+          # build; replicate that here.
+          export SDKROOT="$(xcrun --show-sdk-path)"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -545,6 +565,12 @@ jobs:
             --without-compress-install
           make -j$(sysctl -n hw.ncpu)
           make install
+
+      - name: Dump config.log on failure
+        if: failure()
+        run: |
+          echo "=== tail of emacs-src/config.log ==="
+          tail -n 150 emacs-src/config.log || true
 
       - name: Verify build
         run: |
@@ -926,6 +952,13 @@ jobs:
           LIBRARY_PATH="$GCC_LIB:$HOMEBREW_PREFIX/lib"
           [ -n "$EMUTLS_DIR" ] && LIBRARY_PATH="$EMUTLS_DIR:$LIBRARY_PATH"
           export LIBRARY_PATH
+          # Pin SDKROOT to the installed SDK. The Homebrew gcc bottle behind
+          # libgccjit bakes in a sysroot at build time; on newer macOS SDKs
+          # (sequoia/tahoe) its JIT driver otherwise fails to find the system
+          # libraries it links against, so the libgccjit test compiles but
+          # fails to run. Homebrew's superenv sets SDKROOT for the formula
+          # build; replicate that here.
+          export SDKROOT="$(xcrun --show-sdk-path)"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
@@ -946,6 +979,12 @@ jobs:
             --without-compress-install
           make -j$(sysctl -n hw.ncpu)
           make install
+
+      - name: Dump config.log on failure
+        if: failure()
+        run: |
+          echo "=== tail of emacs-src/config.log ==="
+          tail -n 150 emacs-src/config.log || true
 
       - name: Verify build
         run: |
