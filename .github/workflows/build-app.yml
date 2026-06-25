@@ -110,12 +110,19 @@ jobs:
         run: |
           cd emacs-src
           ./autogen.sh
+          # Point configure at the Homebrew gcc runtime so the libgccjit
+          # test program links and runs. Without this, configure fails with
+          # "libgccjit failed to compile and run a test program" on arm64
+          # after a gcc bottle bump. Mirrors the LDFLAGS the formula sets
+          # (Formula/emacs-plus@*.rb) for native-compilation parity.
+          GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
-            CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
+            CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT -I$(brew --prefix gcc)/include -I$(brew --prefix libgccjit)/include" \
+            LDFLAGS="-L$GCC_LIB -Wl,-rpath,$GCC_LIB" \
             --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
@@ -496,12 +503,19 @@ jobs:
         run: |
           cd emacs-src
           ./autogen.sh
+          # Point configure at the Homebrew gcc runtime so the libgccjit
+          # test program links and runs. Without this, configure fails with
+          # "libgccjit failed to compile and run a test program" on arm64
+          # after a gcc bottle bump. Mirrors the LDFLAGS the formula sets
+          # (Formula/emacs-plus@*.rb) for native-compilation parity.
+          GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
-            CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
+            CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT -I$(brew --prefix gcc)/include -I$(brew --prefix libgccjit)/include" \
+            LDFLAGS="-L$GCC_LIB -Wl,-rpath,$GCC_LIB" \
             --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
@@ -882,12 +896,19 @@ jobs:
         run: |
           cd emacs-src
           ./autogen.sh
+          # Point configure at the Homebrew gcc runtime so the libgccjit
+          # test program links and runs. Without this, configure fails with
+          # "libgccjit failed to compile and run a test program" on arm64
+          # after a gcc bottle bump. Mirrors the LDFLAGS the formula sets
+          # (Formula/emacs-plus@*.rb) for native-compilation parity.
+          GCC_LIB="$HOMEBREW_PREFIX/lib/gcc/current"
           # CFLAGS must match the formula for parity:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
           ./configure \
-            CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT" \
+            CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT -I$(brew --prefix gcc)/include -I$(brew --prefix libgccjit)/include" \
+            LDFLAGS="-L$GCC_LIB -Wl,-rpath,$GCC_LIB" \
             --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
