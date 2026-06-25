@@ -71,7 +71,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter@0.25 pkg-config webp
+            gcc libgccjit tree-sitter@0.25 pkg-config webp
           # tree-sitter@0.25 is keg-only, set up paths
           echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
@@ -126,10 +126,15 @@ jobs:
           # gcc 16's libgccjit driver links the JIT program with -lemutls_w,
           # so this dir MUST be on LIBRARY_PATH or the run-time test fails with
           # "ld: library 'emutls_w' not found / error invoking gcc driver".
-          GCC_EXE=$(ls "$(brew --prefix gcc)"/bin/gcc-[0-9]* 2>/dev/null | grep -E 'gcc-[0-9]+$' | head -1)
+          GCC_VER=$(brew list --versions gcc | awk '{print $2}' | head -1)
+          GCC_MAJOR=${GCC_VER%%.*}
+          GCC_EXE="$(brew --prefix gcc)/bin/gcc-${GCC_MAJOR}"
           EMUTLS_DIR=$(dirname "$("$GCC_EXE" -print-file-name=libemutls_w.a)")
           if [ ! -f "$EMUTLS_DIR/libemutls_w.a" ]; then
-            echo "::error::could not locate libemutls_w.a (got '$EMUTLS_DIR')"; exit 1
+            echo "::error::could not locate libemutls_w.a via '$GCC_EXE' (got '$EMUTLS_DIR')"
+            echo "debug: brew --prefix gcc=$(brew --prefix gcc); versions: $(brew list --versions gcc)"
+            ls -la "$(brew --prefix gcc)/bin" 2>&1 | head -20 || true
+            exit 1
           fi
           LIBRARY_PATH="$EMUTLS_DIR:$GCC_LIB:$(brew --prefix libgccjit)/lib/gcc/current:$HOMEBREW_PREFIX/lib"
           export LIBRARY_PATH
@@ -507,7 +512,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter pkg-config webp
+            gcc libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
@@ -558,10 +563,15 @@ jobs:
           # gcc 16's libgccjit driver links the JIT program with -lemutls_w,
           # so this dir MUST be on LIBRARY_PATH or the run-time test fails with
           # "ld: library 'emutls_w' not found / error invoking gcc driver".
-          GCC_EXE=$(ls "$(brew --prefix gcc)"/bin/gcc-[0-9]* 2>/dev/null | grep -E 'gcc-[0-9]+$' | head -1)
+          GCC_VER=$(brew list --versions gcc | awk '{print $2}' | head -1)
+          GCC_MAJOR=${GCC_VER%%.*}
+          GCC_EXE="$(brew --prefix gcc)/bin/gcc-${GCC_MAJOR}"
           EMUTLS_DIR=$(dirname "$("$GCC_EXE" -print-file-name=libemutls_w.a)")
           if [ ! -f "$EMUTLS_DIR/libemutls_w.a" ]; then
-            echo "::error::could not locate libemutls_w.a (got '$EMUTLS_DIR')"; exit 1
+            echo "::error::could not locate libemutls_w.a via '$GCC_EXE' (got '$EMUTLS_DIR')"
+            echo "debug: brew --prefix gcc=$(brew --prefix gcc); versions: $(brew list --versions gcc)"
+            ls -la "$(brew --prefix gcc)/bin" 2>&1 | head -20 || true
+            exit 1
           fi
           LIBRARY_PATH="$EMUTLS_DIR:$GCC_LIB:$(brew --prefix libgccjit)/lib/gcc/current:$HOMEBREW_PREFIX/lib"
           export LIBRARY_PATH
@@ -939,7 +949,7 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            libgccjit tree-sitter pkg-config webp
+            gcc libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
@@ -990,10 +1000,15 @@ jobs:
           # gcc 16's libgccjit driver links the JIT program with -lemutls_w,
           # so this dir MUST be on LIBRARY_PATH or the run-time test fails with
           # "ld: library 'emutls_w' not found / error invoking gcc driver".
-          GCC_EXE=$(ls "$(brew --prefix gcc)"/bin/gcc-[0-9]* 2>/dev/null | grep -E 'gcc-[0-9]+$' | head -1)
+          GCC_VER=$(brew list --versions gcc | awk '{print $2}' | head -1)
+          GCC_MAJOR=${GCC_VER%%.*}
+          GCC_EXE="$(brew --prefix gcc)/bin/gcc-${GCC_MAJOR}"
           EMUTLS_DIR=$(dirname "$("$GCC_EXE" -print-file-name=libemutls_w.a)")
           if [ ! -f "$EMUTLS_DIR/libemutls_w.a" ]; then
-            echo "::error::could not locate libemutls_w.a (got '$EMUTLS_DIR')"; exit 1
+            echo "::error::could not locate libemutls_w.a via '$GCC_EXE' (got '$EMUTLS_DIR')"
+            echo "debug: brew --prefix gcc=$(brew --prefix gcc); versions: $(brew list --versions gcc)"
+            ls -la "$(brew --prefix gcc)/bin" 2>&1 | head -20 || true
+            exit 1
           fi
           LIBRARY_PATH="$EMUTLS_DIR:$GCC_LIB:$(brew --prefix libgccjit)/lib/gcc/current:$HOMEBREW_PREFIX/lib"
           export LIBRARY_PATH
