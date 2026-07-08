@@ -3,6 +3,20 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-07-08
+
+** Bug Fixes
+
+*** More reliable =LIBRARY_PATH= injection for native compilation
+
+Both formula and cask builds inject =LIBRARY_PATH= into =Info.plist= so the libgccjit linker can find =libemutls_w.a= when GUI-launched Emacs native-compiles packages. The directory was previously located by globbing the gcc Cellar and taking the first match, which could pick a stale gcc version when several are installed. It is now resolved by asking the gcc driver itself (=gcc-NN -print-file-name=libemutls_w.a=), the same mechanism libgccjit uses internally, with the glob kept only as a fallback. The libgccjit library directory is also added to =LIBRARY_PATH=, matching the CI build environment. This ports [[https://github.com/d12frosted/homebrew-emacs-plus/pull/963][#963]] to install-time injection.
+
+Reinstall to pick up the fix:
+
+#+begin_src bash
+brew reinstall emacs-plus@30   # or your version
+#+end_src
+
 * 2026-06-21
 
 ** Bug Fixes

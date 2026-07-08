@@ -485,8 +485,29 @@ class EmacsBase < Formula
     native_comp_path
   end
 
+  # Find the versioned gcc driver (gcc-16 etc.) under the gcc opt prefix.
+  # Returns nil when the gcc formula is not installed.
+  def find_gcc_executable
+    Dir.glob("#{HOMEBREW_PREFIX}/opt/gcc/bin/gcc-*")
+       .select { |p| File.basename(p).match?(/\Agcc-\d+\z/) && File.executable?(p) }
+       .max_by { |p| File.basename(p).delete_prefix("gcc-").to_i }
+  end
+
   # Find the directory containing libemutls_w.a
+  #
+  # Ask gcc itself via -print-file-name: that is the mechanism the
+  # libgccjit driver uses internally, so it is authoritative. A Cellar-wide
+  # glob can pick a stale directory when multiple gcc versions are
+  # installed (PR #963 fixed the same nondeterminism in CI); it remains
+  # only as a last-resort fallback.
   def find_emutls_dir
+    if (gcc = find_gcc_executable)
+      path = IO.popen([gcc, "-print-file-name=libemutls_w.a"], err: File::NULL, &:read).strip
+      # gcc echoes the bare name back when it cannot find the file;
+      # expand_path drops the bin/../lib indirection gcc reports
+      return File.expand_path(File.dirname(path)) if path.include?("/") && File.file?(path)
+    end
+
     gcc_cellar = "#{HOMEBREW_PREFIX}/Cellar/gcc"
     return nil unless File.directory?(gcc_cellar)
 
@@ -497,6 +518,7 @@ class EmacsBase < Formula
   end
 
   # Build LIBRARY_PATH for native compilation
+  # Mirrors the LIBRARY_PATH built in build-app.yml (PR #963)
   def build_library_path
     paths = []
 
@@ -504,8 +526,9 @@ class EmacsBase < Formula
     emutls_dir = find_emutls_dir
     paths << emutls_dir if emutls_dir
 
-    # Add gcc library directories
+    # Add gcc and libgccjit library directories
     paths << "#{HOMEBREW_PREFIX}/lib/gcc/current"
+    paths << "#{HOMEBREW_PREFIX}/opt/libgccjit/lib/gcc/current"
     paths << "#{HOMEBREW_PREFIX}/lib"
 
     paths.compact.join(":")
