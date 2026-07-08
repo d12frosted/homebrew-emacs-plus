@@ -578,6 +578,8 @@ class EmacsBase < Formula
           ;; Set PATH in process-environment for subprocesses
           (setenv "PATH" emacs-plus-path))
 
+        #{BuildConfig.native_comp_driver_options_el(HOMEBREW_PREFIX).chomp}
+
         (provide 'emacs-plus)
 
         ;;; site-start.el ends here

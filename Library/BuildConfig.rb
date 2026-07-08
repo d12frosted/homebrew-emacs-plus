@@ -70,6 +70,52 @@ module BuildConfig
       config
     end
 
+    # Elisp block for site-start.el that lets the libgccjit driver link
+    # .eln files no matter how Emacs was launched (issue #964).
+    #
+    # LIBRARY_PATH injected via LSEnvironment reaches GUI launches only, so
+    # a terminal-launched Emacs with a cold eln-cache fails at the link step
+    # ("ld: library 'emutls_w' not found"). Driver options are passed only
+    # to libgccjit, so unlike setenv they do not leak into child processes
+    # of Emacs (issue #939). The gcc paths are resolved at Emacs startup, so
+    # they survive gcc version bumps without a reinstall.
+    def native_comp_driver_options_el(prefix)
+      <<~ELISP
+        ;; Native compilation: pass gcc library dirs to the libgccjit driver
+        ;; so it can link .eln files (ld needs libemutls_w.a and friends).
+        ;; LIBRARY_PATH from LSEnvironment covers GUI launches only, so a
+        ;; terminal-launched Emacs with a cold eln-cache fails to link
+        ;; without this. Driver options reach only libgccjit, so unlike
+        ;; setenv they do not leak into child processes of Emacs.
+        (when (and (fboundp 'native-comp-available-p)
+                   (native-comp-available-p))
+          (let* ((gcc (car (last (sort (file-expand-wildcards
+                                        "#{prefix}/opt/gcc/bin/gcc-[0-9]*")
+                                       #'string-version-lessp))))
+                 (emutls (when gcc
+                           (with-temp-buffer
+                             (when (eql 0 (ignore-errors
+                                            (call-process
+                                             gcc nil t nil
+                                             "-print-file-name=libemutls_w.a")))
+                               (string-trim (buffer-string))))))
+                 (dirs (list (when (and emutls (string-match-p "/" emutls))
+                               (directory-file-name
+                                (expand-file-name (file-name-directory emutls))))
+                             "#{prefix}/lib/gcc/current"
+                             "#{prefix}/opt/libgccjit/lib/gcc/current"
+                             "#{prefix}/lib")))
+            (unless (boundp 'native-comp-driver-options)
+              (setq native-comp-driver-options nil))
+            (dolist (dir dirs)
+              (when dir
+                (let ((flag (concat "-L" dir)))
+                  (unless (member flag native-comp-driver-options)
+                    (setq native-comp-driver-options
+                          (append native-comp-driver-options (list flag)))))))))
+      ELISP
+    end
+
     # Validate that config has the expected structure
     def validate_config!(config, path)
       unless config.is_a?(Hash)
