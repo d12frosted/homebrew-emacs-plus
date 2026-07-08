@@ -36,6 +36,7 @@ class TestCaskEnv < Minitest::Test
   def teardown
     # Clean up environment
     ENV.delete("HOMEBREW_EMACS_PLUS_BUILD_CONFIG")
+    ENV.delete("HOMEBREW_PREFIX")
   end
 
   # ===========================================
@@ -415,6 +416,131 @@ class TestCaskEnv < Minitest::Test
     CaskEnv.stub(:build_library_path, "") do
       env = CaskEnv.send(:native_comp_env)
       refute_includes env.keys, "LIBRARY_PATH"
+    end
+  end
+
+  # ===========================================
+  # Tests for gcc-based emutls lookup (PR #963 ported to install-time injection)
+  # ===========================================
+
+  # Run a block with HOMEBREW_PREFIX pointing at a fresh tempdir
+  def with_fake_prefix
+    Dir.mktmpdir do |dir|
+      ENV["HOMEBREW_PREFIX"] = dir
+      yield dir
+    ensure
+      ENV.delete("HOMEBREW_PREFIX")
+    end
+  end
+
+  # Create a fake versioned gcc driver that answers -print-file-name with
+  # the given output (gcc echoes the bare file name back when it cannot
+  # find the requested library)
+  def make_fake_gcc(prefix, version, output)
+    bin = File.join(prefix, "opt/gcc/bin")
+    FileUtils.mkdir_p(bin)
+    gcc = File.join(bin, "gcc-#{version}")
+    File.write(gcc, "#!/bin/sh\necho '#{output}'\n")
+    File.chmod(0o755, gcc)
+    gcc
+  end
+
+  def make_cellar_emutls(prefix, gcc_version)
+    lib_dir = File.join(prefix, "Cellar/gcc/#{gcc_version}/lib/gcc/current/gcc/aarch64-apple-darwin24/#{gcc_version.split('.').first}")
+    FileUtils.mkdir_p(lib_dir)
+    File.write(File.join(lib_dir, "libemutls_w.a"), "")
+    lib_dir
+  end
+
+  def test_find_gcc_executable_returns_nil_without_gcc
+    with_fake_prefix do
+      assert_nil CaskEnv.send(:find_gcc_executable)
+    end
+  end
+
+  def test_find_gcc_executable_picks_highest_version
+    with_fake_prefix do |prefix|
+      make_fake_gcc(prefix, 15, "")
+      gcc16 = make_fake_gcc(prefix, 16, "")
+      assert_equal gcc16, CaskEnv.send(:find_gcc_executable)
+    end
+  end
+
+  def test_find_gcc_executable_ignores_non_driver_binaries
+    with_fake_prefix do |prefix|
+      gcc = make_fake_gcc(prefix, 16, "")
+      # gcc-ar-16 style wrappers must not be picked up as the driver
+      ar = File.join(File.dirname(gcc), "gcc-ar-16")
+      File.write(ar, "#!/bin/sh\n")
+      File.chmod(0o755, ar)
+      assert_equal gcc, CaskEnv.send(:find_gcc_executable)
+    end
+  end
+
+  def test_find_emutls_dir_uses_gcc_print_file_name
+    with_fake_prefix do |prefix|
+      lib_dir = make_cellar_emutls(prefix, "16.1.0")
+      make_fake_gcc(prefix, 16, File.join(lib_dir, "libemutls_w.a"))
+      assert_equal lib_dir, CaskEnv.send(:find_emutls_dir)
+    end
+  end
+
+  def test_find_emutls_dir_normalizes_gcc_answer
+    with_fake_prefix do |prefix|
+      lib_dir = make_cellar_emutls(prefix, "16.1.0")
+      # gcc reports the path relative to its bin dir, e.g. .../bin/../lib/...
+      cellar = File.join(prefix, "Cellar/gcc/16.1.0")
+      unresolved = File.join(cellar, "bin/..", lib_dir.delete_prefix("#{cellar}/"), "libemutls_w.a")
+      FileUtils.mkdir_p(File.join(cellar, "bin"))
+      make_fake_gcc(prefix, 16, unresolved)
+      assert_equal lib_dir, CaskEnv.send(:find_emutls_dir)
+    end
+  end
+
+  def test_find_emutls_dir_prefers_gcc_answer_over_glob
+    with_fake_prefix do |prefix|
+      # Two gcc versions in the Cellar: the glob could pick either, but the
+      # driver's own answer must win
+      make_cellar_emutls(prefix, "15.2.0")
+      current = make_cellar_emutls(prefix, "16.1.0")
+      make_fake_gcc(prefix, 16, File.join(current, "libemutls_w.a"))
+      assert_equal current, CaskEnv.send(:find_emutls_dir)
+    end
+  end
+
+  def test_find_emutls_dir_falls_back_to_glob_when_gcc_cannot_find_it
+    with_fake_prefix do |prefix|
+      # gcc echoes the bare name back when it cannot find the library
+      make_fake_gcc(prefix, 16, "libemutls_w.a")
+      lib_dir = make_cellar_emutls(prefix, "16.1.0")
+      assert_equal lib_dir, CaskEnv.send(:find_emutls_dir)
+    end
+  end
+
+  def test_find_emutls_dir_falls_back_to_glob_without_gcc
+    with_fake_prefix do |prefix|
+      lib_dir = make_cellar_emutls(prefix, "16.1.0")
+      assert_equal lib_dir, CaskEnv.send(:find_emutls_dir)
+    end
+  end
+
+  def test_find_emutls_dir_returns_nil_when_not_found
+    with_fake_prefix do
+      assert_nil CaskEnv.send(:find_emutls_dir)
+    end
+  end
+
+  def test_build_library_path_order_and_contents
+    with_fake_prefix do |prefix|
+      lib_dir = make_cellar_emutls(prefix, "16.1.0")
+      make_fake_gcc(prefix, 16, File.join(lib_dir, "libemutls_w.a"))
+      parts = CaskEnv.send(:build_library_path).split(":")
+      # Mirrors the LIBRARY_PATH built in build-app.yml (PR #963):
+      # emutls dir first, then gcc, libgccjit and prefix lib dirs
+      assert_equal [lib_dir,
+                    "#{prefix}/lib/gcc/current",
+                    "#{prefix}/opt/libgccjit/lib/gcc/current",
+                    "#{prefix}/lib"], parts
     end
   end
 
