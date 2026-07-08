@@ -340,48 +340,61 @@ module CaskEnv
       true
     end
 
-    # Update site-start.el to add PATH injection code
-    # The CI build creates site-start.el with ns-emacs-plus-version, but
-    # the PATH injection code must be added at user install time since
-    # that's when EMACS_PLUS_PATH is set via LSEnvironment
+    # Update site-start.el with code that must be added at user install
+    # time. The CI build creates site-start.el with ns-emacs-plus-version;
+    # here we add PATH injection (EMACS_PLUS_PATH is set via LSEnvironment
+    # at install time) and native-comp driver options (issue #964). Each
+    # block is added independently so upgrades pick up new blocks even
+    # when older ones are already present.
     def update_site_start_el(app_path)
       site_start = "#{app_path}/Contents/Resources/site-lisp/site-start.el"
       return unless File.exist?(site_start)
 
       content = File.read(site_start)
+      original = content.dup
 
-      # Skip if already has ns-emacs-plus-injected-path
-      return if content.include?("ns-emacs-plus-injected-path")
-
-      # Insert PATH injection code before (provide 'emacs-plus)
+      # PATH injection code before (provide 'emacs-plus)
       # ns-emacs-plus-injected-path is dynamically computed from EMACS_PLUS_PATH
-      new_content = content.sub(
-        "(provide 'emacs-plus)",
-        <<~ELISP.chomp
-          ;; PATH injection via EMACS_PLUS_PATH
-          ;; macOS blocks PATH in LSEnvironment for security reasons, so we store
-          ;; the desired PATH in EMACS_PLUS_PATH and apply it here at startup.
-          (defconst ns-emacs-plus-injected-path
-            (not (null (getenv "EMACS_PLUS_PATH")))
-            "Non-nil if PATH was injected by Emacs Plus at install time.
-          When this is t, you can skip exec-path-from-shell-initialize:
+      unless content.include?("ns-emacs-plus-injected-path")
+        content = content.sub(
+          "(provide 'emacs-plus)",
+          <<~ELISP.chomp
+            ;; PATH injection via EMACS_PLUS_PATH
+            ;; macOS blocks PATH in LSEnvironment for security reasons, so we store
+            ;; the desired PATH in EMACS_PLUS_PATH and apply it here at startup.
+            (defconst ns-emacs-plus-injected-path
+              (not (null (getenv "EMACS_PLUS_PATH")))
+              "Non-nil if PATH was injected by Emacs Plus at install time.
+            When this is t, you can skip exec-path-from-shell-initialize:
 
-            (unless (bound-and-true-p ns-emacs-plus-injected-path)
-              (exec-path-from-shell-initialize))")
+              (unless (bound-and-true-p ns-emacs-plus-injected-path)
+                (exec-path-from-shell-initialize))")
 
-          (when-let ((emacs-plus-path (getenv "EMACS_PLUS_PATH")))
-            ;; Set exec-path for Emacs to find executables
-            (setq exec-path (append (split-string emacs-plus-path ":" t)
-                                    (list exec-directory)))
-            ;; Set PATH in process-environment for subprocesses
-            (setenv "PATH" emacs-plus-path))
+            (when-let ((emacs-plus-path (getenv "EMACS_PLUS_PATH")))
+              ;; Set exec-path for Emacs to find executables
+              (setq exec-path (append (split-string emacs-plus-path ":" t)
+                                      (list exec-directory)))
+              ;; Set PATH in process-environment for subprocesses
+              (setenv "PATH" emacs-plus-path))
 
-          (provide 'emacs-plus)
-        ELISP
-      )
+            (provide 'emacs-plus)
+          ELISP
+        )
+      end
 
-      File.write(site_start, new_content)
-      puts "Updated site-start.el with PATH injection code"
+      # Native-comp driver options so libgccjit can link .eln files on
+      # terminal launches too (issue #964)
+      unless content.include?("native-comp-driver-options")
+        content = content.sub(
+          "(provide 'emacs-plus)",
+          "#{BuildConfig.native_comp_driver_options_el(homebrew_prefix).chomp}\n\n(provide 'emacs-plus)"
+        )
+      end
+
+      return if content == original
+
+      File.write(site_start, content)
+      puts "Updated site-start.el"
     end
 
     # Escape a string for embedding in an AppleScript double-quoted string

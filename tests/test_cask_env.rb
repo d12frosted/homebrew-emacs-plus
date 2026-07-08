@@ -355,7 +355,7 @@ class TestCaskEnv < Minitest::Test
     end
   end
 
-  def test_update_site_start_el_skips_if_already_has_variable
+  def test_update_site_start_el_does_not_duplicate_path_injection
     Dir.mktmpdir do |dir|
       app_path = "#{dir}/Emacs.app"
       site_lisp = "#{app_path}/Contents/Resources/site-lisp"
@@ -373,8 +373,68 @@ class TestCaskEnv < Minitest::Test
       CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
       CaskEnv.send(:update_site_start_el, app_path)
 
-      # Content should be unchanged
-      assert_equal original_content, File.read("#{site_lisp}/site-start.el")
+      content = File.read("#{site_lisp}/site-start.el")
+
+      # PATH injection block must not be added again, but the driver
+      # options block (issue #964) must be added independently
+      assert_equal 1, content.scan("ns-emacs-plus-injected-path").length
+      assert_includes content, "native-comp-driver-options"
+    end
+  end
+
+  def test_update_site_start_el_adds_native_comp_driver_options
+    Dir.mktmpdir do |dir|
+      app_path = "#{dir}/Emacs.app"
+      site_lisp = "#{app_path}/Contents/Resources/site-lisp"
+      FileUtils.mkdir_p(site_lisp)
+
+      File.write("#{site_lisp}/site-start.el", <<~ELISP)
+        ;;; site-start.el --- Emacs Plus site initialization -*- lexical-binding: t -*-
+
+        (defconst ns-emacs-plus-version 30
+          "Major version of Emacs Plus.")
+
+        (provide 'emacs-plus)
+
+        ;;; site-start.el ends here
+      ELISP
+
+      Hardware::CPU.mock_arm = true
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      CaskEnv.send(:update_site_start_el, app_path)
+
+      content = File.read("#{site_lisp}/site-start.el")
+
+      # Driver options block resolves gcc at startup and adds -L flags
+      assert_includes content, "native-comp-driver-options"
+      assert_includes content, "-print-file-name=libemutls_w.a"
+      assert_includes content, "native-comp-available-p"
+      assert_includes content, "/opt/homebrew/opt/gcc/bin/gcc-[0-9]*"
+      assert_includes content, "/opt/homebrew/lib/gcc/current"
+      # Block must come before provide so it runs when the file loads
+      assert_operator content.index("native-comp-driver-options"), :<,
+                      content.index("(provide 'emacs-plus)")
+    end
+  end
+
+  def test_update_site_start_el_is_idempotent
+    Dir.mktmpdir do |dir|
+      app_path = "#{dir}/Emacs.app"
+      site_lisp = "#{app_path}/Contents/Resources/site-lisp"
+      FileUtils.mkdir_p(site_lisp)
+
+      File.write("#{site_lisp}/site-start.el", <<~ELISP)
+        ;;; site-start.el
+        (defconst ns-emacs-plus-version 30)
+        (provide 'emacs-plus)
+      ELISP
+
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      CaskEnv.send(:update_site_start_el, app_path)
+      first = File.read("#{site_lisp}/site-start.el")
+
+      CaskEnv.send(:update_site_start_el, app_path)
+      assert_equal first, File.read("#{site_lisp}/site-start.el")
     end
   end
 

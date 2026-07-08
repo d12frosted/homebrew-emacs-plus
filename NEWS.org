@@ -7,6 +7,19 @@ This file documents notable changes to Emacs Plus.
 
 ** Bug Fixes
 
+*** Native compilation now works on terminal launches with a cold =eln-cache=
+
+=LIBRARY_PATH= is injected via =LSEnvironment=, which macOS applies to GUI launches only. So a terminal-launched Emacs (for example =emacs --daemon= from a shell) with a cold =eln-cache= failed to link freshly compiled =.eln= files with "ld: library 'emutls_w' not found". A warm cache masked the problem, since nothing needed compiling. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/964][#964]].
+
+The generated =site-start.el= now appends =-L= flags to =native-comp-driver-options= for the gcc, libgccjit and gcc support library directories. Driver options are passed only to the libgccjit driver, so unlike =setenv= they do not leak into child processes of Emacs (the problem that got =CC= injection removed, see [[https://github.com/d12frosted/homebrew-emacs-plus/issues/939][#939]]). The gcc paths are resolved at Emacs startup, so they survive gcc version bumps without a reinstall. Works for formula and cask, GUI and terminal launches alike.
+
+Reinstall to pick up the fix:
+
+#+begin_src bash
+brew reinstall emacs-plus@30            # formula
+brew reinstall --cask emacs-plus-app    # cask
+#+end_src
+
 *** More reliable =LIBRARY_PATH= injection for native compilation
 
 Both formula and cask builds inject =LIBRARY_PATH= into =Info.plist= so the libgccjit linker can find =libemutls_w.a= when GUI-launched Emacs native-compiles packages. The directory was previously located by globbing the gcc Cellar and taking the first match, which could pick a stale gcc version when several are installed. It is now resolved by asking the gcc driver itself (=gcc-NN -print-file-name=libemutls_w.a=), the same mechanism libgccjit uses internally, with the glob kept only as a fallback. The libgccjit library directory is also added to =LIBRARY_PATH=, matching the CI build environment. This ports [[https://github.com/d12frosted/homebrew-emacs-plus/pull/963][#963]] to install-time injection.

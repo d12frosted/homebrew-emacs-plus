@@ -468,6 +468,35 @@ class TestBuildConfig < Minitest::Test
     assert_empty output
   end
 
+  # ===========================================
+  # Tests for native_comp_driver_options_el (issue #964)
+  # ===========================================
+
+  def test_driver_options_el_interpolates_prefix
+    el = BuildConfig.native_comp_driver_options_el("/opt/homebrew")
+    assert_includes el, "/opt/homebrew/opt/gcc/bin/gcc-[0-9]*"
+    assert_includes el, "/opt/homebrew/lib/gcc/current"
+    assert_includes el, "/opt/homebrew/opt/libgccjit/lib/gcc/current"
+
+    el_intel = BuildConfig.native_comp_driver_options_el("/usr/local")
+    assert_includes el_intel, "/usr/local/opt/gcc/bin/gcc-[0-9]*"
+    refute_includes el_intel, "/opt/homebrew"
+  end
+
+  def test_driver_options_el_guards_on_native_comp
+    el = BuildConfig.native_comp_driver_options_el("/opt/homebrew")
+    assert_includes el, "native-comp-available-p"
+    assert_includes el, "native-comp-driver-options"
+    assert_includes el, "-print-file-name=libemutls_w.a"
+  end
+
+  def test_driver_options_el_has_balanced_parens
+    el = BuildConfig.native_comp_driver_options_el("/opt/homebrew")
+    # Strip comment lines, then count parens
+    code = el.lines.reject { |l| l.strip.start_with?(";;") }.join
+    assert_equal code.count("("), code.count(")")
+  end
+
   private
 
   # Helper to load config from a specific path using the environment variable
