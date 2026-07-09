@@ -445,7 +445,26 @@ class TestCaskEnv < Minitest::Test
 
       # Should not raise error
       CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
-      CaskEnv.send(:update_site_start_el, app_path)
+      assert_equal false, CaskEnv.send(:update_site_start_el, app_path)
+    end
+  end
+
+  def test_update_site_start_el_returns_whether_it_modified
+    Dir.mktmpdir do |dir|
+      app_path = "#{dir}/Emacs.app"
+      site_lisp = "#{app_path}/Contents/Resources/site-lisp"
+      FileUtils.mkdir_p(site_lisp)
+
+      File.write("#{site_lisp}/site-start.el", <<~ELISP)
+        ;;; site-start.el
+        (defconst ns-emacs-plus-version 30)
+        (provide 'emacs-plus)
+      ELISP
+
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      assert_equal true, CaskEnv.send(:update_site_start_el, app_path)
+      # Second run changes nothing
+      assert_equal false, CaskEnv.send(:update_site_start_el, app_path)
     end
   end
 
@@ -514,6 +533,22 @@ class TestCaskEnv < Minitest::Test
             needs_resign = CaskEnv.inject(app_path, "#{dir}/Emacs Client.app")
           end
           assert_equal true, needs_resign
+        end
+      end
+    end
+  end
+
+  def test_inject_requests_resign_when_only_site_start_changed
+    # site-start.el lives inside the bundle, so updating it invalidates
+    # the code seal just like the plist steps do; inject must report it
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+
+      with_empty_build_config do
+        CaskEnv.stub(:inject_emacs_app, false) do
+          CaskEnv.stub(:inject_emacs_client_app, false) do
+            assert_equal true, CaskEnv.inject(app_path, "#{dir}/Emacs Client.app")
+          end
         end
       end
     end
