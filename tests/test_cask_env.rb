@@ -450,6 +450,110 @@ class TestCaskEnv < Minitest::Test
   end
 
   # ===========================================
+  # Tests for inject step isolation
+  # ===========================================
+
+  # Point config loading at a nonexistent file so inject uses an empty
+  # config instead of whatever the developer has in ~/.config/emacs-plus
+  def with_empty_build_config
+    ENV["HOMEBREW_EMACS_PLUS_BUILD_CONFIG"] = "/nonexistent/build.yml"
+    yield
+  ensure
+    ENV.delete("HOMEBREW_EMACS_PLUS_BUILD_CONFIG")
+  end
+
+  def make_site_start(dir)
+    app_path = "#{dir}/Emacs.app"
+    site_lisp = "#{app_path}/Contents/Resources/site-lisp"
+    FileUtils.mkdir_p(site_lisp)
+    File.write("#{site_lisp}/site-start.el", <<~ELISP)
+      ;;; site-start.el
+      (defconst ns-emacs-plus-version 30)
+      (provide 'emacs-plus)
+    ELISP
+    app_path
+  end
+
+  def test_inject_continues_when_a_step_fails
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+
+      # Simulate create_cli_wrapper blowing up inside inject_emacs_app
+      # (e.g. Contents/MacOS/bin missing)
+      boom = ->(_path) { raise Errno::ENOENT, "#{app_path}/Contents/MacOS/bin/emacs" }
+
+      with_empty_build_config do
+        CaskEnv.stub(:inject_emacs_app, boom) do
+          # The failure is reported (on stderr) but must not raise out of inject
+          assert_output(nil, /Emacs\.app.*failed.*ENOENT/mi) do
+            CaskEnv.inject(app_path, "#{dir}/Emacs Client.app")
+          end
+        end
+      end
+
+      # Later steps must still run: site-start.el gets patched
+      content = File.read("#{app_path}/Contents/Resources/site-lisp/site-start.el")
+      assert_includes content, "ns-emacs-plus-injected-path"
+      assert_includes content, "native-comp-driver-options"
+    end
+  end
+
+  def test_inject_requests_resign_when_a_step_fails
+    # A failed step may have modified the bundle before raising (e.g. the
+    # plist written but the CLI wrapper not), and the cask re-signs based
+    # on inject's return value, so a failure must report true
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+
+      boom = ->(_path) { raise Errno::ENOENT, "no such file" }
+
+      with_empty_build_config do
+        CaskEnv.stub(:inject_emacs_app, boom) do
+          needs_resign = nil
+          assert_output(nil, /failed/i) do
+            needs_resign = CaskEnv.inject(app_path, "#{dir}/Emacs Client.app")
+          end
+          assert_equal true, needs_resign
+        end
+      end
+    end
+  end
+
+  def test_inject_survives_real_cli_wrapper_failure
+    # End-to-end version of the motivating failure: an Emacs.app without
+    # Contents/MacOS/bin makes create_cli_wrapper hit a genuine
+    # Errno::ENOENT inside the real inject_emacs_app
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+
+      with_empty_build_config do
+        with_fake_prefix do
+          assert_output(nil, /ENOENT/i) do
+            assert_equal true, CaskEnv.inject(app_path, "#{dir}/Emacs Client.app")
+          end
+        end
+      end
+
+      content = File.read("#{app_path}/Contents/Resources/site-lisp/site-start.el")
+      assert_includes content, "ns-emacs-plus-injected-path"
+      assert_includes content, "native-comp-driver-options"
+    end
+  end
+
+  def test_create_cli_wrapper_reports_whether_it_wrote
+    Dir.mktmpdir do |dir|
+      app_path = "#{dir}/Emacs.app"
+      FileUtils.mkdir_p("#{app_path}/Contents/MacOS/bin")
+
+      assert_output(/Creating CLI wrapper/) do
+        assert_equal true, CaskEnv.send(:create_cli_wrapper, app_path)
+      end
+      # Second run is a no-op
+      assert_equal false, CaskEnv.send(:create_cli_wrapper, app_path)
+    end
+  end
+
+  # ===========================================
   # Tests for native_comp_env (LSEnvironment vars)
   # ===========================================
 

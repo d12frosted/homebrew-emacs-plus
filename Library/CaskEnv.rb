@@ -28,7 +28,8 @@ require_relative 'BuildConfig'
 module CaskEnv
   class << self
     # Inject environment into Emacs.app and Emacs Client.app
-    # Returns true if any modifications were made
+    # Returns true if the bundles may have been modified and the caller
+    # should re-sign them
     def inject(emacs_app, emacs_client_app)
       result = BuildConfig.load_config
       @config = result[:config]
@@ -39,13 +40,28 @@ module CaskEnv
       end
 
       modified = false
-      modified |= inject_emacs_app(emacs_app)
-      modified |= inject_emacs_client_app(emacs_client_app)
-      update_site_start_el(emacs_app)
+      modified |= run_step("Emacs.app environment injection") { inject_emacs_app(emacs_app) }
+      modified |= run_step("Emacs Client.app environment injection") { inject_emacs_client_app(emacs_client_app) }
+      run_step("site-start.el update") { update_site_start_el(emacs_app) }
       modified
     end
 
     private
+
+    # Run a single injection step, reporting a failure without aborting
+    # the remaining steps. The steps are independent, so a broken one
+    # (e.g. the CLI wrapper failing to write) must not leave the rest of
+    # the install unconfigured, such as site-start.el never being patched.
+    # A failed step returns true: it may have modified the bundle before
+    # raising, and the caller re-signs based on this result, so err on
+    # the side of an extra (harmless) re-sign.
+    def run_step(name)
+      yield
+    rescue StandardError => e
+      message = "#{name} failed: #{e.class}: #{e.message}"
+      defined?(opoo) ? opoo(message) : warn("Warning: #{message}")
+      true
+    end
 
     # Check if user PATH injection is enabled (default: true)
     def inject_path?
@@ -184,11 +200,16 @@ module CaskEnv
     def inject_emacs_app(app_path)
       return false unless File.exist?(app_path)
 
+      # Create CLI wrapper script for terminal usage. Runs before the
+      # LSEnvironment check so a previously failed wrapper write is
+      # retried on postinstall reruns.
+      wrapper_created = create_cli_wrapper(app_path)
+
       plist = "#{app_path}/Contents/Info.plist"
 
       # Check if already injected
       existing = `defaults read "#{plist}" LSEnvironment 2>/dev/null`.strip
-      return false unless existing.empty? || existing.include?("does not exist")
+      return wrapper_created unless existing.empty? || existing.include?("does not exist")
 
       # Note: For cask, we can only inject native compilation paths (not user PATH)
       # due to Homebrew limitation - cask postflight doesn't have user's shell environment
@@ -212,20 +233,18 @@ module CaskEnv
       # Touch the app to update LaunchServices cache
       system("touch", app_path)
 
-      # Create CLI wrapper script for terminal usage
-      create_cli_wrapper(app_path)
-
       true
     end
 
     # Create a wrapper script at Emacs.app/Contents/MacOS/bin/emacs
     # This fixes the issue where running via symlink breaks Emacs's bundle path resolution
+    # Returns true if the wrapper was written
     def create_cli_wrapper(app_path)
       bin_dir = "#{app_path}/Contents/MacOS/bin"
       wrapper_path = "#{bin_dir}/emacs"
 
       # Skip if wrapper already exists
-      return if File.exist?(wrapper_path) && File.read(wrapper_path).include?("emacs-plus wrapper")
+      return false if File.exist?(wrapper_path) && File.read(wrapper_path).include?("emacs-plus wrapper")
 
       puts "Creating CLI wrapper script at #{wrapper_path}"
 
@@ -238,6 +257,7 @@ module CaskEnv
       SCRIPT
 
       File.chmod(0755, wrapper_path)
+      true
     end
 
     # Inject PATH into Emacs Client.app by recompiling the AppleScript
