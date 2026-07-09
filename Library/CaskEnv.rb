@@ -42,7 +42,7 @@ module CaskEnv
       modified = false
       modified |= run_step("Emacs.app environment injection") { inject_emacs_app(emacs_app) }
       modified |= run_step("Emacs Client.app environment injection") { inject_emacs_client_app(emacs_client_app) }
-      run_step("site-start.el update") { update_site_start_el(emacs_app) }
+      modified |= run_step("site-start.el update") { update_site_start_el(emacs_app) }
       modified
     end
 
@@ -366,9 +366,11 @@ module CaskEnv
     # at install time) and native-comp driver options (issue #964). Each
     # block is added independently so upgrades pick up new blocks even
     # when older ones are already present.
+    # Returns true if the file was modified (it lives inside the bundle,
+    # so the caller must re-sign)
     def update_site_start_el(app_path)
       site_start = "#{app_path}/Contents/Resources/site-lisp/site-start.el"
-      return unless File.exist?(site_start)
+      return false unless File.exist?(site_start)
 
       content = File.read(site_start)
       original = content.dup
@@ -411,10 +413,11 @@ module CaskEnv
         )
       end
 
-      return if content == original
+      return false if content == original
 
       File.write(site_start, content)
       puts "Updated site-start.el"
+      true
     end
 
     # Escape a string for embedding in an AppleScript double-quoted string
