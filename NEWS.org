@@ -3,6 +3,32 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-07-12
+
+** New Features
+
+*** Per-version values in =build.yml=
+
+=icon=, external/local =patches=, and =revision= now accept a version map keyed by major Emacs version (quoted, e.g. ="30"=) with an optional =default= fallback. An exact version match wins, =default= is used otherwise, and with no match the value is simply not applied; for patches this means the patch is skipped for that version. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/950][#950]] and [[https://github.com/d12frosted/homebrew-emacs-plus/issues/973][#973]].
+
+#+begin_src yaml
+icon:
+  default: dragon-plus
+  "31": modern-purple-flat
+
+patches:
+  - only-for-31:
+      "31":
+        url: ./my-31-only.patch
+        sha256: abc123...
+
+revision:
+  default: abc123
+  "31": def456
+#+end_src
+
+All existing =build.yml= files keep working unchanged: a plain value applies to every version, exactly as before. Malformed patch entries (missing =url= or =sha256=) and unknown =revision= keys are now rejected when the config is loaded instead of failing later during the build. Note that this also applies to cask installs: a malformed =patches= or =revision= entry now fails the cask postflight too, where it was previously ignored (those keys are formula-only). If you hit a new error after updating, fix the reported entry in your =build.yml=.
+
 * 2026-07-08
 
 ** Bug Fixes

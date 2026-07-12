@@ -11,8 +11,10 @@ module IconApplier
     # Apply icon from build.yml to the given app paths
     # @param app_path [String, Pathname] Path to Emacs.app
     # @param client_app_path [String, Pathname, nil] Path to Emacs Client.app (optional)
+    # @param version [String, nil] Major Emacs version ("30") for version-mapped icons;
+    #   nil resolves version maps to their 'default' entry only
     # @return [Boolean] true if icon was applied, false if no icon configured
-    def apply(app_path, client_app_path = nil)
+    def apply(app_path, client_app_path = nil, version: nil)
       app_path = app_path.to_s
       client_app_path = client_app_path&.to_s
 
@@ -26,7 +28,7 @@ module IconApplier
 
       # Config details are already printed by CaskEnv.inject
 
-      icon = BuildConfig.resolve_icon(config)
+      icon = BuildConfig.resolve_icon(config, version: version)
       unless icon
         ohai "No custom icon configured in build.yml"
         return false

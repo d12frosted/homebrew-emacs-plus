@@ -198,6 +198,16 @@ inject_path: true
 | =revision=    | /none/  | (Formula only) Pin Emacs source to a specific git revision.                  |
 | =inject_path= | =true=  | (Formula only) Inject user's PATH into Emacs.app. See [[#injected-path][→ Injected PATH]].     |
 
+=icon=, external/local patches, and =revision= also accept a per-version map keyed by major Emacs version (quoted, e.g. ="30"=) with an optional =default= fallback:
+
+#+begin_src yaml
+icon:
+  default: dragon-plus
+  "31": modern-purple-flat
+#+end_src
+
+An exact version match wins, =default= is used otherwise, and with no match the value is not applied. See [[#community-features][→ Community Features]] for patch examples.
+
 For more customization options, see [[#community-features][→ Community Features]] for patches and [[#icons][→ Icons]] for icon customization.
 
 ** Emacs 32
@@ -533,6 +543,13 @@ icon: modern-purple-flat
 #   - local-patch:
 #       url: ~/.config/emacs-plus/my-local.patch
 #       sha256: abc123...
+
+# Apply a patch only for a specific Emacs version
+# patches:
+#   - only-for-31:
+#       "31":
+#         url: ./my-31-only.patch
+#         sha256: abc123...
 #+end_src
 
 Then rebuild Emacs:

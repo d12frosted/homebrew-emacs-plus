@@ -56,6 +56,37 @@ icon:
 
 Local file paths (`/absolute/path`, `~/home/path`, `./relative/path`) are supported for patches. Relative paths are resolved relative to the directory containing `build.yml`.
 
+### Per-version configuration
+
+`icon`, external/local patches, and `revision` accept a version map instead of a single value. Keys are major Emacs versions (quoted, e.g. `"30"`) or `default`. An exact version match wins, `default` is the fallback, and with no match the value is simply not applied (for patches this means the patch is skipped for that version):
+
+```yaml
+icon:
+  default: icon-name-from-registry
+  "31":
+    url: https://example.com/external.icns
+    sha256: def456...
+
+patches:
+  - only-for-31:
+      "31":
+        url: ./my-31-only.patch    # skipped for other versions
+        sha256: abc123...
+  - per-version-patch:
+      default:
+        url: ./my.patch
+        sha256: abc123...
+      "31":
+        url: ./my-31.patch
+        sha256: def456...
+
+revision:
+  default: abc123
+  "31": def456
+```
+
+Community patches from the registry (plain names) already declare their supported Emacs versions in their metadata, so they do not need a version map.
+
 See `registry.json` for available features.
 
 ## Contributing

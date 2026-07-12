@@ -38,6 +38,16 @@ def find_emacs_client_app(emacs_app)
   File.exist?(client) ? client : nil
 end
 
+# Major Emacs version for version-mapped config, from the formula path
+# (emacs-plus@NN) or the app bundle's Info.plist
+def detect_major_version(emacs_app)
+  return Regexp.last_match(1) if emacs_app =~ /emacs-plus@(\d+)/
+
+  plist = File.join(emacs_app, 'Contents', 'Info.plist')
+  ver = `/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' '#{plist}' 2>/dev/null`.strip
+  ver[/\A\d+/]
+end
+
 emacs_app = find_emacs_app(ARGV[0])
 
 unless emacs_app
@@ -51,9 +61,11 @@ unless emacs_app
 end
 
 emacs_client_app = find_emacs_client_app(emacs_app)
+major_version = detect_major_version(emacs_app)
 
 puts "==> Found Emacs.app: #{emacs_app}"
 puts "==> Found Emacs Client.app: #{emacs_client_app || '(not found)'}"
+puts "==> Emacs major version: #{major_version || '(unknown)'}"
 puts
 
 # Load and validate config
@@ -75,10 +87,17 @@ end
 puts
 
 # Validate against registry (formula-specific validation)
-if config["icon"].is_a?(String)
+icon_names = if BuildConfig.version_map?(config["icon"])
+  config["icon"].values.grep(String)
+elsif config["icon"].is_a?(String)
+  [config["icon"]]
+else
+  []
+end
+icon_names.each do |name|
   registry = BuildConfig.registry
-  unless registry.dig("icons", config["icon"])
-    puts "Error: Unknown icon '#{config["icon"]}'"
+  unless registry.dig("icons", name)
+    puts "Error: Unknown icon '#{name}'"
     puts "Check community/registry.json for available icons."
     exit 1
   end
@@ -102,7 +121,7 @@ puts
 # Apply icon
 puts "==> Running IconApplier.apply..."
 begin
-  applied = IconApplier.apply(emacs_app, emacs_client_app)
+  applied = IconApplier.apply(emacs_app, emacs_client_app, version: major_version)
   puts applied ? "    Icon applied" : "    No custom icon configured"
 rescue => e
   puts "Error: #{e.message}"
