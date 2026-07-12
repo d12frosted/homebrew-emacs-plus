@@ -27,7 +27,7 @@ revision:
   "31": def456
 #+end_src
 
-All existing =build.yml= files keep working unchanged: a plain value applies to every version, exactly as before. Malformed patch entries (missing =url= or =sha256=) are now rejected when the config is loaded instead of failing later during the build.
+All existing =build.yml= files keep working unchanged: a plain value applies to every version, exactly as before. Malformed patch entries (missing =url= or =sha256=) and unknown =revision= keys are now rejected when the config is loaded instead of failing later during the build. Note that this also applies to cask installs: a malformed =patches= or =revision= entry now fails the cask postflight too, where it was previously ignored (those keys are formula-only). If you hit a new error after updating, fix the reported entry in your =build.yml=.
 
 * 2026-07-08
 
