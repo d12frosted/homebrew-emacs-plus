@@ -32,6 +32,16 @@ def find_emacs_client_app(emacs_app)
   File.exist?(client) ? client : nil
 end
 
+# Major Emacs version for version-mapped config, from the formula path
+# (emacs-plus@NN) or the app bundle's Info.plist
+def detect_major_version(emacs_app)
+  return Regexp.last_match(1) if emacs_app =~ /emacs-plus@(\d+)/
+
+  plist = File.join(emacs_app, 'Contents', 'Info.plist')
+  ver = `/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' '#{plist}' 2>/dev/null`.strip
+  ver[/\A\d+/]
+end
+
 emacs_app = find_emacs_app(ARGV[0])
 
 unless emacs_app
@@ -46,9 +56,11 @@ unless emacs_app
 end
 
 emacs_client_app = find_emacs_client_app(emacs_app)
+major_version = detect_major_version(emacs_app)
 
 puts "==> Found Emacs.app: #{emacs_app}"
 puts "==> Found Emacs Client.app: #{emacs_client_app || '(not found)'}"
+puts "==> Emacs major version: #{major_version || '(unknown)'}"
 puts
 
 # Run CaskEnv.inject (environment setup)
@@ -65,7 +77,7 @@ puts
 # Run IconApplier.apply (custom icon)
 puts "==> Running IconApplier.apply..."
 begin
-  applied = IconApplier.apply(emacs_app, emacs_client_app)
+  applied = IconApplier.apply(emacs_app, emacs_client_app, version: major_version)
   puts applied ? "    Icon applied" : "    No custom icon configured"
 rescue BuildConfig::ConfigurationError => e
   puts "Error: #{e.message}"

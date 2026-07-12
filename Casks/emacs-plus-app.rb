@@ -67,7 +67,7 @@ cask "emacs-plus-app" do
 
     # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
     load "#{tap.path}/Library/IconApplier.rb"
-    needs_resign = IconApplier.apply("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app") || needs_resign
+    needs_resign = IconApplier.apply("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app", version: version.major) || needs_resign
 
     if needs_resign
       # Re-sign after modifications

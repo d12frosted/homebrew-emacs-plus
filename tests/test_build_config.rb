@@ -397,6 +397,362 @@ class TestBuildConfig < Minitest::Test
   end
 
   # ===========================================
+  # Tests for version maps (unified convention)
+  # ===========================================
+
+  def test_valid_icon_version_map_with_string_values
+    yaml = <<~YAML
+      icon:
+        default: modern-purple-flat
+        "30": with-modern-vscode-icon
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      assert_equal "modern-purple-flat", result[:config]["icon"]["default"]
+      assert_equal "with-modern-vscode-icon", result[:config]["icon"]["30"]
+    end
+  end
+
+  def test_valid_icon_version_map_with_external_values
+    yaml = <<~YAML
+      icon:
+        default: modern-purple-flat
+        "31":
+          url: https://example.com/icon.icns
+          sha256: abc123
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      assert_equal "https://example.com/icon.icns", result[:config]["icon"]["31"]["url"]
+    end
+  end
+
+  def test_valid_icon_version_map_without_default
+    yaml = <<~YAML
+      icon:
+        "31": modern-purple-flat
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      assert_equal "modern-purple-flat", result[:config]["icon"]["31"]
+    end
+  end
+
+  def test_valid_icon_version_map_with_integer_keys
+    yaml = <<~YAML
+      icon:
+        30: modern-purple-flat
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      assert_equal "modern-purple-flat", result[:config]["icon"][30]
+    end
+  end
+
+  def test_invalid_icon_version_map_bad_key
+    yaml = <<~YAML
+      icon:
+        stable: modern-purple-flat
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "Invalid 'icon'"
+      assert_includes error.message, "stable"
+      assert_includes error.message, "default"
+    end
+  end
+
+  def test_invalid_icon_version_map_nested_map
+    yaml = <<~YAML
+      icon:
+        "30":
+          default: modern-purple-flat
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "Invalid 'icon"
+    end
+  end
+
+  def test_invalid_icon_version_map_spec_missing_sha256
+    yaml = <<~YAML
+      icon:
+        "30":
+          url: https://example.com/icon.icns
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "sha256"
+    end
+  end
+
+  def test_invalid_icon_version_map_non_string_value
+    yaml = <<~YAML
+      icon:
+        "30": 5
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "Invalid 'icon"
+    end
+  end
+
+  def test_valid_patch_version_map
+    yaml = <<~YAML
+      patches:
+        - my-patch:
+            "31":
+              url: ./my-patch.patch
+              sha256: abc123
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      spec = result[:config]["patches"].first["my-patch"]
+      assert_equal "./my-patch.patch", spec["31"]["url"]
+    end
+  end
+
+  def test_valid_patch_version_map_with_default
+    yaml = <<~YAML
+      patches:
+        - my-patch:
+            default:
+              url: ./my-patch.patch
+              sha256: abc123
+            "31":
+              url: ./my-patch-31.patch
+              sha256: def456
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      spec = result[:config]["patches"].first["my-patch"]
+      assert_equal "./my-patch-31.patch", spec["31"]["url"]
+      assert_equal "./my-patch.patch", spec["default"]["url"]
+    end
+  end
+
+  def test_valid_patch_external_spec_still_works
+    yaml = <<~YAML
+      patches:
+        - registry-patch
+        - my-patch:
+            url: https://example.com/my.patch
+            sha256: abc123
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      assert_equal "registry-patch", result[:config]["patches"].first
+    end
+  end
+
+  def test_invalid_patch_version_map_bad_key
+    yaml = <<~YAML
+      patches:
+        - my-patch:
+            stable:
+              url: ./my.patch
+              sha256: abc123
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "my-patch"
+      assert_includes error.message, "stable"
+    end
+  end
+
+  def test_invalid_patch_version_map_value_not_spec
+    yaml = <<~YAML
+      patches:
+        - my-patch:
+            "31": just-a-string
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "my-patch"
+    end
+  end
+
+  def test_invalid_patch_spec_missing_sha256
+    yaml = <<~YAML
+      patches:
+        - my-patch:
+            url: https://example.com/my.patch
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "my-patch"
+      assert_includes error.message, "sha256"
+    end
+  end
+
+  def test_invalid_patch_entry_number
+    yaml = <<~YAML
+      patches:
+        - 42
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "Invalid 'patches"
+    end
+  end
+
+  def test_valid_revision_map_with_default
+    yaml = <<~YAML
+      revision:
+        default: abc123
+        "31": def456
+    YAML
+    with_temp_config(yaml) do |path|
+      result = load_config_from_path(path)
+      assert_equal "abc123", result[:config]["revision"]["default"]
+      assert_equal "def456", result[:config]["revision"]["31"]
+    end
+  end
+
+  def test_invalid_revision_map_bad_key
+    yaml = <<~YAML
+      revision:
+        stable: abc123
+    YAML
+    with_temp_config(yaml) do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "Invalid 'revision'"
+      assert_includes error.message, "stable"
+    end
+  end
+
+  # ===========================================
+  # Tests for resolve_versioned
+  # ===========================================
+
+  def test_resolve_versioned_passes_through_string
+    assert_equal "abc", BuildConfig.resolve_versioned("abc", "30")
+  end
+
+  def test_resolve_versioned_passes_through_nil
+    assert_nil BuildConfig.resolve_versioned(nil, "30")
+  end
+
+  def test_resolve_versioned_passes_through_external_spec
+    spec = { "url" => "https://example.com/x", "sha256" => "abc" }
+    assert_equal spec, BuildConfig.resolve_versioned(spec, "30")
+  end
+
+  def test_resolve_versioned_exact_match_wins_over_default
+    map = { "default" => "a", "30" => "b" }
+    assert_equal "b", BuildConfig.resolve_versioned(map, "30")
+  end
+
+  def test_resolve_versioned_falls_back_to_default
+    map = { "default" => "a", "30" => "b" }
+    assert_equal "a", BuildConfig.resolve_versioned(map, "31")
+  end
+
+  def test_resolve_versioned_returns_nil_without_match_or_default
+    map = { "30" => "b" }
+    assert_nil BuildConfig.resolve_versioned(map, "31")
+  end
+
+  def test_resolve_versioned_matches_integer_keys
+    map = { 30 => "b" }
+    assert_equal "b", BuildConfig.resolve_versioned(map, "30")
+  end
+
+  def test_resolve_versioned_accepts_integer_version
+    map = { "30" => "b" }
+    assert_equal "b", BuildConfig.resolve_versioned(map, 30)
+  end
+
+  def test_resolve_versioned_nil_version_uses_default
+    map = { "default" => "a", "30" => "b" }
+    assert_equal "a", BuildConfig.resolve_versioned(map, nil)
+  end
+
+  def test_resolve_versioned_empty_hash_resolves_to_nil
+    assert_nil BuildConfig.resolve_versioned({}, "30")
+  end
+
+  def test_invalid_icon_empty_hash_still_rejected
+    with_temp_config("icon: {}") do |path|
+      error = assert_raises(BuildConfig::ConfigurationError) do
+        load_config_from_path(path)
+      end
+      assert_includes error.message, "sha256"
+    end
+  end
+
+  # ===========================================
+  # Tests for versioned resolve_icon
+  # ===========================================
+
+  def test_resolve_icon_versioned_external_spec
+    config = {
+      "icon" => {
+        "31" => { "url" => "https://example.com/icon.icns", "sha256" => "abc123" },
+      },
+    }
+    icon = BuildConfig.resolve_icon(config, version: "31")
+    assert_equal "external", icon[:type]
+    assert_equal "https://example.com/icon.icns", icon[:url]
+  end
+
+  def test_resolve_icon_versioned_no_match_returns_nil
+    config = {
+      "icon" => {
+        "31" => { "url" => "https://example.com/icon.icns", "sha256" => "abc123" },
+      },
+    }
+    assert_nil BuildConfig.resolve_icon(config, version: "30")
+  end
+
+  def test_resolve_icon_versioned_default_fallback
+    config = {
+      "icon" => {
+        "default" => { "url" => "https://example.com/d.icns", "sha256" => "d" },
+        "31" => { "url" => "https://example.com/31.icns", "sha256" => "e" },
+      },
+    }
+    icon = BuildConfig.resolve_icon(config, version: "30")
+    assert_equal "https://example.com/d.icns", icon[:url]
+  end
+
+  def test_resolve_icon_without_version_uses_default
+    config = {
+      "icon" => {
+        "default" => { "url" => "https://example.com/d.icns", "sha256" => "d" },
+      },
+    }
+    icon = BuildConfig.resolve_icon(config)
+    assert_equal "https://example.com/d.icns", icon[:url]
+  end
+
+  def test_resolve_icon_plain_external_still_works
+    config = {
+      "icon" => { "url" => "https://example.com/icon.icns", "sha256" => "abc123" },
+    }
+    icon = BuildConfig.resolve_icon(config, version: "30")
+    assert_equal "external", icon[:type]
+  end
+
+  # ===========================================
   # Tests for context warnings
   # ===========================================
 
