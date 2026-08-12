@@ -10,7 +10,7 @@
 #   make postinstall-formula      Re-run formula post_install
 #   make postinstall-cask         Re-run cask postflight
 
-.PHONY: test validate postinstall-formula postinstall-cask cask cask@master help
+.PHONY: test validate postinstall-formula postinstall-cask cask cask@next cask@master help
 
 # Capture extra args (everything after the target)
 EXTRA_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -34,6 +34,7 @@ help:
 	@echo ""
 	@echo "Cask (pre-built binary, tests local Cask/ and Library/ changes):"
 	@echo "  make cask                     Install emacs-plus-app cask"
+	@echo "  make cask@next                Install emacs-plus-app@next cask"
 	@echo "  make cask@master              Install emacs-plus-app@master cask"
 	@echo ""
 	@echo "Post-install (test on existing installation):"
@@ -130,6 +131,19 @@ cask:
 	    -e 's|#{tap.path}|#{local_path}|g' \
 	    "$$BACKUP" > "$$TAP_CASK"; \
 	brew reinstall --cask emacs-plus-app $(EXTRA_ARGS)
+
+cask@next:
+	@echo "==> Installing emacs-plus-app@next cask (with local Library/ changes)"
+	@LOCAL_PATH=$$(pwd); \
+	TAP_CASK="$$(brew --repository d12frosted/emacs-plus)/Casks/emacs-plus-app@next.rb"; \
+	BACKUP="$$TAP_CASK.backup"; \
+	cleanup() { [ -f "$$BACKUP" ] && mv "$$BACKUP" "$$TAP_CASK"; }; \
+	trap cleanup EXIT INT TERM; \
+	cp "$$TAP_CASK" "$$BACKUP"; \
+	sed -e "s|tap = Tap.fetch.*|local_path = \"$$LOCAL_PATH\"|" \
+	    -e 's|#{tap.path}|#{local_path}|g' \
+	    "$$BACKUP" > "$$TAP_CASK"; \
+	brew reinstall --cask emacs-plus-app@next $(EXTRA_ARGS)
 
 cask@master:
 	@echo "==> Installing emacs-plus-app@master cask (with local Library/ changes)"

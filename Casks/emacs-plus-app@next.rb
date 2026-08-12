@@ -1,36 +1,36 @@
-cask "emacs-plus-app@master" do
+cask "emacs-plus-app@next" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "32.0.50-291"
+  version "31.0.91-291"
 
-  # Base URL for release assets (versioned releases: cask-32-<build>)
-  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-32-#{version.sub(/^[\d.]+-/, "")}"
+  # Base URL for release assets (versioned releases: cask-31-<build>)
+  base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-31-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
   on_intel do
-    sha256 "6f218b04fe2c8f705768e0c6656a5cc668136c8e4c15f4bd0797f3735b18da56"
+    sha256 "e76ef664e30b25a5a46f43a21d9c7214ddd429301f7b330ef57c172cc9281bf4"
     url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
   end
 
   on_arm do
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "c7732b0cfa8a8484a73d7c50130e5071df94ac16a03148e1738b8905fb471fac"
+      sha256 "cafbb16843818d350ef7e565a16fe76bda02874e2fa96d933868c5e5493d0418"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     elsif MacOS.version >= :sequoia # macOS 15
-      sha256 "aa70e5946e3c18df9d9fb0f2759fadc61dd51262925e21673c87a50fc2958718"
+      sha256 "c3c58b81e68a666a796e02983507f90bba11445ae8b421fbd0b41afc06220fb3"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     else # macOS 14 (Sonoma) and 13 (Ventura)
-      sha256 "2e348e341a13b0d2a8a773565c00f4fa97dbea16039207b7e9b2de533e52384d"
+      sha256 "09a7d0dfc9c73a0c31fc64bfb387112ab0f70fb37575a2d5b894533f7d1c2697"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
   end
 
-  name "Emacs+ (Development)"
-  desc "GNU Emacs text editor with patches for macOS (development version)"
+  name "Emacs+ (Pre-release)"
+  desc "GNU Emacs text editor with patches for macOS (next stable release)"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
   # Required for native compilation (JIT) at runtime
@@ -45,7 +45,7 @@ cask "emacs-plus-app@master" do
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
     "emacs-plus-app",
-    "emacs-plus-app@next",
+    "emacs-plus-app@master",
   ]
 
   # Install the app
@@ -73,6 +73,7 @@ cask "emacs-plus-app@master" do
   # Symlink binaries (emacs symlink created in postflight after wrapper is generated)
   # Note: emacs is symlinked manually in postflight because the wrapper script
   # is created there and binary stanzas run before postflight
+  # Note: no ctags symlink; the ctags program was removed in Emacs 31
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
@@ -92,17 +93,19 @@ cask "emacs-plus-app@master" do
   ]
 
   caveats <<~EOS
-    Emacs+ (development) has been installed to /Applications.
+    Emacs+ (pre-release) has been installed to /Applications.
 
-    This is a pre-built binary from the Emacs master branch (Emacs 32).
+    This is a pre-built binary from the Emacs release branch (currently
+    Emacs 31, pretest). It tracks the next stable release: less bleeding
+    edge than @master, newer than the stable cask.
     For custom patches or build options, use the formula instead:
-      brew install emacs-plus@master --with-...
+      brew install emacs-plus@31 --with-...
 
     Custom icons can be configured via ~/.config/emacs-plus/build.yml:
       icon: dragon-plus
 
     To re-apply an icon after changing build.yml:
-      brew reinstall --cask emacs-plus-app@master
+      brew reinstall --cask emacs-plus-app@next
 
     Note: Emacs Client.app requires Emacs to be running as a daemon.
     Add to your Emacs config: (server-start)

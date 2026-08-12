@@ -3,6 +3,22 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-08-12
+
+** New Features
+
+*** =emacs-plus-app@next= cask
+
+New cask that tracks the Emacs release branch (currently =emacs-31=, the Emacs 31 pretest). It fills the gap between the stable cask and the =@master= nightly: newer than stable, less bleeding edge than master. Built and updated nightly, same as =@master=. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/978][#978]].
+
+#+begin_src bash
+  $ brew install --cask emacs-plus-app           # latest stable
+  $ brew install --cask emacs-plus-app@next      # nightly from release branch (next stable)
+  $ brew install --cask emacs-plus-app@master    # nightly from master
+#+end_src
+
+Note for users switching from the stable cask: there is no =emacs-ctags= symlink, since the =ctags= program was removed in Emacs 31 (same as =@master=).
+
 * 2026-07-12
 
 ** New Features
