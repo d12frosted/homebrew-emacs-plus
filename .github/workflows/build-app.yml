@@ -1444,8 +1444,8 @@ jobs:
           fi
 
   release-31:
-    # Emacs 31 (pre-release): publish artifacts. Does not update a cask file —
-    # there's no dedicated @31 cask, since 31 hasn't been released yet.
+    # Emacs 31 (pre-release): publish artifacts and update the
+    # emacs-plus-app@next cask, which tracks the release branch.
     needs: build-31
     runs-on: ubuntu-latest
     permissions:
@@ -1484,14 +1484,71 @@ jobs:
             - Commit: ${{ github.sha }}
 
             **Installation:**
-            Download the appropriate `.zip` and copy `Emacs.app` and
-            `Emacs Client.app` into `/Applications`.
+            ```
+            brew tap d12frosted/emacs-plus
+            brew install --cask emacs-plus-app@next
+            ```
 
             For source builds, use the formula:
             ```
-            brew tap d12frosted/emacs-plus
             brew install emacs-plus@31
             ```
+
+      - name: Update cask file
+        run: |
+          BUILD_NUM=${{ github.run_number }}
+
+          # Get Emacs full version from artifact
+          EMACS_VER=$(cat artifacts/*/emacs-version.txt | head -1)
+          echo "Emacs version: $EMACS_VER"
+
+          CASK_FILE="Casks/emacs-plus-app@next.rb"
+          echo "Updating $CASK_FILE"
+
+          # Extract SHA256 for each build and update cask
+          for sha_file in artifacts/*/*.sha256; do
+            filename=$(basename "$sha_file" .sha256)
+            sha=$(awk '{print $1}' "$sha_file")
+            echo "Found: $filename -> $sha"
+
+            # Determine arch and OS from filename (emacs-plus-31.0.91-arm64-26.zip)
+            if [[ "$filename" =~ (arm64|x86_64)-([0-9]+)\.zip$ ]]; then
+              arch="${BASH_REMATCH[1]}"
+              os_ver="${BASH_REMATCH[2]}"
+              url_pattern="${arch}-${os_ver}.zip"
+
+              echo "Updating SHA for $url_pattern to $sha"
+              python3 .github/scripts/update_cask_sha.py "$CASK_FILE" "$sha" "$url_pattern"
+            else
+              echo "Unknown filename pattern: $filename"
+            fi
+          done
+
+          # Update version
+          echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
+          sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+
+          # Show the changes
+          git diff "$CASK_FILE"
+
+      - name: Commit and push cask update
+        run: |
+          CASK_FILE="Casks/emacs-plus-app@next.rb"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$CASK_FILE"
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(emacs-plus-app@next): update cask to build ${{ github.run_number }}"
+            # Retry push with exponential backoff (handles race with other release jobs)
+            for i in 1 2 3 4 5; do
+              git pull --rebase origin master && git push && break
+              echo "Push failed, retrying in $((i * 2)) seconds..."
+              sleep $((i * 2))
+            done
+          fi
 
   release-32:
     needs: build-32

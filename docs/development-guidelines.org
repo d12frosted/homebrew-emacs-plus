@@ -106,6 +106,7 @@ Install casks from pre-built binaries (tests local Cask/ and Library/ changes):
 
 #+begin_src bash
   $ make cask                    # Install emacs-plus-app cask
+  $ make cask@next               # Install emacs-plus-app@next cask
   $ make cask@master             # Install emacs-plus-app@master cask
 #+end_src
 

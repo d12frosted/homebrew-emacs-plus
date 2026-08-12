@@ -45,6 +45,7 @@ cask "emacs-plus-app" do
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
     "emacs-plus-app@master",
+    "emacs-plus-app@next",
   ]
 
   # Install the app
