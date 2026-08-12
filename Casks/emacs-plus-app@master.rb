@@ -52,39 +52,15 @@ cask "emacs-plus-app@master" do
   app "Emacs Client.app"
 
   # Remove quarantine attribute, inject PATH, and apply custom icon
+  # (shared logic for all emacs-plus-app casks lives in Library/CaskPostflight.rb)
   postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-r", "-d", "com.apple.quarantine", "#{appdir}/Emacs.app"],
-                   sudo: false
-    system_command "/usr/bin/xattr",
-                   args: ["-r", "-d", "com.apple.quarantine", "#{appdir}/Emacs Client.app"],
-                   sudo: false
-
-    # Environment setup for native compilation and CLI usage
     tap = Tap.fetch("d12frosted", "emacs-plus")
-    load "#{tap.path}/Library/CaskEnv.rb"
-    needs_resign = CaskEnv.inject("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app")
-
-    # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
-    load "#{tap.path}/Library/IconApplier.rb"
-    needs_resign = IconApplier.apply("#{appdir}/Emacs.app", "#{appdir}/Emacs Client.app", version: version.major) || needs_resign
-
-    if needs_resign
-      # Re-sign after modifications
-      system_command "/usr/bin/codesign",
-                     args: ["--force", "--deep", "--sign", "-", "#{appdir}/Emacs.app"],
-                     sudo: false
-      system_command "/usr/bin/codesign",
-                     args: ["--force", "--deep", "--sign", "-", "#{appdir}/Emacs Client.app"],
-                     sudo: false
-    end
-
-    # Create emacs symlink manually (can't use binary stanza since wrapper is created above)
-    emacs_wrapper = "#{appdir}/Emacs.app/Contents/MacOS/bin/emacs"
-    emacs_symlink = "#{HOMEBREW_PREFIX}/bin/emacs"
-    if File.exist?(emacs_wrapper) && !File.exist?(emacs_symlink)
-      FileUtils.ln_sf(emacs_wrapper, emacs_symlink)
-    end
+    load "#{tap.path}/Library/CaskPostflight.rb"
+    CaskPostflight.run(self,
+                       emacs_app: "#{appdir}/Emacs.app",
+                       emacs_client_app: "#{appdir}/Emacs Client.app",
+                       version: version.major,
+                       homebrew_prefix: HOMEBREW_PREFIX.to_s)
   end
 
   # Clean up emacs symlink on uninstall (since we create it manually in postflight)
