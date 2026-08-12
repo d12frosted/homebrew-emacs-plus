@@ -20,7 +20,7 @@
 
 ** About
 
-Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide range of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package. Emacs+ intent is to give the most of 'plus' stuff by default, leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
+Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide range of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package (see [[#tldr][→ TL;DR]] for what exactly the plus is). Emacs+ intent is to give the most of 'plus' stuff by default, leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
@@ -49,8 +49,23 @@ Feel free to open an issue or contact me via email if you face any issues, quest
 
 For recent changes, see [[./NEWS.org][→ News]].
 
+*** TL;DR
+
+So what exactly is the plus? Compared to the core [[https://formulae.brew.sh/formula/emacs#default][=emacs=]] formula:
+
+- *GUI application.* The core formula builds a terminal-only Emacs (configured with =--without-ns=), so there is no =Emacs.app=. Emacs+ builds a full Cocoa application, plus a companion [[#emacs-clientapp][→ Emacs Client.app]] that opens files from Finder via =emacsclient= and handles =org-protocol://= links.
+- *Native compilation.* Emacs+ ships it by default, the core formula does not.
+- *Injected PATH.* Emacs+ captures =PATH= from your shell at install time and injects it into =Emacs.app=, so binaries installed by package managers just work in GUI Emacs, no =exec-path-from-shell= needed. See [[#injected-path][→ Injected PATH]].
+- *Extra patches.* A small set applied by default, most notably =ns-system-appearance-change-functions=, a hook that fires when macOS switches between light and dark appearance. See [[#system-appearance-change][→ System appearance change]].
+- *Custom icons and patches from a simple yaml file.* Describe your build in =~/.config/emacs-plus/build.yml=: pick one of 70+ icons, apply community patches, or point to any external or local patch and icon, including ones this repository knows nothing about. See [[#build-configuration][→ Build Configuration]].
+- *More versions.* Stable release, nightlies from =master= and from the release branch, and old versions down to Emacs 26.
+- *Pre-built binaries.* The =emacs-plus-app= casks install a self-contained =Emacs.app= in about a minute, no compilation involved.
+
+Emacs+ is 10+ years old and the list of differences used to be much longer. Many patches that were exclusive to Emacs+ got merged into Emacs itself, and the core formula improved too. Nowadays the plus is mostly sane macOS defaults and the customization layer on top.
+
 ** Table of Contents :TOC_3:
   - [[#about][About]]
+    - [[#tldr][TL;DR]]
   - [[#install][Install]]
     - [[#pre-built-binaries-cask][Pre-built binaries (Cask)]]
     - [[#build-from-source-formula][Build from source (Formula)]]
