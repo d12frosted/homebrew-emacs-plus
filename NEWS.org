@@ -3,6 +3,20 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-08-18
+
+** Bug Fixes
+
+*** Crash on macOS when hiding the header-line with =pixel-scroll-precision-mode=
+
+With =pixel-scroll-precision-mode= enabled, scrolling so a line is only partially visible and then hiding the header-line crashed Emacs with a bus error. Redisplay can send negative coordinates to the NS scroll code, which passes them straight to the pixel buffer copy. Without the fix, a fragment of the header-line is also painted over the mode-line of the window above (or over the tab-bar).
+
+This is Alan Third's patch from [[https://debbugs.gnu.org/cgi/bugreport.cgi?bug=81585][bug#81585]], which did not make it into the Emacs 31.1 release candidate. It is applied to =emacs-plus@31= and =emacs-plus@32= and will be dropped once it lands upstream.
+
+#+begin_src bash
+  brew reinstall emacs-plus@31
+#+end_src
+
 * 2026-08-12
 
 ** New Features
