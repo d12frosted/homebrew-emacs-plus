@@ -1,0 +1,68 @@
+Fix crash in NS scroll code (bug#81585).
+
+On macOS, toggling off the header-line while pixel-scroll-precision-mode
+is enabled and the window is scrolled so a line is only partially visible
+crashes Emacs with a bus error in memmove, called from
+[EmacsView copyRect:to:].  Redisplay can send negative values to
+ns_scroll_run, which then passes invalid coordinates down to the pixel
+buffer copy.  Without the ns_scroll_run part of the fix, the crash is
+gone but a fragment of the header-line is painted over the mode-line of
+the window above (or over the tab-bar).
+
+This is Alan Third's v2 patch from the bug thread, not yet in the
+emacs-31 branch as of the 31.1 rc1 tarball.  Drop it once it lands
+upstream.
+See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=81585#29
+
+diff --git a/src/nsterm.m b/src/nsterm.m
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -2857,7 +2857,6 @@ Hide the window (X11 semantics)
+ 
+   NSTRACE ("ns_scroll_run");
+ 
+-  /* begin copy from other terms */
+   /* Get frame-relative bounding box of the text display area of W,
+      without mode lines.  Include in this box the left and right
+      fringe of W.  */
+@@ -2875,6 +2874,15 @@ Hide the window (X11 semantics)
+ 	height = bottom_y - from_y;
+       else
+ 	height = run->height;
++
++      /* If the destination is off the top of the current window, don't
++	 draw over the window above.  */
++      if (to_y < y) {
++	int d = y - to_y;
++	height -= d;
++	to_y += d;
++	from_y += d;
++      }
+     }
+   else
+     {
+@@ -2885,7 +2893,6 @@ Hide the window (X11 semantics)
+       else
+ 	height = run->height;
+     }
+-  /* end copy from other terms */
+ 
+   if (height == 0)
+       return;
+@@ -9316,6 +9323,16 @@ - (void)copyRect:(NSRect)srcRect to:(NSPoint)dest
+   NSTRACE_RECT ("Source", srcRect);
+   NSTRACE_POINT ("Destination", dest);
+ 
++  /* If the destination is off the top of the pixel buffer, fix the
++     source and destination to copy only to y = 0.  */
++  if (dest.y < 0)
++    {
++      int d = dest.y;
++      dest.y = 0;
++      srcRect.origin.y -= d;
++      srcRect.size.height += d;
++    }
++
+   NSRect dstRect = NSMakeRect (dest.x, dest.y, NSWidth (srcRect),
+                                NSHeight (srcRect));
+ 
