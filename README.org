@@ -178,16 +178,22 @@ Open terminal and type the following commands (don't forget to use correct Emacs
 
 ** Reinstall
 
-If you wish to reinstall =emacs-plus= with you should not use =reinstall= command of =brew= (not related to this formula, it's a general advice). Instead, you should =uninstall= a package and then =install= it with desired options.
+=brew reinstall= is the normal way to rebuild =emacs-plus=:
 
-Avoid =reinstall= even if you want to =reinstall= with the same set of options, otherwise you will likely to get compilation errors! For example, [[https://github.com/d12frosted/homebrew-emacs-plus/issues/218][#218]] and [[https://github.com/d12frosted/homebrew-emacs-plus/issues/321][#321]].
+#+begin_src bash
+  $ brew reinstall emacs-plus@31
+#+end_src
 
-In short, =brew= doesn't really support options. They break time to time ([[https://github.com/Homebrew/brew/issues/4793][brew#4793]], [[https://github.com/Homebrew/brew/issues/7397][brew#7397]], [[https://github.com/Homebrew/brew/issues/7498][brew#7498]] to show a few).
+Use it after you change =~/.config/emacs-plus/build.yml=, pin a different revision, or when Emacs fails to start with =Library not loaded= errors after upgrading dependencies like =tree-sitter= or =libgccjit=.
 
-#+BEGIN_SRC bash
-  $ brew uninstall emacs-plus
-  $ brew install emacs-plus [options]
-#+END_SRC
+If a build fails halfway and leaves you in a weird state, uninstall and install again for a clean slate:
+
+#+begin_src bash
+  $ brew uninstall emacs-plus@31
+  $ brew install emacs-plus@31 [OPTIONS]
+#+end_src
+
+This section used to advise against =reinstall= altogether, because =brew= would lose or mangle command line options ([[https://github.com/d12frosted/homebrew-emacs-plus/issues/218][#218]], [[https://github.com/d12frosted/homebrew-emacs-plus/issues/321][#321]]). That was fixed on the =brew= side years ago, =reinstall= now reuses the options recorded at install time. If you still hit an option related problem, please report it.
 
 ** Build Configuration
 

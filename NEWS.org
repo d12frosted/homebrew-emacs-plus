@@ -3,6 +3,14 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-08-25
+
+** Improvements
+
+*** Reinstall documentation matches the formula caveats
+
+The =Reinstall= section of the README advised against =brew reinstall=, while the formula caveats and the rest of the README tell you to use it (after editing =build.yml=, pinning a revision, or fixing =Library not loaded= errors). The old advice was about =brew= losing command line options, which =brew= fixed years ago. Reported in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/986][#986]].
+
 * 2026-08-18
 
 ** Bug Fixes
