@@ -1,7 +1,7 @@
 require_relative "../Library/EmacsBase"
 
 class EmacsPlusAT31 < EmacsBase
-  init "31.1", branch: "emacs-31"
+  init "31.1", sha256: "1da5790d9580c81932b5bf700633114468da7b3412d69faa767daebf974f4586", branch: "emacs-31"
 
   desc "GNU Emacs text editor"
   homepage "https://www.gnu.org/software/emacs/"
