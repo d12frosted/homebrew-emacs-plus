@@ -22,8 +22,8 @@ on:
   push:
     branches: [master]
     paths:
-      - 'Formula/emacs-plus@30.rb'
-      - 'patches/emacs-30/**'
+      - 'Formula/emacs-plus@31.rb'
+      - 'patches/emacs-31/**'
       - 'Library/**'
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "EMACS_VERSION=30" >> $GITHUB_ENV
+          echo "EMACS_VERSION=31" >> $GITHUB_ENV
           echo "MAC_ARCH=${{ matrix.platform.arch }}" >> $GITHUB_ENV
           echo "OS_VER=$(sw_vers -productVersion)" >> $GITHUB_ENV
           echo "OS_NAME=${{ matrix.platform.os_name }}" >> $GITHUB_ENV
@@ -72,14 +72,12 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit tree-sitter@0.25 pkg-config webp
-          # tree-sitter@0.25 is keg-only, set up paths
-          echo "PKG_CONFIG_PATH=$(brew --prefix tree-sitter@0.25)/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+            gcc libgccjit tree-sitter pkg-config webp
 
       - name: Clone Emacs source
         run: |
-          # Emacs 30 uses the latest release tag (update when new version is released)
-          BRANCH="emacs-30.2"
+          # Stable lane builds the latest release tag (update on new releases)
+          BRANCH="emacs-31.1"
           git clone --depth 1 --branch "$BRANCH" \
             https://github.com/emacs-mirror/emacs.git emacs-src
           cd emacs-src
@@ -91,11 +89,10 @@ jobs:
           cd emacs-src
           # Only apply patches that are unconditionally applied in the formula
           PATCHES=(
-            "fix-window-role"
             "system-appearance"
             "round-undecorated-frame"
-            "fix-macos-tahoe-scrolling"
             "fix-ns-x-colors"
+            "fix-ns-scroll-crash"
           )
           for patch_name in "${PATCHES[@]}"; do
             patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
@@ -186,7 +183,7 @@ jobs:
         run: |
           ls -la emacs-src/nextstep/
           ./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version
-          # Capture full Emacs version (e.g., 30.1 or 30.0.92)
+          # Capture full Emacs version (e.g., 31.1)
           FULL_VER=$(./emacs-src/nextstep/Emacs.app/Contents/MacOS/Emacs --version | head -1 | sed 's/GNU Emacs //' | cut -d' ' -f1)
           echo "EMACS_FULL_VERSION=$FULL_VER" >> $GITHUB_ENV
           echo "Full Emacs version: $FULL_VER"
@@ -1377,10 +1374,10 @@ jobs:
             artifacts/*/*.zip
             artifacts/*/*.sha256
           body: |
-            Pre-built Emacs+ 30 for cask installation.
+            Pre-built Emacs+ 31 for cask installation.
 
             **Build info:**
-            - Emacs version: 30
+            - Emacs version: 31
             - Workflow run: ${{ github.run_number }}
             - Commit: ${{ github.sha }}
 

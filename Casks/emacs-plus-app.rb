@@ -73,10 +73,10 @@ cask "emacs-plus-app" do
   # Symlink binaries (emacs symlink created in postflight after wrapper is generated)
   # Note: emacs is symlinked manually in postflight because the wrapper script
   # is created there and binary stanzas run before postflight
+  # Note: no ctags symlink; the ctags program was removed in Emacs 31
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
-  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ctags", target: "emacs-ctags"
 
   # Man pages (not gzipped in the build)
   manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacs.1"
