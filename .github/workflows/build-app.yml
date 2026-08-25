@@ -532,6 +532,7 @@ jobs:
             "system-appearance"
             "round-undecorated-frame"
             "fix-ns-x-colors"
+            "fix-ns-scroll-crash"
           )
           for patch_name in "${PATCHES[@]}"; do
             patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
@@ -969,6 +970,7 @@ jobs:
             "system-appearance"
             "round-undecorated-frame"
             "fix-ns-x-colors"
+            "fix-ns-scroll-crash"
           )
           for patch_name in "${PATCHES[@]}"; do
             patch_file="../patches/emacs-$EMACS_VERSION/${patch_name}.patch"
