@@ -30,12 +30,13 @@ Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formu
   # (or trust a single formula/cask) and retry. See https://docs.brew.sh/Tap-Trust.
 
   # Pre-built binaries (fast, ~1 min)
-  $ brew install --cask emacs-plus-app          # latest stable
-  $ brew install --cask emacs-plus-app@next     # nightly from release branch (next stable)
+  $ brew install --cask emacs-plus-app          # latest release
+  $ brew install --cask emacs-plus-app@next     # nightly from the release branch
   $ brew install --cask emacs-plus-app@master   # nightly from master
 
   # Build from source (customizable, ~30 min)
-  $ brew install emacs-plus        [options]    # latest stable
+  $ brew install emacs-plus        [options]    # latest release
+  $ brew install emacs-plus --HEAD [options]    # from the release branch
   $ brew install emacs-plus@master [options]    # from master
 #+end_src
 
@@ -114,14 +115,24 @@ Emacs+ is 10+ years old and the list of differences used to be much longer. Many
 
 ** Install
 
+Emacs+ comes in three lanes, each available as a cask (pre-built) and as a formula (built from source):
+
+| Lane   | Cask                    | Formula             | Source                    |
+|--------+-------------------------+---------------------+---------------------------|
+| stable | =emacs-plus-app=        | =emacs-plus=        | latest release (31.1)     |
+| next   | =emacs-plus-app@next=   | =emacs-plus --HEAD= | release branch (emacs-31) |
+| master | =emacs-plus-app@master= | =emacs-plus@master= | master (32.0.50)          |
+
+The =next= lane follows the active Emacs release branch. Right after a major release it is the stable version plus the fixes going into the next point release; later in the cycle it becomes the pretest for the next major version.
+
 *** Pre-built binaries (Cask)
 
 For fast installation without compilation (~1 min), pre-built binaries are available:
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install --cask emacs-plus-app           # latest stable
-  $ brew install --cask emacs-plus-app@next      # nightly from release branch (next stable)
+  $ brew install --cask emacs-plus-app           # latest release
+  $ brew install --cask emacs-plus-app@next      # nightly from the release branch
   $ brew install --cask emacs-plus-app@master    # nightly from master
 #+end_src
 
@@ -151,11 +162,12 @@ For custom build options (~30 min compile time):
 
 #+begin_src bash
   $ brew tap d12frosted/emacs-plus
-  $ brew install emacs-plus        [options]    # latest stable
+  $ brew install emacs-plus        [options]    # latest release
+  $ brew install emacs-plus --HEAD [options]    # from the release branch
   $ brew install emacs-plus@master [options]    # from master
 #+end_src
 
-Versioned formulas are also available: =emacs-plus@32=, =emacs-plus@31=, =emacs-plus@30=, =emacs-plus@29=, etc. The =emacs-plus@master= alias points to the current development version (=emacs-plus@32=).
+Versioned formulas are also available: =emacs-plus@32=, =emacs-plus@31=, =emacs-plus@30=, =emacs-plus@29=, etc. The =emacs-plus= alias points to the latest release (=emacs-plus@31=) and =emacs-plus@master= to the development version (=emacs-plus@32=).
 
 By default, formulas build Cocoa Emacs with =gnutls=, =librsvg=, =libxml2=, =tree-sitter=, =webp=, native compilation, dynamic modules, and multicolor fonts. See [[#options][→ Options]] for customization.
 
@@ -696,7 +708,7 @@ Emacs 26 comes without any available options due to [[https://github.com/d12fros
 
 *** How to pin a specific commit
 
-Development versions (=emacs-plus@31=, =emacs-plus@32=) are built from their respective branches (=emacs-31=, =master=). Ordinarily, =brew= will update to the latest commit during installation.
+Development builds (=emacs-plus@32=, or =emacs-plus --HEAD=) are built from their respective branches (=master=, =emacs-31=). Ordinarily, =brew= will update to the latest commit during installation.
 
 As development versions are less stable than official releases, you may want to pin a specific commit. The recommended way is to use =~/.config/emacs-plus/build.yml=:
 

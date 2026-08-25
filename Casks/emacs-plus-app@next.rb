@@ -29,8 +29,8 @@ cask "emacs-plus-app@next" do
     end
   end
 
-  name "Emacs+ (Pre-release)"
-  desc "GNU Emacs text editor with patches for macOS (next stable release)"
+  name "Emacs+ (Next)"
+  desc "GNU Emacs text editor with patches for macOS (Emacs release branch)"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
 
   # Required for native compilation (JIT) at runtime
@@ -93,13 +93,14 @@ cask "emacs-plus-app@next" do
   ]
 
   caveats <<~EOS
-    Emacs+ (pre-release) has been installed to /Applications.
+    Emacs+ (next) has been installed to /Applications.
 
     This is a pre-built binary from the Emacs release branch (currently
-    Emacs 31, pretest). It tracks the next stable release: less bleeding
-    edge than @master, newer than the stable cask.
+    emacs-31). It carries the fixes that land after the last release and
+    go into the next one: newer than the stable cask, less bleeding edge
+    than @master.
     For custom patches or build options, use the formula instead:
-      brew install emacs-plus@31 --with-...
+      brew install emacs-plus --HEAD --with-...
 
     Custom icons can be configured via ~/.config/emacs-plus/build.yml:
       icon: dragon-plus

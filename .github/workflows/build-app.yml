@@ -514,7 +514,7 @@ jobs:
 
       - name: Clone Emacs source
         run: |
-          # Emacs 31 uses emacs-31 branch (pre-release)
+          # Next lane builds the active Emacs release branch
           BRANCH="emacs-31"
           git clone --depth 1 --branch "$BRANCH" \
             https://github.com/emacs-mirror/emacs.git emacs-src
@@ -1480,7 +1480,7 @@ jobs:
             artifacts/*/*.zip
             artifacts/*/*.sha256
           body: |
-            Pre-built Emacs+ 31 (pre-release, from `emacs-31` branch).
+            Pre-built Emacs+ from the `emacs-31` release branch.
 
             **Build info:**
             - Emacs version: 31
@@ -1495,7 +1495,7 @@ jobs:
 
             For source builds, use the formula:
             ```
-            brew install emacs-plus@31
+            brew install emacs-plus --HEAD
             ```
 
       - name: Update cask file
