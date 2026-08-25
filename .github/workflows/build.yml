@@ -37,10 +37,10 @@ jobs:
       - name: Update Homebrew
         run: brew update
 
-      - name: Build emacs-plus@30
+      - name: Build emacs-plus@31
         run: |
           export HOMEBREW_DEVELOPER=1
-          brew install --formula Formula/emacs-plus@30.rb --verbose
+          brew install --formula Formula/emacs-plus@31.rb --verbose
 
       - name: Test installation
         run: $(brew --prefix)/bin/emacs --batch --eval='(print (+ 2 2))'
@@ -48,9 +48,9 @@ jobs:
       - name: Pack up build logs
         if: always()
         run: |
-          LOG_DIR=~/Library/Logs/Homebrew/emacs-plus@30
+          LOG_DIR=~/Library/Logs/Homebrew/emacs-plus@31
           if [ -d "$LOG_DIR" ]; then
-            tar -C "$LOG_DIR" -czvf emacs-plus@30-build.tar.gz .
+            tar -C "$LOG_DIR" -czvf emacs-plus@31-build.tar.gz .
           fi
 
       - name: Upload logs
@@ -58,5 +58,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: build-logs
-          path: emacs-plus@30-build.tar.gz
+          path: emacs-plus@31-build.tar.gz
           if-no-files-found: ignore

@@ -5,11 +5,42 @@ This file documents notable changes to Emacs Plus.
 
 * 2026-08-25
 
+** Releases
+
+*** Emacs 31.1 is the default
+
+Emacs 31.1 is out, so the default moves from Emacs 30 to Emacs 31. =brew install emacs-plus= builds =emacs-plus@31= from the release tarball, and the =emacs-plus-app= cask ships Emacs 31.1.
+
+#+begin_src bash
+  $ brew upgrade emacs-plus
+  $ brew upgrade --cask emacs-plus-app
+#+end_src
+
+Emacs 30 stays available as =emacs-plus@30=. The stable cask no longer creates the =emacs-ctags= symlink, since =ctags= was removed in Emacs 31.
+
+** Changes
+
+*** Cask lanes: stable, next and master
+
+Cask releases are tagged =cask-stable-<build>=, =cask-next-<build>= and =cask-master-<build>= instead of being numbered by Emacs version. Stable and next are both Emacs 31 now, so the version number no longer tells the lanes apart.
+
+=emacs-plus-app@next= keeps tracking the Emacs release branch. Right after a major release that means 31.1 plus the fixes going into 31.2, and later in the cycle it becomes the pretest for the next major version. The source equivalent is:
+
+#+begin_src bash
+  $ brew install emacs-plus --HEAD
+#+end_src
+
 ** Improvements
 
 *** Reinstall documentation matches the formula caveats
 
 The =Reinstall= section of the README advised against =brew reinstall=, while the formula caveats and the rest of the README tell you to use it (after editing =build.yml=, pinning a revision, or fixing =Library not loaded= errors). The old advice was about =brew= losing command line options, which =brew= fixed years ago. Reported in [[https://github.com/d12frosted/homebrew-emacs-plus/issues/986][#986]].
+
+** Bug Fixes
+
+*** Cask builds were missing the NS scroll crash fix
+
+The =fix-ns-scroll-crash= patch (bug#81585, see the 2026-08-18 entry) is applied by the formulas, but the cask build jobs skipped it, so =emacs-plus-app@next= and =emacs-plus-app@master= did not have it. Fixed with the next nightly build.
 
 * 2026-08-18
 
