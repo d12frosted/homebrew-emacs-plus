@@ -3,7 +3,7 @@ cask "emacs-plus-app" do
   # Build number corresponds to GitHub Actions run number
   version "30.2-292"
 
-  # Base URL for release assets (versioned releases: cask-30-<build>)
+  # Base URL for release assets (lane releases: cask-30-<build>)
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-30-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 

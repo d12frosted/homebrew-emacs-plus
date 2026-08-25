@@ -4,21 +4,21 @@ on:
   # Manual trigger
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Emacs version to build'
+      lane:
+        description: 'Lane to build'
         required: true
-        default: '30'
+        default: 'stable'
         type: choice
         options:
-          - '30'
-          - '31'
-          - '32'
+          - 'stable'
+          - 'next'
+          - 'master'
 
-  # Nightly builds at 3 AM UTC (for Emacs 31 pre-release and Emacs 32 development version)
+  # Nightly builds at 3 AM UTC (next and master lanes)
   schedule:
     - cron: '0 3 * * *'
 
-  # Rebuild Emacs 30 when formula, patches, or build logic changes
+  # Rebuild the stable lane when formula, patches, or build logic changes
   push:
     branches: [master]
     paths:
@@ -27,11 +27,12 @@ on:
       - 'Library/**'
 
 jobs:
-  build-30:
-    # Emacs 30 (stable): build on formula/patch changes or manual trigger.
+  build-stable:
+    # Stable lane (latest Emacs release): build on formula/patch changes or
+    # manual trigger.
     # Restricted to the upstream repo so forks don't publish releases or
     # auto-commit cask updates pointing at fork-specific assets.
-    if: github.repository == 'd12frosted/homebrew-emacs-plus' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.version == '30'))
+    if: github.repository == 'd12frosted/homebrew-emacs-plus' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.lane == 'stable'))
     strategy:
       fail-fast: false
       matrix:
@@ -463,16 +464,16 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
+          name: stable-emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
           path: |
             emacs-plus-*.zip
             emacs-plus-*.sha256
             emacs-version.txt
 
-  build-31:
-    # Emacs 31 (pre-release): build nightly or on manual trigger.
-    # Restricted to the upstream repo (see build-30).
-    if: github.repository == 'd12frosted/homebrew-emacs-plus' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.version == '31'))
+  build-next:
+    # Next lane (Emacs release branch): build nightly or on manual trigger.
+    # Restricted to the upstream repo (see build-stable).
+    if: github.repository == 'd12frosted/homebrew-emacs-plus' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.lane == 'next'))
     strategy:
       fail-fast: false
       matrix:
@@ -901,16 +902,16 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
+          name: next-emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
           path: |
             emacs-plus-*.zip
             emacs-plus-*.sha256
             emacs-version.txt
 
-  build-32:
-    # Emacs 32 (development): build nightly or on manual trigger.
-    # Restricted to the upstream repo (see build-30).
-    if: github.repository == 'd12frosted/homebrew-emacs-plus' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.version == '32'))
+  build-master:
+    # Master lane (Emacs master): build nightly or on manual trigger.
+    # Restricted to the upstream repo (see build-stable).
+    if: github.repository == 'd12frosted/homebrew-emacs-plus' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.lane == 'master'))
     strategy:
       fail-fast: false
       matrix:
@@ -1339,14 +1340,14 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
+          name: master-emacs-plus-${{ env.EMACS_FULL_VERSION }}-${{ env.MAC_ARCH }}-${{ env.OS_MAJOR }}
           path: |
             emacs-plus-*.zip
             emacs-plus-*.sha256
             emacs-version.txt
 
-  release-30:
-    needs: build-30
+  release-stable:
+    needs: build-stable
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -1354,22 +1355,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Download artifacts for Emacs 30
+      - name: Download artifacts for the stable lane
         uses: actions/download-artifact@v8
         with:
           path: artifacts
-          pattern: emacs-plus-30.*
+          pattern: stable-emacs-plus-*
 
       - name: Display structure
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
-      - name: Create Release for Emacs 30
+      - name: Create Release for the stable lane
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: cask-30-${{ github.run_number }}
-          name: Emacs+ 30 Cask Build ${{ github.run_number }}
+          tag_name: cask-stable-${{ github.run_number }}
+          name: Emacs+ Stable Cask Build ${{ github.run_number }}
           draft: false
           prerelease: false
           files: |
@@ -1423,6 +1424,10 @@ jobs:
           echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
           sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
 
+          # Point the cask at this lane's release tag
+          sed -i -e "s|cask-[a-z0-9]*-<build>|cask-stable-<build>|" \
+                 -e "s|/download/cask-[a-z0-9]*-#|/download/cask-stable-#|" "$CASK_FILE"
+
           # Show the changes
           git diff "$CASK_FILE"
 
@@ -1445,10 +1450,10 @@ jobs:
             done
           fi
 
-  release-31:
-    # Emacs 31 (pre-release): publish artifacts and update the
-    # emacs-plus-app@next cask, which tracks the release branch.
-    needs: build-31
+  release-next:
+    # Publish artifacts and update the emacs-plus-app@next cask, which
+    # tracks the Emacs release branch.
+    needs: build-next
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -1456,22 +1461,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Download artifacts for Emacs 31
+      - name: Download artifacts for the next lane
         uses: actions/download-artifact@v8
         with:
           path: artifacts
-          pattern: emacs-plus-31.*
+          pattern: next-emacs-plus-*
 
       - name: Display structure
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
-      - name: Create Release for Emacs 31
+      - name: Create Release for the next lane
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: cask-31-${{ github.run_number }}
-          name: Emacs+ 31 Cask Build ${{ github.run_number }}
+          tag_name: cask-next-${{ github.run_number }}
+          name: Emacs+ Next Cask Build ${{ github.run_number }}
           draft: false
           prerelease: true
           files: |
@@ -1530,6 +1535,10 @@ jobs:
           echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
           sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
 
+          # Point the cask at this lane's release tag
+          sed -i -e "s|cask-[a-z0-9]*-<build>|cask-next-<build>|" \
+                 -e "s|/download/cask-[a-z0-9]*-#|/download/cask-next-#|" "$CASK_FILE"
+
           # Show the changes
           git diff "$CASK_FILE"
 
@@ -1552,8 +1561,8 @@ jobs:
             done
           fi
 
-  release-32:
-    needs: build-32
+  release-master:
+    needs: build-master
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -1561,22 +1570,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Download artifacts for Emacs 32
+      - name: Download artifacts for the master lane
         uses: actions/download-artifact@v8
         with:
           path: artifacts
-          pattern: emacs-plus-32.*
+          pattern: master-emacs-plus-*
 
       - name: Display structure
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
 
-      - name: Create Release for Emacs 32
+      - name: Create Release for the master lane
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: cask-32-${{ github.run_number }}
-          name: Emacs+ 32 Cask Build ${{ github.run_number }}
+          tag_name: cask-master-${{ github.run_number }}
+          name: Emacs+ Master Cask Build ${{ github.run_number }}
           draft: false
           prerelease: true
           files: |
@@ -1629,6 +1638,10 @@ jobs:
           # Update version
           echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
           sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+
+          # Point the cask at this lane's release tag
+          sed -i -e "s|cask-[a-z0-9]*-<build>|cask-master-<build>|" \
+                 -e "s|/download/cask-[a-z0-9]*-#|/download/cask-master-#|" "$CASK_FILE"
 
           # Show the changes
           git diff "$CASK_FILE"
