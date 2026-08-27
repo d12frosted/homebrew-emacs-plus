@@ -213,17 +213,20 @@ class EmacsPlusAT29 < EmacsBase
       inject_plist_extras
 
       # Replace the symlink with one that avoids starting Cocoa.
-      # Check multiple locations so users can copy Emacs.app to /Applications
-      # for better Spotlight integration.
+      # Prefer the bundle this formula built; fall back to /Applications and
+      # ~/Applications for users who moved Emacs.app there for better
+      # Spotlight integration. The fallbacks come last so an Emacs.app
+      # installed by the emacs-plus-app cask is never picked up instead of
+      # this formula's own build.
       (bin/"emacs").unlink # Kill the existing symlink
       (bin/"emacs").write <<~EOS
         #!/bin/bash
-        for app in "/Applications/Emacs.app" "$HOME/Applications/Emacs.app" "#{prefix}/Emacs.app"; do
+        for app in "#{prefix}/Emacs.app" "/Applications/Emacs.app" "$HOME/Applications/Emacs.app"; do
           if [ -x "$app/Contents/MacOS/Emacs" ]; then
             exec "$app/Contents/MacOS/Emacs" "$@"
           fi
         done
-        echo "Error: Emacs.app not found in /Applications, ~/Applications, or #{prefix}" >&2
+        echo "Error: Emacs.app not found in #{prefix}, /Applications, or ~/Applications" >&2
         exit 1
       EOS
     else
@@ -301,7 +304,8 @@ class EmacsPlusAT29 < EmacsBase
       For best Spotlight integration, copy the app to /Applications:
         cp -r #{prefix}/Emacs.app /Applications/
 
-      The `emacs` command will automatically find the app in /Applications.
+      The `emacs` command always runs this formula's own Emacs.app; copies
+      in /Applications are only used if the original is removed.
 
       Alternatively, create a Finder alias (less reliable with Spotlight):
         osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'

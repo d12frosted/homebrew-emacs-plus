@@ -7,6 +7,10 @@ This file documents notable changes to Emacs Plus.
 
 ** Bug Fixes
 
+*** Formula =emacs= wrapper prefers its own =Emacs.app=
+
+The =emacs= wrapper installed by =emacs-plus@29= through =emacs-plus@32= looked for =Emacs.app= in =/Applications= first and only then in the formula's own prefix. That order predates the casks: with =emacs-plus-app= installed, a formula user running =emacs= in the terminal (or =brew services start emacs-plus@N=) silently got the cask's Emacs, possibly a different major version. The wrapper now runs the formula's own bundle first and falls back to =/Applications= and =~/Applications= only when it is missing, so copies made for Spotlight integration keep working. Reinstall the formula to get the fixed wrapper.
+
 *** Cask uninstall no longer deletes the formula's =emacs= symlink
 
 Uninstalling an =emacs-plus-app= cask removed any symlink at =$(brew --prefix)/bin/emacs=, including one created by a linked =emacs-plus@N= formula, silently leaving the formula unlinked. The cask now checks where the symlink points and only removes it when it leads into the cask's own =Emacs.app=.
