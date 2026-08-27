@@ -88,7 +88,6 @@ cask "emacs-plus-app@master" do
     "~/Library/Caches/org.gnu.Emacs",
     "~/Library/Preferences/org.gnu.Emacs.plist",
     "~/Library/Saved Application State/org.gnu.Emacs.savedState",
-    "~/.emacs.d",
   ]
 
   caveats <<~EOS
