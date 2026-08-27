@@ -7,6 +7,10 @@ This file documents notable changes to Emacs Plus.
 
 ** Bug Fixes
 
+*** Cask uninstall no longer deletes the formula's =emacs= symlink
+
+Uninstalling an =emacs-plus-app= cask removed any symlink at =$(brew --prefix)/bin/emacs=, including one created by a linked =emacs-plus@N= formula, silently leaving the formula unlinked. The cask now checks where the symlink points and only removes it when it leads into the cask's own =Emacs.app=.
+
 *** Cask =zap= no longer trashes =~/.emacs.d=
 
 =brew uninstall --zap --cask emacs-plus-app= (and the =@next= / =@master= variants) moved =~/.emacs.d= to the Trash along with the app caches. That directory is your own Emacs configuration, not something the cask created, so zap now leaves it alone and only removes the app state under =~/Library=.
