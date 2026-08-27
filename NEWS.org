@@ -3,6 +3,14 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-08-27
+
+** Bug Fixes
+
+*** Cask =zap= no longer trashes =~/.emacs.d=
+
+=brew uninstall --zap --cask emacs-plus-app= (and the =@next= / =@master= variants) moved =~/.emacs.d= to the Trash along with the app caches. That directory is your own Emacs configuration, not something the cask created, so zap now leaves it alone and only removes the app state under =~/Library=.
+
 * 2026-08-25
 
 ** Releases
