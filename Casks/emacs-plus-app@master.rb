@@ -8,6 +8,10 @@ cask "emacs-plus-app@master" do
   emacs_ver = version.sub(/-\d+$/, "")
 
   on_arm do
+    # Oldest prebuilt arm64 binary targets macOS 14 (built on the macos-14
+    # runner), so Ventura cannot run it
+    depends_on macos: :sonoma
+
     if MacOS.version >= :tahoe # macOS 26
       sha256 "1310c9b5b3c3b8794620a06156f90a91795cc993ba537521bccd21b5e7f16a4c"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
@@ -16,7 +20,7 @@ cask "emacs-plus-app@master" do
       sha256 "8cf3c54bfe9ac6d7c42dcab98a16127e97de309e85ec93047431f7fd9d321c01"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
-    else # macOS 14 (Sonoma) and 13 (Ventura)
+    else # macOS 14 (Sonoma)
       sha256 "340c118e1b56420f1d0be98653bbf0727a1d85256c6ddaf46911a3dfac19c334"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
@@ -27,6 +31,10 @@ cask "emacs-plus-app@master" do
 
     url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
+
+    # The only Intel build targets macOS 15 (built on the macos-15-intel
+    # runner, the sole Intel runner available)
+    depends_on macos: :sequoia
   end
 
   name "Emacs+ (Development)"
