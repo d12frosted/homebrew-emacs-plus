@@ -114,5 +114,10 @@ cask "emacs-plus-app@next" do
 
     Note: Emacs Client.app requires Emacs to be running as a daemon.
     Add to your Emacs config: (server-start)
+
+    Note: installing this cask alongside an emacs-plus@N formula is not
+    supported. Both provide emacs and emacsclient in $(brew --prefix)/bin,
+    and Homebrew cannot declare a conflict between a cask and a formula.
+    Keep one or the other installed.
   EOS
 end

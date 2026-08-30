@@ -5,6 +5,12 @@ This file documents notable changes to Emacs Plus.
 
 * 2026-08-27
 
+** Improvements
+
+*** Caveats warn about mixing formula and cask installs
+
+The =emacs-plus@N= formulas and the =emacs-plus-app= casks both provide =emacs= and =emacsclient= in =$(brew --prefix)/bin=, but Homebrew cannot declare a conflict between a formula and a cask, so nothing stops you from installing both and ending up with commands that do not match the app you launch. The caveats on both sides now say to keep one or the other.
+
 ** Changes
 
 *** Service logs move from =/tmp= to =var/log=, one pair per version
