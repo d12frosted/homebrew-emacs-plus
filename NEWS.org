@@ -7,6 +7,10 @@ This file documents notable changes to Emacs Plus.
 
 ** Improvements
 
+*** =brew style= runs in CI
+
+The formulas and casks are now checked with =brew style= on every push and pull request, and all existing style offenses are fixed. Two cask cops are excluded (=Cask/NoOverrides= and =Cask/OnSystemConditionals=): they demand restructuring the casks into =on_{macos_version}= blocks, which does not fit how the casks pick one of several prebuilt binaries per macOS version. As part of the cleanup the casks now declare =depends_on :macos= and their descriptions no longer name the platform.
+
 *** Caveats warn about mixing formula and cask installs
 
 The =emacs-plus@N= formulas and the =emacs-plus-app= casks both provide =emacs= and =emacsclient= in =$(brew --prefix)/bin=, but Homebrew cannot declare a conflict between a formula and a cask, so nothing stops you from installing both and ending up with commands that do not match the app you launch. The caveats on both sides now say to keep one or the other.
