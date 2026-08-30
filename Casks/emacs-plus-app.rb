@@ -7,12 +7,6 @@ cask "emacs-plus-app" do
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-stable-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
-  on_intel do
-    sha256 "72b74efb175758185392ff232686541acf4d56f2856dd0e98850d64be072f018"
-    url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
-        verified: "github.com/d12frosted/homebrew-emacs-plus"
-  end
-
   on_arm do
     if MacOS.version >= :tahoe # macOS 26
       sha256 "ee974066f3527fbe444d9a176e124fdbfd8b3ee678bece9fc52218e07eeea0c8"
@@ -28,16 +22,16 @@ cask "emacs-plus-app" do
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
   end
+  on_intel do
+    sha256 "72b74efb175758185392ff232686541acf4d56f2856dd0e98850d64be072f018"
+
+    url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
+        verified: "github.com/d12frosted/homebrew-emacs-plus"
+  end
 
   name "Emacs+"
-  desc "GNU Emacs text editor with patches for macOS"
+  desc "GNU Emacs text editor with patches"
   homepage "https://github.com/d12frosted/homebrew-emacs-plus"
-
-  # Required for native compilation (JIT) at runtime
-  # - libgccjit: JIT compilation library
-  # - gcc: provides toolchain and libemutls_w.a runtime library
-  depends_on formula: "libgccjit"
-  depends_on formula: "gcc"
 
   # Conflict with other Emacs cask installations
   conflicts_with cask: [
@@ -47,10 +41,28 @@ cask "emacs-plus-app" do
     "emacs-plus-app@master",
     "emacs-plus-app@next",
   ]
+  # Required for native compilation (JIT) at runtime
+  # - libgccjit: JIT compilation library
+  # - gcc: provides toolchain and libemutls_w.a runtime library
+  depends_on formula: "libgccjit"
+  depends_on formula: "gcc"
+  depends_on :macos
 
   # Install the app
   app "Emacs.app"
   app "Emacs Client.app"
+  # Symlink binaries (emacs symlink created in postflight after wrapper is generated)
+  # Note: emacs is symlinked manually in postflight because the wrapper script
+  # is created there and binary stanzas run before postflight
+  # Note: no ctags symlink; the ctags program was removed in Emacs 31
+  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
+  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
+  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
+  # Man pages (not gzipped in the build)
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacs.1"
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacsclient.1"
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/ebrowse.1"
+  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/etags.1"
 
   # Remove quarantine attribute, inject PATH, and apply custom icon
   # (shared logic for all emacs-plus-app casks lives in Library/CaskPostflight.rb)
@@ -58,10 +70,10 @@ cask "emacs-plus-app" do
     tap = Tap.fetch("d12frosted", "emacs-plus")
     load "#{tap.path}/Library/CaskPostflight.rb"
     CaskPostflight.run(self,
-                       emacs_app: "#{appdir}/Emacs.app",
+                       emacs_app:        "#{appdir}/Emacs.app",
                        emacs_client_app: "#{appdir}/Emacs Client.app",
-                       version: version.major,
-                       homebrew_prefix: HOMEBREW_PREFIX.to_s)
+                       version:          version.major,
+                       homebrew_prefix:  HOMEBREW_PREFIX.to_s)
   end
 
   # Clean up emacs symlink on uninstall (since we create it manually in postflight)
@@ -71,23 +83,9 @@ cask "emacs-plus-app" do
     emacs_symlink = "#{HOMEBREW_PREFIX}/bin/emacs"
     if File.symlink?(emacs_symlink) &&
        File.readlink(emacs_symlink).start_with?("#{appdir}/Emacs.app/")
-      FileUtils.rm_f(emacs_symlink)
+      FileUtils.rm(emacs_symlink)
     end
   end
-
-  # Symlink binaries (emacs symlink created in postflight after wrapper is generated)
-  # Note: emacs is symlinked manually in postflight because the wrapper script
-  # is created there and binary stanzas run before postflight
-  # Note: no ctags symlink; the ctags program was removed in Emacs 31
-  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
-  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
-  binary "#{appdir}/Emacs.app/Contents/MacOS/bin/etags"
-
-  # Man pages (not gzipped in the build)
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacs.1"
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/emacsclient.1"
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/ebrowse.1"
-  manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/etags.1"
 
   # Cleanup on uninstall
   zap trash: [
