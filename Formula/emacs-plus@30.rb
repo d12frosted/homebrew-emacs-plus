@@ -323,6 +323,11 @@ class EmacsPlusAT30 < EmacsBase
       dependencies (e.g., tree-sitter, libgccjit), reinstall emacs-plus:
         brew reinstall emacs-plus@30
 
+      Note: installing this formula alongside an emacs-plus-app cask is not
+      supported. Both provide emacs and emacsclient in $(brew --prefix)/bin,
+      and Homebrew cannot declare a conflict between a formula and a cask.
+      Keep one or the other installed.
+
       Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
     EOS
   end
