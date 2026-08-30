@@ -21,6 +21,19 @@ jobs:
             ruby "$test"
           done
 
+      # brew style requires the files to live inside a tap, so link the
+      # checkout into the tap location. Cask/NoOverrides and
+      # Cask/OnSystemConditionals are excluded: they demand restructuring
+      # the casks into on_{macos_version} blocks, which does not fit how
+      # the casks pick one of several prebuilt binaries per macOS version.
+      - name: Run brew style on Formula and Casks
+        run: |
+          TAP_DIR="$(brew --repository)/Library/Taps/d12frosted/homebrew-emacs-plus"
+          mkdir -p "$(dirname "$TAP_DIR")"
+          ln -s "$GITHUB_WORKSPACE" "$TAP_DIR"
+          brew style --except-cops Cask/NoOverrides,Cask/OnSystemConditionals \
+            "$TAP_DIR/Formula" "$TAP_DIR/Casks"
+
       - name: Validate icons
         run: ruby scripts/validate-icons.rb
 
