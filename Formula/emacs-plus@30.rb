@@ -107,9 +107,7 @@ class EmacsPlusAT30 < EmacsBase
     gcc_lib="#{HOMEBREW_PREFIX}/lib/gcc/#{gcc_ver_major}"
 
     # Enable debug symbols in Homebrew's superenv
-    if build.with? "debug"
-      ENV.set_debug_symbols
-    end
+    ENV.set_debug_symbols if build.with? "debug"
 
     # Build CFLAGS - pass to configure for includes and defines
     # Note: Homebrew's superenv handles optimization (-O2) and debug (-g) flags
@@ -179,9 +177,7 @@ class EmacsPlusAT30 < EmacsBase
 
       # Generate dSYM bundle for debugging BEFORE install (clang stores symbols
       # in .o files, and dsymutil needs them to extract debug info)
-      if build.with? "debug"
-        system "dsymutil", "nextstep/Emacs.app/Contents/MacOS/Emacs"
-      end
+      system "dsymutil", "nextstep/Emacs.app/Contents/MacOS/Emacs" if build.with? "debug"
 
       system "gmake", "install"
 
@@ -253,9 +249,7 @@ class EmacsPlusAT30 < EmacsBase
       system "gmake"
 
       # Generate dSYM bundle for debugging BEFORE install (non-Cocoa build)
-      if build.with? "debug"
-        system "dsymutil", "src/emacs"
-      end
+      system "dsymutil", "src/emacs" if build.with? "debug"
 
       system "gmake", "install"
     end
@@ -290,9 +284,7 @@ class EmacsPlusAT30 < EmacsBase
 
     # Also re-sign Emacs Client.app
     client_path = prefix/"Emacs Client.app"
-    if client_path.exist?
-      system "codesign", "--force", "--deep", "--sign", "-", client_path.to_s
-    end
+    system "codesign", "--force", "--deep", "--sign", "-", client_path.to_s if client_path.exist?
   end
 
   def caveats
