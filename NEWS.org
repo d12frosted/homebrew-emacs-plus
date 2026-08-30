@@ -5,6 +5,16 @@ This file documents notable changes to Emacs Plus.
 
 * 2026-08-27
 
+** Changes
+
+*** Service logs move from =/tmp= to =var/log=, one pair per version
+
+Every =emacs-plus@N= service wrote to the same =/tmp/homebrew.mxcl.emacs-plus.{stdout,stderr}.log=, so running two versions interleaved their output, and the logs vanished on reboot. Each formula now logs to =$(brew --prefix)/var/log/emacs-plus@N.{stdout,stderr}.log=. Restart the service after upgrading to pick up the new paths:
+
+#+begin_src bash
+  brew services restart emacs-plus@31
+#+end_src
+
 ** Bug Fixes
 
 *** Formula =emacs= wrapper prefers its own =Emacs.app=
