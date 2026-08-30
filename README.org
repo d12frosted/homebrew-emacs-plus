@@ -149,10 +149,10 @@ Cask builds are self-contained applications with all dependencies bundled. They 
 |----------------------+------------------------+---------------------------|
 | Install time         | ~1 minute (download)   | ~30 minutes (compile)     |
 | Custom build options | No                     | Yes (icons, patches, etc) |
-| macOS versions       | ARM64: 13+, Intel: 15+ | Any supported             |
+| macOS versions       | ARM64: 14+, Intel: 15+ | Any supported             |
 | Architectures        | ARM64 and Intel        | Any                       |
 
-*Note:* Cask builds are architecture and macOS version specific. ARM64 has dedicated builds for Sonoma (14), Sequoia (15), and Tahoe (26); Ventura (13) users get the Sonoma build. Intel has a single Sequoia (15) build.
+*Note:* Cask builds are architecture and macOS version specific. ARM64 has dedicated builds for Sonoma (14), Sequoia (15), and Tahoe (26). Intel has a single Sequoia (15) build. On older macOS versions the cask refuses to install; use the formula instead.
 
 Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults.
 

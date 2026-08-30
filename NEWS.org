@@ -27,6 +27,10 @@ Every =emacs-plus@N= service wrote to the same =/tmp/homebrew.mxcl.emacs-plus.{s
 
 ** Bug Fixes
 
+*** Casks refuse to install on macOS versions their binaries cannot run on
+
+The prebuilt binaries have a minimum macOS baked in by the build runner: the oldest arm64 build targets macOS 14 (Sonoma) and the only Intel build targets macOS 15 (Sequoia). The casks happily installed on older systems (the arm64 fallback even claimed to cover Ventura), and the app then refused to launch. The casks now declare =depends_on macos:= per architecture, so unsupported systems get a clear error at install time. On older macOS, build from source with the formula instead.
+
 *** Formula =emacs= wrapper prefers its own =Emacs.app=
 
 The =emacs= wrapper installed by =emacs-plus@29= through =emacs-plus@32= looked for =Emacs.app= in =/Applications= first and only then in the formula's own prefix. That order predates the casks: with =emacs-plus-app= installed, a formula user running =emacs= in the terminal (or =brew services start emacs-plus@N=) silently got the cask's Emacs, possibly a different major version. The wrapper now runs the formula's own bundle first and falls back to =/Applications= and =~/Applications= only when it is missing, so copies made for Spotlight integration keep working. Reinstall the formula to get the fixed wrapper.
