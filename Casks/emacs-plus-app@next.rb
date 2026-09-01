@@ -27,9 +27,18 @@ cask "emacs-plus-app@next" do
     end
   end
   on_intel do
+    # Intel assets can lag behind the arm64 ones. Homebrew treats x86_64 macOS
+    # as a tier 3 configuration and stopped bottling some dependencies for it,
+    # so the Intel build breaks on its own schedule and a release can ship
+    # without it. This pin points at the last release that did produce an Intel
+    # binary, so it is expected to trail the version above from time to time.
+    intel_version = "31.1.50-316"
+    intel_emacs_ver = intel_version.sub(/-\d+$/, "")
+    intel_base_url = base_url.sub(/-\d+$/, "-#{intel_version.sub(/^[\d.]+-/, "")}")
+
     sha256 "bece9edbe18fd468932b21ecca43ea606706df45eaab4c4e6af05cde362f699b"
 
-    url "#{base_url}/emacs-plus-#{emacs_ver}-x86_64-15.zip",
+    url "#{intel_base_url}/emacs-plus-#{intel_emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
 
     # The only Intel build targets macOS 15 (built on the macos-15-intel
