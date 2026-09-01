@@ -29,6 +29,14 @@ I proposed this upstream as [[https://debbugs.gnu.org/cgi/bugreport.cgi?bug=8152
 
 The formula has =brew services= support, but the cask cannot have it: =brew services= only works with formulas, and the cask =service= stanza means something unrelated in the cask DSL. The README now has a [[https://github.com/d12frosted/homebrew-emacs-plus#running-emacs-as-a-daemon][Running Emacs as a daemon]] section covering =brew services= for the formula and a LaunchAgent recipe for the cask, plus a reminder that =emacsclient -c -a ''= starts a daemon on demand and may be all you need. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/937][#937]].
 
+** Bug Fixes
+
+*** Cask Intel checksums are updated again
+
+Applying =brew style= to the casks moved the =on_intel= block below =on_arm= and put a blank line between its =sha256= and =url= stanzas. The release job walks up from a url to find the checksum to rewrite and only looked at the line directly above, so from then on the Intel url advanced to each new release while its checksum stayed behind, and =brew install --cask emacs-plus-app= failed checksum verification on Intel. The =@next= and =@master= casks were affected first, then the stable one.
+
+All three casks now carry the right Intel checksum, the release job finds the stanza across blank lines and comments, and it fails outright if it cannot, instead of leaving the old value in place. It also verifies that every checksum it published made it into the cask before committing.
+
 * 2026-08-27
 
 ** Improvements

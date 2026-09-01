@@ -36,7 +36,7 @@ cask "emacs-plus-app" do
     intel_emacs_ver = intel_version.sub(/-\d+$/, "")
     intel_base_url = base_url.sub(/-\d+$/, "-#{intel_version.sub(/^[\d.]+-/, "")}")
 
-    sha256 "72b74efb175758185392ff232686541acf4d56f2856dd0e98850d64be072f018"
+    sha256 "2ec1187a64ae71642a1fd29a81e1c90e13cdcc30fe403692356f6c58532f73c6"
 
     url "#{intel_base_url}/emacs-plus-#{intel_emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
