@@ -24,6 +24,7 @@
 # Native compilation works via LIBRARY_PATH without needing PATH.
 
 require_relative 'BuildConfig'
+require_relative 'PlistExtras'
 
 module CaskEnv
   class << self
@@ -41,6 +42,7 @@ module CaskEnv
 
       modified = false
       modified |= run_step("Emacs.app environment injection") { inject_emacs_app(emacs_app) }
+      modified |= run_step("Emacs.app usage descriptions") { declare_usage_descriptions(emacs_app) }
       modified |= run_step("Emacs Client.app environment injection") { inject_emacs_client_app(emacs_client_app) }
       modified |= run_step("site-start.el update") { update_site_start_el(emacs_app) }
       modified
@@ -228,6 +230,32 @@ module CaskEnv
 
       native_comp_env.each do |key, value|
         system("/usr/libexec/PlistBuddy", "-c", "Add :LSEnvironment:#{key} string '#{value}'", plist)
+      end
+
+      # Touch the app to update LaunchServices cache
+      system("touch", app_path)
+
+      true
+    end
+
+    # Declare the usage descriptions for the class-based TCC privacy services
+    # in Emacs.app's Info.plist. The prebuilt bundles carry only what upstream
+    # Emacs declares, so without this a process started from within Emacs is
+    # killed with SIGABRT when it touches one of those frameworks. See
+    # Library/PlistExtras.rb.
+    #
+    # Returns true when the plist changed, so the caller re-signs the bundle.
+    def declare_usage_descriptions(app_path)
+      return false unless File.exist?(app_path)
+
+      plist = "#{app_path}/Contents/Info.plist"
+      return false if PlistExtras.usage_descriptions_current?(plist)
+
+      puts "Declaring privacy usage descriptions in #{app_path}"
+      failed = PlistExtras.set_usage_descriptions(plist)
+      unless failed.empty?
+        message = "Could not declare usage descriptions: #{failed.join(", ")}"
+        defined?(opoo) ? opoo(message) : warn("Warning: #{message}")
       end
 
       # Touch the app to update LaunchServices cache
