@@ -72,7 +72,13 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit tree-sitter pkg-config webp
+            gcc libgccjit pkg-config webp
+          # Homebrew stopped shipping x86_64 macOS bottles for tree-sitter
+          # (Intel is Tier 3 now), and refuses to build Tier 3 configurations
+          # from source unless asked explicitly. It is a small C library, so
+          # the source build is cheap. Try the bottle first so this goes back
+          # to being a no-op if x86_64 bottles ever come back.
+          brew install tree-sitter || brew install --build-from-source tree-sitter
 
       - name: Clone Emacs source
         run: |
@@ -510,7 +516,13 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit tree-sitter pkg-config webp
+            gcc libgccjit pkg-config webp
+          # Homebrew stopped shipping x86_64 macOS bottles for tree-sitter
+          # (Intel is Tier 3 now), and refuses to build Tier 3 configurations
+          # from source unless asked explicitly. It is a small C library, so
+          # the source build is cheap. Try the bottle first so this goes back
+          # to being a no-op if x86_64 bottles ever come back.
+          brew install tree-sitter || brew install --build-from-source tree-sitter
 
       - name: Clone Emacs source
         run: |
@@ -948,7 +960,13 @@ jobs:
         run: |
           brew update
           brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit tree-sitter pkg-config webp
+            gcc libgccjit pkg-config webp
+          # Homebrew stopped shipping x86_64 macOS bottles for tree-sitter
+          # (Intel is Tier 3 now), and refuses to build Tier 3 configurations
+          # from source unless asked explicitly. It is a small C library, so
+          # the source build is cheap. Try the bottle first so this goes back
+          # to being a no-op if x86_64 bottles ever come back.
+          brew install tree-sitter || brew install --build-from-source tree-sitter
 
       - name: Clone Emacs source
         run: |
@@ -1345,6 +1363,11 @@ jobs:
 
   release-stable:
     needs: build-stable
+    # Run even when a build leg failed, so a broken Intel build cannot hold
+    # back the arm64 artifacts. The required-artifact check below still fails
+    # this job when an arm64 build is missing. A skipped build means the lane
+    # was not selected for this event, so stay skipped in that case.
+    if: needs.build-stable.result == 'success' || needs.build-stable.result == 'failure'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -1362,6 +1385,31 @@ jobs:
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
+
+      - name: Check required artifacts
+        run: |
+          # arm64 covers every Mac Apple still ships a macOS for, so a missing
+          # arm64 build is a hard failure. Intel is optional: Homebrew treats
+          # x86_64 macOS as a tier 3 configuration and its runner retires in
+          # August 2027, so that build breaks on its own schedule. When it is
+          # absent the cask keeps its Intel pin on the last release that did
+          # produce a binary, and the arm64 artifacts still ship.
+          missing=""
+          for target in arm64-14 arm64-15 arm64-26; do
+            if ! ls artifacts/*/emacs-plus-*-"$target".zip >/dev/null 2>&1; then
+              missing="$missing $target"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::missing required arm64 artifacts:$missing"
+            exit 1
+          fi
+          if ls artifacts/*/emacs-plus-*-x86_64-15.zip >/dev/null 2>&1; then
+            echo "HAVE_INTEL=1" >> $GITHUB_ENV
+          else
+            echo "::warning::no Intel artifact in this run, the cask keeps its current Intel pin"
+            echo "HAVE_INTEL=0" >> $GITHUB_ENV
+          fi
 
       - name: Create Release for the stable lane
         uses: softprops/action-gh-release@v3
@@ -1421,6 +1469,17 @@ jobs:
           echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
           sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
 
+          # The Intel pin moves only when there is a fresh Intel binary to
+          # point it at, so the cask never links to an asset that was not
+          # published. Note the pattern matches the assignment, so it cannot
+          # collide with the version stanza updated above.
+          if [ "$HAVE_INTEL" = "1" ]; then
+            echo "Updating intel_version to ${EMACS_VER}-${BUILD_NUM}"
+            sed -i "s/intel_version = \"[0-9.]*-[0-9]*\"/intel_version = \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+          else
+            echo "No Intel artifact, leaving intel_version as is"
+          fi
+
           # Point the cask at this lane's release tag
           sed -i -e "s|cask-[a-z0-9]*-<build>|cask-stable-<build>|" \
                  -e "s|/download/cask-[a-z0-9]*-#|/download/cask-stable-#|" "$CASK_FILE"
@@ -1451,6 +1510,11 @@ jobs:
     # Publish artifacts and update the emacs-plus-app@next cask, which
     # tracks the Emacs release branch.
     needs: build-next
+    # Run even when a build leg failed, so a broken Intel build cannot hold
+    # back the arm64 artifacts. The required-artifact check below still fails
+    # this job when an arm64 build is missing. A skipped build means the lane
+    # was not selected for this event, so stay skipped in that case.
+    if: needs.build-next.result == 'success' || needs.build-next.result == 'failure'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -1468,6 +1532,31 @@ jobs:
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
+
+      - name: Check required artifacts
+        run: |
+          # arm64 covers every Mac Apple still ships a macOS for, so a missing
+          # arm64 build is a hard failure. Intel is optional: Homebrew treats
+          # x86_64 macOS as a tier 3 configuration and its runner retires in
+          # August 2027, so that build breaks on its own schedule. When it is
+          # absent the cask keeps its Intel pin on the last release that did
+          # produce a binary, and the arm64 artifacts still ship.
+          missing=""
+          for target in arm64-14 arm64-15 arm64-26; do
+            if ! ls artifacts/*/emacs-plus-*-"$target".zip >/dev/null 2>&1; then
+              missing="$missing $target"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::missing required arm64 artifacts:$missing"
+            exit 1
+          fi
+          if ls artifacts/*/emacs-plus-*-x86_64-15.zip >/dev/null 2>&1; then
+            echo "HAVE_INTEL=1" >> $GITHUB_ENV
+          else
+            echo "::warning::no Intel artifact in this run, the cask keeps its current Intel pin"
+            echo "HAVE_INTEL=0" >> $GITHUB_ENV
+          fi
 
       - name: Create Release for the next lane
         uses: softprops/action-gh-release@v3
@@ -1532,6 +1621,17 @@ jobs:
           echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
           sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
 
+          # The Intel pin moves only when there is a fresh Intel binary to
+          # point it at, so the cask never links to an asset that was not
+          # published. Note the pattern matches the assignment, so it cannot
+          # collide with the version stanza updated above.
+          if [ "$HAVE_INTEL" = "1" ]; then
+            echo "Updating intel_version to ${EMACS_VER}-${BUILD_NUM}"
+            sed -i "s/intel_version = \"[0-9.]*-[0-9]*\"/intel_version = \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+          else
+            echo "No Intel artifact, leaving intel_version as is"
+          fi
+
           # Point the cask at this lane's release tag
           sed -i -e "s|cask-[a-z0-9]*-<build>|cask-next-<build>|" \
                  -e "s|/download/cask-[a-z0-9]*-#|/download/cask-next-#|" "$CASK_FILE"
@@ -1560,6 +1660,11 @@ jobs:
 
   release-master:
     needs: build-master
+    # Run even when a build leg failed, so a broken Intel build cannot hold
+    # back the arm64 artifacts. The required-artifact check below still fails
+    # this job when an arm64 build is missing. A skipped build means the lane
+    # was not selected for this event, so stay skipped in that case.
+    if: needs.build-master.result == 'success' || needs.build-master.result == 'failure'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -1577,6 +1682,31 @@ jobs:
         run: |
           ls -laR artifacts/
           cat artifacts/*/*.sha256 || echo "No sha256 files found"
+
+      - name: Check required artifacts
+        run: |
+          # arm64 covers every Mac Apple still ships a macOS for, so a missing
+          # arm64 build is a hard failure. Intel is optional: Homebrew treats
+          # x86_64 macOS as a tier 3 configuration and its runner retires in
+          # August 2027, so that build breaks on its own schedule. When it is
+          # absent the cask keeps its Intel pin on the last release that did
+          # produce a binary, and the arm64 artifacts still ship.
+          missing=""
+          for target in arm64-14 arm64-15 arm64-26; do
+            if ! ls artifacts/*/emacs-plus-*-"$target".zip >/dev/null 2>&1; then
+              missing="$missing $target"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::missing required arm64 artifacts:$missing"
+            exit 1
+          fi
+          if ls artifacts/*/emacs-plus-*-x86_64-15.zip >/dev/null 2>&1; then
+            echo "HAVE_INTEL=1" >> $GITHUB_ENV
+          else
+            echo "::warning::no Intel artifact in this run, the cask keeps its current Intel pin"
+            echo "HAVE_INTEL=0" >> $GITHUB_ENV
+          fi
 
       - name: Create Release for the master lane
         uses: softprops/action-gh-release@v3
@@ -1635,6 +1765,17 @@ jobs:
           # Update version
           echo "Updating version to ${EMACS_VER}-${BUILD_NUM}"
           sed -i "s/version \"[0-9.]*-[0-9]*\"/version \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+
+          # The Intel pin moves only when there is a fresh Intel binary to
+          # point it at, so the cask never links to an asset that was not
+          # published. Note the pattern matches the assignment, so it cannot
+          # collide with the version stanza updated above.
+          if [ "$HAVE_INTEL" = "1" ]; then
+            echo "Updating intel_version to ${EMACS_VER}-${BUILD_NUM}"
+            sed -i "s/intel_version = \"[0-9.]*-[0-9]*\"/intel_version = \"${EMACS_VER}-${BUILD_NUM}\"/" "$CASK_FILE"
+          else
+            echo "No Intel artifact, leaving intel_version as is"
+          fi
 
           # Point the cask at this lane's release tag
           sed -i -e "s|cask-[a-z0-9]*-<build>|cask-master-<build>|" \
