@@ -1,5 +1,6 @@
 require_relative "UrlResolver"
 require_relative "BuildConfig"
+require_relative "PlistExtras"
 
 class CopyDownloadStrategy < AbstractFileDownloadStrategy
   def initialize(url, name, version, **meta)
@@ -660,19 +661,15 @@ class EmacsBase < Formula
   end
 
   # Inject Emacs Plus customizations into Emacs.app Info.plist: usage
-  # descriptions for protected resources (camera, microphone, speech
-  # recognition) and AutoFill opt-out.
+  # descriptions for the class-based TCC privacy services and AutoFill
+  # opt-out. See Library/PlistExtras.rb for what is declared and why.
   def inject_plist_extras
     ohai "Injecting Info.plist extras"
     app = "#{prefix}/Emacs.app"
     plist = "#{app}/Contents/Info.plist"
 
-    system "/usr/libexec/PlistBuddy -c 'Add NSCameraUsageDescription string' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Set NSCameraUsageDescription Emacs requires permission to access the Camera.' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Add NSMicrophoneUsageDescription string' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Set NSMicrophoneUsageDescription Emacs requires permission to access the Microphone.' '#{plist}'"
-    system "/usr/libexec/PlistBuddy -c 'Add NSSpeechRecognitionUsageDescription string' '#{plist}' || true"
-    system "/usr/libexec/PlistBuddy -c 'Set NSSpeechRecognitionUsageDescription Emacs requires permission to handle any speech recognition.' '#{plist}' || true"
+    failed = PlistExtras.set_usage_descriptions(plist)
+    opoo "Could not declare usage descriptions: #{failed.join(", ")}" unless failed.empty?
 
     # Prevent macOS from heuristically offering one-time-code AutoFill in Emacs text fields
     plist_set plist, "NSAutoFillRequiresTextContentTypeForOneTimeCodeOnMac", "bool", true
@@ -682,10 +679,7 @@ class EmacsBase < Formula
 
   # Helper method to add or set a plist key (handles both cases)
   def plist_set(plist, key, type, value)
-    # Try to add first; if it exists, set it instead
-    # Use double quotes for the command to allow proper escaping
-    escaped_value = value.to_s.gsub('"', '\\"')
-    system "/usr/libexec/PlistBuddy -c \"Add :#{key} #{type} #{escaped_value}\" \"#{plist}\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Set :#{key} #{escaped_value}\" \"#{plist}\""
+    opoo "Could not set #{key} in #{plist}" unless PlistExtras.set(plist, key, type, value)
   end
 
   # Escape a string for embedding in an AppleScript double-quoted string

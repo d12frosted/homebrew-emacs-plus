@@ -7,6 +7,16 @@ This file documents notable changes to Emacs Plus.
 
 ** Improvements
 
+*** Emacs.app declares usage descriptions for all class-based privacy services
+
+macOS attributes a privacy check to the responsible process, and for anything started from within Emacs (=M-x shell=, eshell, =M-x compile=, org-babel, vterm) that is Emacs.app. When =Info.plist= does not declare a usage description for the service, macOS never asks: it kills the process with =SIGABRT= as soon as it touches the framework. Emacs Plus declared three of these keys (camera, microphone, speech recognition), and now declares all of them: photo library (read and add), contacts, calendars (including the macOS 14+ full access and write only variants), reminders, Bluetooth, location and local network.
+
+Declaring a key grants nothing by itself. It only carries the text macOS shows in the permission dialog, and the allow or deny decision stays yours, per service, in the prompt or later in System Settings > Privacy & Security. The wording is now "An application in Emacs requires permission to ...", because Emacs itself never touches these frameworks; the prompt is always about something you started from within Emacs.
+
+The casks never declared any of these keys, only the formula did, so cask users were missing even the camera and microphone ones. Both install paths declare them now.
+
+I proposed this upstream as [[https://debbugs.gnu.org/cgi/bugreport.cgi?bug=81526][bug#81526]] and it was not accepted: the position there is that declaring the keys is not the upstream project's business and adds maintenance burden for whatever Apple does next. So it stays a downstream fix.
+
 *** README explains how to run Emacs as a daemon, for formula and cask
 
 The formula has =brew services= support, but the cask cannot have it: =brew services= only works with formulas, and the cask =service= stanza means something unrelated in the cask DSL. The README now has a [[https://github.com/d12frosted/homebrew-emacs-plus#running-emacs-as-a-daemon][Running Emacs as a daemon]] section covering =brew services= for the formula and a LaunchAgent recipe for the cask, plus a reminder that =emacsclient -c -a ''= starts a daemon on demand and may be all you need. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/937][#937]].
