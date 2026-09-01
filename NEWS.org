@@ -3,6 +3,14 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-01
+
+** Improvements
+
+*** README explains how to run Emacs as a daemon, for formula and cask
+
+The formula has =brew services= support, but the cask cannot have it: =brew services= only works with formulas, and the cask =service= stanza means something unrelated in the cask DSL. The README now has a [[https://github.com/d12frosted/homebrew-emacs-plus#running-emacs-as-a-daemon][Running Emacs as a daemon]] section covering =brew services= for the formula and a LaunchAgent recipe for the cask, plus a reminder that =emacsclient -c -a ''= starts a daemon on demand and may be all you need. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/937][#937]].
+
 * 2026-08-27
 
 ** Improvements

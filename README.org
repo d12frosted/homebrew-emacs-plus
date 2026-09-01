@@ -95,6 +95,7 @@ Emacs+ is 10+ years old and the list of differences used to be much longer. Many
     - [[#injected-path][Injected PATH]]
     - [[#detecting-emacs-plus][Detecting Emacs Plus]]
     - [[#emacs-clientapp][Emacs Client.app]]
+    - [[#running-emacs-as-a-daemon][Running Emacs as a daemon]]
     - [[#no-titlebar][No Titlebar]]
     - [[#xwidgets-webkit][Xwidgets (webkit)]]
     - [[#system-appearance-change][System appearance change]]
@@ -472,6 +473,57 @@ You can then:
 The implementation uses AppleScript to properly handle macOS AppleEvents, ensuring files opened from Finder are correctly passed to =emacsclient=. PATH injection works the same as in =Emacs.app= (see [[#injected-path][→ Injected PATH]]).
 
 For more details, see [[file:docs/emacs-client-app.md][→ docs/emacs-client-app.md]].
+
+*** Running Emacs as a daemon
+
+Before setting up a persistent daemon, note that you may not need one: =Emacs Client.app= and =emacsclient -c -a ''= start a daemon on demand and reuse it afterwards.
+
+If you want a keep-alive daemon that starts at login, the setup differs between formula and cask.
+
+**** Formula
+
+The formula ships a Homebrew service:
+
+#+begin_src bash
+  brew services start emacs-plus@31
+#+end_src
+
+Logs go to =$(brew --prefix)/var/log/emacs-plus@31.{stdout,stderr}.log=. Do not start services for two versions at once: both daemons compete for the same server socket, and the loser gets stuck in a restart loop.
+
+**** Cask
+
+=brew services= only works with formulas, so the cask cannot provide a service (see [[https://github.com/d12frosted/homebrew-emacs-plus/issues/937][#937]]). A plain LaunchAgent does the same job. Save this as =~/Library/LaunchAgents/io.emacs-plus.daemon.plist= (replace =/opt/homebrew= with =/usr/local= on Intel):
+
+#+begin_src xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+    <key>Label</key><string>io.emacs-plus.daemon</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/opt/homebrew/bin/emacs</string>
+      <string>--fg-daemon</string>
+    </array>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
+    <key>StandardOutPath</key><string>/opt/homebrew/var/log/emacs-plus-daemon.log</string>
+    <key>StandardErrorPath</key><string>/opt/homebrew/var/log/emacs-plus-daemon.log</string>
+  </dict>
+  </plist>
+#+end_src
+
+Start and stop it with:
+
+#+begin_src bash
+  mkdir -p "$(brew --prefix)/var/log"
+  launchctl bootstrap gui/$UID ~/Library/LaunchAgents/io.emacs-plus.daemon.plist
+  launchctl bootout gui/$UID/io.emacs-plus.daemon
+#+end_src
+
+The =mkdir= matters: launchd does not create log directories, and without it the daemon runs with no logs.
+
+The agent survives reboots (=RunAtLoad=) and restarts the daemon if it dies (=KeepAlive=). Remove the plist file after =bootout= if you want it gone for good.
 
 *** No Titlebar
 
