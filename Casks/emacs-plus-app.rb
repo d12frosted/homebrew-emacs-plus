@@ -1,7 +1,7 @@
 cask "emacs-plus-app" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "31.1-313"
+  version "31.1-319"
 
   # Base URL for release assets (lane releases: cask-stable-<build>)
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-stable-#{version.sub(/^[\d.]+-/, "")}"
@@ -13,15 +13,15 @@ cask "emacs-plus-app" do
     depends_on macos: :sonoma
 
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "ee974066f3527fbe444d9a176e124fdbfd8b3ee678bece9fc52218e07eeea0c8"
+      sha256 "ab63f753bdd30b77664dff9c593f37b179bb3bf16c2960bb6db90499e9a97fbe"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     elsif MacOS.version >= :sequoia # macOS 15
-      sha256 "3209d55a056950a560fab3d2a0e81aba7c3372245c8ee9d80b49d4dbd4614c7b"
+      sha256 "a81c2224b0f9a714c9bd59fbd8190289f8b0ad672d18717bd853fc21e16fcb99"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     else # macOS 14 (Sonoma)
-      sha256 "68c713d633d08a3fc3d04a87cdad4510617ff75e1404e554335418120cc69a3b"
+      sha256 "ab493fcb480ef48fc6aba05c28d6ccc8c43dfc65100680063b71f4a9dfdc40f9"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
@@ -32,7 +32,7 @@ cask "emacs-plus-app" do
     # so the Intel build breaks on its own schedule and a release can ship
     # without it. This pin points at the last release that did produce an Intel
     # binary, so it is expected to trail the version above from time to time.
-    intel_version = "31.1-313"
+    intel_version = "31.1-319"
     intel_emacs_ver = intel_version.sub(/-\d+$/, "")
     intel_base_url = base_url.sub(/-\d+$/, "-#{intel_version.sub(/^[\d.]+-/, "")}")
 
