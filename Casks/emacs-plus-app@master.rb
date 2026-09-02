@@ -1,7 +1,7 @@
 cask "emacs-plus-app@master" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "32.0.50-316"
+  version "32.0.50-320"
 
   # Base URL for release assets (lane releases: cask-master-<build>)
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-master-#{version.sub(/^[\d.]+-/, "")}"
@@ -13,15 +13,15 @@ cask "emacs-plus-app@master" do
     depends_on macos: :sonoma
 
     if MacOS.version >= :tahoe # macOS 26
-      sha256 "e02089ab1c8c758f18f62ed707a2063fdd3097ecfc6247537a1d322386b27447"
+      sha256 "de18f6bccddaca40cdcb2a3fc04ae52d58dd8eb746bd957469e2ae16035411ac"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     elsif MacOS.version >= :sequoia # macOS 15
-      sha256 "b1326fcab4bb81e4a0b785b2e637cde8e065c6e3f84322aca7f25893aa27c72b"
+      sha256 "6866dc96b9afa76f7d43816dec195cb79acece748de4a6c008cdb195eba2a019"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     else # macOS 14 (Sonoma)
-      sha256 "19e92cdf48d494ca0d01b05d347cda703f173440d9eb4b32d5b985bda38e4a1a"
+      sha256 "e346bfdec460681926b990317082c6acd64436687df79861ffe96d79f8218920"
       url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
@@ -32,11 +32,11 @@ cask "emacs-plus-app@master" do
     # so the Intel build breaks on its own schedule and a release can ship
     # without it. This pin points at the last release that did produce an Intel
     # binary, so it is expected to trail the version above from time to time.
-    intel_version = "32.0.50-316"
+    intel_version = "32.0.50-320"
     intel_emacs_ver = intel_version.sub(/-\d+$/, "")
     intel_base_url = base_url.sub(/-\d+$/, "-#{intel_version.sub(/^[\d.]+-/, "")}")
 
-    sha256 "b26b85b4d957586d3f5a301c1506b16dc72b1bade4a4d29c88b219a2cfafb893"
+    sha256 "7dfe3cf9cfd43fa385887b115f9fe84ce5de004ab80e78357bc5b497e7c8591e"
 
     url "#{intel_base_url}/emacs-plus-#{intel_emacs_ver}-x86_64-15.zip",
         verified: "github.com/d12frosted/homebrew-emacs-plus"
