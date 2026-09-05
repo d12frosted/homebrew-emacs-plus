@@ -26,25 +26,6 @@ cask "emacs-plus-app@master" do
           verified: "github.com/d12frosted/homebrew-emacs-plus"
     end
   end
-  on_intel do
-    # Intel assets can lag behind the arm64 ones. Homebrew treats x86_64 macOS
-    # as a tier 3 configuration and stopped bottling some dependencies for it,
-    # so the Intel build breaks on its own schedule and a release can ship
-    # without it. This pin points at the last release that did produce an Intel
-    # binary, so it is expected to trail the version above from time to time.
-    intel_version = "32.0.50-321"
-    intel_emacs_ver = intel_version.sub(/-\d+$/, "")
-    intel_base_url = base_url.sub(/-\d+$/, "-#{intel_version.sub(/^[\d.]+-/, "")}")
-
-    sha256 "099bb4ba50cd2e5ed3c46b1cbce3a14192afc70466bf4bb07d7f8a5f521dc396"
-
-    url "#{intel_base_url}/emacs-plus-#{intel_emacs_ver}-x86_64-15.zip",
-        verified: "github.com/d12frosted/homebrew-emacs-plus"
-
-    # The only Intel build targets macOS 15 (built on the macos-15-intel
-    # runner, the sole Intel runner available)
-    depends_on macos: :sequoia
-  end
 
   name "Emacs+ (Development)"
   desc "GNU Emacs text editor with patches (development version)"
@@ -64,6 +45,9 @@ cask "emacs-plus-app@master" do
   depends_on formula: "libgccjit"
   depends_on formula: "gcc"
   depends_on :macos
+  # Prebuilt binaries are arm64 only; on Intel use the formula, which builds
+  # from source. See https://github.com/d12frosted/homebrew-emacs-plus/issues/1002
+  depends_on arch: :arm64
 
   # Install the app
   app "Emacs.app"
