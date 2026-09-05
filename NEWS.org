@@ -3,6 +3,16 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-05
+
+** Breaking changes
+
+*** Intel (x86_64) cask builds are gone
+
+Homebrew treats x86_64 macOS as a tier 3 configuration and has been dropping Intel bottles one dependency at a time: =tree-sitter= on 2026-09-01, =gcc= on 2026-09-03. The gcc one means a two hour source build on the Intel runner, and that build then fails in a way that has nothing to do with Emacs. Apple ships no new macOS for Intel after Tahoe, and GitHub retires =macos-15-intel=, the last x86_64 runner, in August 2027. Keeping the Intel leg alive had become a chore, so it is gone: the three casks are arm64 only (=depends_on arch: :arm64=) and the build matrix has no Intel leg.
+
+If you use Emacs+ on an Intel Mac, install the formula instead (=brew install emacs-plus@31=). It builds from source and needs no runner, though Homebrew's tier 3 status means some dependencies build from source too. The last Intel cask assets stay downloadable from the releases page. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1002][#1002]].
+
 * 2026-09-01
 
 ** Improvements
