@@ -46,10 +46,8 @@ class TestCaskPostflight < Minitest::Test
     @tmpdir = Dir.mktmpdir
     @emacs_app = File.join(@tmpdir, 'Emacs.app')
     @client_app = File.join(@tmpdir, 'Emacs Client.app')
-    @prefix = File.join(@tmpdir, 'prefix')
     FileUtils.mkdir_p(File.join(@emacs_app, 'Contents/MacOS/bin'))
     FileUtils.mkdir_p(@client_app)
-    FileUtils.mkdir_p(File.join(@prefix, 'bin'))
     @ctx = FakeContext.new
   end
 
@@ -71,8 +69,7 @@ class TestCaskPostflight < Minitest::Test
         CaskPostflight.run(@ctx,
                            emacs_app: @emacs_app,
                            emacs_client_app: @client_app,
-                           version: '31',
-                           homebrew_prefix: @prefix)
+                           version: '31')
       end
     end
     { inject_args: inject_args, icon_args: icon_args }
@@ -136,39 +133,5 @@ class TestCaskPostflight < Minitest::Test
   def test_resigns_both_apps_after_icon_application
     run_postflight(inject: false, icon: true)
     assert_equal 2, commands_for('/usr/bin/codesign').size
-  end
-
-  # ===========================================
-  # emacs symlink
-  # ===========================================
-
-  def wrapper_path
-    File.join(@emacs_app, 'Contents/MacOS/bin/emacs')
-  end
-
-  def symlink_path
-    File.join(@prefix, 'bin/emacs')
-  end
-
-  def test_creates_emacs_symlink_when_wrapper_exists
-    FileUtils.touch(wrapper_path)
-    run_postflight
-    assert File.symlink?(symlink_path)
-    assert_equal wrapper_path, File.readlink(symlink_path)
-  end
-
-  def test_keeps_existing_emacs_symlink
-    FileUtils.touch(wrapper_path)
-    other_target = File.join(@tmpdir, 'other-emacs')
-    FileUtils.touch(other_target)
-    File.symlink(other_target, symlink_path)
-    run_postflight
-    assert_equal other_target, File.readlink(symlink_path)
-  end
-
-  def test_no_symlink_when_wrapper_missing
-    run_postflight
-    refute File.exist?(symlink_path)
-    refute File.symlink?(symlink_path)
   end
 end

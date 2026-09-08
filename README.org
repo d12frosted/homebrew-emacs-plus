@@ -213,7 +213,7 @@ This section used to advise against =reinstall= altogether, because =brew= would
 Emacs+ can be configured using =~/.config/emacs-plus/build.yml=. This file controls options that are applied during installation (formula) or post-installation (cask).
 
 The configuration file is searched in this order:
-1. Path specified by =HOMEBREW_EMACS_PLUS_BUILD_CONFIG= environment variable
+1. Path specified by =HOMEBREW_EMACS_PLUS_BUILD_CONFIG= environment variable (formula installs only: the cask postflight runs in Homebrew's sandbox and can read just the two paths below)
 2. =~/.config/emacs-plus/build.yml=
 3. =~/.emacs-plus-build.yml= (fallback)
 

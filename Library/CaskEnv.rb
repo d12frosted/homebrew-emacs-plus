@@ -210,8 +210,7 @@ module CaskEnv
       plist = "#{app_path}/Contents/Info.plist"
 
       # Check if already injected
-      existing = `defaults read "#{plist}" LSEnvironment 2>/dev/null`.strip
-      return wrapper_created unless existing.empty? || existing.include?("does not exist")
+      return wrapper_created if plist_value(plist, "LSEnvironment")
 
       # Note: For cask, we can only inject native compilation paths (not user PATH)
       # due to Homebrew limitation - cask postflight doesn't have user's shell environment
@@ -294,8 +293,7 @@ module CaskEnv
 
       # Check if we need to recompile (look for our marker in Info.plist)
       plist = "#{app_path}/Contents/Info.plist"
-      marker_check = `defaults read "#{plist}" EmacsPlusPathInjected 2>/dev/null`.strip
-      return false if marker_check == "1"
+      return false if client_injected?(plist)
 
       # Note: For cask, we can only inject native compilation paths (not user PATH)
       puts "Injecting native compilation environment into #{app_path}"
@@ -378,7 +376,7 @@ module CaskEnv
       end
 
       # Mark as injected
-      system("defaults", "write", plist, "EmacsPlusPathInjected", "-bool", "true")
+      mark_client_injected(plist)
 
       # Restore plist settings that osacompile might have overwritten
       system("/usr/libexec/PlistBuddy", "-c", "Set :CFBundleIdentifier org.gnu.EmacsClient", plist)
@@ -446,6 +444,29 @@ module CaskEnv
       File.write(site_start, content)
       puts "Updated site-start.el"
       true
+    end
+
+    # Read one plist key with PlistBuddy; nil when the key is missing.
+    # PlistBuddy edits the file directly, unlike `defaults`, which goes
+    # through cfprefsd and is not something to rely on inside the cask
+    # steps sandbox.
+    def plist_value(plist, key)
+      value = IO.popen(["/usr/libexec/PlistBuddy", "-c", "Print :#{key}", plist],
+                       err: File::NULL, &:read)
+      $?.success? ? value.chomp : nil
+    end
+
+    def client_injected?(plist)
+      plist_value(plist, "EmacsPlusPathInjected") == "true"
+    end
+
+    def mark_client_injected(plist)
+      command = if plist_value(plist, "EmacsPlusPathInjected").nil?
+                  "Add :EmacsPlusPathInjected bool true"
+                else
+                  "Set :EmacsPlusPathInjected true"
+                end
+      system("/usr/libexec/PlistBuddy", "-c", command, plist)
     end
 
     # Escape a string for embedding in an AppleScript double-quoted string

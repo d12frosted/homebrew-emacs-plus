@@ -1,0 +1,33 @@
+#!/bin/bash
+# Entry point the emacs-plus-app casks run from postflight_steps.
+#
+# postflight_steps cannot run Ruby, only a fixed set of literal steps, and
+# one of them is `run`, so the cask runs this script and the Ruby logic in
+# Library/ stays where it is. Homebrew executes it inside the cask steps
+# sandbox: writes go to the app bundle and the Homebrew link directories,
+# HOME is a scratch directory, and the real build.yml paths are readable
+# only because the cask declares them.
+#
+# Homebrew's own Ruby is the one that is always there; the system ruby is
+# a fallback for exotic layouts where the portable one is missing.
+set -euo pipefail
+
+tap_dir="$(cd "$(dirname "$0")/.." && pwd)"
+
+ruby=""
+for candidate in \
+  "${HOMEBREW_PREFIX:-/opt/homebrew}/Library/Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  "$(dirname "$(dirname "$tap_dir")")/../../Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  /usr/bin/ruby; do
+  if [[ -x "$candidate" ]]; then
+    ruby="$candidate"
+    break
+  fi
+done
+
+if [[ -z "$ruby" ]]; then
+  echo "Error: no ruby found to run the emacs-plus cask postflight" >&2
+  exit 1
+fi
+
+exec "$ruby" -r "$tap_dir/Library/CaskPostflightCLI" -e 'exit CaskPostflightCLI.run(ARGV)' -- "$@"
