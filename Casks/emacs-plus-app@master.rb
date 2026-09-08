@@ -7,24 +7,19 @@ cask "emacs-plus-app@master" do
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-master-#{version.sub(/^[\d.]+-/, "")}"
   emacs_ver = version.sub(/-\d+$/, "")
 
-  on_arm do
-    # Oldest prebuilt arm64 binary targets macOS 14 (built on the macos-14
-    # runner), so Ventura cannot run it
-    depends_on macos: :sonoma
-
-    if MacOS.version >= :tahoe # macOS 26
-      sha256 "7e8a6aa31233c4a6e7293ffc311ab418ae62c8a9e3fc30f1e147088d3ee3bbbb"
-      url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip",
-          verified: "github.com/d12frosted/homebrew-emacs-plus"
-    elsif MacOS.version >= :sequoia # macOS 15
-      sha256 "f6b3cb4e0754d12d0922ea094deded700bdfacd2bad3d44bae4181b3e44d1763"
-      url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip",
-          verified: "github.com/d12frosted/homebrew-emacs-plus"
-    else # macOS 14 (Sonoma)
-      sha256 "d7c73c8f4a66e3c379689b4e5c0a31e01d325bafd2099c77d4f527fb7a01ce37"
-      url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip",
-          verified: "github.com/d12frosted/homebrew-emacs-plus"
-    end
+  # The url lives at the top level on purpose. `brew tap` loads every cask
+  # on every OS/arch pair, and a cask with no url on Intel fails that
+  # check, which broke tapping (#1005). `depends_on arch:` below is what
+  # refuses the install on Intel.
+  if MacOS.version >= :tahoe # macOS 26
+    sha256 "7e8a6aa31233c4a6e7293ffc311ab418ae62c8a9e3fc30f1e147088d3ee3bbbb"
+    url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip"
+  elsif MacOS.version >= :sequoia # macOS 15
+    sha256 "f6b3cb4e0754d12d0922ea094deded700bdfacd2bad3d44bae4181b3e44d1763"
+    url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip"
+  else # macOS 14 (Sonoma)
+    sha256 "d7c73c8f4a66e3c379689b4e5c0a31e01d325bafd2099c77d4f527fb7a01ce37"
+    url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip"
   end
 
   name "Emacs+ (Development)"
@@ -44,7 +39,9 @@ cask "emacs-plus-app@master" do
   # - gcc: provides toolchain and libemutls_w.a runtime library
   depends_on formula: "libgccjit"
   depends_on formula: "gcc"
-  depends_on :macos
+  # Oldest prebuilt arm64 binary targets macOS 14 (built on the macos-14
+  # runner), so Ventura cannot run it
+  depends_on macos: :sonoma
   # Prebuilt binaries are arm64 only; on Intel use the formula, which builds
   # from source. See https://github.com/d12frosted/homebrew-emacs-plus/issues/1002
   depends_on arch: :arm64
