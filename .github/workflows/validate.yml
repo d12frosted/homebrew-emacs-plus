@@ -34,6 +34,12 @@ jobs:
           brew style --except-cops Cask/NoOverrides,Cask/OnSystemConditionals \
             "$TAP_DIR/Formula" "$TAP_DIR/Casks"
 
+      # brew tap loads every formula and cask on every OS/arch pair and refuses
+      # the tap when one fails, so run the same check here. Casks that only
+      # declare a url inside on_arm break it on Intel (#1005).
+      - name: Run brew readall on every OS and arch
+        run: brew readall --os=all --arch=all d12frosted/emacs-plus
+
       - name: Validate icons
         run: ruby scripts/validate-icons.rb
 

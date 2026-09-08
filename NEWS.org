@@ -3,6 +3,16 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-08
+
+** Bug fixes
+
+*** =brew tap d12frosted/emacs-plus= works again
+
+Dropping the Intel cask builds on 2026-09-05 left the cask =url= only inside the =on_arm= block. =brew tap= loads every cask on every OS and architecture pair before it accepts a tap, and on Intel the casks had no url, so tapping failed with "Invalid cask (macOS N on intel)" and "invalid syntax in tap". Existing checkouts kept working, which is why this went unnoticed for a few days. The url now lives at the top level and =depends_on arch: :arm64= is what refuses the install on Intel. CI runs the same readall check now. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1005][#1005]].
+
+The casks also stop passing the =verified:= parameter to =url= and declare =depends_on macos: :sonoma= at the top level instead of a bare =depends_on :macos=: Homebrew 6.0.22 deprecated the former and disabled combining the latter two. The =postflight= deprecation warning from the same release is still there; that migration is a separate change.
+
 * 2026-09-05
 
 ** Breaking changes
