@@ -9,12 +9,13 @@
 # 1. Removing the quarantine attribute from both app bundles
 # 2. Environment injection (CaskEnv) and custom icon (IconApplier)
 # 3. Re-signing the bundles if they were modified
-# 4. Symlinking bin/emacs into HOMEBREW_PREFIX
 #
-# The matching cleanup (removing the emacs symlink) stays inline in each
-# cask's uninstall_postflight so uninstall does not depend on this file.
+# The bin/emacs symlink is a `symlink` step in the cask's postflight_steps
+# (it runs after this module has generated the wrapper), so Homebrew
+# creates and removes it without any help from here.
 #
-# ctx is the cask's postflight block (self), which provides system_command.
+# ctx provides system_command(cmd, args:, sudo:); the casks run this module
+# through scripts/cask-postflight, which supplies a shell-backed one.
 
 require 'fileutils'
 require_relative 'CaskEnv'
@@ -22,7 +23,7 @@ require_relative 'IconApplier'
 
 module CaskPostflight
   class << self
-    def run(ctx, emacs_app:, emacs_client_app:, version:, homebrew_prefix:)
+    def run(ctx, emacs_app:, emacs_client_app:, version:)
       remove_quarantine(ctx, emacs_app)
       remove_quarantine(ctx, emacs_client_app)
 
@@ -32,12 +33,10 @@ module CaskPostflight
       # Apply custom icon from ~/.config/emacs-plus/build.yml if configured
       needs_resign = IconApplier.apply(emacs_app, emacs_client_app, version: version) || needs_resign
 
-      if needs_resign
-        resign(ctx, emacs_app)
-        resign(ctx, emacs_client_app)
-      end
+      return unless needs_resign
 
-      link_emacs(emacs_app, homebrew_prefix)
+      resign(ctx, emacs_app)
+      resign(ctx, emacs_client_app)
     end
 
     private
@@ -52,16 +51,6 @@ module CaskPostflight
       ctx.system_command "/usr/bin/codesign",
                          args: ["--force", "--deep", "--sign", "-", app],
                          sudo: false
-    end
-
-    # Create the emacs symlink manually: the wrapper script is generated
-    # by CaskEnv during postflight, and binary stanzas run before that.
-    def link_emacs(emacs_app, homebrew_prefix)
-      emacs_wrapper = "#{emacs_app}/Contents/MacOS/bin/emacs"
-      emacs_symlink = "#{homebrew_prefix}/bin/emacs"
-      if File.exist?(emacs_wrapper) && !File.exist?(emacs_symlink)
-        FileUtils.ln_sf(emacs_wrapper, emacs_symlink)
-      end
     end
   end
 end

@@ -49,9 +49,8 @@ cask "emacs-plus-app" do
   # Install the app
   app "Emacs.app"
   app "Emacs Client.app"
-  # Symlink binaries (emacs symlink created in postflight after wrapper is generated)
-  # Note: emacs is symlinked manually in postflight because the wrapper script
-  # is created there and binary stanzas run before postflight
+  # Symlink binaries. emacs itself is a symlink step in postflight_steps:
+  # the wrapper it points at is generated there, after binary stanzas ran
   # Note: no ctags symlink; the ctags program was removed in Emacs 31
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/emacsclient"
   binary "#{appdir}/Emacs.app/Contents/MacOS/bin/ebrowse"
@@ -62,26 +61,31 @@ cask "emacs-plus-app" do
   manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/ebrowse.1"
   manpage "#{appdir}/Emacs.app/Contents/Resources/man/man1/etags.1"
 
-  # Remove quarantine attribute, inject PATH, and apply custom icon
-  # (shared logic for all emacs-plus-app casks lives in Library/CaskPostflight.rb)
-  postflight do
-    tap = Tap.fetch("d12frosted", "emacs-plus")
-    load "#{tap.path}/Library/CaskPostflight.rb"
-    CaskPostflight.run(self,
-                       emacs_app:        "#{appdir}/Emacs.app",
-                       emacs_client_app: "#{appdir}/Emacs Client.app",
-                       version:          version.major,
-                       homebrew_prefix:  HOMEBREW_PREFIX.to_s)
-  end
-
-  # Clean up emacs symlink on uninstall (since we create it manually in postflight)
-  # Only remove it when it points into this cask's Emacs.app: the formulas
-  # link bin/emacs too, and that symlink is not ours to delete
-  uninstall_postflight do
-    emacs_symlink = "#{HOMEBREW_PREFIX}/bin/emacs"
-    if File.symlink?(emacs_symlink) &&
-       File.readlink(emacs_symlink).start_with?("#{appdir}/Emacs.app/")
-      FileUtils.rm(emacs_symlink)
+  # Post-install setup: quarantine removal, environment injection, custom
+  # icon and re-signing. postflight_steps only takes literal steps, so the
+  # Ruby in Library/ runs through scripts/cask-postflight as a `run` step.
+  # The step runs in Homebrew's sandbox with a scratch HOME; the build.yml
+  # locations are declared so the script can still read them, and network
+  # access is for icons pulled from a URL.
+  postflight_steps do
+    run "{{HOMEBREW_PREFIX}}/Library/Taps/d12frosted/homebrew-emacs-plus/scripts/cask-postflight",
+        args:           ["--emacs-app", "{{appdir}}/Emacs.app",
+                         "--emacs-client-app", "{{appdir}}/Emacs Client.app",
+                         "--version", "{{version.major}}",
+                         "--homebrew-prefix", "{{HOMEBREW_PREFIX}}"],
+        writable_paths: ["~/.config/emacs-plus", "~/.emacs-plus-build.yml"],
+        network_access: true,
+        print_stdout:   true
+    # bin/emacs points at the wrapper the script generates, which is why it
+    # is not a `binary` stanza (those run before postflight). An existing
+    # link, such as the one from an emacs-plus formula, is left alone (the
+    # step would fail on it otherwise), and uninstall only removes a link
+    # that points into this Emacs.app.
+    unless_path_exists "bin/emacs", base: :homebrew_prefix do
+      symlink "Emacs.app/Contents/MacOS/bin/emacs", "bin/emacs",
+              source_base:         :appdir,
+              target_base:         :homebrew_prefix,
+              remove_on_uninstall: true
     end
   end
 

@@ -5,6 +5,14 @@ This file documents notable changes to Emacs Plus.
 
 * 2026-09-08
 
+** Improvements
+
+*** Casks use =postflight_steps=
+
+Homebrew 6.0.22 deprecated the =postflight= and =uninstall_postflight= blocks casks used to run arbitrary Ruby after install, and warns about them on every load ("Calling =postflight= is deprecated! Use =postflight_steps= instead"). The replacement is a fixed list of literal steps that Homebrew runs in a sandbox, so the three casks now run the same setup (quarantine removal, environment injection, custom icon, re-signing) through =scripts/cask-postflight= as a =run= step, and the =bin/emacs= symlink is a declarative =symlink= step that Homebrew also cleans up on uninstall. Nothing changes for users: =build.yml= icons still apply, =brew reinstall --cask= still re-applies them.
+
+One consequence of the sandbox: the postflight can only read =~/.config/emacs-plus= and =~/.emacs-plus-build.yml= from your home directory, so a =HOMEBREW_EMACS_PLUS_BUILD_CONFIG= pointing elsewhere under =$HOME= is not visible to cask installs.
+
 ** Bug fixes
 
 *** =brew tap d12frosted/emacs-plus= works again
