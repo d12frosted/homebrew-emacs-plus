@@ -1371,6 +1371,7 @@ jobs:
 
             **Installation:**
             ```
+            brew trust d12frosted/emacs-plus
             brew tap d12frosted/emacs-plus
             brew install --cask emacs-plus-app
             ```
@@ -1509,6 +1510,7 @@ jobs:
 
             **Installation:**
             ```
+            brew trust d12frosted/emacs-plus
             brew tap d12frosted/emacs-plus
             brew install --cask emacs-plus-app@next
             ```
@@ -1650,6 +1652,7 @@ jobs:
 
             **Installation:**
             ```
+            brew trust d12frosted/emacs-plus
             brew tap d12frosted/emacs-plus
             brew install --cask emacs-plus-app@master
             ```

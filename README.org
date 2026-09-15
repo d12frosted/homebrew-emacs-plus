@@ -23,11 +23,11 @@
 Emacs+ is [[https://www.gnu.org/software/emacs/emacs.html][→ GNU Emacs]] formulae for macOS [[https://brew.sh][→ Homebrew]] package manager. It offers a wide range of extra functionality over regular [[https://formulae.brew.sh/formula/emacs#default][→ Emacs]] package (see [[#tldr][→ TL;DR]] for what exactly the plus is). Emacs+ intent is to give the most of 'plus' stuff by default, leaving only controversial options as opt-in. Please refer to [[#options][→ Options]] section for more information.
 
 #+begin_src bash
+  # Homebrew 6.0+ does not load non-official taps until you trust them, and
+  # `brew tap` checks every formula and cask before accepting a tap, so trust
+  # first. See https://docs.brew.sh/Tap-Trust.
+  $ brew trust d12frosted/emacs-plus
   $ brew tap d12frosted/emacs-plus
-
-  # Homebrew 6.0+ won't load non-official taps until you trust them. If an
-  # install reports an "untrusted tap", run `brew trust d12frosted/emacs-plus`
-  # (or trust a single formula/cask) and retry. See https://docs.brew.sh/Tap-Trust.
 
   # Pre-built binaries (fast, ~1 min)
   $ brew install --cask emacs-plus-app          # latest release
@@ -131,6 +131,7 @@ The =next= lane follows the active Emacs release branch. Right after a major rel
 For fast installation without compilation (~1 min), pre-built binaries are available:
 
 #+begin_src bash
+  $ brew trust d12frosted/emacs-plus
   $ brew tap d12frosted/emacs-plus
   $ brew install --cask emacs-plus-app           # latest release
   $ brew install --cask emacs-plus-app@next      # nightly from the release branch
@@ -162,6 +163,7 @@ Use the *formula* if you need custom icons, patches, or specific build options. 
 For custom build options (~30 min compile time):
 
 #+begin_src bash
+  $ brew trust d12frosted/emacs-plus
   $ brew tap d12frosted/emacs-plus
   $ brew install emacs-plus        [options]    # latest release
   $ brew install emacs-plus --HEAD [options]    # from the release branch
@@ -688,6 +690,7 @@ $ brew install cask --ignore-dependencies
 This repository provides formulas for some older version. Feel free to use them, but they are not really supported anymore.
 
   #+begin_src bash
+  $ brew trust d12frosted/emacs-plus
   $ brew tap d12frosted/emacs-plus
   $ brew install emacs-plus@28 [options] # install Emacs 28
   $ brew install emacs-plus@27 [options] # install Emacs 27
