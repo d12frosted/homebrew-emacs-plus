@@ -3,6 +3,16 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-15
+
+** Bug fixes
+
+*** =brew tap d12frosted/emacs-plus= needs =brew trust= first
+
+Homebrew refuses to load formulae and casks from a tap that is not trusted with =brew trust=, and =brew tap= loads every formula and cask to verify a tap before accepting it. Until 7.0.0 the tap name on the command line counted as permission to load its files, so =brew tap d12frosted/emacs-plus= got through; Homebrew 7.0.0 (2026-09-13) dropped that exception ([[https://github.com/Homebrew/brew/pull/23864][Homebrew/brew#23864]]). Together this means tapping an untrusted tap fails with "Refusing to load formula ... from untrusted tap" for every file and then "Cannot tap d12frosted/emacs-plus: invalid syntax in tap!". Running =brew trust= after the tap, as the README and the nightly workflow used to suggest, is too late: the trust has to be recorded first, and =brew trust d12frosted/emacs-plus= works fine before the tap is installed.
+
+The README, the release notes and the workflows now trust the tap before tapping it. Existing checkouts keep working since they are already tapped, so you only hit this on a fresh machine.
+
 * 2026-09-08
 
 ** Improvements

@@ -36,14 +36,16 @@ jobs:
       - name: Update Homebrew
         run: brew update
 
-      - name: Tap emacs-plus
-        run: brew tap d12frosted/emacs-plus
-
-      # Homebrew now refuses to load formulae from third-party taps unless
-      # they are explicitly trusted ("Refusing to load formula ... from
-      # untrusted tap"). Trust our own tap so install can proceed in CI.
+      # Homebrew refuses to load formulae and casks from third-party taps
+      # unless they are trusted ("Refusing to load formula ... from untrusted
+      # tap"), and brew tap itself loads every formula and cask to verify the
+      # tap before accepting it. So the trust has to be recorded before the
+      # tap exists, otherwise brew tap fails with "invalid syntax in tap".
       - name: Trust emacs-plus tap
         run: brew trust d12frosted/emacs-plus
+
+      - name: Tap emacs-plus
+        run: brew tap d12frosted/emacs-plus
 
       - name: Build ${{ matrix.formula }} ${{ matrix.build_opts }}
         run: |

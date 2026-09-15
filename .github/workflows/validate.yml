@@ -21,6 +21,12 @@ jobs:
             ruby "$test"
           done
 
+      # Homebrew refuses to load formulae and casks from untrusted taps, and
+      # brew readall below loads all of them. Trust the tap by name first;
+      # it does not need to be installed for that.
+      - name: Trust emacs-plus tap
+        run: brew trust d12frosted/emacs-plus
+
       # brew style requires the files to live inside a tap, so link the
       # checkout into the tap location. Cask/NoOverrides and
       # Cask/OnSystemConditionals are excluded: they demand restructuring
