@@ -34,17 +34,17 @@ cask "emacs-plus-app@next" do
     "emacs-plus-app",
     "emacs-plus-app@master",
   ]
-  # Required for native compilation (JIT) at runtime
-  # - libgccjit: JIT compilation library
-  # - gcc: provides toolchain and libemutls_w.a runtime library
-  depends_on formula: "libgccjit"
-  depends_on formula: "gcc"
-  # Oldest prebuilt arm64 binary targets macOS 14 (built on the macos-14
-  # runner), so Ventura cannot run it
-  depends_on macos: :sonoma
   # Prebuilt binaries are arm64 only; on Intel use the formula, which builds
   # from source. See https://github.com/d12frosted/homebrew-emacs-plus/issues/1002
   depends_on arch: :arm64
+  # Required for native compilation (JIT) at runtime
+  # - gcc: provides toolchain and libemutls_w.a runtime library
+  # - libgccjit: JIT compilation library
+  depends_on formula: "gcc"
+  depends_on formula: "libgccjit"
+  # Oldest prebuilt arm64 binary targets macOS 14 (built on the macos-14
+  # runner), so Ventura cannot run it
+  depends_on macos: :sonoma
 
   # Install the app
   app "Emacs.app"
