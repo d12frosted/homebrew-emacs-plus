@@ -446,11 +446,22 @@ class EmacsBase < Formula
     puts "  Icon applied successfully"
   end
 
-  # Apply icon during post_install (for quick testing without rebuild)
-  # Call this from post_install to re-apply icon from build.yml
-  def apply_icon_post_install
-    require_relative 'IconApplier'
-    IconApplier.apply(prefix/"Emacs.app", prefix/"Emacs Client.app", version: major_version)
+  # post_install_steps can only run a literal command and knows nothing about
+  # the tap checkout, so `install` leaves a launcher in libexec that execs
+  # scripts/formula-postinstall from the checkout this formula was loaded
+  # from: the tap, or the local checkout in HOMEBREW_EMACS_PLUS_MODE=local.
+  # Running from the checkout rather than from a copy in the keg keeps
+  # `brew postinstall` picking up the current Library/ and community/ files,
+  # the way post_install did.
+  def install_postinstall_launcher
+    libexec.mkpath
+    launcher = libexec/"emacs-plus-postinstall"
+    launcher.write <<~EOS
+      #!/bin/bash
+      # Written by the emacs-plus formula for post_install_steps.
+      exec "#{formula_root}/scripts/formula-postinstall" "$@"
+    EOS
+    launcher.chmod 0755
   end
 
   # ============================================================

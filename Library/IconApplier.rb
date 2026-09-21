@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Shared module for applying icons to Emacs.app and Emacs Client.app.
-# Used by both the formula (post_install) and cask (postflight).
+# Used by both the formula (post_install_steps) and cask (postflight_steps).
 
 require 'fileutils'
 require_relative 'BuildConfig'

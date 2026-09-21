@@ -249,6 +249,9 @@ class EmacsPlusAT28 < EmacsBase
       (bin/"ctags").unlink
       (man1/"ctags.1.gz").unlink
     end
+
+    # Launcher for post_install_steps, see EmacsBase#install_postinstall_launcher
+    install_postinstall_launcher
   end
 
   def caveats
@@ -269,22 +272,16 @@ class EmacsPlusAT28 < EmacsBase
     EOS
   end
 
-  def post_install
-    emacs_info_dir = info/"emacs"
-    Dir.glob(emacs_info_dir/"*.info{,.gz}") do |info_filename|
-      system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
-    end
-
-    if build.with? "native-comp"
-      ln_sf "#{Dir[opt_prefix/"lib/emacs/*"].first}/native-lisp", "#{opt_prefix}/Emacs.app/Contents/native-lisp"
-    end
-
-    # Re-sign the app for macOS Sequoia compatibility (issue #742)
-    app_path = prefix/"Emacs.app"
-    if app_path.exist?
-      ohai "Re-signing Emacs.app for macOS compatibility..."
-      system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
-    end
+  # Post-install setup: info manuals, the native-lisp link and re-signing.
+  # post_install_steps only takes literal steps, so the Ruby in Library/ runs
+  # through scripts/formula-postinstall as a `run` step, via the launcher
+  # `install` left in libexec (it knows where the tap checkout is).
+  post_install_steps do
+    run "emacs-plus-postinstall",
+        base:         :libexec,
+        args:         ["--prefix", "{{prefix}}", "--opt-prefix", "{{opt_prefix}}",
+                       "--install-info", "--link-native-lisp"],
+        print_stdout: true
   end
 
   service do

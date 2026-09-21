@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Simulate formula post_install scripts on an existing Emacs.app installation.
+# Simulate the formula post-install (post_install_steps) on an existing Emacs.app installation.
 # This allows testing icon application without rebuilding.
 #
-# Note: Some post_install operations (PATH injection, site-lisp setup) require
-# Homebrew context and can't be fully simulated. This script focuses on:
+# Note: The real post-install (scripts/formula-postinstall) also registers the
+# info manuals and re-signs the app bundles; this script focuses on:
 # - Config validation
 # - Icon application
 #

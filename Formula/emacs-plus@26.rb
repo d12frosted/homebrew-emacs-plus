@@ -93,15 +93,20 @@ class EmacsPlusAT26 < EmacsBase
     # and Emacs and ctags to play together without violence.
     (bin/"ctags").unlink
     (man1/"ctags.1.gz").unlink
+
+    # Launcher for post_install_steps, see EmacsBase#install_postinstall_launcher
+    install_postinstall_launcher
   end
 
-  def post_install
-    # Re-sign the app for macOS Sequoia compatibility (issue #742)
-    app_path = prefix/"Emacs.app"
-    if app_path.exist?
-      ohai "Re-signing Emacs.app for macOS compatibility..."
-      system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
-    end
+  # Post-install setup: re-signing Emacs.app. post_install_steps only takes
+  # literal steps, so the Ruby in Library/ runs through
+  # scripts/formula-postinstall as a `run` step, via the launcher `install` left
+  # in libexec (it knows where the tap checkout is).
+  post_install_steps do
+    run "emacs-plus-postinstall",
+        base:         :libexec,
+        args:         ["--prefix", "{{prefix}}"],
+        print_stdout: true
   end
 
   def caveats

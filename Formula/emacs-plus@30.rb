@@ -264,27 +264,21 @@ class EmacsPlusAT30 < EmacsBase
         (man1/"ctags.1").unlink
       end
     end
+
+    # Launcher for post_install_steps, see EmacsBase#install_postinstall_launcher
+    install_postinstall_launcher
   end
 
-  def post_install
-    emacs_info_dir = info/"emacs"
-    Dir.glob(emacs_info_dir/"*.info{,.gz}") do |info_filename|
-      system "install-info", "--info-dir=#{emacs_info_dir}", info_filename
-    end
-
-    # Re-apply icon from build.yml (allows quick testing via `brew postinstall`)
-    apply_icon_post_install
-
-    # Re-sign the app for macOS Sequoia compatibility (issue #742)
-    app_path = prefix/"Emacs.app"
-    if app_path.exist?
-      ohai "Re-signing Emacs.app for macOS compatibility..."
-      system "codesign", "--force", "--deep", "--sign", "-", app_path.to_s
-    end
-
-    # Also re-sign Emacs Client.app
-    client_path = prefix/"Emacs Client.app"
-    system "codesign", "--force", "--deep", "--sign", "-", client_path.to_s if client_path.exist?
+  # Post-install setup: info manuals, custom icon from build.yml and re-signing.
+  # post_install_steps only takes literal steps, so the Ruby in Library/ runs
+  # through scripts/formula-postinstall as a `run` step, via the launcher
+  # `install` left in libexec (it knows where the tap checkout is).
+  post_install_steps do
+    run "emacs-plus-postinstall",
+        base:         :libexec,
+        args:         ["--prefix", "{{prefix}}", "--version", "{{version.major}}",
+                       "--install-info", "--apply-icon"],
+        print_stdout: true
   end
 
   def caveats
