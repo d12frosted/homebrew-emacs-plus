@@ -115,7 +115,7 @@ Install casks from pre-built binaries (tests local Cask/ and Library/ changes):
 #+begin_src bash
   $ make test                    # Run all unit tests
   $ make validate                # Validate build.yml config
-  $ make postinstall-formula     # Simulate formula post_install
+  $ make postinstall-formula     # Simulate formula post-install (icon only)
   $ make postinstall-cask        # Simulate cask postflight
 #+end_src
 

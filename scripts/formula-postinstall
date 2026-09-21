@@ -1,0 +1,34 @@
+#!/bin/bash
+# Entry point the emacs-plus formulas run from post_install_steps.
+#
+# post_install_steps cannot run Ruby, only a fixed set of literal steps, and
+# one of them is `run`, so each formula runs this script (through the
+# libexec/emacs-plus-postinstall launcher its `install` wrote, which knows
+# where the tap checkout is) and the Ruby logic in Library/ stays where it
+# is. Homebrew executes it inside the formula post-install sandbox, the same
+# one the old post_install method ran in.
+#
+# Homebrew's own Ruby is the one that is always there; the system ruby is
+# a fallback for exotic layouts where the portable one is missing.
+set -euo pipefail
+
+tap_dir="$(cd "$(dirname "$0")/.." && pwd)"
+
+ruby=""
+for candidate in \
+  "${HOMEBREW_RUBY_PATH:-}" \
+  "${HOMEBREW_PREFIX:-/opt/homebrew}/Library/Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  "$(dirname "$(dirname "$tap_dir")")/../../Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  /usr/bin/ruby; do
+  if [[ -n "$candidate" && -x "$candidate" ]]; then
+    ruby="$candidate"
+    break
+  fi
+done
+
+if [[ -z "$ruby" ]]; then
+  echo "Error: no ruby found to run the emacs-plus formula post-install" >&2
+  exit 1
+fi
+
+exec "$ruby" -r "$tap_dir/Library/FormulaPostinstallCLI" -e 'exit FormulaPostinstallCLI.run(ARGV)' -- "$@"

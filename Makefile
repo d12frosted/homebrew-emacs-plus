@@ -7,7 +7,7 @@
 #   make formula-31 --HEAD        Build with extra brew args
 #   make cask                     Install cask (test local changes)
 #   make cask@master              Install cask@master (test local changes)
-#   make postinstall-formula      Re-run formula post_install
+#   make postinstall-formula      Simulate formula post-install (icon only)
 #   make postinstall-cask         Re-run cask postflight
 
 .PHONY: test validate postinstall-formula postinstall-cask cask cask@next cask@master help
@@ -38,7 +38,7 @@ help:
 	@echo "  make cask@master              Install emacs-plus-app@master cask"
 	@echo ""
 	@echo "Post-install (test on existing installation):"
-	@echo "  make postinstall-formula      Re-run post_install scripts"
+	@echo "  make postinstall-formula      Simulate formula post-install (icon only)"
 	@echo "  make postinstall-cask         Re-run cask postflight scripts"
 
 #
@@ -107,7 +107,7 @@ formula-%:
 #
 
 postinstall-formula:
-	@echo "==> Running formula post_install simulation"
+	@echo "==> Running formula post-install simulation"
 	@ruby scripts/postinstall-formula.rb
 
 postinstall-cask:

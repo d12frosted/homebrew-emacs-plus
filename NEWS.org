@@ -3,6 +3,14 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-21
+
+** Improvements
+
+*** Formulas use =post_install_steps=
+
+Homebrew 7.0.0 deprecated the =post_install= method formulas used to run arbitrary Ruby after install ("Calling =post_install= is deprecated! Use =post_install_steps= instead"). With =HOMEBREW_DEVELOPER=1= that deprecation is an error, which is how the nightly builds of every formula started failing in the post-install phase while the build itself succeeded. The replacement is a fixed list of literal steps that Homebrew runs in the post-install sandbox, the same treatment the casks got on 2026-09-08. Every =emacs-plus@N= formula now declares a =post_install_steps= block that runs the same setup as before (info manuals, the custom icon from =build.yml=, re-signing the app bundles, and the =native-lisp= link on Emacs 28 and 29) through =scripts/formula-postinstall= as a =run= step. A step cannot know where the tap checkout is, so =install= leaves a small launcher in =libexec= that execs the script from the checkout; =brew postinstall emacs-plus@N= keeps picking up the current =Library/= and =community/= files that way. Nothing changes for users: =build.yml= icons still apply, =brew postinstall= still re-applies them, and =HOMEBREW_EMACS_PLUS_BUILD_CONFIG= is still honoured.
+
 * 2026-09-15
 
 ** Bug fixes
