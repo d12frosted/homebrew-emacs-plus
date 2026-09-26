@@ -846,6 +846,15 @@ class TestBuildConfig < Minitest::Test
     assert_includes el, "-print-file-name=libemutls_w.a"
   end
 
+  def test_driver_options_el_keeps_emacs_default
+    # site-start.el runs before comp.el is loaded, so the variable is still
+    # unbound there. Seeding it with nil would make the later defcustom keep
+    # nil and drop Emacs's own darwin default ("-Wl,-w", silences ld)
+    el = BuildConfig.native_comp_driver_options_el("/opt/homebrew")
+    assert_includes el, '(list "-Wl,-w")'
+    refute_includes el, "(setq native-comp-driver-options nil)"
+  end
+
   def test_driver_options_el_has_balanced_parens
     el = BuildConfig.native_comp_driver_options_el("/opt/homebrew")
     # Strip comment lines, then count parens

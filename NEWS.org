@@ -3,6 +3,24 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-26
+
+** Bug fixes
+
+*** Cask builds load their =site-start.el= again
+
+Since 2026-03-06 the cask builds were configured with =--enable-locallisppath= pointing at Homebrew's =site-lisp=, so packages like mu4e from =brew install mu= are found ([[https://github.com/d12frosted/homebrew-emacs-plus/issues/930][#930]]). That flag replaces the default site-lisp search path instead of extending it, and for a self-contained app the default is the bundle's own =Contents/Resources/site-lisp=. So the bundled =site-start.el= was never loaded: =ns-emacs-plus-version= was undefined, and the native compilation fix from 2026-07-08 never took effect. A terminal-launched Emacs with a cold =eln-cache= kept failing with "ld: library 'emutls_w' not found"; GUI launches worked only because they get =LIBRARY_PATH= from =Info.plist=. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1016][#1016]].
+
+The cask builds no longer pass the flag. Instead, =site-start.el= adds Homebrew's =site-lisp= to =load-path= and loads its =subdirs.el= if there is one, the same way Emacs treats site-lisp directories at startup, so mu4e and friends are still found.
+
+The =native-comp-driver-options= block in =site-start.el= also keeps Emacs's own macOS default (=-Wl,-w=, which silences ld warnings) instead of starting from an empty list. This applies to formula builds too.
+
+If you added a workaround that loads =site-start.el= by hand, remove it after upgrading:
+
+#+begin_src bash
+brew upgrade --cask emacs-plus-app   # or @next / @master
+#+end_src
+
 * 2026-09-21
 
 ** Improvements

@@ -149,10 +149,12 @@ jobs:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
+          # Note: no --enable-locallisppath; it replaces the bundle site-lisp,
+          # so site-start.el never loads. The cask postflight adds Homebrew
+          # site-lisp to load-path from site-start.el instead (issue #1016)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT -I$(brew --prefix gcc)/include -I$(brew --prefix libgccjit)/include" \
             LDFLAGS="-L$GCC_LIB -Wl,-rpath,$GCC_LIB" \
-            --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \
@@ -588,10 +590,12 @@ jobs:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
+          # Note: no --enable-locallisppath; it replaces the bundle site-lisp,
+          # so site-start.el never loads. The cask postflight adds Homebrew
+          # site-lisp to load-path from site-start.el instead (issue #1016)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT -I$(brew --prefix gcc)/include -I$(brew --prefix libgccjit)/include" \
             LDFLAGS="-L$GCC_LIB -Wl,-rpath,$GCC_LIB" \
-            --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \
@@ -1027,10 +1031,12 @@ jobs:
           # - FD_SETSIZE=10000: Increases file descriptor limit (default ~1024) for LSP/eglot
           # - DARWIN_UNLIMITED_SELECT: Removes macOS select() limit
           # Note: ImageMagick excluded to avoid libomp conflicts (issue #890)
+          # Note: no --enable-locallisppath; it replaces the bundle site-lisp,
+          # so site-start.el never loads. The cask postflight adds Homebrew
+          # site-lisp to load-path from site-start.el instead (issue #1016)
           ./configure \
             CFLAGS="-DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT -I$(brew --prefix gcc)/include -I$(brew --prefix libgccjit)/include" \
             LDFLAGS="-L$GCC_LIB -Wl,-rpath,$GCC_LIB" \
-            --enable-locallisppath=$HOMEBREW_PREFIX/share/emacs/site-lisp \
             --with-ns \
             --with-native-compilation=aot \
             --with-xwidgets \

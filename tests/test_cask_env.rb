@@ -418,6 +418,56 @@ class TestCaskEnv < Minitest::Test
     end
   end
 
+  def test_update_site_start_el_adds_homebrew_site_lisp_to_load_path
+    # Cask builds are self-contained, so Emacs does not search Homebrew's
+    # site-lisp (where e.g. mu installs mu4e) by default. site-start.el
+    # adds it at startup instead of --enable-locallisppath, which replaces
+    # the bundle site-lisp and keeps site-start.el from loading at all
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+
+      Hardware::CPU.mock_arm = true
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      CaskEnv.send(:update_site_start_el, app_path)
+
+      content = File.read("#{app_path}/Contents/Resources/site-lisp/site-start.el")
+
+      assert_includes content, '"/opt/homebrew/share/emacs/site-lisp"'
+      assert_includes content, "(add-to-list 'load-path dir)"
+      # Subdirectories are picked up the same way Emacs does at startup
+      assert_includes content, '"subdirs.el"'
+      assert_operator content.index("share/emacs/site-lisp"), :<,
+                      content.index("(provide 'emacs-plus)")
+    end
+  end
+
+  def test_update_site_start_el_adds_homebrew_site_lisp_on_upgrade
+    # A site-start.el that already has the older blocks still gets the
+    # load-path block
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      CaskEnv.send(:update_site_start_el, app_path)
+
+      site_start = "#{app_path}/Contents/Resources/site-lisp/site-start.el"
+      content = File.read(site_start)
+      start = content.index(";; Homebrew site-lisp")
+      finish = content.index("(provide 'emacs-plus)")
+      File.write(site_start, content[0...start] + content[finish..])
+
+      assert_equal true, CaskEnv.send(:update_site_start_el, app_path)
+      assert_includes File.read(site_start), "share/emacs/site-lisp"
+    end
+  end
+
+  def test_cask_builds_keep_default_locallisppath
+    # --enable-locallisppath replaces the default site-lisp search path,
+    # which for a self-contained app is the bundle's site-lisp. With it,
+    # the bundled site-start.el never loads (issue #1016)
+    workflow = File.read(File.expand_path("../.github/workflows/build-app.yml", __dir__))
+    refute_includes workflow, "--enable-locallisppath="
+  end
+
   def test_update_site_start_el_is_idempotent
     Dir.mktmpdir do |dir|
       app_path = "#{dir}/Emacs.app"
