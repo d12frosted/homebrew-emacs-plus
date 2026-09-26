@@ -13,7 +13,8 @@
 #
 # 3. Emacs Client.app - Recompiles AppleScript with PATH for emacsclient
 #
-# 4. site-start.el - Adds ns-emacs-plus-version and PATH injection code
+# 4. site-start.el - Adds PATH injection, native-comp driver options and
+#    Homebrew site-lisp on load-path
 #
 # LIMITATION: Unlike formula builds, cask postflight runs in Homebrew's
 # controlled environment without access to the user's full PATH. Therefore:
@@ -389,7 +390,8 @@ module CaskEnv
     # Update site-start.el with code that must be added at user install
     # time. The CI build creates site-start.el with ns-emacs-plus-version;
     # here we add PATH injection (EMACS_PLUS_PATH is set via LSEnvironment
-    # at install time) and native-comp driver options (issue #964). Each
+    # at install time), native-comp driver options (issue #964) and
+    # Homebrew site-lisp on load-path (issues #930, #1016). Each
     # block is added independently so upgrades pick up new blocks even
     # when older ones are already present.
     # Returns true if the file was modified (it lives inside the bundle,
@@ -439,11 +441,39 @@ module CaskEnv
         )
       end
 
+      # Homebrew site-lisp on load-path (issues #930, #1016)
+      unless content.include?(";; Homebrew site-lisp")
+        content = content.sub(
+          "(provide 'emacs-plus)",
+          "#{homebrew_site_lisp_el(homebrew_prefix).chomp}\n\n(provide 'emacs-plus)"
+        )
+      end
+
       return false if content == original
 
       File.write(site_start, content)
       puts "Updated site-start.el"
       true
+    end
+
+    # Elisp block that adds Homebrew's site-lisp (where e.g. mu installs
+    # mu4e) to load-path. The cask app is self-contained, so its default
+    # site-lisp search path is the bundle's own site-lisp. Passing
+    # --enable-locallisppath at build time would replace that path rather
+    # than extend it, and then this very file never loads (issue #1016).
+    # A colon-separated list does not help either: the bundle path is
+    # relative and Emacs relocates only single paths (see ns_relocate).
+    def homebrew_site_lisp_el(prefix)
+      <<~ELISP
+        ;; Homebrew site-lisp: packages such as mu install their Elisp here.
+        ;; Mirror what Emacs does for site-lisp dirs at startup: add the
+        ;; directory, then load its subdirs.el if there is one.
+        (let ((dir "#{prefix}/share/emacs/site-lisp"))
+          (when (file-directory-p dir)
+            (add-to-list 'load-path dir)
+            (let ((default-directory dir))
+              (load (expand-file-name "subdirs.el" dir) t t t))))
+      ELISP
     end
 
     # Read one plist key with PlistBuddy; nil when the key is missing.

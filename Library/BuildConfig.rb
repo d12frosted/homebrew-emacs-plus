@@ -139,8 +139,10 @@ module BuildConfig
                              "#{prefix}/lib/gcc/current"
                              "#{prefix}/opt/libgccjit/lib/gcc/current"
                              "#{prefix}/lib")))
+            ;; comp.el is not loaded yet, so start from its darwin default
+            ;; (silences ld warnings); the later defcustom keeps our value
             (unless (boundp 'native-comp-driver-options)
-              (setq native-comp-driver-options nil))
+              (setq native-comp-driver-options (list "-Wl,-w")))
             (dolist (dir dirs)
               (when dir
                 (let ((flag (concat "-L" dir)))
