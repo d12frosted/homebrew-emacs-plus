@@ -62,8 +62,18 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit pkg-config webp tree-sitter
+          # Retry: on Tier 3 macOS versions some deps build from source and
+          # fetch GitHub compare .diff patches, which are not byte-stable and
+          # occasionally fail checksum verification. Drop cached patches and
+          # try again.
+          for attempt in 1 2 3; do
+            brew install autoconf automake texinfo gnutls librsvg libxml2 \
+              gcc libgccjit pkg-config webp tree-sitter && break
+            [ "$attempt" = 3 ] && exit 1
+            echo "::warning::brew install failed (attempt $attempt), retrying"
+            rm -f "$(brew --cache)"/downloads/*.diff "$(brew --cache)"/downloads/*.patch*
+            sleep 30
+          done
 
       - name: Clone Emacs source
         run: |
@@ -491,8 +501,18 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit pkg-config webp tree-sitter
+          # Retry: on Tier 3 macOS versions some deps build from source and
+          # fetch GitHub compare .diff patches, which are not byte-stable and
+          # occasionally fail checksum verification. Drop cached patches and
+          # try again.
+          for attempt in 1 2 3; do
+            brew install autoconf automake texinfo gnutls librsvg libxml2 \
+              gcc libgccjit pkg-config webp tree-sitter && break
+            [ "$attempt" = 3 ] && exit 1
+            echo "::warning::brew install failed (attempt $attempt), retrying"
+            rm -f "$(brew --cache)"/downloads/*.diff "$(brew --cache)"/downloads/*.patch*
+            sleep 30
+          done
 
       - name: Clone Emacs source
         run: |
@@ -920,8 +940,18 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install autoconf automake texinfo gnutls librsvg libxml2 \
-            gcc libgccjit pkg-config webp tree-sitter
+          # Retry: on Tier 3 macOS versions some deps build from source and
+          # fetch GitHub compare .diff patches, which are not byte-stable and
+          # occasionally fail checksum verification. Drop cached patches and
+          # try again.
+          for attempt in 1 2 3; do
+            brew install autoconf automake texinfo gnutls librsvg libxml2 \
+              gcc libgccjit pkg-config webp tree-sitter && break
+            [ "$attempt" = 3 ] && exit 1
+            echo "::warning::brew install failed (attempt $attempt), retrying"
+            rm -f "$(brew --cache)"/downloads/*.diff "$(brew --cache)"/downloads/*.patch*
+            sleep 30
+          done
 
       - name: Clone Emacs source
         run: |
