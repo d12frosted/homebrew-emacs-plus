@@ -151,10 +151,10 @@ Cask builds are self-contained applications with all dependencies bundled. They 
 |----------------------+------------------------+---------------------------|
 | Install time         | ~1 minute (download)   | ~30 minutes (compile)     |
 | Custom build options | No                     | Yes (icons, patches, etc) |
-| macOS versions       | 14+                    | Any supported             |
+| macOS versions       | 15+                    | Any supported             |
 | Architectures        | ARM64 only             | Any                       |
 
-*Note:* Cask builds are macOS version specific, with dedicated builds for Sonoma (14), Sequoia (15), and Tahoe (26). On older macOS versions, and on Intel Macs, the cask refuses to install; use the formula instead. Intel builds were dropped in September 2026, see [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1002][#1002]].
+*Note:* Cask builds are macOS version specific, with dedicated builds for Sequoia (15) and Tahoe (26). On older macOS versions, and on Intel Macs, the cask refuses to install; use the formula instead. Intel builds were dropped in September 2026, see [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1002][#1002]], and Sonoma (14) builds shortly after, since Homebrew no longer provides bottles for it.
 
 Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults.
 

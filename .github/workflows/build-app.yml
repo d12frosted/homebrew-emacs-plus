@@ -43,9 +43,6 @@ jobs:
           - runner: macos-15
             arch: arm64
             os_name: sequoia
-          - runner: macos-14
-            arch: arm64
-            os_name: sonoma
     runs-on: ${{ matrix.platform.runner }}
     steps:
       - uses: actions/checkout@v7
@@ -484,9 +481,6 @@ jobs:
           - runner: macos-15
             arch: arm64
             os_name: sequoia
-          - runner: macos-14
-            arch: arm64
-            os_name: sonoma
     runs-on: ${{ matrix.platform.runner }}
     steps:
       - uses: actions/checkout@v7
@@ -925,9 +919,6 @@ jobs:
           - runner: macos-15
             arch: arm64
             os_name: sequoia
-          - runner: macos-14
-            arch: arm64
-            os_name: sonoma
     runs-on: ${{ matrix.platform.runner }}
     steps:
       - uses: actions/checkout@v7
@@ -1377,7 +1368,7 @@ jobs:
           # Every build leg must have uploaded its binary; a release with a
           # missing asset would leave the cask pointing at a dead URL.
           missing=""
-          for target in arm64-14 arm64-15 arm64-26; do
+          for target in arm64-15 arm64-26; do
             if ! ls artifacts/*/emacs-plus-*-"$target".zip >/dev/null 2>&1; then
               missing="$missing $target"
             fi
@@ -1516,7 +1507,7 @@ jobs:
           # Every build leg must have uploaded its binary; a release with a
           # missing asset would leave the cask pointing at a dead URL.
           missing=""
-          for target in arm64-14 arm64-15 arm64-26; do
+          for target in arm64-15 arm64-26; do
             if ! ls artifacts/*/emacs-plus-*-"$target".zip >/dev/null 2>&1; then
               missing="$missing $target"
             fi
@@ -1658,7 +1649,7 @@ jobs:
           # Every build leg must have uploaded its binary; a release with a
           # missing asset would leave the cask pointing at a dead URL.
           missing=""
-          for target in arm64-14 arm64-15 arm64-26; do
+          for target in arm64-15 arm64-26; do
             if ! ls artifacts/*/emacs-plus-*-"$target".zip >/dev/null 2>&1; then
               missing="$missing $target"
             fi

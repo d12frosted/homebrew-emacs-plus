@@ -14,12 +14,9 @@ cask "emacs-plus-app@next" do
   if MacOS.version >= :tahoe # macOS 26
     sha256 "2e6d3997fc57aa2397d91e835464a375b2b4c6620bae5d32c8f0abd3b97da6b3"
     url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip"
-  elsif MacOS.version >= :sequoia # macOS 15
+  else # macOS 15 (Sequoia)
     sha256 "76adc6b388d4233f19a9616436a9f8196112c51caf5fcb9efb2cb4764283d09b"
     url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip"
-  else # macOS 14 (Sonoma)
-    sha256 "39c9322f345164ab5f0ffad1cb6aba016fa9d6710f2ae7c09cda199f508561e1"
-    url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-14.zip"
   end
 
   name "Emacs+ (Next)"
@@ -42,9 +39,10 @@ cask "emacs-plus-app@next" do
   # - libgccjit: JIT compilation library
   depends_on formula: "gcc"
   depends_on formula: "libgccjit"
-  # Oldest prebuilt arm64 binary targets macOS 14 (built on the macos-14
-  # runner), so Ventura cannot run it
-  depends_on macos: :sonoma
+  # Oldest prebuilt binary targets macOS 15 (built on the macos-15 runner).
+  # There is no Sonoma build: Homebrew stopped bottling for macOS 14, so
+  # building there meant compiling dependencies like llvm from source
+  depends_on macos: :sequoia
 
   # Install the app
   app "Emacs.app"

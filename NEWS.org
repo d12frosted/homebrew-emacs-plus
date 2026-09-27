@@ -3,6 +3,16 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-09-27
+
+** Improvements
+
+*** macOS 14 (Sonoma) cask builds are gone
+
+Homebrew moved macOS 14 to tier 3 and no longer builds bottles for it, so every dependency updated since then builds from source on the Sonoma runner. =librsvg= pulls in =llvm@22= through =rust=, and building that from source alone takes almost two hours. Since 2026-09-20 the Sonoma job took around 2.5 hours against about 25 minutes for the other two, and every release waited for it. It only gets worse as more dependencies lose their bottles (=gcc= next time it is bumped). So the Sonoma leg is gone: the three casks require macOS 15 (=depends_on macos: :sequoia=) and ship builds for Sequoia and Tahoe only.
+
+If you use a cask on Sonoma, switch to the formula (=brew install emacs-plus@31=), which builds from source; expect Homebrew to build some dependencies from source too. Until then, the installed cask keeps working, but =brew upgrade= refuses to update it. The last Sonoma cask assets stay downloadable from the releases page.
+
 * 2026-09-26
 
 ** Bug fixes
