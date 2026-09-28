@@ -1,7 +1,7 @@
 cask "emacs-plus-app@next" do
   # Version format: <emacs-version>-<build-number>
   # Build number corresponds to GitHub Actions run number
-  version "31.1.50-348"
+  version "31.1.50-352"
 
   # Base URL for release assets (lane releases: cask-next-<build>)
   base_url = "https://github.com/d12frosted/homebrew-emacs-plus/releases/download/cask-next-#{version.sub(/^[\d.]+-/, "")}"
@@ -12,10 +12,10 @@ cask "emacs-plus-app@next" do
   # check, which broke tapping (#1005). `depends_on arch:` below is what
   # refuses the install on Intel.
   if MacOS.version >= :tahoe # macOS 26
-    sha256 "2e6d3997fc57aa2397d91e835464a375b2b4c6620bae5d32c8f0abd3b97da6b3"
+    sha256 "9b13ba37b3965f93c767b282882bb2c5f7739795715fd5f9bd7aae0e9d731d8d"
     url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-26.zip"
   else # macOS 15 (Sequoia)
-    sha256 "76adc6b388d4233f19a9616436a9f8196112c51caf5fcb9efb2cb4764283d09b"
+    sha256 "ba560cb69d7f8cb740a4d679e03f1dc80959851b0c4e45cd6f415cd1d20a6d4b"
     url "#{base_url}/emacs-plus-#{emacs_ver}-arm64-15.zip"
   end
 
