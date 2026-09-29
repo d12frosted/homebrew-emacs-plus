@@ -9,7 +9,7 @@ Transparency + Blurring (alpha 0.5, blur 20)
 
 ## Compatibility
 
-- Emacs versions: 31
+- Emacs versions: 31, 32
 
 ## Maintainer
 
@@ -92,3 +92,4 @@ Here is an example of how I use this feature. It works using emacs clients attac
 ## Patch Files
 
 - `emacs-31.patch` - Patch for Emacs 31
+- `emacs-32.patch` - Patch for Emacs 32
