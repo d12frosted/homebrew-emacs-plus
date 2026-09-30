@@ -130,6 +130,8 @@ class EmacsPlusAT28 < EmacsBase
       ENV.append "LDFLAGS", "-L#{gcc_lib}"
       ENV.append "LDFLAGS", "-I#{Formula["gcc"].include}"
       ENV.append "LDFLAGS", "-I#{Formula["libgccjit"].include}"
+      # libgccjit's JIT linker needs GCC runtime libraries during configure and compilation.
+      ENV.prepend_path "LIBRARY_PATH", build_library_path
     end
 
     args << "CFLAGS=#{cflags.join(" ")}"
