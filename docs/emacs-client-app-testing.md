@@ -4,19 +4,19 @@ This document provides comprehensive test scenarios to validate the Emacs Client
 
 ## Prerequisites
 
-1. Install emacs-plus@30 with the Emacs Client.app:
+1. Install emacs-plus@31 with the Emacs Client.app:
    ```bash
-   brew install emacs-plus@30 --with-<your-icon>-icon
+   brew install emacs-plus@31
    ```
 
-2. Create aliases in /Applications:
+2. Copy the apps to /Applications:
    ```bash
    # Get the prefix
-   PREFIX=$(brew --prefix emacs-plus@30)
+   PREFIX=$(brew --prefix emacs-plus@31)
 
-   # Create aliases
-   osascript -e "tell application \"Finder\" to make alias file to posix file \"$PREFIX/Emacs.app\" at posix file \"/Applications\" with properties {name:\"Emacs.app\"}"
-   osascript -e "tell application \"Finder\" to make alias file to posix file \"$PREFIX/Emacs Client.app\" at posix file \"/Applications\" with properties {name:\"Emacs Client.app\"}"
+   # Copy the apps
+   cp -R "$PREFIX/Emacs.app" /Applications/
+   cp -R "$PREFIX/Emacs Client.app" /Applications/
    ```
 
 3. Create test files:
@@ -238,26 +238,19 @@ ps aux | grep "[E]macs.*daemon"
 
 #### Test 4.3: Disable PATH Injection
 **Steps**:
-1. Set environment variable:
+1. Add `inject_path: false` to `~/.config/emacs-plus/build.yml`
+2. Reinstall: `brew reinstall emacs-plus@31`
+3. Check the PATH baked into the script:
    ```bash
-   launchctl setenv EMACS_PLUS_NO_PATH_INJECTION 1
-   ```
-2. Kill all Emacs processes
-3. Launch Emacs Client from Spotlight
-4. In Emacs shell, check PATH:
-   ```bash
-   M-x shell
-   echo $PATH
+   osadecompile "$(brew --prefix emacs-plus@31)/Emacs Client.app/Contents/Resources/Scripts/main.scpt" | grep -m1 -o "PATH='[^']*'"
    ```
 
 **Expected Result**:
-- ✅ PATH contains only system paths (/usr/bin, /bin, etc.)
-- ✅ Homebrew paths are NOT present
+- ✅ PATH holds only Homebrew's `bin`/`sbin` and the system paths (`/usr/bin`, `/bin`, `/usr/sbin`, `/sbin`)
+- ✅ Directories from your shell PATH are NOT present
 
 **Cleanup**:
-```bash
-launchctl unsetenv EMACS_PLUS_NO_PATH_INJECTION
-```
+Remove `inject_path: false` from `build.yml` and reinstall.
 
 ---
 
@@ -281,7 +274,7 @@ launchctl unsetenv EMACS_PLUS_NO_PATH_INJECTION
 #### Test 5.2: Connect to Existing Daemon
 **Precondition**: Start daemon manually
 ```bash
-$(brew --prefix emacs-plus@30)/Emacs.app/Contents/MacOS/Emacs --daemon
+$(brew --prefix emacs-plus@31)/Emacs.app/Contents/MacOS/Emacs --daemon
 ```
 
 **Steps**:
@@ -455,7 +448,7 @@ open -a "Emacs Client" /tmp/nonexistent-file.txt
 #### Test 8.2: Emacsclient Command Line Still Works
 **Steps**:
 ```bash
-$(brew --prefix emacs-plus@30)/bin/emacsclient -c ~/emacs-client-tests/test.md
+$(brew --prefix emacs-plus@31)/bin/emacsclient -c ~/emacs-client-tests/test.md
 ```
 
 **Expected Result**:
@@ -504,7 +497,7 @@ Here's a script to run basic automated tests:
 
 set -e
 
-PREFIX=$(brew --prefix emacs-plus@30)
+PREFIX=$(brew --prefix emacs-plus@31)
 EMACSCLIENT="$PREFIX/bin/emacsclient"
 TEST_DIR="$HOME/emacs-client-tests"
 

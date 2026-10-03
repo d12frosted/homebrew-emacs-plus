@@ -112,10 +112,21 @@ class EmacsPlusAT26 < EmacsBase
   def caveats
     <<~EOS
       Emacs.app was installed to:
-        #{prefix}
+        #{opt_prefix}
 
-      To link the application to default Homebrew App location:
-        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
+      Formulas don't install apps into /Applications. If that is what you
+      want, the emacs-plus-app casks are the better fit, though they ship
+      Emacs 31 and newer:
+        brew install --cask emacs-plus-app
+
+      With this formula you can still put it there yourself:
+      - copy it, and after each upgrade remove the copy and copy it again:
+          cp -R "#{opt_prefix}/Emacs.app" /Applications/
+      - or symlink it; the link follows upgrades, but Spotlight may not
+        show it:
+          ln -s "#{opt_prefix}/Emacs.app" /Applications/
+
+      The `emacs` command always runs this formula's own Emacs.app.
     EOS
   end
 
