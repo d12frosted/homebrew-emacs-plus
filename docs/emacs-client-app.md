@@ -53,9 +53,11 @@ The method handles:
 - Info.plist metadata configuration
 - Custom icon installation
 
+The casks get the same AppleScript from two other places: the cask build jobs in `.github/workflows/build-app.yml` create the app, and the cask postflight (`Library/CaskEnv.rb`) recompiles it to inject the PATH. `tests/test_client_app_script.rb` checks that all copies compile and bring Emacs to the front the same way, so change them together.
+
 ### AppleScript Structure
 
-The AppleScript application implements three handlers:
+The AppleScript application implements three handlers, plus a helper that brings Emacs to the front:
 
 #### 1. `on open` Handler (File Opening)
 
@@ -68,10 +70,11 @@ Triggered when:
 on open theDropped
   repeat with oneDrop in theDropped
     set dropPath to quoted form of POSIX path of oneDrop
-    -- PATH injection logic here
-    do shell script pathEnv & "#{prefix}/bin/emacsclient -c -a '' -n " & dropPath
+    try
+      do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n " & dropPath
+    end try
   end repeat
-  tell application "Emacs" to activate
+  my activateEmacs()
 end open
 ```
 
@@ -91,9 +94,10 @@ Triggered when:
 
 ```applescript
 on run
-  -- PATH injection logic here
-  do shell script pathEnv & "#{prefix}/bin/emacsclient -c -a '' -n"
-  tell application "Emacs" to activate
+  try
+    do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n"
+  end try
+  my activateEmacs()
 end run
 ```
 
@@ -105,9 +109,10 @@ Triggered when:
 
 ```applescript
 on open location this_URL
-  -- PATH injection logic here
-  do shell script pathEnv & "#{prefix}/bin/emacsclient -n " & quoted form of this_URL
-  tell application "Emacs" to activate
+  try
+    do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -n " & quoted form of this_URL
+  end try
+  my activateEmacs()
 end open location
 ```
 
@@ -116,23 +121,28 @@ end open location
 - Passes the full URL to emacsclient (no `-c` flag needed, org-protocol handles frame creation)
 - Requires `(require 'org-protocol)` in your Emacs init file
 
-### PATH Injection
+#### 4. `activateEmacs` (Bringing Emacs to the Front)
 
-The AppleScript respects the `EMACS_PLUS_NO_PATH_INJECTION` environment variable, similar to Emacs.app:
+Each handler ends by calling this helper:
 
 ```applescript
-set pathInjection to system attribute "EMACS_PLUS_NO_PATH_INJECTION"
-if pathInjection is "" then
-  set pathEnv to "PATH='#{escaped_path}' "
-else
-  set pathEnv to ""
-end if
+on activateEmacs()
+  set emacsId to "org.gnu.Emacs"
+  try
+    tell application id emacsId to activate
+  end try
+end activateEmacs
 ```
 
-This ensures that:
-- Homebrew-installed binaries are found when launching from Finder/Spotlight
-- Users can opt out by setting `EMACS_PLUS_NO_PATH_INJECTION=1`
-- The same PATH used during installation is available to emacsclient
+**Key points:**
+- `tell application id` talks to the Emacs process that is already running, usually the daemon that emacsclient just used
+- Don't use `open -a Emacs` here. It asks LaunchServices for an Emacs.app by name, and LaunchServices picks the one launched most recently from Finder, the Dock, Spotlight or `open`. A daemon started by `emacsclient -a ''` is never launched that way, so with a second Emacs.app around (a copy in `/Applications`, another `emacs-plus@N`), `open -a` starts that one next to the daemon. See [discussion #1020](https://github.com/d12frosted/homebrew-emacs-plus/discussions/1020)
+- The bundle id is kept in a variable on purpose: `osacompile` resolves a literal `application id "..."` at compile time and fails when the app is not installed, e.g. on CI
+- If no Emacs is running at all (for example, emacsclient failed), `activate` launches Emacs.app
+
+### PATH Injection
+
+Every emacsclient call runs with `PATH='...'`, captured when the script is generated (when the formula is installed, or in the cask postflight). This way Homebrew-installed binaries are found when the app is launched from Finder or Spotlight. It follows the same rules as the PATH injected into Emacs.app, including the `inject_path` option in `build.yml`; see [Injected PATH](../README.org#injected-path).
 
 ### Compilation Process
 
@@ -262,9 +272,12 @@ If you see the generic AppleScript droplet icon instead of the Emacs icon:
 
 ### "Emacs not found" errors
 
-1. Ensure `EMACS_PLUS_NO_PATH_INJECTION` is not set in your environment
-2. Check that Emacs.app is installed at the expected location
-3. Verify PATH injection is working by examining the AppleScript source in the app bundle
+1. Check that Emacs.app is installed at the expected location
+2. Check the emacsclient path and PATH baked into the script: `osadecompile "/Applications/Emacs Client.app/Contents/Resources/Scripts/main.scpt"`
+
+### A second Emacs starts next to the daemon
+
+Older builds brought Emacs to the front with `open -a Emacs`, which could start another Emacs.app (see `activateEmacs` above). Reinstall the formula or upgrade the cask. If you copied `Emacs Client.app` to `/Applications`, copy it again: a copy does not update by itself.
 
 ### Daemon won't start automatically
 
