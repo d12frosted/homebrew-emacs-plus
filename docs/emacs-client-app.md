@@ -111,7 +111,7 @@ Triggered when:
 ```applescript
 on open location this_URL
   try
-    do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -n " & quoted form of this_URL
+    do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -r -a '' -n " & quoted form of this_URL
   end try
   my activateEmacs()
 end open location
@@ -119,7 +119,8 @@ end open location
 
 **Key points:**
 - Handles `org-protocol://` URLs registered via `CFBundleURLTypes`
-- Passes the full URL to emacsclient (no `-c` flag needed, org-protocol handles frame creation)
+- Uses `-r` to reuse the current frame, and to create one only when the daemon has none. A daemon started by `brew services` or a LaunchAgent has no GUI frame until the first client asks for one, and until then macOS doesn't know it as an app: with plain `-n` the URL lands in an invisible frame, and `activateEmacs` starts a second Emacs.app instead
+- Uses `-a ''` to start the daemon if it isn't running, like the other handlers, instead of dropping the URL
 - Requires `(require 'org-protocol)` in your Emacs init file
 
 #### 4. `activateEmacs` (Bringing Emacs to the Front)
