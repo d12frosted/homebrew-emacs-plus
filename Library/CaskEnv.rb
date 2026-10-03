@@ -317,9 +317,7 @@ module CaskEnv
               do shell script "PATH='#{escaped_path}' #{emacsclient} -c -a '' -n " & dropPath
             end try
           end repeat
-          try
-            do shell script "open -a Emacs"
-          end try
+          my activateEmacs()
         end open
 
         -- Handle launch without files (from Spotlight, Dock, or Finder)
@@ -327,9 +325,7 @@ module CaskEnv
           try
             do shell script "PATH='#{escaped_path}' #{emacsclient} -c -a '' -n"
           end try
-          try
-            do shell script "open -a Emacs"
-          end try
+          my activateEmacs()
         end run
 
         -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
@@ -337,10 +333,19 @@ module CaskEnv
           try
             do shell script "PATH='#{escaped_path}' #{emacsclient} -n " & quoted form of this_URL
           end try
-          try
-            do shell script "open -a Emacs"
-          end try
+          my activateEmacs()
         end open location
+
+        -- Bring the running Emacs to the front. `open -a Emacs` would pick an
+        -- Emacs.app by name and could start a second Emacs next to the daemon.
+        -- The id is kept in a variable so osacompile does not look the app up
+        -- at compile time, when Emacs.app may not be installed yet.
+        on activateEmacs()
+          set emacsId to "org.gnu.Emacs"
+          try
+            tell application id emacsId to activate
+          end try
+        end activateEmacs
       APPLESCRIPT
 
       # Write and compile the script

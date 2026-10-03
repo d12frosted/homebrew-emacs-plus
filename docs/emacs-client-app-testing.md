@@ -464,6 +464,21 @@ $(brew --prefix emacs-plus@30)/bin/emacsclient -c ~/emacs-client-tests/test.md
 
 ---
 
+#### Test 8.3: No Second Emacs When Another Emacs.app Was Launched Last
+**Precondition**: A second Emacs.app exists next to the one the daemon runs from, e.g. a copy in `/Applications` or another `emacs-plus@N`
+
+**Steps**:
+1. Launch the other Emacs.app from Finder or Spotlight, then quit it
+2. Quit all Emacs processes, including the daemon
+3. Launch Emacs Client from Spotlight
+4. Run `pgrep -lf MacOS/Emacs`
+
+**Expected Result**:
+- ✅ Only the daemon is running, the other Emacs.app is not started
+- ✅ The new frame comes to the foreground
+
+---
+
 ### Category 9: Cleanup and Removal
 
 #### Test 9.1: Uninstall Emacs Client

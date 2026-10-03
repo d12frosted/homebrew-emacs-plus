@@ -3,6 +3,24 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-10-03
+
+** Bug fixes
+
+*** =Emacs Client.app= no longer starts a second Emacs
+
+After running =emacsclient=, =Emacs Client.app= brings Emacs to the front. Since 2025-12-28 it did that with =open -a Emacs=, which asks LaunchServices for an =Emacs.app= by name. LaunchServices answers with the one launched most recently from Finder, the Dock or Spotlight, not with the daemon =emacsclient= talks to. So once a second =Emacs.app= was around, for example a copy in =/Applications= that was launched once, or another =emacs-plus@N=, every click on =Emacs Client.app= started that other Emacs next to the daemon, with its own frame. See [[https://github.com/d12frosted/homebrew-emacs-plus/discussions/1020][#1020]].
+
+=Emacs Client.app= now activates Emacs with =tell application id= again, which talks to the running Emacs directly. The bundle id is kept in a variable, so compiling the script does not need =Emacs.app= to be installed, which is why =open -a= replaced it in the first place.
+
+Formula users need to reinstall to get the fix, cask users get it with the next build:
+
+#+begin_src bash
+brew reinstall emacs-plus@31   # or the version you use
+#+end_src
+
+If you copied =Emacs Client.app= to =/Applications=, copy it again after reinstalling: a copy does not update by itself.
+
 * 2026-09-27
 
 ** Improvements
