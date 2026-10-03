@@ -724,7 +724,9 @@ class EmacsBase < Formula
     # Use the same build_path logic as inject_path for consistency
     escaped_path = escape_for_applescript_shell(build_path)
 
-    # Create AppleScript source
+    # Create AppleScript source. emacsclient is called through opt_prefix:
+    # upgrades replace the versioned keg path, and a copy of the app in
+    # /Applications would otherwise point at a keg that no longer exists.
     client_script = buildpath/"emacs-client.applescript"
     client_script.write <<~EOS
       -- Emacs Client AppleScript Application
@@ -734,7 +736,7 @@ class EmacsBase < Formula
         repeat with oneDrop in theDropped
           set dropPath to quoted form of POSIX path of oneDrop
           try
-            do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n " & dropPath
+            do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -c -a '' -n " & dropPath
           end try
         end repeat
         my activateEmacs()
@@ -743,7 +745,7 @@ class EmacsBase < Formula
       -- Handle launch without files (from Spotlight, Dock, or Finder)
       on run
         try
-          do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n"
+          do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -c -a '' -n"
         end try
         my activateEmacs()
       end run
@@ -751,7 +753,7 @@ class EmacsBase < Formula
       -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
       on open location this_URL
         try
-          do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -n " & quoted form of this_URL
+          do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -n " & quoted form of this_URL
         end try
         my activateEmacs()
       end open location

@@ -63,6 +63,15 @@ class TestClientAppScript < Minitest::Test
     end
   end
 
+  def test_formula_script_calls_emacsclient_through_opt_prefix
+    # Upgrades change the versioned keg path (Cellar/emacs-plus@31/31.1) but
+    # not the opt link, so a copy of Emacs Client.app in /Applications keeps
+    # working only if it calls emacsclient through opt_prefix
+    script = scripts.find { |(source, _)| source == "Library/EmacsBase.rb" }.last
+    assert_equal 3, script.scan('#{opt_prefix}/bin/emacsclient').size
+    refute_includes script, '#{prefix}/bin/emacsclient'
+  end
+
   def test_scripts_do_not_use_open_a
     scripts.each do |(source, script)|
       refute_match(/open -a/, code(script), "#{source}: use activateEmacs() instead of open -a")

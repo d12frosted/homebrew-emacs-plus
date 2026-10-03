@@ -71,7 +71,7 @@ on open theDropped
   repeat with oneDrop in theDropped
     set dropPath to quoted form of POSIX path of oneDrop
     try
-      do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n " & dropPath
+      do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -c -a '' -n " & dropPath
     end try
   end repeat
   my activateEmacs()
@@ -84,6 +84,7 @@ end open
 - Uses `emacsclient -c` to create a new frame
 - Uses `-a ''` to auto-start Emacs daemon if not running
 - Uses `-n` to return immediately without waiting
+- Calls emacsclient through the formula's `opt` path, which survives upgrades, so a copy of the app in `/Applications` keeps working (the casks use `$(brew --prefix)/bin/emacsclient`)
 
 #### 2. `on run` Handler (Launch Without Files)
 
@@ -95,7 +96,7 @@ Triggered when:
 ```applescript
 on run
   try
-    do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -c -a '' -n"
+    do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -c -a '' -n"
   end try
   my activateEmacs()
 end run
@@ -110,7 +111,7 @@ Triggered when:
 ```applescript
 on open location this_URL
   try
-    do shell script "PATH='#{escaped_path}' #{prefix}/bin/emacsclient -n " & quoted form of this_URL
+    do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -n " & quoted form of this_URL
   end try
   my activateEmacs()
 end open location
@@ -185,11 +186,13 @@ The generated app bundle includes comprehensive metadata:
 
 ## Usage
 
-After installation, users should create aliases in `/Applications`:
+The casks install the app into `/Applications`. Formula users copy or symlink it there themselves (the formula caveats show how):
 
 ```bash
-osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
+cp -R "$(brew --prefix emacs-plus@31)/Emacs Client.app" /Applications/
 ```
+
+A copy keeps working after upgrades, since the app calls emacsclient through the formula's `opt` path. Avoid Finder aliases: an alias points at the versioned keg it was made for and stops working once an upgrade replaces it.
 
 Then users can:
 
@@ -205,9 +208,9 @@ To use org-protocol with Emacs Client.app:
 
 1. Add `(require 'org-protocol)` to your Emacs init file
 2. Install a browser extension like [org-capture-extension](https://github.com/nicksellen/org-capture-extension)
-3. Copy Emacs Client.app to `/Applications` for reliable URL handling:
+3. With a formula, copy Emacs Client.app to `/Applications` for reliable URL handling (the casks already install it there):
    ```bash
-   cp -r "$(brew --prefix)/opt/emacs-plus@30/Emacs Client.app" /Applications/
+   cp -R "$(brew --prefix emacs-plus@31)/Emacs Client.app" /Applications/
    ```
 4. Test with a URL like: `org-protocol://capture?template=t&url=https://example.com&title=Test`
 

@@ -153,10 +153,11 @@ Cask builds are self-contained applications with all dependencies bundled. They 
 | Custom build options | No                     | Yes (icons, patches, etc) |
 | macOS versions       | 15+                    | Any supported             |
 | Architectures        | ARM64 only             | Any                       |
+| In =/Applications=   | Yes                    | No, copy or symlink       |
 
 *Note:* Cask builds are macOS version specific, with dedicated builds for Sequoia (15) and Tahoe (26). On older macOS versions, and on Intel Macs, the cask refuses to install; use the formula instead. Intel builds were dropped in September 2026, see [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1002][#1002]], and Sonoma (14) builds shortly after, since Homebrew no longer provides bottles for it.
 
-Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults.
+Use the *formula* if you need custom icons, patches, or specific build options. Use the *cask* for quick installation with sensible defaults, or if you want =Emacs.app= in =/Applications=: formulas don't install apps there, so you have to copy or symlink them yourself (see [[#emacs-clientapp][→ Emacs Client.app]]).
 
 *** Build from source (Formula)
 
@@ -454,16 +455,22 @@ Starting with =emacs-plus@30=, =emacs-plus@31=, and =emacs-plus@32=, the formula
 
 **** Usage
 
-After installation, create aliases in =/Applications= (the formula will suggest these commands in the caveats):
+The casks install both apps into =/Applications=. Formulas don't install apps there; if that is what you want, the cask is the better fit (see [[#pre-built-binaries-cask][→ Pre-built binaries (Cask)]]). With a formula you can still put them there yourself, the formula caveats show the same commands:
 
 #+begin_src bash
-  # Get the installation prefix (use emacs-plus@30, emacs-plus@31, or emacs-plus@32)
-  PREFIX=$(brew --prefix emacs-plus@30)
+  # use emacs-plus@30, emacs-plus@31, or emacs-plus@32
+  PREFIX=$(brew --prefix emacs-plus@31)
 
-  # Create aliases in /Applications
-  osascript -e 'tell application "Finder" to make alias file to posix file "'$PREFIX'/Emacs.app" at posix file "/Applications" with properties {name:"Emacs.app"}'
-  osascript -e 'tell application "Finder" to make alias file to posix file "'$PREFIX'/Emacs Client.app" at posix file "/Applications" with properties {name:"Emacs Client.app"}'
+  # either copy them; after each upgrade remove the copy of Emacs.app and copy it again
+  cp -R "$PREFIX/Emacs.app" /Applications/
+  cp -R "$PREFIX/Emacs Client.app" /Applications/
+
+  # or symlink them; the links follow upgrades, but Spotlight may not show them
+  ln -s "$PREFIX/Emacs.app" /Applications/
+  ln -s "$PREFIX/Emacs Client.app" /Applications/
 #+end_src
+
+A copy of =Emacs Client.app= keeps working after upgrades, since it calls =emacsclient= through the formula's =opt= path. Finder aliases are not a good option: an alias points at the versioned keg it was made for and stops working once an upgrade replaces it.
 
 You can then:
 - Right-click files in Finder → "Open With" → "Emacs Client"

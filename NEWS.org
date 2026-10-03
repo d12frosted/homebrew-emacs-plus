@@ -21,6 +21,14 @@ brew reinstall emacs-plus@31   # or the version you use
 
 If you copied =Emacs Client.app= to =/Applications=, copy it again after reinstalling: a copy does not update by itself.
 
+*** A copied =Emacs Client.app= keeps working after upgrades
+
+Formula builds of =Emacs Client.app= called =emacsclient= through the versioned keg path, e.g. =/opt/homebrew/Cellar/emacs-plus@31/31.1/bin/emacsclient=. Upgrades replace that path, so a copy in =/Applications= quietly stopped working after the next version or revision bump. It now calls =emacsclient= through the formula's =opt= path (=$(brew --prefix emacs-plus@31)=), which follows upgrades.
+
+The formula caveats and the README no longer suggest Finder aliases either: an alias points at the versioned keg it was made for and stops working once an upgrade replaces it. Formulas don't install apps into =/Applications=, so the caveats now point to the =emacs-plus-app= casks for that and describe the two formula options: copying (copy =Emacs.app= again after each upgrade) and symlinking (the links follow upgrades, but Spotlight may not show them).
+
+To pick this up, reinstall the formula, and copy =Emacs Client.app= to =/Applications= again if you use a copy.
+
 * 2026-09-27
 
 ** Improvements
