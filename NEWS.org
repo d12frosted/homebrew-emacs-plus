@@ -29,6 +29,14 @@ The formula caveats and the README no longer suggest Finder aliases either: an a
 
 To pick this up, reinstall the formula, and copy =Emacs Client.app= to =/Applications= again if you use a copy.
 
+*** org-protocol links no longer start a second Emacs
+
+=Emacs Client.app= handled =org-protocol://= links with =emacsclient -n URL=. With a daemon that had no frame yet, for example one started by =brew services= or a LaunchAgent, the URL went to the daemon's invisible frame, so nothing showed up, and bringing Emacs to the front started a second Emacs, because macOS does not know such a daemon as an app until it opens its first frame. With no daemon running at all, the URL was dropped and a plain Emacs started instead.
+
+The handler now runs =emacsclient -r -a '' -n URL=: =-r= reuses the current frame and creates one only when there is none, and =-a ''= starts the daemon when it is not running, like the other handlers do.
+
+Formula users need to reinstall (and copy =Emacs Client.app= to =/Applications= again if they use a copy), cask users get it with the next build.
+
 * 2026-09-27
 
 ** Improvements

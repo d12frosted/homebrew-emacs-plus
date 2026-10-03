@@ -96,6 +96,19 @@ class TestClientAppScript < Minitest::Test
     end
   end
 
+  def test_open_location_shows_the_url_in_a_frame
+    # A daemon without a GUI frame (brew services, a LaunchAgent) is not an
+    # app macOS can activate. With plain `emacsclient -n URL` the URL lands in
+    # the daemon's invisible terminal frame, and activating Emacs starts a
+    # second Emacs.app instead. -r reuses the current frame and creates one
+    # only when there is none; -a '' starts the daemon if it is not running,
+    # like the other handlers do, instead of dropping the URL.
+    scripts.each do |(source, script)|
+      body = script[HANDLERS["open location"], 1]
+      assert_includes body, %q(-r -a '' -n " & quoted form of this_URL), source
+    end
+  end
+
   def test_activation_handler_is_the_same_everywhere
     handlers = scripts.map { |(_, script)| activation_handler(script) }
     refute_includes handlers, nil, "every script defines activateEmacs()"

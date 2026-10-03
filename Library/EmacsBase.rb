@@ -751,9 +751,10 @@ class EmacsBase < Formula
       end run
 
       -- Handle org-protocol:// URLs (for org-capture, org-roam, etc.)
+      -- -r reuses the current frame and creates one only if the daemon has none
       on open location this_URL
         try
-          do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -n " & quoted form of this_URL
+          do shell script "PATH='#{escaped_path}' #{opt_prefix}/bin/emacsclient -r -a '' -n " & quoted form of this_URL
         end try
         my activateEmacs()
       end open location
