@@ -162,6 +162,12 @@ jobs:
             --with-webp \
             --without-dbus \
             --without-compress-install
+          # Preload the native-comp driver options into the dump, so they
+          # apply with -Q and --no-site-file too (issue #964). Mirrors
+          # Library/EmacsBase.rb#write_site_init.
+          ruby -I../Library -rBuildConfig \
+            -e 'print BuildConfig.site_init_el(ENV.fetch("HOMEBREW_PREFIX"))' \
+            > lisp/site-init.el
           make -j$(sysctl -n hw.ncpu)
           make install
 
@@ -606,6 +612,12 @@ jobs:
             --with-webp \
             --without-dbus \
             --without-compress-install
+          # Preload the native-comp driver options into the dump, so they
+          # apply with -Q and --no-site-file too (issue #964). Mirrors
+          # Library/EmacsBase.rb#write_site_init.
+          ruby -I../Library -rBuildConfig \
+            -e 'print BuildConfig.site_init_el(ENV.fetch("HOMEBREW_PREFIX"))' \
+            > lisp/site-init.el
           make -j$(sysctl -n hw.ncpu)
           make install
 
@@ -1050,6 +1062,12 @@ jobs:
             --with-webp \
             --without-dbus \
             --without-compress-install
+          # Preload the native-comp driver options into the dump, so they
+          # apply with -Q and --no-site-file too (issue #964). Mirrors
+          # Library/EmacsBase.rb#write_site_init.
+          ruby -I../Library -rBuildConfig \
+            -e 'print BuildConfig.site_init_el(ENV.fetch("HOMEBREW_PREFIX"))' \
+            > lisp/site-init.el
           make -j$(sysctl -n hw.ncpu)
           make install
 

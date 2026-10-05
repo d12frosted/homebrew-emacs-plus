@@ -418,6 +418,44 @@ class TestCaskEnv < Minitest::Test
     end
   end
 
+  def test_update_site_start_el_skips_driver_options_when_dump_preloads_them
+    # Builds with site-init.el set the driver options from the dump, which
+    # also covers -Q and --no-site-file; the site-start.el block would only
+    # cost a gcc call on every startup
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+      lisp_dir = "#{app_path}/Contents/Resources/lisp"
+      FileUtils.mkdir_p(lisp_dir)
+      File.write("#{lisp_dir}/site-init.el", BuildConfig.site_init_el("/opt/homebrew"))
+
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      CaskEnv.send(:update_site_start_el, app_path)
+
+      content = File.read("#{app_path}/Contents/Resources/site-lisp/site-start.el")
+      refute_includes content, "native-comp-driver-options"
+      # The other blocks are still added
+      assert_includes content, "ns-emacs-plus-injected-path"
+      assert_includes content, ";; Homebrew site-lisp"
+    end
+  end
+
+  def test_update_site_start_el_adds_driver_options_without_preloaded_site_init
+    # Builds from before site-init.el still need the site-start.el block,
+    # and so does a site-init.el that does not set driver options
+    Dir.mktmpdir do |dir|
+      app_path = make_site_start(dir)
+      lisp_dir = "#{app_path}/Contents/Resources/lisp"
+      FileUtils.mkdir_p(lisp_dir)
+      File.write("#{lisp_dir}/site-init.el", ";;; site-init.el\n")
+
+      CaskEnv.instance_variable_set(:@config, { "inject_path" => true })
+      CaskEnv.send(:update_site_start_el, app_path)
+
+      content = File.read("#{app_path}/Contents/Resources/site-lisp/site-start.el")
+      assert_includes content, "native-comp-driver-options"
+    end
+  end
+
   def test_update_site_start_el_adds_homebrew_site_lisp_to_load_path
     # Cask builds are self-contained, so Emacs does not search Homebrew's
     # site-lisp (where e.g. mu installs mu4e) by default. site-start.el

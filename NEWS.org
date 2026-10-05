@@ -3,6 +3,22 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-10-05
+
+** Bug fixes
+
+*** Native compilation works with =-Q= and =--no-site-file=
+
+The fix from 2026-07-08 for "ld: library 'emutls_w' not found" lived in =site-start.el=, so it did nothing for an Emacs started with =-Q= or =--no-site-file=. Tools like [[https://github.com/emacs-eldev/eldev][Eldev]] start Emacs that way, and a terminal launch has no =LIBRARY_PATH= either, so as soon as something had to be compiled into a cold =eln-cache=, for example the trampoline for an advised primitive like =insert-file-contents=, linking failed. Every rebuild of Emacs starts a new =eln-cache= directory, so this tended to show up right after a reinstall. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/964][#964]].
+
+The driver options now come from a =site-init.el= that the build writes into Emacs's =lisp= directory. Emacs loads that file while building its dump, so the code is part of Emacs itself and runs no matter how Emacs is started. It also runs later than before: the gcc paths are resolved when =comp.el= loads, that is only when something actually gets compiled, so startup no longer runs =gcc= every time. The block in =site-start.el= is gone for formula builds. Cask builds made before this change still get it when installed.
+
+Formula users need to reinstall, cask users get it with the next build:
+
+#+begin_src bash
+brew reinstall emacs-plus@31   # or the version you use
+#+end_src
+
 * 2026-10-03
 
 ** Bug fixes
