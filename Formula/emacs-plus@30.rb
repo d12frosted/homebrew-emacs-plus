@@ -157,6 +157,9 @@ class EmacsPlusAT30 < EmacsBase
     # Apply custom patches from build.yml
     apply_custom_patches
 
+    # Preload native-comp driver options into the dump (works with -Q)
+    write_site_init
+
     if (build.with? "cocoa") && (build.without? "x11")
       args << "--with-ns" << "--disable-ns-self-contained"
 

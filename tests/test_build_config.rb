@@ -10,6 +10,7 @@
 
 require 'minitest/autorun'
 require 'tempfile'
+require 'tmpdir'
 require_relative '../Library/BuildConfig'
 
 class TestBuildConfig < Minitest::Test
@@ -860,6 +861,81 @@ class TestBuildConfig < Minitest::Test
     # Strip comment lines, then count parens
     code = el.lines.reject { |l| l.strip.start_with?(";;") }.join
     assert_equal code.count("("), code.count(")")
+  end
+
+  # ===========================================
+  # Tests for site_init_el (preloaded into the dump, so it applies with
+  # -Q and --no-site-file too)
+  # ===========================================
+
+  def test_site_init_el_interpolates_prefix
+    el = BuildConfig.site_init_el("/opt/homebrew")
+    assert_includes el, "/opt/homebrew/opt/gcc/bin/gcc-[0-9]*"
+    assert_includes el, "/opt/homebrew/lib/gcc/current"
+    assert_includes el, "/opt/homebrew/opt/libgccjit/lib/gcc/current"
+
+    el_intel = BuildConfig.site_init_el("/usr/local")
+    assert_includes el_intel, "/usr/local/opt/gcc/bin/gcc-[0-9]*"
+    refute_includes el_intel, "/opt/homebrew"
+  end
+
+  def test_site_init_el_is_not_byte_compiled
+    # The Emacs build would otherwise compile it like any other file in
+    # lisp/; it only needs to be loaded once, by loadup.el
+    first_line = BuildConfig.site_init_el("/opt/homebrew").lines.first
+    assert_includes first_line, "lexical-binding: t"
+    assert_includes first_line, "no-byte-compile: t"
+  end
+
+  def test_site_init_el_resolves_paths_when_comp_loads
+    # Lazy: nothing runs at startup, gcc is asked only when something is
+    # actually compiled
+    el = BuildConfig.site_init_el("/opt/homebrew")
+    assert_includes el, "(with-eval-after-load 'comp"
+    assert_includes el, "-print-file-name=libemutls_w.a"
+  end
+
+  def test_site_init_el_appends_to_driver_options
+    # comp.el is loaded when the hook runs, so the variable already holds
+    # Emacs's default or the user's value; keep it and append
+    el = BuildConfig.site_init_el("/opt/homebrew")
+    assert_includes el, "(add-to-list 'native-comp-driver-options"
+    refute_match(/\(setq native-comp-driver-options/, el)
+  end
+
+  def test_site_init_el_has_balanced_parens
+    el = BuildConfig.site_init_el("/opt/homebrew")
+    code = el.lines.reject { |l| l.strip.start_with?(";") }.join
+    assert_equal code.count("("), code.count(")")
+  end
+
+  def test_site_init_el_adds_driver_options_in_emacs
+    # Runs the generated file in a real Emacs, when one with native
+    # compilation is around. The prefix has no gcc, so only the fixed
+    # library dirs are expected
+    emacs = ENV.fetch("EMACS", "emacs")
+    probe = IO.popen([emacs, "--batch", "-Q", "--eval", "(princ (native-comp-available-p))"],
+                     err: File::NULL, &:read) rescue nil
+    skip "no Emacs with native compilation" unless probe == "t"
+
+    Dir.mktmpdir do |dir|
+      site_init = File.join(dir, "site-init.el")
+      File.write(site_init, BuildConfig.site_init_el(dir))
+      script = <<~ELISP
+        (progn
+          (load #{site_init.inspect} nil t)
+          (princ (format "%S\\n" (boundp 'native-comp-driver-options)))
+          (require 'comp)
+          (princ (format "%S\\n" native-comp-driver-options)))
+      ELISP
+      out = IO.popen([emacs, "--batch", "-Q", "--eval", script], err: File::NULL, &:read)
+      unbound, options = out.lines.map(&:strip)
+
+      assert_equal "nil", unbound, "nothing should be set before comp.el loads"
+      assert_equal %W[-Wl,-w -L#{dir}/lib/gcc/current
+                      -L#{dir}/opt/libgccjit/lib/gcc/current -L#{dir}/lib],
+                   options.scan(/"([^"]*)"/).flatten
+    end
   end
 
   private

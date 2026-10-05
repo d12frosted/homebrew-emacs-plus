@@ -552,6 +552,14 @@ class EmacsBase < Formula
     paths.compact.join(":")
   end
 
+  # Write lisp/site-init.el into the source tree. Emacs loads it while
+  # dumping, so the native-comp driver options it sets up apply even with
+  # -Q or --no-site-file. Must run before the build.
+  def write_site_init
+    ohai "Writing lisp/site-init.el (native-comp driver options)"
+    File.write("lisp/site-init.el", BuildConfig.site_init_el(HOMEBREW_PREFIX))
+  end
+
   def inject_emacs_plus_site_lisp(major_version)
     # Install to Homebrew's shared site-lisp directory
     # Emacs looks here for site-start.el at startup
@@ -595,8 +603,6 @@ class EmacsBase < Formula
                                   (list exec-directory)))
           ;; Set PATH in process-environment for subprocesses
           (setenv "PATH" emacs-plus-path))
-
-        #{BuildConfig.native_comp_driver_options_el(HOMEBREW_PREFIX).chomp}
 
         (provide 'emacs-plus)
 
