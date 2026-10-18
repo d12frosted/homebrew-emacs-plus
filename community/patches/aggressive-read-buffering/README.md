@@ -4,7 +4,7 @@ Improve processing large quantities of data from tty/pty reads on macOS
 
 ## Compatibility
 
-- Emacs versions: 29, 30, 31
+- Emacs versions: 29, 30, 31, 32
 
 ## Maintainer
 
@@ -30,3 +30,4 @@ brew reinstall emacs-plus@30
 - `emacs-29.patch` - Patch for Emacs 29
 - `emacs-30.patch` - Patch for Emacs 30
 - `emacs-31.patch` - Patch for Emacs 31
+- `emacs-32.patch` - Patch for Emacs 32
