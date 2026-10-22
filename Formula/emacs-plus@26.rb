@@ -132,7 +132,7 @@ class EmacsPlusAT26 < EmacsBase
 
   service do
     run [opt_bin/"emacs", "--fg-daemon"]
-    keep_alive true
+    keep_alive crashed: true
     log_path var/"log/emacs-plus@26.stdout.log"
     error_log_path var/"log/emacs-plus@26.stderr.log"
   end

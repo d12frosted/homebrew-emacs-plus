@@ -3,6 +3,24 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-10-22
+
+** Changes
+
+*** The service restarts the daemon only when it crashes
+
+The =emacs-plus@N= service used =keep_alive true=, so launchd restarted the daemon after every exit. But a daemon exits with status 1 on purpose when another Emacs already runs the server: a daemon of another version, a leftover service under an old name, or a GUI Emacs that called =server-start=. launchd then restarted it every ~10 seconds until the other Emacs went away. Each attempt loaded the whole init file before giving up, so it could start async native compilation, and on macOS those compilation processes can get stuck at high CPU when their parent exits. One report had 158 restarts in about 34 minutes and 19 such leftovers using most of the CPU. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1014][#1014]].
+
+The service now uses =keep_alive crashed: true=: launchd still restarts a daemon that dies on a signal, but leaves a clean exit alone. This also means =kill-emacs= now really stops the daemon. If you used =emacsclient -e '(kill-emacs)'= to restart it and relied on launchd to bring it back, use =brew services restart emacs-plus@N= instead.
+
+The service definition is written into a plist when the service starts, so restart it once to pick up the change:
+
+#+begin_src bash
+  brew services restart emacs-plus@31   # or the version you use
+#+end_src
+
+The LaunchAgent recipe for the cask in the README changed the same way. If you copied it, replace =<key>KeepAlive</key><true/>= in your plist with =<key>KeepAlive</key><dict><key>Crashed</key><true/></dict>= and load it again.
+
 * 2026-10-05
 
 ** Bug fixes

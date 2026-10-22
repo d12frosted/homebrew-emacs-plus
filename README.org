@@ -497,7 +497,9 @@ The formula ships a Homebrew service:
   brew services start emacs-plus@31
 #+end_src
 
-Logs go to =$(brew --prefix)/var/log/emacs-plus@31.{stdout,stderr}.log=. Do not start services for two versions at once: both daemons compete for the same server socket, and the loser gets stuck in a restart loop.
+Logs go to =$(brew --prefix)/var/log/emacs-plus@31.{stdout,stderr}.log=.
+
+The service restarts the daemon when it crashes, but not when it exits on its own. So =M-x kill-emacs= (or =emacsclient -e '(kill-emacs)'=) stops the daemon until the next login; use =brew services restart emacs-plus@31= to restart it. A daemon also exits on its own when another Emacs already runs the server, for example a daemon of another version or a GUI Emacs that called =server-start=. Then the service stays stopped and the log says "Unable to start the daemon". Do not start services for two versions at once.
 
 **** Cask
 
@@ -515,7 +517,10 @@ Logs go to =$(brew --prefix)/var/log/emacs-plus@31.{stdout,stderr}.log=. Do not 
       <string>--fg-daemon</string>
     </array>
     <key>RunAtLoad</key><true/>
-    <key>KeepAlive</key><true/>
+    <key>KeepAlive</key>
+    <dict>
+      <key>Crashed</key><true/>
+    </dict>
     <key>StandardOutPath</key><string>/opt/homebrew/var/log/emacs-plus-daemon.log</string>
     <key>StandardErrorPath</key><string>/opt/homebrew/var/log/emacs-plus-daemon.log</string>
   </dict>
@@ -532,7 +537,7 @@ Start and stop it with:
 
 The =mkdir= matters: launchd does not create log directories, and without it the daemon runs with no logs.
 
-The agent survives reboots (=RunAtLoad=) and restarts the daemon if it dies (=KeepAlive=). Remove the plist file after =bootout= if you want it gone for good.
+The agent survives reboots (=RunAtLoad=) and restarts the daemon if it crashes (=KeepAlive= / =Crashed=). A clean exit, like =kill-emacs= or a daemon that finds the server already taken, is left alone; =launchctl kickstart -k gui/$UID/io.emacs-plus.daemon= starts it again. Avoid a plain =<key>KeepAlive</key><true/>=: launchd then restarts the daemon after every exit, and a daemon that cannot get the server exits right away, so it turns into an endless restart loop. Remove the plist file after =bootout= if you want it gone for good.
 
 *** No Titlebar
 
