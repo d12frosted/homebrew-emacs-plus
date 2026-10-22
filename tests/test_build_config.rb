@@ -912,11 +912,16 @@ class TestBuildConfig < Minitest::Test
   def test_site_init_el_adds_driver_options_in_emacs
     # Runs the generated file in a real Emacs, when one with native
     # compilation is around. The prefix has no gcc, so only the fixed
-    # library dirs are expected
+    # library dirs are expected. They are compared against what comp.el
+    # sets up without the file, since an emacs-plus Emacs already has its
+    # own site-init.el in the dump
     emacs = ENV.fetch("EMACS", "emacs")
     probe = IO.popen([emacs, "--batch", "-Q", "--eval", "(princ (native-comp-available-p))"],
                      err: File::NULL, &:read) rescue nil
     skip "no Emacs with native compilation" unless probe == "t"
+
+    baseline_script = '(progn (require \'comp) (princ (format "%S" native-comp-driver-options)))'
+    baseline = IO.popen([emacs, "--batch", "-Q", "--eval", baseline_script], err: File::NULL, &:read)
 
     Dir.mktmpdir do |dir|
       site_init = File.join(dir, "site-init.el")
@@ -932,7 +937,8 @@ class TestBuildConfig < Minitest::Test
       unbound, options = out.lines.map(&:strip)
 
       assert_equal "nil", unbound, "nothing should be set before comp.el loads"
-      assert_equal %W[-Wl,-w -L#{dir}/lib/gcc/current
+      assert_equal baseline.scan(/"([^"]*)"/).flatten +
+                   %W[-L#{dir}/lib/gcc/current
                       -L#{dir}/opt/libgccjit/lib/gcc/current -L#{dir}/lib],
                    options.scan(/"([^"]*)"/).flatten
     end
