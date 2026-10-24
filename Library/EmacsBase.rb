@@ -350,8 +350,7 @@ class EmacsBase < Formula
       if patch[:type] == "community"
         maintainer_str = format_maintainer(patch[:metadata]&.dig("maintainer"))
         puts "    Maintainer: #{maintainer_str}" if maintainer_str
-        system "patch", "-p1", "-i", patch[:path]
-        odie "Failed to apply community patch: #{patch[:name]}" unless $?.success?
+        apply_patch_file(patch[:name], patch[:path], "community")
       elsif patch[:type] == "local"
         actual_sha = Digest::SHA256.file(patch[:path]).hexdigest
         if actual_sha != patch[:sha256]
@@ -361,8 +360,7 @@ class EmacsBase < Formula
             Actual:   #{actual_sha}
           ERROR
         end
-        system "patch", "-p1", "-i", patch[:path]
-        odie "Failed to apply local patch: #{patch[:name]}" unless $?.success?
+        apply_patch_file(patch[:name], patch[:path], "local")
       else
         # External: download with curl, verify SHA256
         tmpfile = Tempfile.new(["patch-#{patch[:name]}-", ".patch"])
@@ -378,10 +376,23 @@ class EmacsBase < Formula
           ERROR
         end
 
-        system "patch", "-p1", "-i", tmpfile.path
-        odie "Failed to apply external patch: #{patch[:name]}" unless $?.success?
+        apply_patch_file(patch[:name], tmpfile.path, "external")
         tmpfile.unlink
       end
+    end
+  end
+
+  # Apply a patch without ever prompting. A bare `patch` asks "Assume -R?"
+  # when the patch is already applied (e.g. merged upstream), which hangs
+  # the build since the prompt goes to the log, not the terminal.
+  def apply_patch_file(name, path, kind)
+    if quiet_system "patch", "-p1", "-N", "-t", "--dry-run", "-i", path
+      system "patch", "-p1", "-N", "-t", "-i", path
+      odie "Failed to apply #{kind} patch: #{name}" unless $?.success?
+    elsif quiet_system "patch", "-p1", "-R", "-t", "--dry-run", "-i", path
+      opoo "Skipping #{kind} patch #{name}: it is already applied (probably merged upstream). Consider removing it from build.yml."
+    else
+      odie "Failed to apply #{kind} patch: #{name} (does not apply cleanly to this source)"
     end
   end
 
