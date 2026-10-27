@@ -25,7 +25,7 @@ cask "emacs-plus-app" do
 
   # Conflict with other Emacs cask installations
   conflicts_with cask: [
-    "emacs",
+    "emacs-app",
     "emacs-mac",
     "emacs-mac-spacemacs-icon",
     "emacs-plus-app@master",
