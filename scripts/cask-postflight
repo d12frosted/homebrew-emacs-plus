@@ -9,17 +9,21 @@
 # only because the cask declares them.
 #
 # Homebrew's own Ruby is the one that is always there; the system ruby is
-# a fallback for exotic layouts where the portable one is missing.
+# a fallback for exotic layouts where the portable one is missing. The
+# portable one lives in HOMEBREW_REPOSITORY/Library/Homebrew, next to the
+# taps, which is not under HOMEBREW_PREFIX when bin/brew links into a
+# separate repository.
 set -euo pipefail
 
 tap_dir="$(cd "$(dirname "$0")/.." && pwd)"
 
 ruby=""
 for candidate in \
-  "${HOMEBREW_PREFIX:-/opt/homebrew}/Library/Homebrew/vendor/portable-ruby/current/bin/ruby" \
-  "$(dirname "$(dirname "$tap_dir")")/../../Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  "${HOMEBREW_RUBY_PATH:-}" \
+  "${HOMEBREW_REPOSITORY:-${HOMEBREW_PREFIX:-/opt/homebrew}}/Library/Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  "$tap_dir/../../../Homebrew/vendor/portable-ruby/current/bin/ruby" \
   /usr/bin/ruby; do
-  if [[ -x "$candidate" ]]; then
+  if [[ -n "$candidate" && -x "$candidate" ]]; then
     ruby="$candidate"
     break
   fi

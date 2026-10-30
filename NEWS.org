@@ -3,6 +3,23 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-10-30
+
+** Bug fixes
+
+*** The casks install when the Homebrew repository is not the prefix
+
+Taps live in the Homebrew repository (=brew --repository=). On a default install that is the same directory as =HOMEBREW_PREFIX=, but not when =bin/brew= is a symlink into a separate repository, for example =/opt/homebrew/bin/brew= pointing to =/opt/homebrew/Homebrew/bin/brew=. The casks looked for their postflight script under =HOMEBREW_PREFIX=, so on such a layout the install failed with "cask-postflight: No such file or directory". See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1039][#1039]].
+
+The casks now find the tap through =HOMEBREW_REPOSITORY=, which =brew= sets, and the postflight script finds Homebrew's own Ruby on such a layout too instead of falling back to the system Ruby.
+
+The fix is in the cask definitions, so there is nothing to rebuild:
+
+#+begin_src bash
+brew update
+brew install --cask emacs-plus-app   # or emacs-plus-app@next / emacs-plus-app@master
+#+end_src
+
 * 2026-10-22
 
 ** Changes
