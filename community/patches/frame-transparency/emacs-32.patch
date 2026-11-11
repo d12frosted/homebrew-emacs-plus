@@ -1,5 +1,5 @@
 diff --git a/src/frame.c b/src/frame.c
-index ebb1d761645..256f560d3a5 100644
+index ebb1d761645..b0da905fa4f 100644
 --- a/src/frame.c
 +++ b/src/frame.c
 @@ -1205,6 +1205,7 @@ make_frame (bool mini_p)
@@ -10,16 +10,16 @@ index ebb1d761645..256f560d3a5 100644
  #endif
  #endif
    f->select_mini_window_flag = false;
-@@ -4156,6 +4157,8 @@ frame_unspecified_color (struct frame *f, Lisp_Object unspec)
+@@ -4156,6 +4157,8 @@ static const struct frame_parm_table frame_parms[] =
  #ifdef NS_IMPL_COCOA
    {"ns-appearance",		SYMBOL_INDEX (Qns_appearance)},
    {"ns-transparent-titlebar",	SYMBOL_INDEX (Qns_transparent_titlebar)},
 +  {"ns-background-blur",	SYMBOL_INDEX (Qns_background_blur)},
-+  {"ns-alpha-elements",	        SYMBOL_INDEX (Qns_alpha_elements)},
++  {"ns-alpha-elements",		SYMBOL_INDEX (Qns_alpha_elements)},
  #endif
  
    {"display",			SYMBOL_INDEX (Qdisplay)},
-@@ -4233,6 +4236,8 @@ frame_unspecified_color (struct frame *f, Lisp_Object unspec)
+@@ -4233,6 +4236,8 @@ enum x_frame_parameter
  #ifdef NS_IMPL_COCOA
    NS_APPEARANCE,
    NS_TRANSPARENT_TITLEBAR,
@@ -41,7 +41,7 @@ diff --git a/src/frame.h b/src/frame.h
 index 64d8a74f36e..2fd53720f4e 100644
 --- a/src/frame.h
 +++ b/src/frame.h
-@@ -736,6 +736,7 @@ #define EMACS_FRAME_H
+@@ -736,6 +736,7 @@ struct frame
    /* NSAppearance theme used on this frame.  */
    enum ns_appearance_type ns_appearance;
    bool_bf ns_transparent_titlebar;
@@ -49,7 +49,7 @@ index 64d8a74f36e..2fd53720f4e 100644
  #endif
  
  #ifdef HAVE_TEXT_CONVERSION
-@@ -1257,6 +1258,7 @@ #define FRAME_TOOLTIP_P(f) ((f)->tooltip)
+@@ -1257,6 +1258,7 @@ FRAME_PARENT_FRAME (struct frame *f)
  #ifdef NS_IMPL_COCOA
  #define FRAME_NS_APPEARANCE(f) ((f)->ns_appearance)
  #define FRAME_NS_TRANSPARENT_TITLEBAR(f) ((f)->ns_transparent_titlebar)
@@ -217,7 +217,7 @@ diff --git a/src/nsterm.h b/src/nsterm.h
 index 69f565d51f9..9a4596fa3bc 100644
 --- a/src/nsterm.h
 +++ b/src/nsterm.h
-@@ -1243,6 +1243,10 @@ #define NSAPP_DATA2_RUNFILEDIALOG 11
+@@ -1243,6 +1243,10 @@ extern void ns_set_appearance (struct frame *f, Lisp_Object new_value,
  extern void ns_set_transparent_titlebar (struct frame *f,
                                           Lisp_Object new_value,
                                           Lisp_Object old_value);
