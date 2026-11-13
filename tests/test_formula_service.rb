@@ -37,4 +37,22 @@ class TestFormulaService < Minitest::Test
       assert_includes block, %(error_log_path var/"log/#{name}.stderr.log")
     end
   end
+
+  # The service runs bin/emacs directly, so LaunchServices never applies
+  # LSEnvironment and the daemon misses EMACS_PLUS_PATH unless the service
+  # passes it. Only formulas with a site-start.el read that variable (#1044)
+  def test_service_passes_injected_path
+    line = 'environment_variables BuildConfig.service_environment(opt_prefix/"Emacs.app")'
+    with_site_start = FORMULAS.select { |path| File.read(path).include?('inject_emacs_plus_site_lisp(') }
+    refute_empty with_site_start
+    FORMULAS.each do |path|
+      block = service_block(path)
+      name = File.basename(path, '.rb')
+      if with_site_start.include?(path)
+        assert_includes block, line, "#{name} service should pass the injected PATH"
+      else
+        refute_includes block, 'environment_variables', "#{name} has nothing that reads EMACS_PLUS_PATH"
+      end
+    end
+  end
 end

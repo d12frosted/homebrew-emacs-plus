@@ -382,7 +382,7 @@ There is a wonderful solution to overcome this problem, [[https://github.com/pur
 
 **** Formula builds
 
-For formula builds (=brew install emacs-plus@30=), Emacs+ captures your shell's PATH at install time and injects it into =Emacs.app=. This makes your PATH available whenever you start =Emacs.app= from Finder, Dock, Spotlight, =open= command, or =launchd=. This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]].
+For formula builds (=brew install emacs-plus@30=), Emacs+ captures your shell's PATH at install time and injects it into =Emacs.app=. This makes your PATH available whenever you start =Emacs.app= from Finder, Dock, Spotlight, or the =open= command. The daemon started by =brew services= gets the same PATH (=emacs-plus@30= and newer, see [[#running-emacs-as-a-daemon][→ Running Emacs as a daemon]]). This solves a wide range of problems for GUI users without the need to use [[https://github.com/purcell/exec-path-from-shell][purcell/exec-path-from-shell]].
 
 To disable PATH injection for formula builds, set =inject_path: false= in your =build.yml= and reinstall:
 
@@ -498,6 +498,8 @@ The formula ships a Homebrew service:
 #+end_src
 
 Logs go to =$(brew --prefix)/var/log/emacs-plus@31.{stdout,stderr}.log=.
+
+The service passes the injected PATH to the daemon (=emacs-plus@30= and newer), so =ns-emacs-plus-injected-path= is non-nil there as well (see [[#injected-path][→ Injected PATH]]). The value is the one captured at install time. With =inject_path: false= the daemon runs with the default PATH of =launchd=.
 
 The service restarts the daemon when it crashes, but not when it exits on its own. So =M-x kill-emacs= (or =emacsclient -e '(kill-emacs)'=) stops the daemon until the next login; use =brew services restart emacs-plus@31= to restart it. A daemon also exits on its own when another Emacs already runs the server, for example a daemon of another version or a GUI Emacs that called =server-start=. Then the service stays stopped and the log says "Unable to start the daemon". Do not start services for two versions at once.
 

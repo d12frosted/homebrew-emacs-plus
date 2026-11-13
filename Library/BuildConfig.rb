@@ -207,6 +207,28 @@ module BuildConfig
       ELISP
     end
 
+    # Environment variables for the formula's launchd service.
+    #
+    # The service runs bin/emacs, which execs the binary inside Emacs.app
+    # directly. LaunchServices is not involved, so LSEnvironment from
+    # Info.plist is not applied and the daemon would not see
+    # EMACS_PLUS_PATH (issue #1044). Read the value back from Info.plist,
+    # so the daemon gets the same PATH as a GUI launch, and nothing when
+    # inject_path is disabled.
+    #
+    # Homebrew evaluates the service block for formulas that are not
+    # installed too, so a missing Emacs.app is not an error.
+    def service_environment(app)
+      plist = File.join(app.to_s, "Contents", "Info.plist")
+      return {} unless File.file?(plist)
+
+      path = IO.popen(["/usr/libexec/PlistBuddy", "-c", "Print :LSEnvironment:EMACS_PLUS_PATH", plist],
+                      err: File::NULL, &:read).to_s.chomp
+      $?.success? && !path.empty? ? { EMACS_PLUS_PATH: path } : {}
+    rescue SystemCallError
+      {}
+    end
+
     # Validate that config has the expected structure
     def validate_config!(config, path)
       unless config.is_a?(Hash)
