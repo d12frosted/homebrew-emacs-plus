@@ -3,6 +3,23 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-11-13
+
+** Bug fixes
+
+*** The service passes the injected PATH to the daemon
+
+The =emacs-plus@N= service starts the daemon through =bin/emacs=, which runs the binary inside =Emacs.app= directly. macOS applies =LSEnvironment= from =Info.plist= only to launches that go through LaunchServices (Finder, Dock, Spotlight, =open=), so the daemon never saw =EMACS_PLUS_PATH=. It ran with the default PATH of =launchd= (=/usr/bin:/bin:/usr/sbin:/sbin=) and =ns-emacs-plus-injected-path= was nil. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1044][#1044]].
+
+The service of =emacs-plus@30=, =emacs-plus@31= and =emacs-plus@32= now sets =EMACS_PLUS_PATH= itself, with the value stored in =Info.plist= at install time. So the daemon gets the same PATH as a GUI launch, and =inject_path: false= still turns it off. Starting =emacs= in a terminal is not affected: it keeps the PATH of that shell.
+
+There is nothing to rebuild. The service definition is written when the service starts, so restart it once:
+
+#+begin_src bash
+  brew update
+  brew services restart emacs-plus@31   # or the version you use
+#+end_src
+
 * 2026-10-30
 
 ** Bug fixes

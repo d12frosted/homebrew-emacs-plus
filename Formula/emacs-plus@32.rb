@@ -296,6 +296,7 @@ class EmacsPlusAT32 < EmacsBase
 
   service do
     run [opt_bin/"emacs", "--fg-daemon"]
+    environment_variables BuildConfig.service_environment(opt_prefix/"Emacs.app")
     keep_alive crashed: true
     log_path var/"log/emacs-plus@32.stdout.log"
     error_log_path var/"log/emacs-plus@32.stderr.log"
