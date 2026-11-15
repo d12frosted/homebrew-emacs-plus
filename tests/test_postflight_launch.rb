@@ -6,10 +6,13 @@
 #
 # Run with: ruby tests/test_postflight_launch.rb
 #
-# Taps live in HOMEBREW_REPOSITORY/Library/Taps, which is HOMEBREW_PREFIX
-# only on the default layout. When bin/brew is a symlink into a separate
-# repository (/opt/homebrew/Homebrew, say), the two differ (#1039), so the
-# tests build that split layout in a temporary directory.
+# Taps live in HOMEBREW_LIBRARY/Taps, which is HOMEBREW_PREFIX/Library only
+# on the default layout. When bin/brew is a symlink into a separate
+# repository (/opt/homebrew/Homebrew, say), the library is inside that
+# repository (#1039), so the tests build that split layout in a temporary
+# directory. nix-homebrew goes the other way: the library stays in the
+# prefix and HOMEBREW_REPOSITORY is a stub directory with nothing in it
+# (#1046).
 
 require 'minitest/autorun'
 require 'tmpdir'
@@ -28,7 +31,21 @@ class TestPostflightLaunch < Minitest::Test
     @dir = Dir.mktmpdir
     @prefix = File.join(@dir, "prefix")
     @repository = File.join(@prefix, "Homebrew")
+    @library = File.join(@repository, "Library")
+    @nix_repository = File.join(@prefix, "Library/.homebrew-is-managed-by-nix")
+    @nix_library = File.join(@prefix, "Library")
     FileUtils.mkdir_p(@prefix)
+  end
+
+  # What stock bin/brew exports on the split layout
+  def split_env
+    { "HOMEBREW_REPOSITORY" => @repository, "HOMEBREW_LIBRARY" => @library }
+  end
+
+  # What nix-homebrew exports
+  def nix_env
+    FileUtils.mkdir_p(@nix_repository)
+    { "HOMEBREW_REPOSITORY" => @nix_repository, "HOMEBREW_LIBRARY" => @nix_library }
   end
 
   def teardown
@@ -66,8 +83,16 @@ class TestPostflightLaunch < Minitest::Test
   def test_casks_run_the_script_from_the_repository
     stub(File.join(@repository, TAP, "scripts/cask-postflight"), "repository")
     CASKS.each do |name|
-      lines = run_cask_step(name, "HOMEBREW_PREFIX" => @prefix, "HOMEBREW_REPOSITORY" => @repository)
+      lines = run_cask_step(name, { "HOMEBREW_PREFIX" => @prefix }.merge(split_env))
       assert_equal ["repository", *ARGS], lines, name
+    end
+  end
+
+  def test_casks_run_the_script_from_the_library_when_the_repository_is_a_stub
+    stub(File.join(@prefix, TAP, "scripts/cask-postflight"), "library")
+    CASKS.each do |name|
+      lines = run_cask_step(name, { "HOMEBREW_PREFIX" => @prefix }.merge(nix_env))
+      assert_equal ["library", *ARGS], lines, name
     end
   end
 
@@ -93,7 +118,7 @@ class TestPostflightLaunch < Minitest::Test
     stub(ruby, "ruby-path")
     stub(File.join(@repository, PORTABLE_RUBY), "portable")
     SCRIPTS.each do |script|
-      lines = run_script(script, "HOMEBREW_RUBY_PATH" => ruby, "HOMEBREW_REPOSITORY" => @repository)
+      lines = run_script(script, { "HOMEBREW_RUBY_PATH" => ruby }.merge(split_env))
       assert_equal "ruby-path", lines.first, script
     end
   end
@@ -101,8 +126,18 @@ class TestPostflightLaunch < Minitest::Test
   def test_scripts_find_portable_ruby_in_the_repository
     stub(File.join(@repository, PORTABLE_RUBY), "portable")
     SCRIPTS.each do |script|
-      lines = run_script(script, "HOMEBREW_REPOSITORY" => @repository)
+      lines = run_script(script, split_env)
       assert_equal "portable", lines.first, script
+    end
+  end
+
+  # The tap sits in the split layout here, so only HOMEBREW_LIBRARY leads
+  # to this ruby
+  def test_scripts_find_portable_ruby_in_the_library_when_the_repository_is_a_stub
+    stub(File.join(@prefix, PORTABLE_RUBY), "library")
+    SCRIPTS.each do |script|
+      lines = run_script(script, nix_env)
+      assert_equal "library", lines.first, script
     end
   end
 
@@ -117,7 +152,7 @@ class TestPostflightLaunch < Minitest::Test
   def test_scripts_pass_arguments_through
     stub(File.join(@repository, PORTABLE_RUBY), "portable")
     SCRIPTS.each do |script|
-      lines = run_script(script, "HOMEBREW_REPOSITORY" => @repository)
+      lines = run_script(script, split_env)
       assert_equal ARGS, lines.last(ARGS.length), script
     end
   end

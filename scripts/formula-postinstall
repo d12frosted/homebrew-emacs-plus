@@ -10,9 +10,10 @@
 #
 # Homebrew's own Ruby is the one that is always there; the system ruby is
 # a fallback for exotic layouts where the portable one is missing. The
-# portable one lives in HOMEBREW_REPOSITORY/Library/Homebrew, next to the
-# taps, which is not under HOMEBREW_PREFIX when bin/brew links into a
-# separate repository.
+# portable one lives in HOMEBREW_LIBRARY/Homebrew, next to the taps, which
+# is not under HOMEBREW_PREFIX when bin/brew links into a separate
+# repository. HOMEBREW_REPOSITORY is not used: nix-homebrew points it at a
+# stub directory and keeps the library in the prefix.
 set -euo pipefail
 
 tap_dir="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,7 +21,7 @@ tap_dir="$(cd "$(dirname "$0")/.." && pwd)"
 ruby=""
 for candidate in \
   "${HOMEBREW_RUBY_PATH:-}" \
-  "${HOMEBREW_REPOSITORY:-${HOMEBREW_PREFIX:-/opt/homebrew}}/Library/Homebrew/vendor/portable-ruby/current/bin/ruby" \
+  "${HOMEBREW_LIBRARY:-${HOMEBREW_PREFIX:-/opt/homebrew}/Library}/Homebrew/vendor/portable-ruby/current/bin/ruby" \
   "$tap_dir/../../../Homebrew/vendor/portable-ruby/current/bin/ruby" \
   /usr/bin/ruby; do
   if [[ -n "$candidate" && -x "$candidate" ]]; then

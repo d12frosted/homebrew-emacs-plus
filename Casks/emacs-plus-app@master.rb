@@ -64,15 +64,17 @@ cask "emacs-plus-app@master" do
   # The step runs in Homebrew's sandbox with a scratch HOME; the build.yml
   # locations are declared so the script can still read them, and network
   # access is for icons pulled from a URL.
-  # The tap lives in HOMEBREW_REPOSITORY/Library/Taps, which is not under
+  # The tap lives in HOMEBREW_LIBRARY/Taps, which is not under
   # HOMEBREW_PREFIX when bin/brew links into a separate repository, and
   # steps have no token for it. So bash reads it from the environment brew
   # exports, falling back to the prefix (the default layout); Homebrew
   # expands {{HOMEBREW_PREFIX}} before bash sees the program.
+  # HOMEBREW_REPOSITORY is not used: nix-homebrew points it at a stub
+  # directory and keeps the library in the prefix.
   postflight_steps do
     run "/bin/bash",
         args:           ["-c",
-                         'exec "${HOMEBREW_REPOSITORY:-{{HOMEBREW_PREFIX}}}/Library/Taps/' \
+                         'exec "${HOMEBREW_LIBRARY:-{{HOMEBREW_PREFIX}}/Library}/Taps/' \
                          'd12frosted/homebrew-emacs-plus/scripts/cask-postflight" "$@"',
                          "cask-postflight",
                          "--emacs-app", "{{appdir}}/Emacs.app",
