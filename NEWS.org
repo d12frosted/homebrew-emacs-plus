@@ -3,6 +3,22 @@
 
 This file documents notable changes to Emacs Plus.
 
+* 2026-11-15
+
+** Bug fixes
+
+*** The casks install with nix-homebrew again
+
+Since the fix for [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1039][#1039]] the casks looked for their postflight script in =$HOMEBREW_REPOSITORY/Library/Taps=. That is right for stock Homebrew, but [[https://github.com/zhaofengli/nix-homebrew][nix-homebrew]] points =HOMEBREW_REPOSITORY= at a stub directory (=/opt/homebrew/Library/.homebrew-is-managed-by-nix=) and keeps the taps in =/opt/homebrew/Library/Taps=. So the install failed with "cask-postflight: No such file or directory". On an upgrade the rollback ran the same step and failed too, which left no =Emacs.app= at all. See [[https://github.com/d12frosted/homebrew-emacs-plus/issues/1046][#1046]].
+
+The casks now find the tap through =HOMEBREW_LIBRARY=, the variable Homebrew itself uses for the taps directory. Stock =brew= sets it to =$HOMEBREW_REPOSITORY/Library=, so nothing changes there, including the layout from #1039. The lookup of Homebrew's own Ruby in the postflight and post-install scripts changed the same way.
+
+The fix is in the cask definitions, so there is nothing to rebuild. Update the tap (with nix-homebrew: update the flake input) and install again:
+
+#+begin_src bash
+brew install --cask emacs-plus-app   # or emacs-plus-app@next / emacs-plus-app@master
+#+end_src
+
 * 2026-11-13
 
 ** Bug fixes
